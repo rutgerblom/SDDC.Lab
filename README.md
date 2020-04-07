@@ -21,7 +21,7 @@ This repository contains a set of Ansible Playbooks that deploy and configure vC
 Now updated for vSphere 7.0 and NSX-T 3.0. Also verified to work with vSphere 6.7 and NSX-T 2.5.1 (just swap the ISOs/OVAs).<br/>
 Tested in an environment with at least one physical ESXi hosts managed by vCenter.<br/>
 <br/>
-Other components I used that are nit part of this deployment are a FRRouting VM for routing within the nested environment and a NFS datastore availabe to the nested ESXi hosts. vSAN could be used too, but I have not tested this yet.<br/>
+Other components I used that are not part of this deployment are a FRRouting VM for routing within the nested environment and a NFS datastore availabe to the nested ESXi hosts. vSAN could be used too, but I have not tested this yet.<br/>
 <br/>
 I also recommend having a DNS/NTP server available to the nested environment to host something like a "lab.local" zone and have proper time synchronization.<br/>
 
