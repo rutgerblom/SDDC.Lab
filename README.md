@@ -31,7 +31,6 @@ pip install pyvmomi <br/>
 
 ESXi and VCSA ISOs (6.7 or 7.0) as well as the NSX-T Manager and NSX-T Edge OVAs (2.5 or 3.0). Place all of these in /iso <br/>
 
-
 ### answerfile.yml
 
 Edit and adjust the answerfile.yml according to your needs!
@@ -39,7 +38,6 @@ Edit and adjust the answerfile.yml according to your needs!
 ## Usage
 
 ansible-playbook deploy.yml
-
 
 ## Compatibility
 
