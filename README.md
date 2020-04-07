@@ -1,5 +1,5 @@
 # vsphere-nsxt-lab-deploy
-A set of Ansible Playbooks to automate deployment of vCenter, nested ESXi hosts, NSX-T Manager. and NSX-T Edge nodes. <br/>
+A set of Ansible Playbooks that help automate the deployment of vCenter, nested ESXi, NSX-T Manager, and NSX-T Edge nodes. <br/>
 
 #### Table of Contents
 
