@@ -67,7 +67,7 @@ nfs_datastore: 'nfs01'
 nfs_path: '/nested_nfs01'
 nfs_type: 'nfs'
 
-# Properties for the VDS within the lab vCenter
+# Properties for the VDS that will be deployed in the lab vCenter
 vds:
   name: 'vds'
   mtu: '9000'
@@ -89,7 +89,7 @@ clusters: # You can add, remove or rename clusters in this section, you can spec
 # Do not change ha and vsan to True untill I fix a bug. It is better to go and enable first vSAN and HA after the deployment is done
   Compute:
     ha: False
-    drs: False
+    drs: True
     vsan: False
   Edge:
     ha: False
@@ -97,7 +97,7 @@ clusters: # You can add, remove or rename clusters in this section, you can spec
     vsan: False
   
 # NSX-T configuration
-tz_vlan_name: 'tz-vlan'
+tz_vlan_name: 'tz-vlan' 
 tz_overlay_name: 'tz-overlay'
 nvds_name: 'n-vds'
 host_uplink_profile_name: 'esxi-uplink-profile'
@@ -109,7 +109,7 @@ edge_transport_vlan: '1659'
 host_transport_mtu: '9000'
 edge_transport_mtu: '9000'
 
-# NSX-T Manager node global properties shared by all nodes
+# NSX-T Manager node global properties shared by all manager nodes
 nsxmanmask: '255.255.255.0'
 nsxmangateway: '172.16.11.1'
 nsxmandns: '10.2.129.10'
@@ -130,7 +130,7 @@ nsxman:
     hostname: 'nsxmanager01'
     vmname: 'nested-nsxmanager01'
 
-# NSX-T Edge node global properties shared by all nodes
+# NSX-T Edge node global properties shared by all Edge nodes
 nsxedgemask: '255.255.255.0'
 nsxedgegateway: '172.16.11.1'
 nsxedgedns: '10.2.129.10'
