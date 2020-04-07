@@ -51,7 +51,7 @@ NSX-T version 2.5 and above is supported <br/>
 
 TODO: Configure stuff in NSX-T <br/>
 TODO: Include a diagram in README.md<br/>
-TODO: Clean up / structure answerfile.yml
+TODO: Clean up / structurize answerfile.yml
 
 ## Credits
 
