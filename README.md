@@ -55,4 +55,4 @@ TODO: Include a diagram in README.md<br/>
 
 ## Credits
 
-Credits go to Yasen Simeonov and his project at https://github.com/yasensim/vsphere-lab-deploy. This project is largely entirely based on his.
+Credits go to Yasen Simeonov and his project at https://github.com/yasensim/vsphere-lab-deploy. This project is largely based on his.
