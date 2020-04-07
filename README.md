@@ -18,10 +18,10 @@ This repository contains a set of Ansible Playbooks that deploy and configure vC
 
 ## Setup
 
-Now updated for vSphere 7.0 and NSX-T 3.0. Also verified to work with vSphere 6.7 and NSX-T 2.5.1<br/>
+Now updated for vSphere 7.0 and NSX-T 3.0. Also verified to work with vSphere 6.7 and NSX-T 2.5.1 (just swap the ISOs/OVAs).<br/>
 Tested in an environment with at least one physical ESXi hosts managed by vCenter.<br/>
 Other components include a FRRouting VM for routing within the nested environment and a NFS datastore availabe to the nested ESXi hosts. vSAN could be used too, but I did not test this yet.<br/>
-I recommend having a DNS server available to the nested environment to host something like a "lab.local" zone.<br/>
+I recommend having a DNS/NTP server available to the nested environment to host something like a "lab.local" zone and have proper time synchronization.<br/>
 
 ### Dependencies
 
@@ -30,11 +30,11 @@ apt install sshpass python-pip git <br/>
 pip install vim <br/>
 pip install pyvmomi <br/>
 
-ESXi and VCSA ISOs (6.7 or 7.0) as well as the NSX-T Manager and NSX-T Edge OVAs (2.5 or 3.0). Place all of these in /iso <br/>
+ESXi and VCSA ISOs (6.7 or 7.0) as well as the NSX-T Manager and NSX-T Edge OVAs (2.5 or 3.0). Place all of these in the /iso directory of your Ansible control node.<br/>
 
 ### answerfile.yml
 
-Edit and adjust the answerfile.yml according to your needs!
+Edit and adjust the answerfile.yml according to your needs! I've parameterized as much as possible so it's easier to customize your deployment.
 
 ## Usage
 
@@ -52,6 +52,7 @@ NSX-T version 2.5 and above is supported <br/>
 TODO: Configure stuff in NSX-T <br/>
 TODO: Include a diagram in README.md<br/>
 TODO: Clean up / structurize answerfile.yml<br/>
+TODO: Parameterize more<br/>
 
 ## Credits
 
