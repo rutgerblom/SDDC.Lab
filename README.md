@@ -19,7 +19,7 @@ This repository contains a set of Ansible Playbooks that deploy and configure vC
 ## Setup
 
 Updated for vSphere 7.0 and NSX-T 3.0. Also verified to work with vSphere 6.7 and NSX-T 2.5.1<br/>
-Tested in an evironment with at least one physical ESXi hosts managed by vCenter.<br/>
+Tested in an environment with at least one physical ESXi hosts managed by vCenter.<br/>
 Other components include a FRRouting VM for routing within the nested environment and a NFS datastore<br/>
 
 ### Dependencies
