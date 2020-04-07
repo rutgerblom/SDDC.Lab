@@ -1,0 +1,66 @@
+---
+- name: Deploy VC
+  hosts: localhost
+  gather_facts: False
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Mount vCenter ISO
+      action: mount name='/mnt/VCSA' src="{{ vcIso }}" opts=loop fstype=iso9660 state=mounted
+      tags: mount
+    - name: Create JSON template file for VCSA with embeded PSC
+      template: 
+        src=../templates/embedded_vCSA_on_ESXi.json
+        dest=/tmp/vCSA_on_ESXi.json
+      when: 
+        - vcenter.ip  ==  vcenter.psc_ip
+
+    - debug:
+        msg: "Next step will take about 20 minutes if vCenter has not been previously deployed, so go grab some coffee !!!"
+
+    - name: Perform vCenter CLI-based installation
+      command: "./vcsa-deploy install --accept-eula --no-ssl-certificate-verification --acknowledge-ceip /tmp/vCSA_on_ESXi.json"
+      args:
+        chdir: /mnt/VCSA/vcsa-cli-installer/lin64/
+#      when: vcIso | search("-6.5.")
+      register: vc65deploy
+      ignore_errors: True
+
+    - name: Unmount vCenter ISO
+      action: mount name='/mnt/VCSA' src="{{ esxIso }}" fstype=iso9660 state=absent
+
+    - name: Delete the temporary JSON template file
+      file: path=/tmp/vCSA_on_ESXi.json state=absent
+    
+    - name: Move the vCenter VM to folder
+      vmware_guest_move:
+        hostname: "{{ vc_mng.ip }}"
+        username: "{{ vc_mng.user }}"
+        password: "{{ vc_mng.password }}"
+        datacenter: "{{ vc_mng.datacenter }}"
+        validate_certs: no
+        name: "{{ vcenter.vmname }}"
+        dest_folder: "{{ vcfolder }}"
+      delegate_to: localhost
+
+    - name: Create Datacenter
+      vmware_datacenter:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        datacenter_name: "{{ vcenter.datacenter }}"
+        state: present
+        validate_certs: False
+
+    - name: Create Clusters
+      vmware_cluster:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        datacenter_name: "{{ vcenter.datacenter }}"
+        cluster_name: "{{ item.key }}"
+        validate_certs: False
+        enable_ha: False  # Hardcoded as we need to enable HA after vSAN is enabled and disks are claimed
+        enable_drs: "{{ item.value.drs }}"
+        enable_vsan: False  # Hardcoded as we need to enable vSAN when the hosts are added to the cluster
+      with_dict: "{{ clusters }}"

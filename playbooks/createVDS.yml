@@ -1,0 +1,195 @@
+---
+- name: Create and connect VDS
+  hosts: localhost
+  gather_facts: False
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Create Distributed Switch
+      vmware_dvswitch:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        datacenter_name: "{{ vcenter.datacenter }}"
+        validate_certs: false
+        switch_name: "{{ vds.name }}"
+        mtu: "{{ vds.mtu }}"
+        uplink_quantity: "{{ vds.uplinks }}"
+        discovery_proto: "{{ vds.discovery_proto }}"
+        discovery_operation: "{{ vds.discovery_operation }}"
+        state: present
+    - name: Create Management Portgroup
+      vmware_dvs_portgroup:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        validate_certs: false
+        portgroup_name: "{{ vds.management_pg }}"
+        switch_name: "{{ vds.name }}"
+        vlan_id: "{{ vds.management_vlan }}"
+        num_ports: 8
+        portgroup_type: earlyBinding
+        state: present
+    - name: Create vMotion Portgroup
+      vmware_dvs_portgroup:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        validate_certs: false
+        portgroup_name: "{{ vds.vmotion_pg }}"
+        switch_name: "{{ vds.name }}"
+        vlan_id: "{{ vds.vmotion_vlan }}"
+        num_ports: 8
+        portgroup_type: earlyBinding
+        state: present
+    - name: Create vSAN Portgroup
+      vmware_dvs_portgroup:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        validate_certs: false
+        portgroup_name: "{{ vds.vsan_pg }}"
+        switch_name: "{{ vds.name }}"
+        vlan_id: "{{ vds.vsan_vlan }}"
+        num_ports: 8
+        portgroup_type: earlyBinding
+        state: present
+    - name: Create Uplink1 Portgroup
+      vmware_dvs_portgroup:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        validate_certs: false
+        portgroup_name: "{{ vds.uplink1_pg }}"
+        switch_name: "{{ vds.name }}"
+        vlan_trunk: true
+        vlan_id: "{{ vds.uplink1_vlan }}"
+        num_ports: 8
+        portgroup_type: earlyBinding
+        state: present
+    - name: Create Uplink2 Portgroup
+      vmware_dvs_portgroup:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        validate_certs: false
+        portgroup_name: "{{ vds.uplink2_pg }}"
+        switch_name: "{{ vds.name }}"
+        vlan_trunk: true
+        vlan_id: "{{ vds.uplink2_vlan }}"
+        num_ports: 8
+        portgroup_type: earlyBinding
+        state: present
+
+    - name: Migrate uplinks to the new VDS
+      vmware_dvs_host:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        validate_certs: false
+        esxi_hostname: "{{ item.value.fqdn }}"
+        switch_name: "{{ vds.name }}"
+        vmnics:
+          - vmnic1
+          - vmnic2
+        state: present
+      with_dict: "{{ vESX }}"
+
+    - name: Migrate Management vmk0
+      vmware_migrate_vmk:
+        hostname: "{{ vcenter.ip }}"
+        esxi_hostname: "{{ item.value.fqdn }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        device: 'vmk0'
+        current_switch_name: 'vSwitch0'
+        current_portgroup_name: 'Management Network'
+        migrate_switch_name: "{{ vds.name }}"
+        validate_certs: False
+        migrate_portgroup_name: "{{ vds.management_pg }}"
+      with_dict: "{{ vESX }}"
+
+    - name: Create vMotion vmk1
+      vmware_vmkernel:
+        hostname: "{{ vcenter.ip }}"
+        esxi_hostname: "{{ item.value.fqdn }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        state: present
+        portgroup_name: 'pg-vmotion'
+        dvswitch_name: "{{ vds.name }}"
+        validate_certs: False
+        enable_vmotion: true
+        network:
+          type: 'static'
+          ip_address: "{{ item.value.vmotion_ip }}"
+          subnet_mask: "{{ item.value.vmotion_mask }}"
+      with_dict: "{{ vESX }}"
+
+    - name: Create vSAN vmk2
+      vmware_vmkernel:
+        hostname: "{{ vcenter.ip }}"
+        esxi_hostname: "{{ item.value.fqdn }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        state: present
+        enable_vsan: true
+        portgroup_name: 'pg-vsan'
+        dvswitch_name: "{{ vds.name }}"
+        validate_certs: False
+        network:
+          type: 'static'
+          ip_address: "{{ item.value.vsan_ip }}"
+          subnet_mask: "{{ item.value.vsan_mask }}"
+      with_dict: "{{ vESX }}"
+
+    - name: Remove the standard switch
+      vmware_vswitch:
+        hostname: '{{ item.value.fqdn }}'
+        username: '{{ item.value.username }}'
+        password: '{{ item.value.password }}'
+        validate_certs: no
+        switch: 'vSwitch0'
+        state: absent
+      with_dict: "{{ vESX }}"
+
+    - name: Enable vSAN
+      enable_vsan:
+        vcenter: "{{ vcenter.ip }}"
+        user: "{{ vcenter.user }}"
+        passwd: "{{ vcenter.password }}"
+        cluster: "{{ item.key }}"
+      when: item.value.vsan == True
+      with_dict: "{{ clusters }}"
+
+    - name: Claim disks for vSAN
+      claim_vsan_disks:
+        vcenter: "{{ vcenter.ip }}"
+        user: "{{ vcenter.user }}"
+        passwd: "{{ vcenter.password }}"
+        cluster: "{{ item.key }}"
+      when: item.value.vsan == True
+      with_dict: "{{ clusters }}"
+
+    - name: Clear vSAN errors for unsupported hardware
+      clear_vsan_errors:
+        vcenter: "{{ vcenter.ip }}"
+        user: "{{ vcenter.user }}"
+        passwd: "{{ vcenter.password }}"
+
+    - name: Enable HA on the clusters
+      enable_ha:
+        vcenter: "{{ vcenter.ip }}"
+        user: "{{ vcenter.user }}"
+        passwd: "{{ vcenter.password }}"
+        cluster: "{{ item.key }}"
+      when: item.value.ha == True
+      with_dict: "{{ clusters }}"
+
+    - name: Wait 3 minutes before clearing the errors
+      pause: minutes=3
+    - name: Clear errors
+      clear_vsan_errors:
+        vcenter: "{{ vcenter.ip }}"
+        user: "{{ vcenter.user }}"
+        passwd: "{{ vcenter.password }}"

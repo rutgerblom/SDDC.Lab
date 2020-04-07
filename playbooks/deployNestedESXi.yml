@@ -1,0 +1,50 @@
+---
+- name: Deploy Nested vESX VMs
+  hosts: localhost
+  gather_facts: False
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Deploy ESXi VMs
+      nestedESXi:
+        vcenter: "{{ vc_mng.ip }}"
+        vmname: "{{ item.value.vmname }}"
+        vcenter_user: "{{ vc_mng.user }}"
+        vcenter_passwd: "{{ vc_mng.password }}"
+        cluster: "{{ item.value.mng_cluster }}"
+        datastore: "{{ vc_mng.datastore }}"
+        portgroup: "Trunk"
+        cpucount: "{{ item.value.cpu }}"
+        memory: "{{ item.value.ram }}"
+        hdd: "{{ item.value.hdd }}"
+        isopath: "yasenISO/customesxv.iso"
+      with_dict: "{{ vESX }}"
+      async: 7200
+      poll: 0
+      register: deployment
+    - name: Wait 3 seconds before we start checking whether the ESXi hosts are ready
+      pause: seconds=3
+    - name: Result check for deployment
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      with_items: "{{ deployment.results }}"
+    - name: Create a mark if there is a new vESX to deploy
+      file: path=/tmp/newESXi state=touch owner=root group=root mode=0555
+      when: item.stat is not defined
+      with_items: "{{ job_result.results }}"
+    - stat: path=/tmp/newESXi
+      register: newESXi
+    - name: Wait 15 minutes before we start checking whether the ESXi hosts are ready
+      pause: minutes=15
+      when: newESXi.stat.exists == True
+    - name: Delete the temporary mark
+      file: path=/tmp/newESXi state=absent
+    - name: Check result for deployment
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      with_items: "{{ deployment.results }}"
+      retries: 20
+  tags: nestedESX

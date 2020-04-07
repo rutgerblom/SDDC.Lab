@@ -1,0 +1,251 @@
+# Path to the ESXi Installer ISO
+esxIso: '/iso/VMware-VMvisor-Installer-7.0.0-15843807.x86_64.iso' # ESXi 7.0
+#esxIso: '/iso/67-25/VMware-VMvisor-Installer-201912001-15160138.x86_64.iso' # ESXi 6.7
+
+# Path to vCenter installer ISO
+vcIso: '/iso/VMware-VCSA-all-7.0.0-15952498.iso' # vCenter 7.0
+#vcIso: '/iso/67-25/VMware-VCSA-all-6.7.0-14367737.iso' # vCenter 6.7
+
+# Path to NSX-T Manager OVA
+NsxManOva: '/iso/nsx-unified-appliance-3.0.0.0.0.15946739.ova' # NSX-T 3.0
+#NsxManOva: '/iso/67-25/nsx-unified-appliance-2.5.1.0.0.15314292.ova' # NSX-T 2.5
+
+# Path to NSX-T Edge OVA
+NsxEdgeOva: '/iso/67-25/nsx-edge-3.0.0.0.0.15946012.ova' # NSX-T 3.0
+#NsxEdgeOva: '/iso/67-25/nsx-edge-2.5.1.0.0.15314297.ova # NSX-T 2.5
+
+# Infrastructure vCenter folder where all the VMs get deployed
+vcfolder: 'Datacenter/vm/Nested' 
+
+# Properties of the physical ESXi host
+physicalESX:
+  host: 'esxi02.demo.local'
+  user: 'root' 
+  password: 'VMware1!' 
+  vswitch: 'vSwitch0' # vSwitch for lab environment
+  vlan: '1611' # Management VLAN for the lab environment
+  vlanpg: 'VLAN-1611' # Port group for vCenter appliance. Will be created if missing.
+  trunkvlan: '4095'
+  trunkpg: 'Trunk' # Port group for ESXi VMs. Will be created if missing.
+
+# Configuration for the vCenter instance to be deployed
+vcenter:
+  ip: '172.16.11.10' # vCenter ip address 
+  mask: '24'
+  gw: '172.16.11.1'
+  fqdn: 'vcenter.lab.local' # FQDN if there is working DNS server, otherwise put the ip as a name
+  vmname: 'nested-vcenter01'
+  psc_name: 'vcenter.lab.local' # if psc_name is the same as name above and psc_ip is the same as ip above, it will be vCenter with embeded PSC.
+  psc_ip: '172.16.11.10' # just change the name and ip address for the PSC if you want external PSC to be deployed.
+  thin: 'true'
+  user: 'administrator@vsphere.local' 
+  password: 'VMware1!' 
+  datacenter: 'DC01'
+  datastore: 'demo_nfs01' # Physical datastore where the VCSA VM will be deployed
+  domain: 'vsphere.local'
+
+# If there is an infrastructure vCenter connected to the physical ESXi change the configuration here. If there is no existing vCenter the config must be the same as the vcenter section above
+vc_mng:
+  ip: 'vcenter.demo.local'
+  mask: '24'
+  gw: '10.2.129.1'
+  network: 'PG-301'
+  name: 'vcsa67-01' 
+  user: 'administrator@vsphere.local' 
+  password: 'VMware1!' 
+  datacenter: 'Datacenter' 
+  cluster: 'Compute'
+  datastore: 'demo_nfs01'
+  domain: 'vsphere.local'
+
+dns1: '10.2.129.10'
+dns2: '8.8.8.8'
+ntp_server: '10.2.129.10'
+domain: 'lab.local' # FQDN of the lab environment
+nfs_server: '10.2.129.90'
+nfs_datastore: 'nfs01'
+nfs_path: '/nested_nfs01'
+nfs_type: 'nfs'
+
+# Properties for the VDS within the lab vCenter
+vds:
+  name: 'vds'
+  mtu: '9000'
+  uplinks: '2'
+  discovery_proto: 'lldp'
+  discovery_operation: 'both'
+  management_pg: 'pg-management'
+  management_vlan: '1611'
+  vmotion_pg: 'pg-vmotion'
+  vmotion_vlan: '1612'
+  vsan_pg: 'pg-vsan'
+  vsan_vlan: '1613'
+  uplink1_pg: 'pg-uplink1'
+  uplink1_vlan: '0-4094'
+  uplink2_pg: 'pg-uplink2'
+  uplink2_vlan: '0-4094'
+
+clusters: # You can add, remove or rename clusters in this section, you can specify to which cluster specific nested ESXi to be connected to
+# Do not change ha and vsan to True untill I fix a bug. It is better to go and enable first vSAN and HA after the deployment is done
+  Compute:
+    ha: False
+    drs: False
+    vsan: False
+  Edge:
+    ha: False
+    drs: False
+    vsan: False
+  
+# NSX-T configuration
+tz_vlan_name: 'tz-vlan'
+tz_overlay_name: 'tz-overlay'
+nvds_name: 'n-vds'
+host_uplink_profile_name: 'esxi-uplink-profile'
+edge_uplink_profile_name: 'edge-uplink-profile'
+host_teaming_policy: 'LOADBALANCE_SRCID'
+edge_teaming_policy: 'LOADBALANCE_SRCID'
+host_transport_vlan: '1659'
+edge_transport_vlan: '1659'
+host_transport_mtu: '9000'
+edge_transport_mtu: '9000'
+
+# NSX-T Manager node global properties shared by all nodes
+nsxmanmask: '255.255.255.0'
+nsxmangateway: '172.16.11.1'
+nsxmandns: '10.2.129.10'
+nsxmanntp: '10.2.129.10'
+nsxmanportgroup: 'VLAN-1611'
+nsxmandomain: 'lab.local'
+nsxmanpassword: 'VMware1!VMware1!'
+nsxmanaudituser: 'audit'
+nsxmanadminuser: 'admin'
+nsxmansize: 'small'
+nsxmanrole: 'NSX Manager' # Can be 'nsx-cloud-service-manager', 'nsx-global-manager' or 'NSX Manager' in NSX-T 3.0
+nsxmanurl: 'https://nsxmanager01.lab.local'
+
+# The NSX-T Manager nodes. You can add, remove or rename NSX-T Manager nodes below.
+nsxman:
+  nsxman01:
+    ip: '172.16.11.57'
+    hostname: 'nsxmanager01'
+    vmname: 'nested-nsxmanager01'
+
+# NSX-T Edge node global properties shared by all nodes
+nsxedgemask: '255.255.255.0'
+nsxedgegateway: '172.16.11.1'
+nsxedgedns: '10.2.129.10'
+nsxedgentp: '10.2.129.10'
+nsxedgemgmtportgroup: 'pg-management'
+nsxedgeupl1portgroup: 'pg-uplink1'
+nsxedgeupl2portgroup: 'pg-uplink2'
+nsxedgedomain: 'lab.local'
+nsxedgepassword: 'VMware1!VMware1!'
+nsxedgeaudituser: 'audit'
+nsxedgeadminuser: 'admin'
+nsxedgesize: 'small'
+nsxedge_vsphere_cluster: 'Edge'
+
+# The NSX-T Edge nodes. You can add, remove or rename NSX-T Edge nodes below.
+nsxedge:
+  nsxedge01:
+    ip: '172.16.11.61'
+    hostname: "en01.{{ nsxedgedomain }}"
+    vmname: 'en01'
+  nsxedge02:
+    ip: '172.16.11.62'
+    hostname: "en02.{{ nsxedgedomain }}"
+    vmname: 'en02'
+
+
+# The ESXi hosts. You can add, remove or rename ESXi hosts below.
+vESX:
+  esxi01:
+    ip: '172.16.11.51'
+    mask: '255.255.255.0'
+    gw: '172.16.11.1'
+    fqdn: 'esxi01.lab.local'
+    vmname: 'nested-esxi01'
+    mng_cluster: 'Compute' # the cluster where physical ESXi is connected to. The nested VMs will be deployed here
+    cluster: 'Compute' # the cluster where this specific nested ESXi need to be connected to
+    vlan: '1611' # the external vlan id, need to have connectivity with the vCenter
+    cpu: '8' # CPU count
+    ram: '65536' # memory
+    hdd: '180' # there is one HDD 8GB by default where the ESXi OS is installed. Additional one is SSD emulated drive configured half of the value here, and third HDD is according the value here
+    vmotion_ip: '172.16.12.51' 
+    vmotion_mask: '255.255.255.0'
+    vsan_ip: '172.16.13.51' # even if you dont need vSAN put an IP address here otherwise the install will fail
+    vsan_mask: '255.255.255.0'
+    username: 'root'
+    password: 'VMware1!'
+  esxi02:
+    ip: '172.16.11.52'
+    mask: '255.255.255.0'
+    gw: '172.16.11.1'
+    fqdn: 'esxi02.lab.local'
+    vmname: 'nested-esxi02'
+    mng_cluster: 'Compute' # the cluster where physical ESXi is connected to. The nested VMs will be deployed here
+    cluster: 'Compute' # the cluster where this specific nested ESXi need to be connected to
+    vlan: '1611' # the external vlan id, need to have connectivity with the vCenter
+    cpu: '8' # CPU count
+    ram: '65536' # memory
+    hdd: '180' # there is one HDD 8GB by default where the ESXi OS is installed. Additional one is SSD emulated drive configured half of the value here, and third HDD is according the value here
+    vmotion_ip: '172.16.12.52'
+    vmotion_mask: '255.255.255.0'
+    vsan_ip: '172.16.13.52' # even if you dont need vSAN put an IP address here otherwise the install will fail
+    vsan_mask: '255.255.255.0'
+    username: 'root'
+    password: 'VMware1!'
+  esxi03:
+    ip: '172.16.11.53'
+    mask: '255.255.255.0'
+    gw: '172.16.11.1'
+    fqdn: 'esxi03.lab.local'
+    vmname: 'nested-esxi03'
+    mng_cluster: 'Compute' # the cluster where physical ESXi is connected to. The nested VMs will be deployed here
+    cluster: 'Compute' # the cluster where this specific nested ESXi need to be connected to
+    vlan: '1611' # the external vlan id, need to have connectivity with the vCenter
+    cpu: '8' # CPU count
+    ram: '65536' # memory
+    hdd: '180' # there is one HDD 8GB by default where the ESXi OS is installed. Additional one is SSD emulated drive configured half of the value here, and third HDD is according the value here
+    vmotion_ip: '172.16.12.53'
+    vmotion_mask: '255.255.255.0'
+    vsan_ip: '172.16.13.53' # even if you dont need vSAN put an IP address here otherwise the install will fail
+    vsan_mask: '255.255.255.0'
+    username: 'root'
+    password: 'VMware1!'
+  esxi04:
+    ip: '172.16.11.54'
+    mask: '255.255.255.0'
+    gw: '172.16.11.1'
+    fqdn: 'esxi04.lab.local'
+    vmname: 'nested-esxi04'
+    mng_cluster: 'Compute' # the cluster where physical ESXi is connected to. The nested VMs will be deployed here
+    cluster: Edge # the cluster where this specific nested ESXi need to be connected to
+    vlan: '1611' # the external vlan id, need to have connectivity with the vCenter
+    cpu: '8' # CPU count
+    ram: '65536' # memory
+    hdd: '180' # there is one HDD 8GB by default where the ESXi OS is installed. Additional one is SSD emulated drive configured half of the value here, and third HDD is according the value here
+    vmotion_ip: '172.16.12.54'
+    vmotion_mask: '255.255.255.0'
+    vsan_ip: '172.16.13.54' # even if you dont need vSAN put an IP address here otherwise the install will fail
+    vsan_mask: '255.255.255.0'
+    username: 'root'
+    password: 'VMware1!'
+  esxi05:
+    ip: '172.16.11.55'
+    mask: '255.255.255.0'
+    gw: '172.16.11.1'
+    fqdn: 'esxi05.lab.local'
+    vmname: 'nested-esxi05'
+    mng_cluster: 'Compute' # the cluster where physical ESXi is connected to. The nested VMs will be deployed here
+    cluster: Edge # the cluster where this specific nested ESXi need to be connected to
+    vlan: '1611' # the external vlan id, need to have connectivity with the vCenter
+    cpu: '8' # CPU count
+    ram: '65536' # memory
+    hdd: '180' # there is one HDD 8GB by default where the ESXi OS is installed. Additional one is SSD emulated drive configured half of the value here, and third HDD is according the value here
+    vmotion_ip: '172.16.12.55'
+    vmotion_mask: '255.255.255.0'
+    vsan_ip: '172.16.13.55' # even if you dont need vSAN put an IP address here otherwise the install will fail
+    vsan_mask: '255.255.255.0'
+    username: 'root'
+    password: 'VMware1!'

@@ -1,0 +1,20 @@
+{
+  "resource_type": "UplinkHostSwitchProfile",
+  "display_name": "{{ edge_uplink_profile_name }}",
+  "mtu": "{{ edge_transport_mtu }}",
+  "teaming": {
+      "standby_list": [],
+      "active_list": [
+        {
+            "uplink_name": "uplink-1",
+            "uplink_type": "PNIC"
+        },
+        {
+            "uplink_name": "uplink-2",
+            "uplink_type": "PNIC"
+        }        
+      ],
+      "policy": "{{ edge_teaming_policy }}"
+    },
+    "transport_vlan": "{{ edge_transport_vlan }}"
+  }

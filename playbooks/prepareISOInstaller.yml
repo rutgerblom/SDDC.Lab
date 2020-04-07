@@ -1,0 +1,49 @@
+---
+- name: Prepare ESXi installer ISO
+  hosts: localhost
+  gather_facts: True
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Ensure xorriso is intalled
+      package:
+        name: xorriso
+        state: present
+
+    - name: Mount ESXi installer
+      action: mount name='/mnt/ESX' src="{{ esxIso }}" opts=loop fstype=iso9660 state=mounted
+
+    - name: Copy ISO files
+      copy: src=/mnt/ESX dest=/tmp/
+
+    - name: Unmount ESXi installer
+      action: mount name='/mnt/ESX' src="{{ esxIso }}" fstype=iso9660 state=absent
+
+    - name: Edit boot.cfg
+      replace:
+        dest: /tmp/ESX/boot.cfg
+        regexp: 'kernelopt=cdromBoot runweasel'
+        replace: 'kernelopt=ks=file://etc/vmware/weasel/KS.CFG'
+
+    - name: insert customks.tgz in boot.cfg modules section
+      replace:
+        dest: /tmp/ESX/boot.cfg
+        regexp: 'imgpayld.tgz$'
+        replace: 'imgpayld.tgz --- /customks.tgz'
+
+    - name: copy customks.tgz
+      copy: src=../files/customks.tgz dest=/tmp/ESX/
+
+    - name: Burn an ISO image
+      command: xorrisofs -relaxed-filenames -J -R -o /tmp/customesxv.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table /tmp/ESX/
+      args:
+        chdir: /tmp/ESX/
+
+    - name: Upload the ISO to the Datastore
+      vsphere_copy: hostname="{{ vc_mng.ip }}" login="{{ vc_mng.user }}" password="{{ vc_mng.password }}" src=/tmp/customesxv.iso datacenter="{{ vc_mng.datacenter }}" datastore="{{ vc_mng.datastore }}" path=/yasenISO/customesxv.iso validate_certs=False
+      tags: upload
+
+    - name: Delete Temporary Directory
+      file:
+        path: /tmp/ESX/
+        state: absent
