@@ -25,7 +25,7 @@ Other components include a FRRouting VM for routing within the nested environmen
 ### Dependencies
 
 apt install ansible <br/>
-apt-get install sshpass python-pip git <br/>
+apt install sshpass python-pip git <br/>
 pip install vim <br/>
 pip install pyvmomi <br/>
 
