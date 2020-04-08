@@ -20,7 +20,7 @@ The primary use case is speedy provisioning of a consistent lab environment.
 
 ## Setup
 
-Now updated for vSphere 7.0 and NSX-T 3.0. Also verified to work with vSphere 6.7 and NSX-T 2.5.1 (just swap the ISOs/OVAs).<br/>
+Now updated for vSphere 7.0 and NSX-T 3.0. Also verified to work with vSphere 6.7 and NSX-T 2.5 (just swap the ISOs/OVAs).<br/>
 Tested in an environment with at least one physical ESXi hosts managed by vCenter.<br/>
 <br/>
 Other components used that are **not** part of this deployment are a FRRouting VM for routing within the nested environment and an NFS datastore availabe to the nested ESXi hosts. vSAN could be used too, but I have not tested this yet.<br/>
