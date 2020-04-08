@@ -17,7 +17,7 @@ NsxEdgeOva: '/iso/nsx-edge-3.0.0.0.0.15946012.ova' # NSX-T 3.0
 # Infrastructure vCenter folder where all the VMs get deployed
 vcfolder: 'Datacenter/vm/Nested' 
 
-# Properties of the physical ESXi host
+# Properties of the existing physical ESXi host
 physicalESX:
   host: 'esxi02.demo.local'
   user: 'root' 
@@ -28,21 +28,7 @@ physicalESX:
   trunkvlan: '4095'
   trunkpg: 'Trunk' # Port group for ESXi VMs. Will be created if missing.
 
-# Configuration for the VCSA in the nested environment
-vcenter:
-  ip: '172.16.11.10' # vCenter ip address 
-  mask: '24'
-  gw: '172.16.11.1'
-  fqdn: 'vcenter.lab.local' # vCenter FQDN if there is a working DNS server, otherwise put the ip as a name
-  vmname: 'nested-vcenter01'
-  thin: 'true'
-  user: 'administrator@vsphere.local' 
-  password: 'VMware1!' 
-  datacenter: 'DC01'
-  datastore: 'demo_nfs01' # Physical datastore where the VCSA VM will be deployed
-  domain: 'vsphere.local'
-
-# If there is an infrastructure vCenter connected to the physical ESXi change the configuration here. If there is no existing vCenter the config must be the same as the vcenter section above
+# Properties of the existing infrastructure vCenter instance (the one managing the physical ESXi host)
 vc_mng:
   ip: 'vcenter.demo.local'
   mask: '24'
@@ -54,6 +40,20 @@ vc_mng:
   datacenter: 'Datacenter' 
   cluster: 'Compute'
   datastore: 'demo_nfs01'
+  domain: 'vsphere.local'
+
+# Deployment configuration for the vCenter instance in the nested environment
+vcenter:
+  ip: '172.16.11.10' # vCenter ip address 
+  mask: '24'
+  gw: '172.16.11.1'
+  fqdn: 'vcenter.lab.local' # vCenter FQDN if there is a working DNS server, otherwise put the ip as a name
+  vmname: 'nested-vcenter01'
+  thin: 'true'
+  user: 'administrator@vsphere.local' 
+  password: 'VMware1!' 
+  datacenter: 'DC01'
+  datastore: 'demo_nfs01' # Physical datastore where the VCSA VM will be deployed
   domain: 'vsphere.local'
 
 # Some general settings used when deploying and configuring the lab environment. These are all in the context of the lab environment. 
