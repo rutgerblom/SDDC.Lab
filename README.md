@@ -6,9 +6,9 @@ A set of Ansible Playbooks that help automate the deployment of vCenter, nested 
 1. [Description](#description)
 1. [Setup](#setup)
     * [Dependencies](#Dependencies)
-    * [Answerfile.yml](#answerfile.yml)
+    * [Answerfile.yml](#Answerfile.yml)
 1. [Diagram](#Diagram)
-1. [Usage](#usage)
+1. [Usage](#Usage)
 1. [Compatibility](#Compatibility)
 1. [Development](#Development)
 1. [Credits](#Credits)
@@ -41,7 +41,7 @@ pip install pyvmomi <br/>
 
 ESXi and VCSA ISOs (6.7 or 7.0) as well as the NSX-T Manager and NSX-T Edge OVAs (2.5 or 3.0). Place all of these in the /iso directory of your Ansible control node.<br/>
 
-### answerfile.yml
+### Answerfile.yml
 
 Edit and adjust the answerfile.yml according to your needs! I've parameterized as much as possible so it's easier to customize your deployment.
 
