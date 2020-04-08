@@ -39,6 +39,7 @@ Below a simple diagram over the physical environment. This will be deployed on t
 * apt install sshpass python-pip git <br/>
 * pip install vim <br/>
 * pip install pyvmomi <br/>
+* apt install xorriso<br/>
 
 * ESXi and VCSA ISOs (6.7 or 7.0) as well as the NSX-T Manager and NSX-T Edge OVAs (2.5 or 3.0). Place these in the /iso directory of your Ansible control node. This path can be changed in the answerfile.<br/>
 
@@ -52,8 +53,8 @@ ansible-playbook deploy.yml
 
 ## Compatibility
 
-Tested to work with:<br/> 
-* Ubuntu 18.04 as the control node<br/>
+Confirmed to be working with:<br/> 
+* Ubuntu 18.04 as the OS for the Ansible control node<br/>
 * Ansible 2.9.6 <br/>
 * ESXi version 6.7 and 7.0 <br/>
 * vCenter version 6.7 and 7.0 <br/>
