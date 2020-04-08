@@ -12,18 +12,15 @@
       template: 
         src=../templates/embedded_vCSA_on_ESXi.json
         dest=/tmp/vCSA_on_ESXi.json
-      when: 
-        - vcenter.ip  ==  vcenter.psc_ip
 
     - debug:
-        msg: "Next step will take about 20 minutes if vCenter has not been previously deployed, so go grab some coffee !!!"
+        msg: "Deploying the VCSA will take about 20 minutes, so go grab some coffee !!!"
 
     - name: Perform vCenter CLI-based installation
       command: "./vcsa-deploy install --accept-eula --no-ssl-certificate-verification --acknowledge-ceip /tmp/vCSA_on_ESXi.json"
       args:
         chdir: /mnt/VCSA/vcsa-cli-installer/lin64/
-#      when: vcIso | search("-6.5.")
-      register: vc65deploy
+      register: vcdeploy
       ignore_errors: True
 
     - name: Unmount vCenter ISO
