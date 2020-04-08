@@ -109,19 +109,17 @@ nsxmangateway: '172.16.11.1'
 nsxmandns: '10.2.129.10'
 nsxmanntp: '10.2.129.10'
 nsxmanportgroup: 'VLAN-1611'
-nsxmandomain: 'lab.local'
 nsxmanpassword: 'VMware1!VMware1!'
 nsxmanaudituser: 'audit'
 nsxmanadminuser: 'admin'
 nsxmansize: 'small'
 nsxmanrole: 'NSX Manager' # Can be 'nsx-cloud-service-manager', 'nsx-global-manager' or 'NSX Manager' in NSX-T 3.0
-nsxmanurl: 'https://nsxmanager01.lab.local'
 
 # The NSX-T Manager nodes. You can add, remove or rename NSX-T Manager nodes below.
 nsxman:
   nsxman01:
     ip: '172.16.11.57'
-    hostname: 'nsxmanager01'
+    hostname: "nsxmanager01.{{ domain }}"
     vmname: 'nested-nsxmanager01'
 
 # NSX-T Edge node global properties shared by all Edge nodes
@@ -143,11 +141,11 @@ nsxedge_vsphere_cluster: 'Edge'
 nsxedge:
   nsxedge01:
     ip: '172.16.11.61'
-    hostname: "en01.{{ nsxedgedomain }}"
+    hostname: "en01.{{ domain }}"
     vmname: 'en01'
   nsxedge02:
     ip: '172.16.11.62'
-    hostname: "en02.{{ nsxedgedomain }}"
+    hostname: "en02.{{ domain }}"
     vmname: 'en02'
 
 
