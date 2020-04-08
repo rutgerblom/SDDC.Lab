@@ -7,6 +7,7 @@ A set of Ansible Playbooks that help automate the deployment of vCenter, nested 
 1. [Setup](#setup)
     * [Dependencies](#Dependencies)
     * [Answerfile.yml](#answerfile.yml)
+1. [Diagram](#Diagram)
 1. [Usage](#usage)
 1. [Compatibility](#Compatibility)
 1. [Development](#Development)
@@ -21,9 +22,15 @@ This repository contains a set of Ansible Playbooks that deploy and configure vC
 Now updated for vSphere 7.0 and NSX-T 3.0. Also verified to work with vSphere 6.7 and NSX-T 2.5.1 (just swap the ISOs/OVAs).<br/>
 Tested in an environment with at least one physical ESXi hosts managed by vCenter.<br/>
 <br/>
-Other components I used that are not part of this deployment are a FRRouting VM for routing within the nested environment and a NFS datastore availabe to the nested ESXi hosts. vSAN could be used too, but I have not tested this yet.<br/>
+Other components used that are not part of this deployment are a FRRouting VM for routing within the nested environment and an NFS datastore availabe to the nested ESXi hosts. vSAN could be used too, but I have not tested this yet.<br/>
 <br/>
-I also recommend having a DNS/NTP server available to the nested environment to host something like a "lab.local" zone and have proper time synchronization.<br/>
+I also recommend having a DNS/NTP/AD server available to the nested environment to host something like a "lab.local" zone and have proper time synchronization.<br/>
+
+### Diagram
+
+Below a simple diagram over the physical environment. TYhis will be deployed on the physical ESXi host using the default settings in answerfile.yml<br/>
+<br/>
+![Physical overview](/images/vsphere-nsxt-deploy-phys.png)
 
 ### Dependencies
 
@@ -52,7 +59,7 @@ NSX-T version 2.5 and above is supported <br/>
 ## Development
 
 TODO: Configure stuff in NSX-T <br/>
-TODO: Include a diagram in README.md<br/>
+TODO: Include more diagrams in README.md<br/>
 TODO: Clean up / structurize answerfile.yml<br/>
 TODO: Parameterize more<br/>
 
