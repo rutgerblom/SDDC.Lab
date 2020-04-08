@@ -40,7 +40,7 @@ Below a simple diagram over the physical environment. This will be deployed on t
 * pip install vim <br/>
 * pip install pyvmomi <br/>
 
-* ESXi and VCSA ISOs (6.7 or 7.0) as well as the NSX-T Manager and NSX-T Edge OVAs (2.5 or 3.0). Place these in the /iso directory of your Ansible control node. This path can be adjusted in the answerfile.<br/>
+* ESXi and VCSA ISOs (6.7 or 7.0) as well as the NSX-T Manager and NSX-T Edge OVAs (2.5 or 3.0). Place these in the /iso directory of your Ansible control node. This path can be changed in the answerfile.<br/>
 
 ### Answerfile
 
