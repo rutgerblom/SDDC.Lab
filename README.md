@@ -28,7 +28,7 @@ I also recommend having a DNS/NTP/AD server available to the nested environment 
 
 ### Diagram
 
-Below a simple diagram over the physical environment. TYhis will be deployed on the physical ESXi host using the default settings in answerfile.yml<br/>
+Below a simple diagram over the physical environment. This will be deployed on the physical ESXi host using the default settings in answerfile.yml<br/>
 <br/>
 ![Physical overview](/images/vsphere-nsxt-deploy-phys.png)
 
