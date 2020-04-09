@@ -89,10 +89,10 @@
         datacenter: "{{ vc_mng.datacenter }}"
         validate_certs: false
         vm_id: "{{ nsxman.nsxman01.vmname }}"
-        vm_username: "{{ nsxmanadminuser }}"
-        vm_password: "{{ nsxmanpassword }}"
-        vm_shell: get
-        vm_shell_args: "certificate api thumbprint"
+        vm_username: "root"
+        vm_password: "VMware1!VMware1!"
+        vm_shell: "/bin/nsxcli"
+        vm_shell_args: "-c certificate api thumbprint"
         wait_for_process: yes
       async: 7200
       poll: 0
