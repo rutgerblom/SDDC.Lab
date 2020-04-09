@@ -60,7 +60,7 @@
       with_items: "{{ job_result.results }}"
     - stat: path=/tmp/newNsxNode
       register: newNsxNode
-    - name: Wait 15 minutes before checking wheter the node is ready
+    - name: Wait 15 minutes before checking whether the node is ready
       pause: minutes=15
       when: newNsxNode.stat.exists == True
     - name: Delete the temporary mark
