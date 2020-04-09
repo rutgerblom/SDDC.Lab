@@ -81,6 +81,22 @@
         validate_certs: no
         body_format: json
 
+    - name: Change vESXi hostnames
+      vmware_vm_shell:
+        hostname: "{{ vcenter.fqdn }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        datacenter: "{{ vcenter.datacenter }}"
+        validate_certs: false
+        vm_id: "{{ nsxman.nsxman01.vmname }}"
+        vm_username: "{{ nsxmanadminuser }}"
+        vm_password: "{{ nsxmanpassword }}"
+        vm_shell: get
+        vm_shell_args: "certificate api thumbprint"
+      async: 7200
+      poll: 0
+      register: thumbprint
+
     - name: Find temporary JSON templates files
       find:
         path: /tmp
