@@ -80,23 +80,6 @@
         status_code: 201
         validate_certs: no
         body_format: json
-
-    - name: Fetch NSX Manager API thumnprint
-      vmware_vm_shell:
-        hostname: "{{ vc_mng.ip }}"
-        username: "{{ vc_mng.user }}"
-        password: "{{ vc_mng.password }}"
-        datacenter: "{{ vc_mng.datacenter }}"
-        validate_certs: false
-        vm_id: "{{ nsxman.nsxman01.vmname }}"
-        vm_username: "root"
-        vm_password: "VMware1!VMware1!"
-        vm_shell: "/bin/nsxcli -c certificate api thumbprint"
-        wait_for_process: True
-      async: 7200
-      poll: 0
-      register: thumbprint
-
     - name: Find temporary JSON templates files
       find:
         path: /tmp
