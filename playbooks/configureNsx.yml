@@ -83,10 +83,10 @@
 
     - name: Fetch NSX Manager API thumnprint
       vmware_vm_shell:
-        hostname: "{{ vcenter.fqdn }}"
-        username: "{{ vcenter.user }}"
-        password: "{{ vcenter.password }}"
-        datacenter: "{{ vcenter.datacenter }}"
+        hostname: "{{ vc_mng.ip }}"
+        username: "{{ vc_mng.user }}"
+        password: "{{ vc_mng.password }}"
+        datacenter: "{{ vc_mng.datacenter }}"
         validate_certs: false
         vm_id: "{{ nsxman.nsxman01.vmname }}"
         vm_username: "{{ nsxmanadminuser }}"
@@ -96,6 +96,8 @@
       async: 7200
       poll: 0
       register: thumbprint
+    - debug:
+        msg: "Thumbprint is: {{ thumbprint }}"
 
     - name: Find temporary JSON templates files
       find:
