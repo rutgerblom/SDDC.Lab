@@ -9,7 +9,7 @@ A set of Ansible Playbooks to help automate the deployment of vCenter, nested ES
     * [Answerfile.yml](#Answerfile)
 1. [Diagram](#Diagram)
 1. [Usage](#Usage)
-1. [Compatibility](#Compatibility)
+1. [Interoperability](#Interoperability)
 1. [Development](#Development)
 1. [Credits](#Credits)
 
