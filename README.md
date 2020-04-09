@@ -51,7 +51,7 @@ Edit and adjust the answerfile.yml according to your needs! It's a very easy way
 
 ansible-playbook deploy.yml
 
-## Compatibility
+## Interoperability
 
 Confirmed to be working with:<br/> 
 * Ubuntu 18.04 as the OS for the Ansible control node<br/>
