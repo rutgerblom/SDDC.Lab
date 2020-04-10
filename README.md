@@ -7,7 +7,7 @@ A set of Ansible Playbooks to help automate the deployment of vCenter, nested ES
 1. [Setup](#setup)
     * [Requirements](#Requirements)
     * [Answerfile.yml](#Answerfile)
-1. [Diagram](#Diagram)
+1. [Diagrams](#Diagrams)
 1. [Usage](#Usage)
 1. [Interoperability](#Interoperability)
 1. [Development](#Development)
@@ -27,11 +27,13 @@ Other components used that are **not** part of this deployment are a FRRouting V
 <br/>
 I also recommend having DNS/NTP/AD available to the nested environment to host something like a "lab.local" zone and have proper time synchronization and authentication.<br/>
 
-### Diagram
+### Diagrams
 
-Below a simple diagram over the physical environment. This will be deployed on the physical ESXi host when using the default settings in answerfile.yml<br/>
+A simple diagram over the physical environment. This will be deployed on the physical ESXi host when using the default settings in answerfile.yml<br/>
 <br/>
-![Physical overview](/images/vsphere-nsxt-deploy-phys.png)
+![Physical overview](/images/vsphere-nsxt-deploy-phys.png)<br/>
+Another diagram showing some more details about the nested vSphere environment. Againm using the default settings in answerfile.yml<br/>
+![Logical overview](/images/vsphere-nsxt-deploy-log.png)<br/>
 
 ### Prerequisites
 
