@@ -45,7 +45,7 @@ Below a simple diagram over the physical environment. This will be deployed on t
 
 ### Answerfile
 
-Edit and adjust the answerfile.yml according to your needs! It's a very easy way to customize your deployment.
+Edit and adjust the answerfile.yml according to your needs! It's very easy to customize the deployment.
 
 ## Usage
 
