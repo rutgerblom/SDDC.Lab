@@ -32,7 +32,7 @@ I also recommend having DNS/NTP/AD available to the nested environment to host s
 A simple diagram over the physical environment. This will be deployed on the physical ESXi host when using the default settings in answerfile.yml<br/>
 <br/>
 ![Physical overview](/images/vsphere-nsxt-deploy-phys.png)<br/>
-Another diagram showing some more details about the nested vSphere environment. Againm using the default settings in answerfile.yml<br/>
+Another diagram showing some more details about the nested vSphere environment. Again using the default settings in answerfile.yml<br/>
 ![Logical overview](/images/vsphere-nsxt-deploy-log.png)<br/>
 
 ### Prerequisites
