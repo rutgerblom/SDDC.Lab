@@ -5,12 +5,20 @@
   vars_files:
     - ../answerfile.yml
   tasks:
+    - name: Add a VMware vSwitch to a specific host system
+      vmware_vswitch:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        esxi_hostname: "{{ physicalESX.host }}"
+        switch_name: "{{ physicalESX.vswitch }}"
+        mtu: 9000
     - name: Create management portgroup for the lab environment
       vmware_portgroup:
         hostname: "{{ physicalESX.host }}"
-        esxi_hostname: "{{ physicalESX.host }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
+        esxi_hostname: "{{ physicalESX.host }}"
         switch_name: "{{ physicalESX.vswitch }}"
         portgroup_name: "{{ physicalESX.vlanpg }}"
         vlan_id: "{{ physicalESX.vlan }}"
@@ -20,9 +28,9 @@
     - name: Create trunk port group for the lab environment
       vmware_portgroup:
         hostname: "{{ physicalESX.host }}"
-        esxi_hostname: "{{ physicalESX.host }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
+        esxi_hostname: "{{ physicalESX.host }}"
         switch_name: "{{ physicalESX.vswitch }}"
         portgroup_name: "{{ physicalESX.trunkpg }}"
         vlan_id: "{{ physicalESX.trunkvlan }}"
