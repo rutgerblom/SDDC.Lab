@@ -64,8 +64,7 @@ Confirmed to be working with:<br/>
 
 ## Development
 
-TODO: Automate configuration of logical networking in NSX-T <br/>
-TODO: Include diagram for nested environment in README.md<br/>
+TODO: Automate configuration of some basic logical networking in NSX-T <br/>
 TODO: Optimize / structurize answerfile.yml<br/>
 
 ## Credits
