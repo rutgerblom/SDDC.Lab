@@ -25,7 +25,7 @@ Tested in an environment with a physical ESXi host managed by its own vCenter.<b
 <br/>
 Other components used that are **not** part of this deployment are a FRRouting VM for routing within the nested environment and an NFS datastore availabe to the nested ESXi hosts. vSAN could be used too, but I have not tested this yet.<br/>
 <br/>
-I also recommend having DNS/NTP/AD available to the nested environment to host something like a "lab.local" zone and have proper time synchronization.<br/>
+I also recommend having DNS/NTP/AD available to the nested environment to host something like a "lab.local" zone and have proper time synchronization and authentication.<br/>
 
 ### Diagram
 
