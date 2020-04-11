@@ -102,6 +102,29 @@ transportzones:
   transport_type: "VLAN"
   host_switch_name: "n-vds-edge"
 
+# NSX-T Uplink Profiles
+uplink_profiles:
+- display_name: esxi-uplink-profile
+  teaming:
+    active_list:
+    - uplink_name: "uplink-1"
+      uplink_type: PNIC
+    - uplink_name: "uplink-2"
+      uplink_type: PNIC
+    policy: LOADBALANCE_SRCID
+  transport_vlan: 1659
+  mtu: 9000
+- display_name: edge-uplink-profile
+  teaming:
+    active_list:
+    - uplink_name: "uplink-1"
+      uplink_type: PNIC
+    - uplink_name: "uplink-2"
+      uplink_type: PNIC
+    policy: LOADBALANCE_SRCID
+  transport_vlan: 1659
+  mtu: 9000
+
 host_uplink_profile_name: 'esxi-uplink-profile'
 edge_uplink_profile_name: 'edge-uplink-profile'
 host_teaming_policy: 'LOADBALANCE_SRCID'
