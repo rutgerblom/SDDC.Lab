@@ -19,15 +19,6 @@
             cli_password: "{{ item.value.password }}"
             root_password: "{{ item.value.password }}"
           vm_deployment_config:
-            #reservation_info:
-             # cpu_reservation:
-             # - reservation_in_mhz: "0"
-             # - reservation_in_shares: "NORMAL_PRIORITY"
-             # memory_reservation:
-             # - reservation_percentage: "0"
-            #dns_servers: "{{ dns1 }}"
-            #search_domains: "{{ domain }}"
-            #ntp_servers: "{{ ntp_server }}"
             placement_type: VsphereDeploymentConfig
             vc_name: "{{ vcenter.fqdn }}"
             data_network_ids:
@@ -45,5 +36,12 @@
             - ip_addresses:
               - "{{ item.value.ip }}"
               prefix_length: "{{ item.value.mask }}"
+        node_settings:
+            dns_servers: 
+            - "{{ dns1 }}"
+            search_domains: 
+            - "{{ domain }}"
+            ntp_servers: 
+            - "{{ ntp_server }}"
         state: present
-      with_dict: "{{ edge_nodes }}"  
+      with_dict: "{{ edge_nodes }}"
