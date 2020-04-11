@@ -6,34 +6,39 @@
   tasks:
     - name: Add Edge VM
       nsxt_fabric_nodes:
-        hostname: "{{hostname}}"
-        username: "{{username}}"
-        password: "{{password}}"
+        hostname: "{{ nsxman.nsxman01.hostname }}"
+        username: "{{ nsxmanadminuser }}"
+        password: "{{ nsxmanpassword }}"
         validate_certs: False
         resource_type: "EdgeNode"
-        display_name: "EdegeNode1"
-        #node_id: "58c42d2c-d9bb-4d88-9d9c-3d032ad455e2"
+        display_name: "{{ item.value.name }}"
         ip_addresses:
         deployment_config:
           form_factor: "SMALL"
           node_user_settings:
-            cli_password: "Admin!23Admin"
-            root_password: "Admin!23Admin"
+            cli_password: "{{ item.value.password }}"
+            root_password: "{{ item.value.password }}"
           vm_deployment_config:
             placement_type: VsphereDeploymentConfig
-            vc_name: "VC1"
+            vc_name: "{{ vcenter.fqdn }}"
             data_network_ids:
             - network-16
             - network-16
             - network-16
             management_network_id: "network-16"
-            hostname: "EdgeVM1"
+            hostname: "{{ item.value.hostname }}"
             compute_id: "domain-c8"
-            storage_id: "datastore-13"
+            host_id:
+            storage_id:
             default_gateway_addresses:
             - 10.112.203.253
+            dns_servers: "{{ dns1 }}"
+            search_domains: "{{ domain }}"
+            ntp_servers: "{{ ntp_server }}"
+            enable_ssh: True
             management_port_subnets:
             - ip_addresses:
               - 10.112.201.26
               prefix_length: "19"
         state: present
+      with_dict: "{{ edge_nodes }}"  

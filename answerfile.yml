@@ -51,7 +51,7 @@ vcenter:
   datastore: 'demo_nfs01' # Physical datastore where the VCSA VM will be deployed
   domain: 'vsphere.local'
 
-# Some general settings used when deploying and configuring the lab environment. These are all in the context of the lab environment. 
+# Some general settings used when deploying and configuring the lab environment. These settings are in the context of the lab environment. 
 dns1: '10.2.129.10' 
 dns2: '8.8.8.8'
 ntp_server: '10.2.129.10'
@@ -124,6 +124,30 @@ uplink_profiles:
     policy: LOADBALANCE_SRCID
   transport_vlan: 1659
   mtu: 9000
+
+# NSX-T Edge Node VMs in the lab environment
+edge_nodes:
+  en01:
+    name: en01
+    form_factor: "SMALL"
+    password: "VMware1!VMware1!"
+    hostname: "en02.{{ domain }}"
+    compute_id: "domain-c8"
+    storage_id: "datastore-13"
+    gw: 172.16.11.1
+    ip_addresses: 172.16.11.61
+    prefix_length: "24"
+  en02:
+    name: en02
+    form_factor: "SMALL"
+    password: "VMware1!VMware1!"
+    hostname: "en02.{{ domain }}"
+    compute_id: "domain-c8"
+    storage_id: "datastore-18"
+    gw: 10.112.203.253
+    ip_addresses: 172.16.11.62
+    prefix_length: "24" 
+
 
 # NSX-T Manager node global properties shared by all manager nodes
 nsxmanmask: '255.255.255.0'
