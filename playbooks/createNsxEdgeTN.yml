@@ -1,0 +1,21 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - ../answerfile.yml
+  tasks:   
+    - name: Create edge transport nodes
+      nsxt_transport_nodes:
+        hostname: "{{ nsxman.nsxman01.hostname }}"
+        username: "{{ nsxmanadminuser }}"
+        password: "{{ nsxmanpassword }}"
+        validate_certs: False
+        display_name: "{{ item.value.name }}"
+        description: "Edge transport node"
+        host_switch_spec:
+          resource_type: StandardHostSwitchSpec
+          host_switches: "{{item.host_switches}}"
+        transport_zone_endpoints: "{{item.transport_zone_endpoints}}"
+        node_deployment_info: "{{item.node_deployment_info}}"
+        state: present
+      with_dict: "{{ edge_nodes }}"
