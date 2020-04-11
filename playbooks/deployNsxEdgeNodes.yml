@@ -25,21 +25,21 @@
              # - reservation_in_shares: "NORMAL_PRIORITY"
              # memory_reservation:
              # - reservation_percentage: "0"
+            #dns_servers: "{{ dns1 }}"
+            #search_domains: "{{ domain }}"
+            #ntp_servers: "{{ ntp_server }}"
             placement_type: VsphereDeploymentConfig
             vc_name: "{{ vcenter.fqdn }}"
             data_network_ids:
-            - dvportgroup-24
-            - dvportgroup-24
-            management_network_id: "dvportgroup-21"
+            - "{{ item.value.uplink1_pg }}"
+            - "{{ item.value.uplink2_pg }}"
+            management_network_id: "{{ item.value.mgmt_pg }}"
             hostname: "{{ item.value.hostname }}"
             compute_id: "{{ item.value.cluster }}"
             host_id: "{{ item.value.esxi_host }}"
             storage_id: "{{ item.value.datastore }}"
             default_gateway_addresses:
             - "{{ item.value.gw }}"
-            #dns_servers: "{{ dns1 }}"
-            #search_domains: "{{ domain }}"
-            #ntp_servers: "{{ ntp_server }}"
             enable_ssh: True
             management_port_subnets:
             - ip_addresses:
