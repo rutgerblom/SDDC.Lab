@@ -1,0 +1,23 @@
+
+---
+- hosts: 127.0.0.1
+  connection: local
+  become: yes
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Register compute manager
+      nsxt_fabric_compute_managers:
+          hostname: "{{ nsxman.nsxman01.hostname }}"
+          username: "{{ nsxmanadminuser }}"
+          password: "{{ nsxmanpassword }}"
+          validate_certs: False
+          display_name: "{{ vcenter.fqdn }}"
+          server: "{{ vcenter.fqdn }}"
+          origin_type: vCenter
+          credential:
+            credential_type: UsernamePasswordLoginCredential
+            username: "{{ vcenter.user }}"
+            password: "{{ vcenter.password }}"
+            thumbprint: "{{item.thumbprint}}"
+          state: present
