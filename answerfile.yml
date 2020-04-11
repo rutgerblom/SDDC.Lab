@@ -90,12 +90,28 @@ clusters: # You can add, remove or rename clusters in this section, you can spec
     drs: False
     vsan: False
   
+# NSX-T Transport Zones
+transport_zones:
+  tzvlan:
+    name: tz-vlan
+    type: VLAN
+    nvds: n-vds
+  tzoverlay:
+    name: tz-overlay
+    type: OVERLAY
+    nvds: n-vds
+  tzedge:
+    name: tz-edge
+    type: VLAN
+    nvds: n-vds-edge
+
 # NSX-T configuration
 tz_vlan_name: 'tz-vlan' 
 tz_overlay_name: 'tz-overlay'
 tz_edge_vlan_name: 'tz-edge-vlan'
 nvds_name: 'n-vds'
 edge_nvds_name: 'n-vds-edge'
+
 host_uplink_profile_name: 'esxi-uplink-profile'
 edge_uplink_profile_name: 'edge-uplink-profile'
 host_teaming_policy: 'LOADBALANCE_SRCID'
