@@ -16,6 +16,7 @@
         deployment_config:
           form_factor: "{{ item.value.form_factor }}"
           node_user_settings:
+            dns_servers: "{{ dns1 }}"
             cli_password: "{{ item.value.password }}"
             root_password: "{{ item.value.password }}"
           vm_deployment_config:
@@ -36,12 +37,12 @@
             - ip_addresses:
               - "{{ item.value.ip }}"
               prefix_length: "{{ item.value.mask }}"
-        node_settings:
-            dns_servers: 
-            - "{{ dns1 }}"
-            search_domains: 
-            - "{{ domain }}"
-            ntp_servers: 
-            - "{{ ntp_server }}"
+        #node_settings:
+         #   dns_servers: 
+          #  - "{{ dns1 }}"
+           # search_domains: 
+            #- "{{ domain }}"
+            #ntp_servers: 
+            #- "{{ ntp_server }}"
         state: present
       with_dict: "{{ edge_nodes }}"
