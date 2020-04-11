@@ -11,12 +11,12 @@
           password: "{{ nsxmanpassword }}"
           validate_certs: False
           resource_type: "TransportZone"
-          display_name: "{{item.value.name}}"
+          display_name: "{{ item.display_name }}"
           description: "NSX configured Transport Zone"
-          transport_type: "{{item.value.type}}"
-          host_switch_name: "{{item.value.nvds}}"
+          transport_type: "{{ item.transport_type }}"
+          host_switch_name: "{{ item.host_switch_name }}"
           state: "present"
         register: result
         with_items:
-          - "{{transport_zones}}"
+          - "{{transportzones}}"
       - debug: var=result.id

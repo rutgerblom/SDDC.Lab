@@ -91,19 +91,16 @@ clusters: # You can add, remove or rename clusters in this section, you can spec
     vsan: False
   
 # NSX-T Transport Zones
-transport_zones:
-  tzvlan:
-    name: tz-vlan
-    type: VLAN
-    nvds: n-vds
-  tzoverlay:
-    name: tz-overlay
-    type: OVERLAY
-    nvds: n-vds
-  tzedge:
-    name: tz-edge
-    type: VLAN
-    nvds: n-vds-edge
+transportzones:
+- display_name: "tz-vlan"
+  transport_type: "VLAN"
+  host_switch_name: "n-vds"
+- display_name: "tz-overlay"
+  transport_type: "OVERLAY"
+  host_switch_name: "n-vds"
+- display_name: "tz-edge"
+  transport_type: "VLAN"
+  host_switch_name: "n-vds-edge"
 
 # NSX-T configuration
 tz_vlan_name: 'tz-vlan' 
