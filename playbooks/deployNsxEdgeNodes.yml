@@ -14,31 +14,36 @@
         display_name: "{{ item.value.name }}"
         ip_addresses:
         deployment_config:
-          form_factor: "SMALL"
+          form_factor: "{{ item.value.form_factor }}"
           node_user_settings:
             cli_password: "{{ item.value.password }}"
             root_password: "{{ item.value.password }}"
           vm_deployment_config:
+            reservation_info:
+              cpu_reservation:
+              - reservation_in_mhz: "0"
+              - reservation_in_shares: "NORMAL_PRIORITY"
+              memory_reservation:
+              - reservation_percentage: "0"
             placement_type: VsphereDeploymentConfig
             vc_name: "{{ vcenter.fqdn }}"
             data_network_ids:
-            - network-16
-            - network-16
-            - network-16
-            management_network_id: "network-16"
+            - dvportgroup-24
+            - dvportgroup-24
+            management_network_id: "dvportgroup-21"
             hostname: "{{ item.value.hostname }}"
-            compute_id: "domain-c8"
-            host_id:
+            compute_id: "{{ item.value.cluster }}"
+            host_id: "{{ item.value.esxi_host }}"
             storage_id:
             default_gateway_addresses:
-            - 10.112.203.253
+            - "{{ item.value.gw }}"
             dns_servers: "{{ dns1 }}"
             search_domains: "{{ domain }}"
             ntp_servers: "{{ ntp_server }}"
             enable_ssh: True
             management_port_subnets:
             - ip_addresses:
-              - 10.112.201.26
-              prefix_length: "19"
+              - "{{ item.value.ip }}"
+              prefix_length: "{{ item.value.mask }}"
         state: present
       with_dict: "{{ edge_nodes }}"  
