@@ -79,8 +79,8 @@ vds:
   uplink2_pg: 'pg-uplink2'
   uplink2_vlan: '0-4094'
 
-clusters: # You can add, remove or rename clusters in this section, you can specify to which cluster specific nested ESXi to be connected to
-# Do not change ha and vsan to True untill I fix a bug. It is better to go and enable first vSAN and HA after the deployment is done
+# You can add, remove or rename vSphere clusters below. These are created in the lab environment
+clusters:
   Compute:
     ha: False
     drs: True
@@ -90,7 +90,7 @@ clusters: # You can add, remove or rename clusters in this section, you can spec
     drs: False
     vsan: False
   
-# NSX-T Transport Zones
+# NSX-T Transport Zones in the lab environment
 transportzones:
 - display_name: "tz-vlan"
   transport_type: "VLAN"
@@ -102,7 +102,7 @@ transportzones:
   transport_type: "VLAN"
   host_switch_name: "n-vds-edge"
 
-# NSX-T Uplink Profiles
+# NSX-T Uplink Profiles in the lab environment
 uplink_profiles:
 - display_name: esxi-uplink-profile
   teaming:
