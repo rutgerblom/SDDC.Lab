@@ -38,6 +38,7 @@ Another diagram showing some more details about the nested vSphere environment. 
 
 ### Prerequisites
 
+* ovftool
 * apt install ansible <br/>
 * apt install sshpass python-pip git <br/>
 * pip install vim <br/>
