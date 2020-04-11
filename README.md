@@ -33,6 +33,7 @@ A simple diagram over the physical environment. This will be deployed on the phy
 <br/>
 ![Physical overview](/images/vsphere-nsxt-deploy-phys.png)<br/>
 Another diagram showing some more details about the nested vSphere environment. Again using the default settings in answerfile.yml<br/>
+<br/>
 ![Logical overview](/images/vsphere-nsxt-deploy-log.png)<br/>
 
 ### Prerequisites
