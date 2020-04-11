@@ -125,37 +125,102 @@ uplink_profiles:
   transport_vlan: 1659
   mtu: 9000
 
-# NSX-T Edge VMs in the lab environment
-edge_nodes:
-  en01:
-    name: "en01"
-    form_factor: "SMALL"
-    password: "VMware1!VMware1!"
-    hostname: "en01.{{ domain }}"
-    gw: 172.16.11.1
-    ip: 172.16.11.61
-    mask: "24"
-    esxi_host: "host-17"
-    cluster: "domain-c8"
-    datastore: "datastore-18"
-    mgmt_pg: "dvportgroup-21"
-    uplink1_pg: "dvportgroup-24"
-    uplink2_pg: "dvportgroup-25"
-  en02:
-    name: "en02"
-    form_factor: "SMALL"
-    password: "VMware1!VMware1!"
-    hostname: "en02.{{ domain }}"
-    gw: 172.16.11.1
-    ip: 172.16.11.62
-    mask: "24"
-    esxi_host: "host-16"
-    cluster: "domain-c8"
-    datastore: "datastore-18"
-    mgmt_pg: "dvportgroup-21"
-    uplink1_pg: "dvportgroup-24"
-    uplink2_pg: "dvportgroup-25"
-
+# NSX-T Edge Transport Nodes in the lab environment
+edge_transport_nodes:
+- display_name: en01
+  host_switches:
+  - host_switch_profiles:
+    - name: edge-uplink-profile
+      type: UplinkHostSwitchProfile
+    host_switch_name: n-vds-edge
+    host_switch_mode: STANDARD
+    pnics:
+    - device_name: "fp-eth0"
+      uplink_name: "uplink-1"
+    - device_name: "fp-eth1"
+      uplink_name: "uplink-2"      
+    ip_assignment_spec:
+      resource_type: StaticIpListSpec
+      ip_list:
+      - "172.16.59.61"
+      - "172.16.59.62"
+      subnet_mask: "255.255.255.0"
+      default_gateway: "172.16.59.1"
+    transport_zone_endpoints:
+    - transport_zone_name: "tz-overlay"
+    - transport_zone_name: "tz-edge"
+  transport_zone_endpoints:
+  - transport_zone_name: "tz-overlay"
+  - transport_zone_name: "tz-edge"  
+  node_deployment_info:
+    resource_type: "EdgeNode"
+    display_name: "en01"
+    ip_addresses: "172.16.11.61"
+    deployment_config:
+      form_factor: "SMALL"
+      node_user_settings:
+        cli_password: "VMware1!VMware1!"
+        root_password: "VMware1!VMware1!"
+      vm_deployment_config:
+        placement_type: VsphereDeploymentConfig
+        vc_name: "{{ vcenter.fqdn }}"
+        data_network:
+        - {{ vds.uplink1_pg }}
+        - {{ vds.uplink2_pg }}
+        management_network: {{ vds.management_pg }}
+        hostname: "en01.{{ domain }}"
+        compute: "Edge"
+        storage: "{{ nfs_datastore }}"
+        host: "esxi04.lab.local"
+        default_gateway_addresses: 172.16.11.1
+        management_port_subnets: 172.16.11.0/24
+- display_name: en02
+  host_switches:
+  - host_switch_profiles:
+    - name: edge-uplink-profile
+      type: UplinkHostSwitchProfile
+    host_switch_name: n-vds-edge
+    host_switch_mode: STANDARD
+    pnics:
+    - device_name: "fp-eth0"
+      uplink_name: "uplink-1"
+    - device_name: "fp-eth1"
+      uplink_name: "uplink-2"      
+    ip_assignment_spec:
+      resource_type: StaticIpListSpec
+      ip_list:
+      - "172.16.59.63"
+      - "172.16.59.64"
+      subnet_mask: "255.255.255.0"
+      default_gateway: "172.16.59.1"
+    transport_zone_endpoints:
+    - transport_zone_name: "tz-overlay"
+    - transport_zone_name: "tz-edge"
+  transport_zone_endpoints:
+  - transport_zone_name: "tz-overlay"
+  - transport_zone_name: "tz-edge"  
+  node_deployment_info:
+    resource_type: "EdgeNode"
+    display_name: "en02"
+    ip_addresses: "172.16.11.62"
+    deployment_config:
+      form_factor: "SMALL"
+      node_user_settings:
+        cli_password: "VMware1!VMware1!"
+        root_password: "VMware1!VMware1!"
+      vm_deployment_config:
+        placement_type: VsphereDeploymentConfig
+        vc_name: "{{ vcenter.fqdn }}"
+        data_network:
+        - {{ vds.uplink1_pg }}
+        - {{ vds.uplink2_pg }}
+        management_network: {{ vds.management_pg }}
+        hostname: "en02.{{ domain }}"
+        compute: "Edge"
+        storage: "{{ nfs_datastore }}"
+        host: "esxi05.lab.local"
+        default_gateway_addresses: 172.16.11.1
+        management_port_subnets: 172.16.11.0/24
 
 # NSX-T Manager node global properties shared by all manager nodes
 nsxmanmask: '255.255.255.0'

@@ -10,7 +10,7 @@
         username: "{{ nsxmanadminuser }}"
         password: "{{ nsxmanpassword }}"
         validate_certs: False
-        display_name: "{{ item.value.name }}"
+        display_name: "{{ display_name }}"
         description: "Edge transport node"
         host_switch_spec:
           resource_type: StandardHostSwitchSpec
@@ -18,4 +18,5 @@
         transport_zone_endpoints: "{{item.transport_zone_endpoints}}"
         node_deployment_info: "{{item.node_deployment_info}}"
         state: present
-      with_dict: "{{ edge_nodes }}"
+      with_items:
+        - "{{edge_transport_nodes}}"
