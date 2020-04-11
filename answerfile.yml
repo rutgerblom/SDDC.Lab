@@ -164,16 +164,18 @@ edge_transport_nodes:
       vm_deployment_config:
         placement_type: VsphereDeploymentConfig
         vc_name: "{{ vcenter.fqdn }}"
-        data_network:
-        - pg-uplink1
-        - pg-uplink2
+        data_networks:
+        - "{{ vds.uplink1_pg }}"
+        - "{{ vds.uplink2_pg }}"
         management_network: "{{ vds.management_pg }}"
+        management_port_subnets: 
+        - ip_addresses: 172.16.11.61
+        - prefix_length: 24
+        default_gateway_addresses: 172.16.11.1
         hostname: "en01.{{ domain }}"
         compute: "Edge"
         storage: "{{ nfs_datastore }}"
         host: "esxi04.lab.local"
-        default_gateway_addresses: 172.16.11.1
-        management_port_subnets: 172.16.11.0/24
 - display_name: en02
   host_switches:
   - host_switch_profiles:
@@ -211,16 +213,18 @@ edge_transport_nodes:
       vm_deployment_config:
         placement_type: VsphereDeploymentConfig
         vc_name: "{{ vcenter.fqdn }}"
-        data_network:
+        data_networks:
         - "{{ vds.uplink1_pg }}"
         - "{{ vds.uplink2_pg }}"
         management_network: "{{ vds.management_pg }}"
+        management_port_subnets: 
+        - ip_addresses: 172.16.11.61
+        - prefix_length: 24
+        default_gateway_addresses: 172.16.11.1
         hostname: "en02.{{ domain }}"
         compute: "Edge"
         storage: "{{ nfs_datastore }}"
         host: "esxi05.lab.local"
-        default_gateway_addresses: 172.16.11.1
-        management_port_subnets: 172.16.11.0/24
 
 # NSX-T Manager node global properties shared by all manager nodes
 nsxmanmask: '255.255.255.0'
