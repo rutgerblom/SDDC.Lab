@@ -16,7 +16,6 @@
         deployment_config:
           form_factor: "{{ item.value.form_factor }}"
           node_user_settings:
-            dns_servers: "{{ dns1 }}"
             cli_password: "{{ item.value.password }}"
             root_password: "{{ item.value.password }}"
           vm_deployment_config:
@@ -27,6 +26,12 @@
             - "{{ item.value.uplink2_pg }}"
             management_network_id: "{{ item.value.mgmt_pg }}"
             hostname: "{{ item.value.hostname }}"
+            dns_servers: 
+            - "{{ dns1 }}"
+            ntp_servers: 
+            - "{{ ntp_server }}"
+            search_domains: 
+            - "{{ domain }}"            
             compute_id: "{{ item.value.cluster }}"
             host_id: "{{ item.value.esxi_host }}"
             storage_id: "{{ item.value.datastore }}"
