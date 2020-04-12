@@ -51,10 +51,10 @@ Running the Playbooks as defined in the **deploy.yml** will deploy the following
 
 ### Diagrams
 
-A simple diagram over the physical environment. This will be deployed on the physical ESXi host when using the default settings in answerfile.yml<br/>
+A simple diagram over the physical environment. This will be deployed on the physical ESXi host when using the default settings in **answerfile.yml**<br/>
 <br/>
 ![Physical overview](/images/vsphere-nsxt-deploy-phys.png)<br/>
-Another diagram showing some more details about the nested vSphere environment. Again using the default settings in answerfile.yml<br/>
+Another diagram showing some more details about the nested vSphere environment. Again using the default settings in **answerfile.yml**<br/>
 <br/>
 ![Logical overview](/images/vsphere-nsxt-deploy-log.png)<br/>
 
@@ -68,11 +68,11 @@ Another diagram showing some more details about the nested vSphere environment. 
 * pip install pyvmomi <br/>
 * apt install xorriso<br/>
 
-* ESXi and VCSA ISOs (6.7 or 7.0) as well as the NSX-T Manager and NSX-T Edge OVAs (2.5 or 3.0). Place these in the /iso directory of your Ansible control node. This path can be changed in the answerfile.<br/>
+* ESXi and VCSA ISOs (6.7 or 7.0) as well as the NSX-T Manager and NSX-T Edge OVAs (2.5 or 3.0). Place these in the /iso directory of your Ansible control node. This path can be changed in **answerfile.yml**.<br/>
 
 ### Answerfile
 
-Edit and adjust answerfile.yml according to your needs. In deploy.yml you control what gets deployed. It's very easy to customize your deployment.
+Edit and adjust **answerfile.yml** according to your needs. In **deploy.yml** you control what gets deployed. It's very easy to customize your deployment.
 
 ## Usage
 
@@ -93,4 +93,4 @@ TODO: Optimize / structurize answerfile.yml<br/>
 
 ## Credits
 
-Credits go to Yasen Simeonov and his project at https://github.com/yasensim/vsphere-lab-deploy. This project is largely based on his.
+Credits go to **Yasen Simeonov** and his project at https://github.com/yasensim/vsphere-lab-deploy. This project is largely based on his.
