@@ -33,9 +33,9 @@ Running the Playbooks as defined in the deploy.yml will deploy the following:<br
 1. Deploy and configure a vCenter Sever Appliance
 1. Deploy 5 ESXi VMs
 1. Configure the nested vSphere environment:
-   1. Configure the ESXi hosts
-   1. Create and configure a Distributed Switch
-   1. Add ESXi hosts to vCenter (3 hosts in the "Compute" vSphere cluster and 2 hosts in the "Edge" cluster)
+   * Configure the ESXi hosts
+   * Create and configure a Distributed Switch
+   * Add ESXi hosts to vCenter (3 hosts in the "Compute" vSphere cluster and 2 hosts in the "Edge" cluster)
 1. Configure NSX-T:
    1. Deploy NSX Manager
    1. Register vCenter as a Compute Manager in NSX Manager
