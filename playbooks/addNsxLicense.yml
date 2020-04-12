@@ -1,0 +1,16 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars:
+    nsxlicensekey:: "{{ lookup('file', '{{ nsxlicense }}') }}"
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Add license
+      nsxt_licenses:
+        hostname: "{{ nsxman.nsxman01.hostname }}"
+        username: "{{ nsxmanadminuser }}"
+        password: "{{ nsxmanpassword }}"
+        validate_certs: False
+        license_key: "{{ nsxlicensekey }}"
+        state: "present"
