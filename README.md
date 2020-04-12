@@ -26,6 +26,30 @@ Tested in an environment with a physical ESXi host managed by its own vCenter.<b
 Other components used that are **not** part of this deployment are a FRRouting VM for routing within the nested environment and an NFS datastore availabe to the nested ESXi hosts. vSAN could be used too, but I have not tested this yet.<br/>
 <br/>
 I also recommend having DNS/NTP/AD available to the nested environment to host something like a "lab.local" zone and have proper time synchronization and authentication.<br/>
+<br>
+Running the Playbooks as defined in the deploy.yml will deploy the following:<br/>
+<br/>
+
+1. Create a vSwitch and port groups on the physical ESXi
+1. Deploy and configure a vCenter Sever Appliance
+1. Deploy 5 ESXi VMs
+1. Configure the nested vSphere environment:
+   1. Configure the ESXi hosts
+   1. Create and configure a Distributed Switch
+   1. Add ESXi hosts to vCenter (3 hosts in the "Compute" vSphere cluster and 2 hosts in the "Edge" cluster)
+1. Configure NSX-T:
+   1. Deploy NSX Manager
+   1. Register vCenter as a Compute Manager in NSX Manager
+   1. Create NSX-T Transport Zones
+   1. Create NSX-T IP pool
+   1. Create NSX-T Uplink Profiles
+   1. Deploy two NSX-T Edge Transport Nodes
+   1. Create NSX-T Edge Cluster
+   1. Create NSX-T Transport Node Profile
+   1. Attach NSX-T Transport Node Profile to the "Comnpute" vSphere cluster (This will deploy NSX-T on the ESXi hosts in that cluster)
+
+
+
 
 ### Diagrams
 
