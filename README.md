@@ -59,6 +59,7 @@ Another diagram showing some more details about the nested vSphere environment. 
 
 ### Prerequisites
 
+* A physical ESXi host managed by vCenter
 * ovftool (free download from VMware)
 * apt install python3
 * apt install ansible <br/>
