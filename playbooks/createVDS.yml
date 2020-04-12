@@ -81,7 +81,7 @@
         portgroup_type: earlyBinding
         state: present
 
-    - name: Migrate uplinks to the new VDS
+    - name: Migrate uplinks to the VDS
       vmware_dvs_host:
         hostname: "{{ vcenter.ip }}"
         username: "{{ vcenter.user }}"
@@ -95,7 +95,7 @@
         state: present
       with_dict: "{{ vESX }}"
 
-    - name: Migrate Management vmk0
+    - name: Migrate Management vmk0 to the VDS
       vmware_migrate_vmk:
         hostname: "{{ vcenter.ip }}"
         esxi_hostname: "{{ item.value.fqdn }}"
