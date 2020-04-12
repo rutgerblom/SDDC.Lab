@@ -16,7 +16,7 @@ A set of Ansible Playbooks to help automate the deployment of vCenter, nested ES
 ## Description
 
 This repository contains a set of Ansible Playbooks that will deploy and configure vCenter, nested ESXi, NSX-T Manager, and NSX-T Edge nodes.<br/>
-The primary use case is speedy provisioning of a consistent lab environment. 
+The primary use case is speedy provisioning of a consistent nested lab environment. 
 
 ## Setup
 
@@ -38,7 +38,8 @@ Another diagram showing some more details about the nested vSphere environment. 
 
 ### Prerequisites
 
-* ovftool
+* ovftool (free download from VMware)
+* apt install python3
 * apt install ansible <br/>
 * apt install sshpass python-pip git <br/>
 * pip install vim <br/>
@@ -49,7 +50,7 @@ Another diagram showing some more details about the nested vSphere environment. 
 
 ### Answerfile
 
-Edit and adjust the answerfile.yml according to your needs! It's very easy to customize the deployment.
+Edit and adjust answerfile.yml according to your needs. In deploy.yml you control what gets deployed. It's very easy to customize your deployment.
 
 ## Usage
 
@@ -58,7 +59,7 @@ ansible-playbook deploy.yml
 ## Interoperability
 
 Confirmed to be working with:<br/> 
-* Ubuntu 18.04 as the OS for the Ansible control node<br/>
+* Ubuntu 18.04 as the OS for the Ansible Controller<br/>
 * Ansible 2.9.6 <br/>
 * ESXi version 6.7 and 7.0 <br/>
 * vCenter version 6.7 and 7.0 <br/>
