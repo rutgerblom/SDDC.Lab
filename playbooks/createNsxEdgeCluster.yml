@@ -1,11 +1,13 @@
 ---
 - hosts: 127.0.0.1
-  connection: local
-  vars:
-    nsxlicensekey: "{{ lookup('file', '{{ nsxlicense }}') }}"   
+  connection: local  
   vars_files:
     - ../answerfile.yml
   tasks:
+    - name: Check if NSX-T license file exists
+      stat: 
+        path: "{{ nsxlicense }}"
+      register: nsxlicensekey  
     - name: Add edge cluster
       nsxt_edge_clusters:
           hostname: "{{ nsxman.nsxman01.hostname }}"
@@ -20,4 +22,4 @@
           - transport_node_name: "{{ transport_node1 }}"
           - transport_node_name: "{{ transport_node2 }}"
           state: present
-      when: nsxlicensekey != ""
+      when: nsxlicensekey.stat.exists == True
