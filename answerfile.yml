@@ -120,6 +120,15 @@ transportzones:
   transport_type: "VLAN"
   host_switch_name: "n-vds"
 
+# NSX-T IP Pool
+ip_pools:
+- display_name: tep-pool
+  subnets:
+  - allocation_ranges:
+    - start: "172.16.59.20"
+      end: "172.16.59.50"
+    cidr: "172.16.59.0/24"
+
 # NSX-T Uplink Profiles
 uplink_profiles:
 - display_name: esxi-uplink-profile
@@ -271,16 +280,8 @@ transport_node_profiles:
     - device_name: vmnic4
       uplink_name: "uplink-2"      
     ip_assignment_spec:
-      resource_type: StaticIpListSpec
-      ip_list:
-      - "172.16.59.80"
-      - "172.16.59.81"
-      - "172.16.59.82"
-      - "172.16.59.83"
-      - "172.16.59.84"
-      - "172.16.59.85"            
-      subnet_mask: "255.255.255.0"
-      default_gateway: "172.16.59.1"
+      resource_type: StaticIpPoolSpec
+      ip_pool_name: "tep-pool"
     transport_zone_endpoints:
     - transport_zone_name: "tz-vlan"
     - transport_zone_name: "tz-overlay"    
