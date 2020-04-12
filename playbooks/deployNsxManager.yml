@@ -61,7 +61,7 @@
     - stat: path=/tmp/newNsxNode
       register: newNsxNode
     - debug:
-        msg: "Deploying NSX Manager will take about 20 minutes, so go grab another coffee !!!"      
+        msg: "Deploying NSX Manager will take about 20 minutes, so go grab some more coffee !!!"      
     - name: Wait 20 minutes before checking whether the node is ready
       pause: minutes=20
       when: newNsxNode.stat.exists == True
