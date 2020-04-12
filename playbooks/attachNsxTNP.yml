@@ -1,0 +1,19 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Attach Transport node profile to cluster
+      nsxt_transport_node_collections:
+        hostname: "{{ nsxman.nsxman01.hostname }}"
+        username: "{{ nsxmanadminuser }}"
+        password: "{{ nsxmanpassword }}"
+        validate_certs: False
+        display_name: "TNC"
+        resource_type: "TransportNodeCollection"
+        description: "Transport Node Collections"
+        compute_manager_name: "{{ vcenter.fqdn }}"
+        cluster_name: "Compute"
+        transport_node_profile_name: "{{ transport_node_profiles.display_name }}"
+        state: present
