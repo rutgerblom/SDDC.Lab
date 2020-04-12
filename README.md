@@ -16,8 +16,7 @@ A set of Ansible Playbooks to help automate the deployment of vCenter, nested ES
 
 ## Description
 
-This repository contains a set of Ansible Playbooks that will deploy and configure vCenter, nested ESXi, NSX-T Manager, and NSX-T Edge nodes.<br/>
-The primary use case is speedy provisioning of a consistent nested lab environment. 
+This repository contains a set of Ansible Playbooks that will deploy and configure vCenter, nested ESXi, NSX-T Manager, and NSX-T Edge nodes. The primary use case is speedy provisioning of a consistent nested lab environment. 
 
 ## Setup
 
