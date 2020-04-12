@@ -18,10 +18,10 @@
         description: "Edge transport node"
         host_switch_spec:
           resource_type: StandardHostSwitchSpec
-          host_switches: "{{item.host_switches}}"
-        #transport_zone_endpoints: "{{item.transport_zone_endpoints}}"
-        node_deployment_info: "{{item.node_deployment_info}}"
+          host_switches: "{{ item.host_switches }}"
+        node_deployment_info: "{{ item.node_deployment_info }}"
         state: present
       with_items:
-        - "{{edge_transport_nodes}}"
+        - "{{ edge_transport_nodes }}"
+      ignore_errors: yes
       when: nsxlicensekey.stat.exists == True
