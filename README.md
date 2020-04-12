@@ -5,6 +5,7 @@ A set of Ansible Playbooks to help automate the deployment of vCenter, nested ES
 
 1. [Description](#description)
 1. [Setup](#setup)
+    * [Deployment](#Deployment)
     * [Requirements](#Requirements)
     * [Answerfile.yml](#Answerfile)
 1. [Diagrams](#Diagrams)
@@ -26,7 +27,9 @@ Tested in an environment with a physical ESXi host managed by its own vCenter.<b
 Other components used that are **not** part of this deployment are a FRRouting VM for routing within the nested environment and an NFS datastore availabe to the nested ESXi hosts. vSAN could be used too, but I have not tested this yet.<br/>
 <br/>
 I also recommend having DNS/NTP/AD available to the nested environment to host something like a "lab.local" zone and have proper time synchronization and authentication.<br/>
-<br>
+
+### Deployment
+
 Running the Playbooks as defined in the deploy.yml will deploy the following:<br/>
 <br/>
 1. Create a vSwitch and port groups on the physical ESXi
@@ -46,9 +49,6 @@ Running the Playbooks as defined in the deploy.yml will deploy the following:<br
    * Create NSX-T Edge Cluster
    * Create NSX-T Transport Node Profile
    * Attach NSX-T Transport Node Profile to the "Comnpute" vSphere cluster (This will deploy NSX-T on the ESXi hosts in that cluster)
-
-
-
 
 ### Diagrams
 
