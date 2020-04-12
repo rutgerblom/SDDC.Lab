@@ -37,15 +37,15 @@ Running the Playbooks as defined in the deploy.yml will deploy the following:<br
    * Create and configure a Distributed Switch
    * Add ESXi hosts to vCenter (3 hosts in the "Compute" vSphere cluster and 2 hosts in the "Edge" cluster)
 1. Configure NSX-T:
-   1. Deploy NSX Manager
-   1. Register vCenter as a Compute Manager in NSX Manager
-   1. Create NSX-T Transport Zones
-   1. Create NSX-T IP pool
-   1. Create NSX-T Uplink Profiles
-   1. Deploy two NSX-T Edge Transport Nodes
-   1. Create NSX-T Edge Cluster
-   1. Create NSX-T Transport Node Profile
-   1. Attach NSX-T Transport Node Profile to the "Comnpute" vSphere cluster (This will deploy NSX-T on the ESXi hosts in that cluster)
+   * Deploy NSX Manager
+   * Register vCenter as a Compute Manager in NSX Manager
+   * Create NSX-T Transport Zones
+   * Create NSX-T IP pool
+   * Create NSX-T Uplink Profiles
+   * Deploy two NSX-T Edge Transport Nodes
+   * Create NSX-T Edge Cluster
+   * Create NSX-T Transport Node Profile
+   * Attach NSX-T Transport Node Profile to the "Comnpute" vSphere cluster (This will deploy NSX-T on the ESXi hosts in that cluster)
 
 
 
