@@ -67,7 +67,7 @@ Another diagram showing some more details about the nested vSphere environment. 
 * pip install pyvmomi <br/>
 * apt install xorriso<br/>
 
-* ESXi and VCSA ISOs (6.7 or 7.0) as well as the NSX-T Manager and NSX-T Edge OVAs (2.5 or 3.0). Place these in the /iso directory of your Ansible control node. This path can be changed in **answerfile.yml**.<br/>
+* ESXi and VCSA ISOs (6.7 or 7.0) as well as the NSX-T Manager OVA (2.5 or 3.0). Place these in the /iso directory of your Ansible control node. This path can be changed in **answerfile.yml**.<br/>
 
 ### Answerfile
 
