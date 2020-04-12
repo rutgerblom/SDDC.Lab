@@ -43,9 +43,9 @@ Running the Playbooks as defined in the **deploy.yml** will deploy the following
    * Create NSX-T Transport Zones
    * Create NSX-T IP pool
    * Create NSX-T Uplink Profiles
+   * Create NSX-T Transport Node Profile
    * Deploy two NSX-T Edge Transport Nodes
    * Create NSX-T Edge Cluster
-   * Create NSX-T Transport Node Profile
    * Attach NSX-T Transport Node Profile to the "Compute" vSphere cluster (this will effectively install NSX-T bits and configuration on the ESXi hosts in that cluster)
 
 ### Diagrams
@@ -89,6 +89,7 @@ Confirmed to be working with:<br/>
 
 ## Development
 
+TODO: Handle NSX-T license requirement
 TODO: Optimize / structurize answerfile.yml<br/>
 
 ## Credits
