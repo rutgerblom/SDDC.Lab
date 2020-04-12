@@ -90,7 +90,7 @@ clusters:
     drs: False
     vsan: False
   
-# NSX-T Transport Zones in the lab environment
+# NSX-T Transport Zones
 transportzones:
 - display_name: "tz-vlan"
   transport_type: "VLAN"
@@ -102,7 +102,7 @@ transportzones:
   transport_type: "VLAN"
   host_switch_name: "n-vds"
 
-# NSX-T Uplink Profiles in the lab environment
+# NSX-T Uplink Profiles
 uplink_profiles:
 - display_name: esxi-uplink-profile
   teaming:
@@ -125,7 +125,7 @@ uplink_profiles:
   transport_vlan: 1659
   mtu: 9000
 
-# NSX-T Edge Transport Nodes in the lab environment
+# NSX-T Edge Transport Nodes
 edge_transport_nodes:
 - display_name: en01
   host_switches:
@@ -149,9 +149,6 @@ edge_transport_nodes:
     transport_zone_endpoints:
     - transport_zone_name: "tz-overlay"
     - transport_zone_name: "tz-edge"
-#  transport_zone_endpoints:
-#  - transport_zone_name: "tz-overlay"
-#  - transport_zone_name: "tz-edge"  
   node_deployment_info:
     resource_type: "EdgeNode"
     display_name: "en01"
@@ -202,9 +199,6 @@ edge_transport_nodes:
     transport_zone_endpoints:
     - transport_zone_name: "tz-overlay"
     - transport_zone_name: "tz-edge"
-#  transport_zone_endpoints:
-#  - transport_zone_name: "tz-overlay"
-# - transport_zone_name: "tz-edge"  
   node_deployment_info:
     resource_type: "EdgeNode"
     display_name: "en02"
@@ -233,6 +227,12 @@ edge_transport_nodes:
         compute: "Edge"
         storage: "{{ nfs_datastore }}"
         host: "esxi05.lab.local"
+
+# NSX-T Edge cluster
+edge_cluster_name: "edge-cluster-1"
+edge_cluster_profile: "nsx-default-edge-high-availability-profile"
+transport_node1: "en01"
+transport_node2: "en02"
 
 # NSX-T Manager node global properties shared by all manager nodes
 nsxmanmask: '255.255.255.0'
