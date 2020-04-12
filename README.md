@@ -30,7 +30,7 @@ I also recommend having DNS/NTP/AD available to the nested environment to host s
 
 ### Deployment
 
-Running the Playbooks as defined in the deploy.yml will deploy the following:<br/>
+Running the Playbooks as defined in the **deploy.yml** will deploy the following:<br/>
 1. Create a vSwitch and port groups on the physical ESXi
 1. Deploy and configure a vCenter Sever Appliance
 1. Deploy 5 ESXi VMs
