@@ -67,7 +67,6 @@ Confirmed to be working with:<br/>
 
 ## Development
 
-TODO: Automate configuration of some basic logical networking in NSX-T <br/>
 TODO: Optimize / structurize answerfile.yml<br/>
 
 ## Credits
