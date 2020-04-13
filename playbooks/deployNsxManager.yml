@@ -32,14 +32,14 @@
           nsx_cli_audit_username: "{{ nsxmanaudituser }}"
           nsx_cli_passwd_0: "{{ nsxmanpassword }}"
           nsx_cli_username: "{{ nsxmanadminuser }}"
-          nsx_dns1_0: "{{ nsxmandns }}"
+          nsx_dns1_0: "{{ dns1 }}"
           nsx_domain_0: "{{ domain }}"
-          nsx_gateway_0: "{{ nsxmangateway }}"
+          nsx_gateway_0: "{{ mgmt_network_gw }}"
           nsx_hostname: "{{ item.value.hostname }}"
           nsx_ip_0: "{{ item.value.ip }}"
           nsx_isSSHEnabled: True
-          nsx_netmask_0: "{{ nsxmanmask }}"
-          nsx_ntp_0: "{{ nsxmanntp }}"
+          nsx_netmask_0: "{{ mgmt_network_mask }}"
+          nsx_ntp_0: "{{ ntp_server }}"
           nsx_passwd_0: "{{ nsxmanpassword }}"
           nsx_role: "{{ nsxmanrole }}"
       delegate_to: localhost
