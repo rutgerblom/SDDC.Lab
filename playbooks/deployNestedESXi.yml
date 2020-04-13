@@ -22,6 +22,17 @@
       async: 7200
       poll: 0
       register: deployment
+    - name: Move the ESXi VMs to folder
+      vmware_guest_move:
+        hostname: "{{ vc_mng.ip }}"
+        username: "{{ vc_mng.user }}"
+        password: "{{ vc_mng.password }}"
+        datacenter: "{{ vc_mng.datacenter }}"
+        validate_certs: no
+        name: "{{ item.value.vmname }}"
+        dest_folder: "{{ vcfolder }}"
+      with_dict: "{{ vESX }}"
+      delegate_to: localhost
     - name: Wait 3 seconds before we start checking whether the ESXi hosts are ready
       pause: seconds=3
     - name: Result check for deployment
@@ -47,15 +58,4 @@
       until: job_result.finished
       with_items: "{{ deployment.results }}"
       retries: 20
-    - name: Move the ESXi VMs to folder
-      vmware_guest_move:
-        hostname: "{{ vc_mng.ip }}"
-        username: "{{ vc_mng.user }}"
-        password: "{{ vc_mng.password }}"
-        datacenter: "{{ vc_mng.datacenter }}"
-        validate_certs: no
-        name: "{{ item.value.vmname }}"
-        dest_folder: "{{ vcfolder }}"
-      with_dict: "{{ vESX }}"
-      delegate_to: localhost
   tags: nestedESX
