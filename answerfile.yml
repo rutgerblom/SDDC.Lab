@@ -36,28 +36,33 @@ vc_mng:
   cluster: 'Compute'
   datastore: 'demo_nfs01'
 
-# Global properties for the nested environment
+# Global properties for the lab environment
+vm_prefix: 'nested-' # This prefix will be added to the VMs that are deployed on the physical ESXi
 dns1: '10.2.129.10' 
 dns2: '8.8.8.8'
 ntp_server: '10.2.129.10'
 domain: 'lab.local'
+mgmt_network_gw: '172.16.11.1'
+mgmt_network_mask: '255.255.255.0'
+nested_esxi_cpu: '8'
+nested_esxi_ram: '65536'
 nfs_server: '10.2.129.90'
 nfs_datastore: 'nfs01'
 nfs_path: '/nested_nfs01'
 nfs_type: 'nfs'
 
-# Deployment configuration for the vCenter appliance in the nested environment
+# Deployment configuration for the vCenter appliance in the lab environment
 vcenter:
   ip: '172.16.11.10' # vCenter ip address 
   mask: '24'
-  gw: '172.16.11.1'
-  fqdn: 'vcenter.lab.local' # vCenter FQDN if there is a working DNS server, otherwise use IP address as the name
-  vmname: 'nested-vcenter01'
+  gw: "{{ mgmt_network_gw }}"
+  fqdn: "vcenter.{{ domain }}" # vCenter FQDN if there is a working DNS server, otherwise use IP address as the name
+  vmname: "{{ vm_prefix }}vcenter01"
   thin: 'true'
   user: 'administrator@vsphere.local' 
   password: 'VMware1!' 
   datacenter: 'DC01'
-  datastore: 'demo_nfs01' # Physical datastore where the VCSA VM will be deployed
+  datastore: 'demo_nfs01' # Physical datastore on which the VCSA will be deployed
   domain: 'vsphere.local'
 
 # Properties for the VDS that will be deployed in the lab environment
@@ -68,7 +73,7 @@ vds:
   discovery_proto: 'lldp'
   discovery_operation: 'both'
   management_pg: 'pg-management'
-  management_vlan: '1611'
+  management_vlan: "{{ physicalESX.vlan }}"
   vmotion_pg: 'pg-vmotion'
   vmotion_vlan: '1612'
   vsan_pg: 'pg-vsan'
@@ -90,10 +95,10 @@ clusters:
     vsan: False
 
 # NSX-T Manager node global properties shared by all manager nodes
-nsxmanmask: '255.255.255.0'
-nsxmangateway: '172.16.11.1'
-nsxmandns: '10.2.129.10'
-nsxmanntp: '10.2.129.10'
+nsxmanmask: "{{ mgmt_network_mask }}"
+nsxmangateway: "{{ mgmt_network_gw }}"
+nsxmandns: "{{ dns1 }}"
+nsxmanntp: "{{ ntp }}"
 nsxmanpassword: 'VMware1!VMware1!'
 nsxmanaudituser: 'audit'
 nsxmanadminuser: 'admin'
@@ -105,7 +110,7 @@ nsxman:
   nsxman01:
     ip: '172.16.11.57'
     hostname: "nsxmanager01.{{ domain }}"
-    vmname: 'nested-nsxmanager01'
+    vmname: "{{ vm_prefix }}nsxmanager01"
 
 # NSX-T Transport Zones
 transportzones:
@@ -199,11 +204,11 @@ edge_transport_nodes:
           - 172.16.11.61
           prefix_length: 24
         default_gateway_addresses: 
-        - 172.16.11.1
+        - "{{ mgmt_network_gw }}"
         hostname: "en01.{{ domain }}"
         compute: "Edge"
         storage: "{{ nfs_datastore }}"
-        host: "esxi04.lab.local"
+        host: "esxi04.{{ domain }}"
 - display_name: en02
   host_switches:
   - host_switch_profiles:
@@ -249,11 +254,11 @@ edge_transport_nodes:
           - 172.16.11.62
           prefix_length: 24
         default_gateway_addresses: 
-        - 172.16.11.1
+        - "{{ mgmt_network_gw }}"
         hostname: "en02.{{ domain }}"
         compute: "Edge"
         storage: "{{ nfs_datastore }}"
-        host: "esxi05.lab.local"
+        host: "esxi05.{{ domain }}"
 
 # NSX-T Edge cluster
 edge_cluster_name: "edge-cluster-1"
@@ -290,15 +295,15 @@ transport_node_profiles:
 vESX:
   esxi01:
     ip: '172.16.11.51'
-    mask: '255.255.255.0'
-    gw: '172.16.11.1'
-    fqdn: 'esxi01.lab.local'
-    vmname: 'nested-esxi01'
+    mask: "{{ mgmt_network_mask }}"
+    gw: "{{ mgmt_network_gw }}"
+    fqdn: "esxi01.{{ domain }}"
+    vmname: "{{ vm_prefix }}esxi01"
     mng_cluster: 'Compute' # the cluster where physical ESXi is connected to. The nested VMs will be deployed here
     cluster: 'Compute' # the cluster where this specific nested ESXi need to be connected to
-    vlan: '1611' # the external vlan id, need to have connectivity with the vCenter
-    cpu: '8' # CPU count
-    ram: '65536' # memory
+    vlan: "{{ physicalESX.vlan }}"
+    cpu: "{{ nested_esxi_cpu }}"
+    ram: "{{ nested_esxi_ram }}"
     hdd: '180' # there is one HDD 8GB by default where the ESXi OS is installed. Additional one is SSD emulated drive configured half of the value here, and third HDD is according the value here
     vmotion_ip: '172.16.12.51' 
     vmotion_mask: '255.255.255.0'
@@ -308,15 +313,15 @@ vESX:
     password: 'VMware1!'
   esxi02:
     ip: '172.16.11.52'
-    mask: '255.255.255.0'
-    gw: '172.16.11.1'
-    fqdn: 'esxi02.lab.local'
-    vmname: 'nested-esxi02'
+    mask: "{{ mgmt_network_mask }}"
+    gw: "{{ mgmt_network_gw }}"
+    fqdn: "esxi02.{{ domain }}"
+    vmname: "{{ vm_prefix }}esxi02"
     mng_cluster: 'Compute' # the cluster where physical ESXi is connected to. The nested VMs will be deployed here
     cluster: 'Compute' # the cluster where this specific nested ESXi need to be connected to
-    vlan: '1611' # the external vlan id, need to have connectivity with the vCenter
-    cpu: '8' # CPU count
-    ram: '65536' # memory
+    vlan: "{{ physicalESX.vlan }}"
+    cpu: "{{ nested_esxi_cpu }}"
+    ram: "{{ nested_esxi_ram }}"
     hdd: '180' # there is one HDD 8GB by default where the ESXi OS is installed. Additional one is SSD emulated drive configured half of the value here, and third HDD is according the value here
     vmotion_ip: '172.16.12.52'
     vmotion_mask: '255.255.255.0'
@@ -326,15 +331,15 @@ vESX:
     password: 'VMware1!'
   esxi03:
     ip: '172.16.11.53'
-    mask: '255.255.255.0'
-    gw: '172.16.11.1'
-    fqdn: 'esxi03.lab.local'
-    vmname: 'nested-esxi03'
+    mask: "{{ mgmt_network_mask }}"
+    gw: "{{ mgmt_network_gw }}"
+    fqdn: "esxi03.{{ domain }}"
+    vmname: "{{ vm_prefix }}esxi03"
     mng_cluster: 'Compute' # the cluster where physical ESXi is connected to. The nested VMs will be deployed here
     cluster: 'Compute' # the cluster where this specific nested ESXi need to be connected to
-    vlan: '1611' # the external vlan id, need to have connectivity with the vCenter
-    cpu: '8' # CPU count
-    ram: '65536' # memory
+    vlan: "{{ physicalESX.vlan }}"
+    cpu: "{{ nested_esxi_cpu }}"
+    ram: "{{ nested_esxi_ram }}"
     hdd: '180' # there is one HDD 8GB by default where the ESXi OS is installed. Additional one is SSD emulated drive configured half of the value here, and third HDD is according the value here
     vmotion_ip: '172.16.12.53'
     vmotion_mask: '255.255.255.0'
@@ -344,15 +349,15 @@ vESX:
     password: 'VMware1!'
   esxi04:
     ip: '172.16.11.54'
-    mask: '255.255.255.0'
-    gw: '172.16.11.1'
-    fqdn: 'esxi04.lab.local'
-    vmname: 'nested-esxi04'
+    mask: "{{ mgmt_network_mask }}"
+    gw: "{{ mgmt_network_gw }}"
+    fqdn: "esxi04.{{ domain }}"
+    vmname: "{{ vm_prefix }}esxi04"
     mng_cluster: 'Compute' # the cluster where physical ESXi is connected to. The nested VMs will be deployed here
     cluster: Edge # the cluster where this specific nested ESXi need to be connected to
-    vlan: '1611' # the external vlan id, need to have connectivity with the vCenter
-    cpu: '8' # CPU count
-    ram: '65536' # memory
+    vlan: "{{ physicalESX.vlan }}"
+    cpu: "{{ nested_esxi_cpu }}"
+    ram: "{{ nested_esxi_ram }}"
     hdd: '180' # there is one HDD 8GB by default where the ESXi OS is installed. Additional one is SSD emulated drive configured half of the value here, and third HDD is according the value here
     vmotion_ip: '172.16.12.54'
     vmotion_mask: '255.255.255.0'
@@ -362,15 +367,15 @@ vESX:
     password: 'VMware1!'
   esxi05:
     ip: '172.16.11.55'
-    mask: '255.255.255.0'
-    gw: '172.16.11.1'
-    fqdn: 'esxi05.lab.local'
-    vmname: 'nested-esxi05'
+    mask: "{{ mgmt_network_mask }}"
+    gw: "{{ mgmt_network_gw }}"
+    fqdn: "esxi05.{{ domain }}"
+    vmname: "{{ vm_prefix }}esxi05"
     mng_cluster: 'Compute' # the cluster where physical ESXi is connected to. The nested VMs will be deployed here
     cluster: Edge # the cluster where this specific nested ESXi need to be connected to
-    vlan: '1611' # the external vlan id, need to have connectivity with the vCenter
-    cpu: '8' # CPU count
-    ram: '65536' # memory
+    vlan: "{{ physicalESX.vlan }}"
+    cpu: "{{ nested_esxi_cpu }}"
+    ram: "{{ nested_esxi_ram }}"
     hdd: '180' # there is one HDD 8GB by default where the ESXi OS is installed. Additional one is SSD emulated drive configured half of the value here, and third HDD is according the value here
     vmotion_ip: '172.16.12.55'
     vmotion_mask: '255.255.255.0'
