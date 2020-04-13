@@ -35,7 +35,7 @@ A current version of [Ansible](https://docs.ansible.com/ansible/latest/installat
 * pip install pyvim
 * pip install setuptools wheel
 * pip install pyvmomi
-* ESXi and VCSA ISOs as well as the NSX-T Manager OVA. Place these in the /iso directory of your Ansible control node.
+* ESXi and VCSA ISOs as well as the NSX-T Manager OVA.
 * For NSX-T you will need an NSX-T license (Check uut [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership))
 
 ## Deployment
