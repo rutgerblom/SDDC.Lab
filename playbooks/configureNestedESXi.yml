@@ -210,7 +210,7 @@
         ntp_servers:
           - "{{ ntp_server }}"
       with_dict: "{{ vESX }}"
-    - name: Start ntpd on ESXi hosts and change service policy
+    - name: Start ntpd on the ESXi hosts and change the service policy
       vmware_host_service_manager:
         hostname: "{{ vcenter.ip }}"
         username: "{{ vcenter.user }}"
