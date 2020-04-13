@@ -34,7 +34,7 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
   * pip install setuptools wheel
   * pip install pyvmomi
   * ovftool (free download from VMware)
-  * ESXi and VCSA ISOs as well as the NSX-T Manager OVA.
+  * ESXi and VCSA ISO files as well as the NSX-T Manager OVA file
 * For NSX-T you will need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership))
 
 ## Deployment
