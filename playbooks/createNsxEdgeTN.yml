@@ -23,13 +23,13 @@
         state: present
       with_items:
         - "{{ edge_transport_nodes }}"
-      ignore_errors: True
       register: _deploy_edges
       when: nsxlicensekey.stat.exists == True
       async: 1800
       poll: 0
-    - name: Wait 15 minutes for the NSX-T Edge node deployment to finish.
-      pause: minutes=15      
+      ignore_errors: True      
+    - name: Wait 30 minutes for the NSX-T Edge node deployment to finish.
+      pause: minutes=30
     - name: Checking if the NSX-T Edge node deployment is finished
       async_status:
         jid: "{{ item.ansible_job_id }}"
