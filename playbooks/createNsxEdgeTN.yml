@@ -28,7 +28,9 @@
       when: nsxlicensekey.stat.exists == True
       async: 1800
       poll: 0
-    - name: Wait for NSX-T Edge node deployment to finish
+    - name: Wait 15 minutes for the NSX-T Edge node deployment to finish.
+      pause: minutes=15      
+    - name: Checking if the NSX-T Edge node deployment is finished
       async_status:
         jid: "{{ item.ansible_job_id }}"
       register: _jobs
