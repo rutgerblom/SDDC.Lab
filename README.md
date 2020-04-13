@@ -24,8 +24,6 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
 
 ## Requirements
 
-A current version of [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
-
 * A physical ESXi host managed by vCenter
 * ovftool (free download from VMware)
 * apt install python
