@@ -89,7 +89,7 @@ Confirmed to be working with:<br/>
 
 ## Development
 
-TODO: Handle NSX-T license requirement
+TODO: Add Playbooks for configuring NSX-T logical networking
 TODO: Optimize / structurize answerfile.yml<br/>
 
 ## Credits
