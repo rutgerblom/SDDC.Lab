@@ -59,7 +59,6 @@ Another diagram showing some more details about the nested vSphere environment. 
 
 ### Prerequisites
 
-
 Use a current version of [ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
 
 * A physical ESXi host managed by vCenter
@@ -93,8 +92,8 @@ Confirmed to be working with:<br/>
 
 ## Development
 
-TODO: Add Playbooks for configuring NSX-T logical networking
-TODO: Optimize / structurize answerfile.yml<br/>
+* TODO: Add Playbooks for configuring NSX-T logical networking
+* TODO: Optimize / structurize answerfile.yml
 
 ## Credits
 
