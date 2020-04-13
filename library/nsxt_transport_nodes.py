@@ -598,8 +598,8 @@ def wait_till_create(node_id, module, manager_url, mgr_username, mgr_password, v
           any(resp['node_deployment_state']['state'] in progress_status for progress_status in IN_PROGRESS_STATES):
               time.sleep(10)
               count = count + 1
-              if count == 90:
-                  #Wait for max 15 minutes for host to realize
+              if count == 1880:
+                  #Wait for max 30 minutes for host to realize
                   module.fail_json(msg= 'Error creating transport node: creation state %s, node_deployment_state %s, Failure message: %s'%(str(resp['state']), str(resp['node_deployment_state']['state']), str(resp['failure_message'])))
           elif any(resp['state'] in progress_status for progress_status in SUCCESS_STATES) and\
           any(resp['node_deployment_state']['state'] in progress_status for progress_status in SUCCESS_STATES):
@@ -611,7 +611,7 @@ def wait_till_create(node_id, module, manager_url, mgr_username, mgr_password, v
           else:
               time.sleep(10)
               count = count + 1
-              if count == 90:
+              if count == 180:
                    module.fail_json(msg= 'Error creating transport node: creation state %s, node_deployment_state %s'%(str(resp['state']), str(resp['node_deployment_state']['state'])))
     except Exception as err:
       module.fail_json(msg='Error accessing transport node. Error [%s]' % (to_native(err)))
