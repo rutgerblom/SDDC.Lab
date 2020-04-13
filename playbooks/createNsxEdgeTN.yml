@@ -25,3 +25,5 @@
         - "{{ edge_transport_nodes }}"
       ignore_errors: True
       when: nsxlicensekey.stat.exists == True
+      async: 1800
+      poll: 0      
