@@ -3,31 +3,42 @@ A set of Ansible Playbooks that automate the deployment and configuration of a c
 
 #### Table of Contents
 
-1. [Description](#description)
-1. [Setup](#setup)
-    * [Deployment](#Deployment)
-    * [Requirements](#Requirements)
-    * [Answerfile.yml](#Answerfile)
+1. [Description](#Description)
+1. [Changelog](#Changelog)
+1. [Requirements](#Requirements)
+1. [Deployment](#Deployment)
 1. [Diagrams](#Diagrams)
 1. [Usage](#Usage)
-1. [Interoperability](#Interoperability)
+1. [Compatibility](#Compatibility)
 1. [Development](#Development)
 1. [Credits](#Credits)
 
 ## Description
 
-This repository contains a set of Ansible Playbooks that will deploy and configure vCenter, nested ESXi, NSX-T Manager, and NSX-T Edge nodes. The primary use case is speedy provisioning of a consistent nested lab environment. 
+This repository contains a set of Ansible Playbooks that will deploy and configure vCenter, nested ESXi, NSX-T Manager, and NSX-T Edge nodes. The primary use case is speedy provisioning of a consistent nested lab environment.
 
-## Setup
+## Changelog
 
-Now updated for vSphere 7.0 and NSX-T 3.0. Also verified to work with vSphere 6.7 and NSX-T 2.5 (just swap the ISOs/OVAs).<br/>
-Tested in an environment with a physical ESXi host managed by its own vCenter.<br/>
-<br/>
-Other components used that are **not** part of this deployment are a FRRouting VM for routing within the nested environment and an NFS datastore availabe to the nested ESXi hosts. vSAN could be used too, but I have not tested this yet.<br/>
-<br/>
-I also recommend having DNS/NTP/AD available to the nested environment to host something like a "lab.local" zone and have proper time synchronization and authentication.<br/>
+* **12/04/2020**
+  * Initial release
 
-### Deployment
+## Requirements
+
+A current version of [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
+
+* A physical ESXi host managed by vCenter
+* ovftool (free download from VMware)
+* apt install python
+* apt install ansible
+* apt install sshpass python-pip git
+* apt install xorriso
+* pip install pyvim
+* pip install setuptools wheel
+* pip install pyvmomi
+* ESXi and VCSA ISOs as well as the NSX-T Manager OVA. Place these in the /iso directory of your Ansible control node.
+* For NSX-T you will need an NSX-T license (Check uut [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership))
+
+## Deployment
 
 Running the Playbooks as defined in the **deploy.yml** will deploy the following:<br/>
 1. Create a vSwitch and port groups on the physical ESXi
@@ -55,40 +66,21 @@ A simple diagram over the physical environment. This will be deployed on the phy
 ![Physical overview](/images/vsphere-nsxt-deploy-phys.png)<br/>
 Another diagram showing some more details about the nested vSphere environment. Again using the default settings in **answerfile.yml**<br/>
 <br/>
-![Logical overview](/images/vsphere-nsxt-deploy-log.png)<br/>
-
-### Prerequisites
-
-Use a current version of [ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
-
-* A physical ESXi host managed by vCenter
-* ovftool (free download from VMware)
-* apt install python
-* apt install ansible <br/>
-* apt install sshpass python-pip git <br/>
-* apt install xorriso<br/>
-* pip install pyvim <br/>
-* pip install setuptools wheel <br/>
-* pip install pyvmomi <br/>
-
-* ESXi and VCSA ISOs (6.7 or 7.0) as well as the NSX-T Manager OVA (2.5 or 3.0). Place these in the /iso directory of your Ansible control node. This path can be changed in **answerfile.yml**.<br/>
-
-### Answerfile
-
-Edit and adjust **answerfile.yml** according to your needs. In **deploy.yml** you control what gets deployed. It's very easy to customize your deployment.
+![Logical overview](/images/vsphere-nsxt-deploy-log.png)
 
 ## Usage
 
-ansible-playbook deploy.yml
+Adjust the **answerfile.yml** according to your needs. In **deploy.yml** you control what gets deployed. Then run:<br/>
+**ansible-playbook deploy.yml**
 
-## Interoperability
+## Compatibility
 
-Confirmed to be working with:<br/> 
-* Ubuntu 18.04 as the OS for the Ansible Controller<br/>
-* Ansible 2.9.6 <br/>
-* ESXi version 6.7 and 7.0 <br/>
-* vCenter version 6.7 and 7.0 <br/>
-* NSX-T version 2.5 and 3.0 <br/>
+Confirmed to be working with:
+* Ubuntu 18.04 as the OS for the Ansible Controller
+* Ansible 2.9.6
+* ESXi version 6.7 and 7.0
+* vCenter version 6.7 and 7.0
+* NSX-T version 2.5 and 3.0
 
 ## Development
 
