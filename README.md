@@ -3,15 +3,15 @@ A set of Ansible Playbooks that automate the deployment and configuration of a c
 
 #### Table of Contents
 
-1. [Description](#Description)
-1. [Changelog](#Changelog)
-1. [Requirements](#Requirements)
-1. [Deployment](#Deployment)
-1. [Diagrams](#Diagrams)
-1. [Usage](#Usage)
-1. [Compatibility](#Compatibility)
-1. [Development](#Development)
-1. [Credits](#Credits)
+* [Description](#Description)
+* [Changelog](#Changelog)
+* [Requirements](#Requirements)
+* [Deployment](#Deployment)
+* [Diagrams](#Diagrams)
+* [Usage](#Usage)
+* [Compatibility](#Compatibility)
+* [Development](#Development)
+* [Credits](#Credits)
 
 ## Description
 
