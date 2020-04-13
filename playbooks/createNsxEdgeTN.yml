@@ -8,7 +8,7 @@
       stat: 
         path: "{{ nsxlicense }}"
       register: nsxlicensekey  
-    - name: Create NSX-T Edge Transport Nodes
+    - name: Deploy and configure NSX-T Edge Transport Nodes
       nsxt_transport_nodes:
         hostname: "{{ nsxman.nsxman01.hostname }}"
         username: "{{ nsxmanadminuser }}"
@@ -24,6 +24,17 @@
       with_items:
         - "{{ edge_transport_nodes }}"
       ignore_errors: True
+      register: _deploy_edges
       when: nsxlicensekey.stat.exists == True
       async: 1800
-      poll: 0      
+      poll: 0
+    - name: Wait for NSX-T Edge node deployment to finish
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: _jobs
+      until: _jobs.finished
+      delay: 30
+      retries: 10
+      with_items: "{{ _deploy_edges.results }}"
+
+
