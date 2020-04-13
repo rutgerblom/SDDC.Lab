@@ -25,15 +25,16 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
 ## Requirements
 
 * A physical ESXi host managed by vCenter
-* ovftool (free download from VMware)
-* apt install python
-* apt install ansible
-* apt install sshpass python-pip git
-* apt install xorriso
-* pip install pyvim
-* pip install setuptools wheel
-* pip install pyvmomi
-* ESXi and VCSA ISOs as well as the NSX-T Manager OVA.
+* An Ansible Control node (like an Ubuntu 18.04 VM) with:
+  * apt install python
+  * apt install ansible
+  * apt install sshpass python-pip git
+  * apt install xorriso
+  * pip install pyvim
+  * pip install setuptools wheel
+  * pip install pyvmomi
+  * ovftool (free download from VMware)
+  * ESXi and VCSA ISOs as well as the NSX-T Manager OVA.
 * For NSX-T you will need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership))
 
 ## Deployment
@@ -74,7 +75,7 @@ Adjust the **answerfile.yml** according to your needs. In **deploy.yml** you con
 ## Compatibility
 
 Confirmed to be working with:
-* Ubuntu 18.04 as the OS for the Ansible Controller
+* Ubuntu 18.04 as the OS for the Ansible Control node
 * Ansible 2.9.6
 * ESXi version 6.7 and 7.0
 * vCenter version 6.7 and 7.0
