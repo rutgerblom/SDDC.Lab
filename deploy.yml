@@ -24,11 +24,5 @@
 # The Playbooks below require that an NSX-T license is availsble. Configure this in answerfile.yml
 - import_playbook: playbooks/addNsxLicense.yml
 - import_playbook: playbooks/createNsxEdgeTN.yml
-- name: Wait 10 minutes for the NSX-T Edge Nodes to become fully responsive
-  hosts: localhost
-  gather_facts: False
-  tasks:
-    - name: Wait 10 minutes before checking whether theNSX-T Edge Nodes are ready
-      pause: minutes=10 
 - import_playbook: playbooks/createNsxEdgeCluster.yml
 - import_playbook: playbooks/attachNsxTNP.yml
