@@ -69,7 +69,7 @@ Another diagram showing some more details about the nested vSphere environment. 
 
 ## Usage
 
-Adjust the **answerfile.yml** and the **deploy.yml** according to your needs. Start the deployment with:<br/>
+Edit the **answerfile.yml** and the **deploy.yml** according to your needs. Start the deployment with:<br/>
 <br/>
 **ansible-playbook deploy.yml**
 
