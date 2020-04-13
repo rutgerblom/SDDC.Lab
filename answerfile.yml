@@ -10,7 +10,7 @@ vcIso: '/iso/VMware-VCSA-all-7.0.0-15952498.iso' # vCenter 7.0
 NsxManOva: '/iso/nsx-unified-appliance-3.0.0.0.0.15946739.ova' # NSX-T 3.0
 #NsxManOva: '/iso/67-25/nsx-unified-appliance-2.5.1.0.0.15314292.ova' # NSX-T 2.5
 
-# Path to the NSX-T license key (text file should just contain the key). Required for deploying transport nodes.
+# Path to the NSX-T license key file (text file should contain just the key). Required for deploying transport nodes.
 nsxlicense: '/tmp/nsxlicense.txt'
 
 # The vCenter folder where all the VMs will get deployed
@@ -29,28 +29,14 @@ physicalESX:
 
 # Properties of the existing infrastructure vCenter (the one managing the physical ESXi host above)
 vc_mng:
-  ip: 'vcenter.demo.local' # Can be FQDN too
+  ip: 'vcenter.demo.local' # Or FQDN
   user: 'administrator@vsphere.local' 
   password: 'VMware1!' 
   datacenter: 'Datacenter' 
   cluster: 'Compute'
   datastore: 'demo_nfs01'
 
-# Deployment configuration for the vCenter instance in the nested environment
-vcenter:
-  ip: '172.16.11.10' # vCenter ip address 
-  mask: '24'
-  gw: '172.16.11.1'
-  fqdn: 'vcenter.lab.local' # vCenter FQDN if there is a working DNS server, otherwise put the ip as a name
-  vmname: 'nested-vcenter01'
-  thin: 'true'
-  user: 'administrator@vsphere.local' 
-  password: 'VMware1!' 
-  datacenter: 'DC01'
-  datastore: 'demo_nfs01' # Physical datastore where the VCSA VM will be deployed
-  domain: 'vsphere.local'
-
-# Some general settings used when deploying and configuring the lab environment. These settings are in the context of the lab environment. 
+# Global properties for the nested environment
 dns1: '10.2.129.10' 
 dns2: '8.8.8.8'
 ntp_server: '10.2.129.10'
@@ -60,7 +46,21 @@ nfs_datastore: 'nfs01'
 nfs_path: '/nested_nfs01'
 nfs_type: 'nfs'
 
-# Properties for the VDS that will be deployed in the lab environment's vCenter
+# Deployment configuration for the vCenter appliance in the nested environment
+vcenter:
+  ip: '172.16.11.10' # vCenter ip address 
+  mask: '24'
+  gw: '172.16.11.1'
+  fqdn: 'vcenter.lab.local' # vCenter FQDN if there is a working DNS server, otherwise use IP address as the name
+  vmname: 'nested-vcenter01'
+  thin: 'true'
+  user: 'administrator@vsphere.local' 
+  password: 'VMware1!' 
+  datacenter: 'DC01'
+  datastore: 'demo_nfs01' # Physical datastore where the VCSA VM will be deployed
+  domain: 'vsphere.local'
+
+# Properties for the VDS that will be deployed in the lab environment
 vds:
   name: 'vds'
   mtu: '9000'
@@ -78,7 +78,7 @@ vds:
   uplink2_pg: 'pg-uplink2'
   uplink2_vlan: '0-4094'
 
-# You can add, remove or rename vSphere clusters below. These are created in the lab environment
+# You can add, remove or rename vSphere clusters below. These will be created in the lab environment
 clusters:
   Compute:
     ha: False
@@ -100,7 +100,7 @@ nsxmanadminuser: 'admin'
 nsxmansize: 'small'
 nsxmanrole: 'NSX Manager' # Can be 'nsx-cloud-service-manager', 'nsx-global-manager' or 'NSX Manager' in NSX-T 3.0
 
-# The NSX-T Manager nodes. You can add, remove or rename NSX-T Manager nodes below.
+# The NSX-T Manager nodes. You can add, remove or rename NSX-T Manager nodes below
 nsxman:
   nsxman01:
     ip: '172.16.11.57'
