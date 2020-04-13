@@ -59,14 +59,18 @@ Another diagram showing some more details about the nested vSphere environment. 
 
 ### Prerequisites
 
+
+Use a current version of [ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
+
 * A physical ESXi host managed by vCenter
 * ovftool (free download from VMware)
-* apt install python3
+* apt install python
 * apt install ansible <br/>
 * apt install sshpass python-pip git <br/>
-* pip install vim <br/>
-* pip install pyvmomi <br/>
 * apt install xorriso<br/>
+* pip install pyvim <br/>
+* pip install setuptools wheel <br/>
+* pip install pyvmomi <br/>
 
 * ESXi and VCSA ISOs (6.7 or 7.0) as well as the NSX-T Manager OVA (2.5 or 3.0). Place these in the /iso directory of your Ansible control node. This path can be changed in **answerfile.yml**.<br/>
 
