@@ -1,11 +1,11 @@
 ---
-- name: Prepare physical ESXi
+- name: Prepare the physical ESXi host
   hosts: localhost
   gather_facts: False
   vars_files:
     - ../answerfile.yml
   tasks:
-    - name: Add a VMware vSwitch to a specific host system
+    - name: Add a VMware vSwitch to the ESXi hosts
       vmware_vswitch:
         hostname: "{{ physicalESX.host }}"
         username: "{{ physicalESX.user }}"
@@ -14,7 +14,7 @@
         switch_name: "{{ physicalESX.vswitch }}"
         mtu: 9000
         validate_certs: False
-    - name: Create management portgroup for the lab environment
+    - name: Create a management port group for the lab environment
       vmware_portgroup:
         hostname: "{{ physicalESX.host }}"
         username: "{{ physicalESX.user }}"

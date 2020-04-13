@@ -5,7 +5,7 @@
   vars_files:
     - ../answerfile.yml
   tasks:
-    - name: Change vESXi hostnames
+    - name: Configure hostname on the ESXi hosts
       vmware_vm_shell:
         hostname: "{{ vc_mng.ip }}"
         username: "{{ vc_mng.user }}"
@@ -32,7 +32,7 @@
       until: job_result.finished
       with_items: "{{ hname.results }}"
       retries: 10
-    - name: Set VLAN to Management portgroup
+    - name: Set VLAN on the management portgroup
       vmware_vm_shell:
         hostname: "{{ vc_mng.ip }}"
         username: "{{ vc_mng.user }}"
@@ -59,7 +59,7 @@
       until: job_result.finished
       with_items: "{{ hvlan.results }}"
       retries: 10
-    - name: Set vmk0 ip addresses
+    - name: Set IP address on vmk0
       vmware_vm_shell:
         hostname: "{{ vc_mng.ip }}"
         username: "{{ vc_mng.user }}"
@@ -86,7 +86,7 @@
       until: job_result.finished
       with_items: "{{ hip.results }}"
       retries: 10
-    - name: Set default gw
+    - name: Set default gateway on the ESXi hosts
       vmware_vm_shell:
         hostname: "{{ vc_mng.ip }}"
         username: "{{ vc_mng.user }}"
@@ -113,7 +113,7 @@
       until: job_result.finished
       with_items: "{{ hgw.results }}"
       retries: 10
-    - name: Set search domain
+    - name: Set search domain on the ESXi hosts
       vmware_vm_shell:
         hostname: "{{ vc_mng.ip }}"
         username: "{{ vc_mng.user }}"
@@ -140,7 +140,7 @@
       until: job_result.finished
       with_items: "{{ hsd.results }}"
       retries: 10
-    - name: Set a DNS Server
+    - name: Configure DNS on the ESXi hosts
       vmware_vm_shell:
         hostname: "{{ vc_mng.ip }}"
         username: "{{ vc_mng.user }}"
@@ -160,7 +160,7 @@
       async: 7200
       poll: 0
       register: hdns
-    - name: Disable SSH Warnings
+    - name: Disable SSH warnings on the ESXi hosts
       vmware_vm_shell:
         hostname: "{{ vc_mng.ip }}"
         username: "{{ vc_mng.user }}"
@@ -187,7 +187,7 @@
       until: job_result.finished
       with_items: "{{ hdns.results }}"
       retries: 10
-    - name: Add ESXi Host to VCSA
+    - name: Add the ESXi hosts to vCenter
       vmware_host:
         hostname: "{{ vcenter.ip }}"
         username: "{{ vcenter.user }}"
@@ -200,7 +200,7 @@
         esxi_password: "{{ item.value.password }}"
         state: present
       with_dict: "{{ vESX }}"
-    - name: Set NTP servers ESXi Host
+    - name: Configure NTP on the ESXi hosts
       vmware_host_ntp:
         hostname: "{{ vcenter.ip }}"
         username: "{{ vcenter.user }}"
@@ -221,7 +221,7 @@
         service_policy: on
         state: present
       with_dict: "{{ vESX }}"
-    - name: Mount NFS datastores to ESXi
+    - name: Mount NFS datastore on the ESXi hosts
       vmware_host_datastore:
         hostname: "{{ vcenter.ip }}"
         username: "{{ vcenter.user }}"
@@ -235,7 +235,7 @@
         nfs_ro: no
         state: present
       with_dict: "{{ vESX }}"
-    - name: Remove local datastores from ESXi
+    - name: Remove local datastores from the ESXi hosts
       vmware_host_datastore:
         hostname: "{{ item.value.fqdn }}" 
         username: "{{ item.value.username }}"

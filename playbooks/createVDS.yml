@@ -5,7 +5,7 @@
   vars_files:
     - ../answerfile.yml
   tasks:
-    - name: Create Distributed Switch
+    - name: Create distributed switch in vCenter
       vmware_dvswitch:
         hostname: "{{ vcenter.ip }}"
         username: "{{ vcenter.user }}"
@@ -18,7 +18,7 @@
         discovery_proto: "{{ vds.discovery_proto }}"
         discovery_operation: "{{ vds.discovery_operation }}"
         state: present
-    - name: Create Management Portgroup
+    - name: Create Management port group
       vmware_dvs_portgroup:
         hostname: "{{ vcenter.ip }}"
         username: "{{ vcenter.user }}"
@@ -30,7 +30,7 @@
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
-    - name: Create vMotion Portgroup
+    - name: Create vMotion port group
       vmware_dvs_portgroup:
         hostname: "{{ vcenter.ip }}"
         username: "{{ vcenter.user }}"
@@ -42,7 +42,7 @@
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
-    - name: Create vSAN Portgroup
+    - name: Create vSAN port group
       vmware_dvs_portgroup:
         hostname: "{{ vcenter.ip }}"
         username: "{{ vcenter.user }}"
@@ -54,7 +54,7 @@
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
-    - name: Create Uplink1 Portgroup
+    - name: Create Uplink1 port group
       vmware_dvs_portgroup:
         hostname: "{{ vcenter.ip }}"
         username: "{{ vcenter.user }}"
@@ -67,7 +67,7 @@
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
-    - name: Create Uplink2 Portgroup
+    - name: Create Uplink2 port group
       vmware_dvs_portgroup:
         hostname: "{{ vcenter.ip }}"
         username: "{{ vcenter.user }}"
@@ -80,7 +80,6 @@
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
-
     - name: Migrate uplinks to the VDS
       vmware_dvs_host:
         hostname: "{{ vcenter.ip }}"
@@ -94,8 +93,7 @@
           - vmnic2
         state: present
       with_dict: "{{ vESX }}"
-
-    - name: Migrate Management vmk0 to the VDS
+    - name: Migrate vmk0 to the VDS
       vmware_migrate_vmk:
         hostname: "{{ vcenter.ip }}"
         esxi_hostname: "{{ item.value.fqdn }}"
@@ -108,8 +106,7 @@
         validate_certs: False
         migrate_portgroup_name: "{{ vds.management_pg }}"
       with_dict: "{{ vESX }}"
-
-    - name: Create vMotion vmk1
+    - name: Create vmk1 for vMotion
       vmware_vmkernel:
         hostname: "{{ vcenter.ip }}"
         esxi_hostname: "{{ item.value.fqdn }}"
@@ -125,8 +122,7 @@
           ip_address: "{{ item.value.vmotion_ip }}"
           subnet_mask: "{{ item.value.vmotion_mask }}"
       with_dict: "{{ vESX }}"
-
-    - name: Create vSAN vmk2
+    - name: Create vmk2 for vSAN
       vmware_vmkernel:
         hostname: "{{ vcenter.ip }}"
         esxi_hostname: "{{ item.value.fqdn }}"
@@ -142,8 +138,7 @@
           ip_address: "{{ item.value.vsan_ip }}"
           subnet_mask: "{{ item.value.vsan_mask }}"
       with_dict: "{{ vESX }}"
-
-    - name: Remove the standard switch
+    - name: Remove the standard switch from the ESXi hosts
       vmware_vswitch:
         hostname: '{{ item.value.fqdn }}'
         username: '{{ item.value.username }}'
@@ -152,7 +147,6 @@
         switch: 'vSwitch0'
         state: absent
       with_dict: "{{ vESX }}"
-
     - name: Enable vSAN
       enable_vsan:
         vcenter: "{{ vcenter.ip }}"
@@ -161,7 +155,6 @@
         cluster: "{{ item.key }}"
       when: item.value.vsan == True
       with_dict: "{{ clusters }}"
-
     - name: Claim disks for vSAN
       claim_vsan_disks:
         vcenter: "{{ vcenter.ip }}"
@@ -170,13 +163,11 @@
         cluster: "{{ item.key }}"
       when: item.value.vsan == True
       with_dict: "{{ clusters }}"
-
     - name: Clear vSAN errors for unsupported hardware
       clear_vsan_errors:
         vcenter: "{{ vcenter.ip }}"
         user: "{{ vcenter.user }}"
         passwd: "{{ vcenter.password }}"
-
     - name: Enable HA on the clusters
       enable_ha:
         vcenter: "{{ vcenter.ip }}"
@@ -185,8 +176,7 @@
         cluster: "{{ item.key }}"
       when: item.value.ha == True
       with_dict: "{{ clusters }}"
-
-    - name: Wait 3 minutes before clearing the errors
+    - name: Wait 3 minutes before clearing the errors in vCenter
       pause: minutes=3
     - name: Clear errors
       clear_vsan_errors:
