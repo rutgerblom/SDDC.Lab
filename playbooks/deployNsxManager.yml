@@ -62,7 +62,7 @@
       register: newNsxNode
     - debug:
         msg: "Deploying NSX-T Manager will take 20 minutes, so go grab some more coffee !!!"      
-    - name: Wait 20 minutes before continuing the deployment
+    - name: Wait 20 minutes for the NSX-T Manager node deployment to finish
       pause: minutes=20
       when: newNsxNode.stat.exists == True
     - name: Delete the temporary mark
