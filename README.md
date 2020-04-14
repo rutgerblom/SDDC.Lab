@@ -58,7 +58,7 @@ Using the default **deploy.yml** the following is deployed:
    * Create NSX-T Edge Cluster
    * Attach NSX-T Transport Node Profile to the "Compute" vSphere cluster (this will effectively install NSX-T bits and configuration on the ESXi hosts in that cluster)
 
-Ansible Play recap from 13/04/2020:
+Ansible Play recap from 14/04/2020:
 
 ![](images/play-recap.png)
 
