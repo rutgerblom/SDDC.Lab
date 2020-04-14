@@ -5,29 +5,46 @@
   vars_files:
     - ../answerfile.yml
   tasks:
-    - name: Mount vCenter ISO
-      action: mount name='/mnt/VCSA' src="{{ vcIso }}" opts=loop fstype=iso9660 state=mounted
-      tags: mount
+    - name: Check if VCSA is already installed
+      uri:
+        url: https://{{ vcenter.ip }}
+        validate_certs: False
+        timeout: 5
+      register: vcenter_check
+      ignore_errors: True
+      failed_when: false
+      no_log: True
+
     - name: Create JSON template file for VCSA with embeded PSC
       template: 
         src=../templates/embedded_vCSA_on_ESXi.json
         dest=/tmp/vCSA_on_ESXi.json
+      when: vcenter_check.status != 200
+
+    - name: Mount vCenter ISO
+      action: mount name='/mnt/VCSA' src="{{ vcIso }}" opts=loop fstype=iso9660 state=mounted
+      when: vcenter_check.status != 200
+      tags: mount
 
     - debug:
         msg: "Deploying the VCSA will take about 20 minutes, so go grab some coffee !!!"
-
+      when: vcenter_check.status != 200
+      
     - name: Perform vCenter CLI-based installation
       command: "./vcsa-deploy install --accept-eula --no-ssl-certificate-verification --acknowledge-ceip /tmp/vCSA_on_ESXi.json"
       args:
         chdir: /mnt/VCSA/vcsa-cli-installer/lin64/
       register: vcdeploy
       ignore_errors: True
+      when: vcenter_check.status != 200
 
     - name: Unmount vCenter ISO
       action: mount name='/mnt/VCSA' src="{{ esxIso }}" fstype=iso9660 state=absent
+      when: vcenter_check.status != 200
 
     - name: Delete the temporary JSON template file
       file: path=/tmp/vCSA_on_ESXi.json state=absent
+      when: vcenter_check.status != 200
     
     - name: Move the vCenter VM to folder
       vmware_guest_move:
