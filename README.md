@@ -66,10 +66,10 @@ Play recap from 13/04/2020
 ### Diagrams
 
 A simple diagram over the physical environment. This will be deployed on the physical ESXi host when using the default settings in **answerfile.yml**<br/>
-<br/>
-![Physicaloverview](images/vsphere-nsxt-deploy-phys.png)<br/>
-Another diagram showing some more details about the nested vSphere environment. Again using the default settings in **answerfile.yml**<br/>
-<br/>
+
+![Physicaloverview](images/vsphere-nsxt-deploy-phys.png)
+Another diagram showing some more details about the nested vSphere environment. Again using the default settings in **answerfile.yml**
+
 ![Logicaloverview](images/vsphere-nsxt-deploy-log.png)
 
 ## Usage
