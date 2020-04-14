@@ -39,7 +39,7 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
 
 ## Deployment
 
-With the default **deploy.yml** the following is deployed:
+Using the default **deploy.yml** the following is deployed:
 1. Create a vSwitch and port groups on the physical ESXi
 1. Deploy and configure a vCenter Sever Appliance
 1. Deploy 5 ESXi VMs
@@ -65,7 +65,7 @@ Ansible Play recap from 13/04/2020:
 
 ### Diagrams
 
-A simple diagram over the physical environment. This will be deployed on the physical ESXi host when using the default settings in **answerfile.yml**<br/>
+A simple diagram over the physical environment. This will be deployed on the physical ESXi host when using the default settings in **answerfile.yml**
 
 ![Physicaloverview](images/vsphere-nsxt-deploy-phys.png)
 Another diagram showing some more details about the nested vSphere environment. Again using the default settings in **answerfile.yml**
@@ -74,8 +74,8 @@ Another diagram showing some more details about the nested vSphere environment. 
 
 ## Usage
 
-Edit the **answerfile.yml** and the **deploy.yml** according to your needs. Start the deployment with:<br/>
-<br/>
+Edit the **answerfile.yml** and the **deploy.yml** according to your needs. Start the deployment with:
+
 **ansible-playbook deploy.yml**
 
 ## Compatibility
