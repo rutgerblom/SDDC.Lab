@@ -57,9 +57,9 @@ Running the Playbooks as defined in the **deploy.yml** will deploy the following
    * Deploy two NSX-T Edge Transport Nodes
    * Create NSX-T Edge Cluster
    * Attach NSX-T Transport Node Profile to the "Compute" vSphere cluster (this will effectively install NSX-T bits and configuration on the ESXi hosts in that cluster)
-<br/>
-Play recap from 13/04/2020<br/>
-<br/>
+
+Play recap from 13/04/2020
+
 ![](images/play-recap.png)
 
 
