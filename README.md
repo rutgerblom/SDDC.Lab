@@ -60,7 +60,7 @@ Running the Playbooks as defined in the **deploy.yml** will deploy the following
 <br/>
 Play recap from 13/04/2020<br/>
 <br/>
-![Play recap](images/play_recap.png)<br/>
+![Play recap](/images/play_recap.png)
 
 
 ### Diagrams
