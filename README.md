@@ -1,5 +1,5 @@
 # vsphere-nsxt-lab-deploy
-A set of Ansible Playbooks that automate the deployment and configuration of a complete nested vSphere environment and NSX-T. <br/>
+A set of Ansible Playbooks that automate the deployment and configuration of a complete nested vSphere environment and NSX-T.
 
 #### Table of Contents
 
@@ -39,7 +39,7 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
 
 ## Deployment
 
-Running the Playbooks as defined in the **deploy.yml** will deploy the following:<br/>
+With the default **deploy.yml** the following is deployed:
 1. Create a vSwitch and port groups on the physical ESXi
 1. Deploy and configure a vCenter Sever Appliance
 1. Deploy 5 ESXi VMs
