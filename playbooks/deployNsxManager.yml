@@ -5,6 +5,17 @@
   vars_files:
     - ../answerfile.yml
   tasks:
+    - name: Check if NSX-T manager is already installed
+      uri:
+        url: https://{{ item.value.ip }}
+        validate_certs: False
+        timeout: 5
+      with_dict: "{{ nsxman }}"
+      register: nsxman_check
+      ignore_errors: True
+      failed_when: false
+      no_log: True
+
     - name: Deploy NSX-T Manager node from OVA
       vmware_deploy_ovf:
         hostname: "{{ vc_mng.ip }}"
@@ -14,7 +25,7 @@
         cluster: "{{ vc_mng.cluster }}"
         folder: "{{ vcfolder }}"
         datastore: "{{ vc_mng.datastore }}"
-        name: "{{ item.value.vmname }}"
+        name: "{{ item.item.value.vmname }}"
         ovf: "{{ NsxManOva }}"
         deployment_option: "{{ nsxmansize }}"
         networks:
@@ -35,38 +46,38 @@
           nsx_dns1_0: "{{ dns1 }}"
           nsx_domain_0: "{{ domain }}"
           nsx_gateway_0: "{{ mgmt_network_gw }}"
-          nsx_hostname: "{{ item.value.hostname }}"
-          nsx_ip_0: "{{ item.value.ip }}"
+          nsx_hostname: "{{ item.item.value.hostname }}"
+          nsx_ip_0: "{{ item.item.value.ip }}"
           nsx_isSSHEnabled: True
           nsx_netmask_0: "{{ mgmt_network_mask }}"
           nsx_ntp_0: "{{ ntp_server }}"
           nsx_passwd_0: "{{ nsxmanpassword }}"
           nsx_role: "{{ nsxmanrole }}"
       delegate_to: localhost
-      with_dict: "{{ nsxman }}"
+      with_items: "{{ nsxman_check.results }}"
+      when: item.status != 200
       async: 7200
       poll: 0
       register: deployment
+
     - name: Wait 3 seconds before start checking whether the NSX-T Manager node is ready
       pause: seconds=3
+      when: deployment.changed == True
+
     - name: Result check for NSX-T Manager node deployment
       async_status:
         jid: "{{ item.ansible_job_id }}"
       register: job_result
       with_items: "{{ deployment.results }}"
-    - name: Create a mark if there is a new NSX-T Manager node to deploy
-      file: path=/tmp/newNsxNode state=touch owner=root group=root mode=0555
-      when: item.stat is not defined
-      with_items: "{{ job_result.results }}"
-    - stat: path=/tmp/newNsxNode
-      register: newNsxNode
-    - debug:
-        msg: "Deploying NSX-T Manager will take 20 minutes, so go grab some more coffee !!!"      
+      when:
+        - deployment.changed == True
+        - item.started is defined
+
     - name: Wait 20 minutes for the NSX-T Manager node deployment to finish
       pause: minutes=20
-      when: newNsxNode.stat.exists == True
-    - name: Delete the temporary mark
-      file: path=/tmp/newNsxNode state=absent
+      when:
+        - deployment.changed == True
+
     - name: Result check for deployment
       async_status:
         jid: "{{ item.ansible_job_id }}"
@@ -74,4 +85,8 @@
       until: job_result.finished
       with_items: "{{ deployment.results }}"
       retries: 60
+      when:
+        - deployment.changed == True
+        - item.started is defined
+
   tags: NsxNode
