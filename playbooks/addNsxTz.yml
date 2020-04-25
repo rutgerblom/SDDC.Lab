@@ -1,0 +1,23 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Create NSX-T transport zones
+      nsxt_transport_zones:
+        hostname: "{{ nsxman.nsxman01.hostname }}"
+        username: "{{ nsxmanadminuser }}"
+        password: "{{ nsxmanpassword }}"
+        validate_certs: False
+        resource_type: "TransportZone"
+        display_name: "{{ item.display_name }}"
+        description: "NSX configured Transport Zone"
+        transport_type: "{{ item.transport_type }}"
+        host_switch_name: "{{ item.host_switch_name }}"
+        state: "present"
+      register: result
+      with_items:
+        - "{{ transportzones }}"
+      when:
+      - deploy_nsxt == true

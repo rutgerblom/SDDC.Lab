@@ -1,0 +1,29 @@
+---
+- hosts: 127.0.0.1
+  connection: local  
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Check if NSX-T license file exists
+      stat: 
+        path: "{{ nsxlicense }}"
+      register: nsxlicensekey  
+    - name: Create NSX-T Edge cluster
+      nsxt_edge_clusters:
+          hostname: "{{ nsxman.nsxman01.hostname }}"
+          username: "{{ nsxmanadminuser }}"
+          password: "{{ nsxmanpassword }}"
+          validate_certs: False
+          display_name: "{{ edge_cluster_name }}"
+          cluster_profile_bindings:
+          - profile_name: "{{ edge_cluster_profile }}"
+            resource_type: EdgeHighAvailabilityProfile          
+          members:
+          - transport_node_name: "{{ transport_node1 }}"
+          - transport_node_name: "{{ transport_node2 }}"
+          state: present
+      when: 
+        - nsxlicensekey.stat.exists == true
+        - use_nfs == true
+        - deploy_nsxt == true
+        - deploy_nsxt_edge == true

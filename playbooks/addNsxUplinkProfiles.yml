@@ -1,0 +1,22 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Create NSX-T uplink profiles
+      nsxt_uplink_profiles:
+        hostname: "{{ nsxman.nsxman01.hostname }}"
+        username: "{{ nsxmanadminuser }}"
+        password: "{{ nsxmanpassword }}"
+        validate_certs: False
+        resource_type: UplinkHostSwitchProfile
+        display_name: "{{ item.display_name }}"
+        mtu: "{{ item.mtu }}"
+        teaming: "{{ item.teaming }}"
+        transport_vlan: "{{ item.transport_vlan }}"
+        state: "present"
+      with_items:
+        - "{{ uplink_profiles }}"
+      when:
+        - deploy_nsxt == true

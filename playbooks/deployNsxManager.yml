@@ -1,0 +1,95 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Check if NSX-T manager is already installed
+      uri:
+        url: https://{{ item.value.ip }}
+        validate_certs: False
+        timeout: 5
+      with_dict: "{{ nsxman }}"
+      register: nsxman_check
+      ignore_errors: true
+      failed_when: false
+      no_log: true
+      when: deploy_nsxt == true
+
+    - name: Deploy NSX-T Manager node from OVA
+      vmware_deploy_ovf:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        datastore: "{{ physicalESX.datastore }}"
+        name: "{{ item.item.value.vmname }}"
+        ovf: "{{ NsxManOva }}"
+        deployment_option: "{{ nsxmansize }}"
+        networks:
+          "Network 1": "{{ physicalESX.vlanpg }}"
+        disk_provisioning: thin
+        power_on: yes
+        fail_on_spec_warnings: yes
+        wait: yes
+        wait_for_ip_address: yes
+        inject_ovf_env: yes
+        properties:
+          nsx_allowSSHRootLogin: yes
+          nsx_cli_audit_passwd_0: "{{ nsxmanpassword }}"
+          nsx_cli_audit_username: "{{ nsxmanaudituser }}"
+          nsx_cli_passwd_0: "{{ nsxmanpassword }}"
+          nsx_cli_username: "{{ nsxmanadminuser }}"
+          nsx_dns1_0: "{{ dns1 }}"
+          nsx_domain_0: "{{ domain }}"
+          nsx_gateway_0: "{{ mgmt_network_gw }}"
+          nsx_hostname: "{{ item.item.value.hostname }}"
+          nsx_ip_0: "{{ item.item.value.ip }}"
+          nsx_isSSHEnabled: True
+          nsx_netmask_0: "{{ mgmt_network_mask }}"
+          nsx_ntp_0: "{{ ntp_server }}"
+          nsx_passwd_0: "{{ nsxmanpassword }}"
+          nsx_role: "{{ nsxmanrole }}"
+      delegate_to: localhost
+      with_items: "{{ nsxman_check.results }}"
+      when:
+        - deploy_nsxt == true
+        - item.status != 200
+      async: 7200
+      poll: 0
+      register: deployment
+
+    - name: Wait 3 seconds before start checking whether the NSX-T Manager node is ready
+      pause: seconds=3
+      when: 
+        - deploy_nsxt == true
+        - deployment.changed == true
+
+    - name: Result check for NSX-T Manager node deployment
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      with_items: "{{ deployment.results }}"
+      when:
+        - deploy_nsxt == true
+        - deployment.changed == true
+        - item.started is defined
+
+    - name: Wait 20 minutes for the NSX-T Manager node deployment to finish
+      pause: minutes=20
+      when:
+        - deploy_nsxt == true
+        - deployment.changed == true
+
+    - name: Result check for deployment
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      with_items: "{{ deployment.results }}"
+      retries: 60
+      when:
+        - deploy_nsxt == true
+        - deployment.changed == true
+        - item.started is defined
+  tags: NsxNode

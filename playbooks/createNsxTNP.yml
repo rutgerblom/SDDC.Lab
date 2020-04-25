@@ -1,0 +1,24 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Create NSX-T transport node profile 
+      nsxt_transport_node_profiles:
+        hostname: "{{ nsxman.nsxman01.hostname }}"
+        username: "{{ nsxmanadminuser }}"
+        password: "{{ nsxmanpassword }}"
+        validate_certs: False
+        resource_type: TransportNodeProfile
+        display_name: "{{ item.display_name }}"
+        description: Transport Node Profile
+        host_switch_spec:
+          resource_type: StandardHostSwitchSpec
+          host_switches: "{{item.host_switches}}"
+          #transport_zone_endpoints: "{{ item.transport_zone_endpoints }}"
+        state: present
+      with_items:
+        - "{{ transport_node_profiles }}"
+      when:
+        - deploy_nsxt == true

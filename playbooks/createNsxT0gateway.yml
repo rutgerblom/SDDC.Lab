@@ -1,0 +1,23 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Create NSX-T Tier-0 Gateway
+      nsxt_policy_tier0:
+        hostname: "{{ nsxman.nsxman01.hostname }}"
+        username: "{{ nsxmanadminuser }}"
+        password: "{{ nsxmanpassword }}"
+        validate_certs: False
+        display_name: "{{ item.display_name }}"
+        ha_mode: "{{ item.ha_mode }}"
+        failover_mode: "{{ item.failover_mode }}"
+        state: "present"
+        locale_services: "{{ item.locale_services }}"
+      with_items:
+        - "{{ tier0_gateways }}"
+      when:
+        - deploy_nsxt == true
+        - deploy_nsxt_edge == true
+

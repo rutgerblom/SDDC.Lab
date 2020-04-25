@@ -1,0 +1,68 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Create template file for VyOS router
+      template: 
+        src=../templates/vyos.conf
+        dest=/tmp/vyos.conf
+      when: deploy_router == true
+
+    - name: Download VyOS OVA
+      get_url:
+        url: https://downloads.vyos.io/release/legacy/1.1.8/vyos-1.1.8-amd64.ova
+        dest: "{{ VyosOva }}"
+      when: deploy_router == true
+
+    - name: Deploy VyOS router
+      vmware_deploy_ovf:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        datastore: "{{ physicalESX.datastore }}"
+        name: "{{ vm_prefix }}{{ router_hostname }}"
+        ovf: "/iso/vyos-1.1.8-amd64.ova"
+        networks:
+          "public": "{{ router_public_pg }}"
+          "internal": "{{ physicalESX.trunkpg }}"
+        disk_provisioning: "thin"
+        power_on: true
+        wait: true
+        wait_for_ip_address: yes
+      when: deploy_router == true
+      delegate_to: localhost
+
+    - name: Configure VyOS router
+      vmware_guest_file_operation:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        vm_id: "{{ vm_prefix }}{{ router_hostname }}"
+        vm_username: "vyos"
+        vm_password: "vyos"
+        copy:
+            src: "/tmp/vyos.conf"
+            dest: "/config/config.boot"
+            overwrite: true
+      when: deploy_router == true
+
+    - name: Reboot VyOS router
+      vmware_guest_powerstate:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ vm_prefix }}{{ router_hostname }}"
+        state: reboot-guest
+      when: deploy_router == true
+
+    - name: Delete the template file for VyOS router
+      file: path=/tmp/vyos.conf state=absent
+      when: deploy_router == true
+
+    - name: Wait a minute 
+      pause: seconds=60

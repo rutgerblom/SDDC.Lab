@@ -1,0 +1,43 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Create a VMware vSwitch on the ESXi host for the lab environment
+      vmware_vswitch:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: False
+        esxi_hostname: "{{ physicalESX.host }}"
+        switch_name: "{{ physicalESX.vswitch }}"
+        mtu: 9000
+    - name: Create a management port group for the lab environment
+      vmware_portgroup:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: False        
+        esxi_hostname: "{{ physicalESX.host }}"
+        switch_name: "{{ physicalESX.vswitch }}"
+        portgroup_name: "{{ physicalESX.vlanpg }}"
+        vlan_id: "{{ physicalESX.vlan }}"
+        network_policy:
+          promiscuous_mode: True
+    - name: Create trunk port group for the lab environment
+      vmware_portgroup:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: False
+        esxi_hostname: "{{ physicalESX.host }}"
+        switch_name: "{{ physicalESX.vswitch }}"
+        portgroup_name: "{{ physicalESX.trunkpg }}"
+        vlan_id: "4095"
+        network_policy:
+          promiscuous_mode: True
+          forged_transmits: True
+          mac_changes: True
+    - name: Wait 5 seconds 
+      pause: seconds=5

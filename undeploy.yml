@@ -1,0 +1,89 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - ./answerfile.yml
+  tasks:
+    - name: Remove VyOS router VM
+      vmware_guest:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ vm_prefix }}{{ router_hostname }}"
+        force: true
+        state: absent
+      async: 7200
+      poll: 0  
+    - name: Remove ESXi VMs
+      vmware_guest:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ item.value.vmname }}"
+        force: true
+        state: absent
+      async: 7200
+      poll: 0        
+      with_dict: "{{ vESX }}"
+    - name: Remove vCenter VM
+      vmware_guest:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ vcenter.vmname }}"
+        force: true
+        state: absent
+      async: 7200
+      poll: 0        
+    - name: Remove NSX Manager VM(s)
+      vmware_guest:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ item.value.vmname }}"
+        force: true
+        state: absent
+      async: 7200
+      poll: 0        
+      with_dict: "{{ nsxman }}"
+      when:
+        - deploy_nsxt == true
+    - name: Remove trunk port group for the lab environment
+      vmware_portgroup:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: False
+        esxi_hostname: "{{ physicalESX.host }}"
+        switch_name: "{{ physicalESX.vswitch }}"
+        portgroup_name: "{{ physicalESX.trunkpg }}"
+        state: absent
+      async: 7200
+      poll: 0        
+    - name: Remove management port group for the lab environment
+      vmware_portgroup:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: False        
+        esxi_hostname: "{{ physicalESX.host }}"
+        switch_name: "{{ physicalESX.vswitch }}"
+        portgroup_name: "{{ physicalESX.vlanpg }}"
+        state: absent
+      async: 7200
+      poll: 0        
+    - name: Remove VMware vSwitch on the ESXi host for the lab environment
+      vmware_vswitch:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: False
+        esxi_hostname: "{{ physicalESX.host }}"
+        switch_name: "{{ physicalESX.vswitch }}"
+        state: absent
+      async: 7200
+      poll: 0        

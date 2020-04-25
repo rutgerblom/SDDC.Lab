@@ -1,0 +1,19 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Create NSX-T IP pool
+      nsxt_ip_pools:
+        hostname: "{{ nsxman.nsxman01.hostname }}"
+        username: "{{ nsxmanadminuser }}"
+        password: "{{ nsxmanpassword }}"
+        validate_certs: False
+        display_name: "{{ item.display_name }}"
+        subnets: "{{ item.subnets }}"
+        state: present
+      with_items:
+        - "{{ ip_pools }}"
+      when:
+        - deploy_nsxt == true

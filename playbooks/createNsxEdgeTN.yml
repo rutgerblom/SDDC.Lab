@@ -1,0 +1,58 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Check if the NSX-T license file exists
+      stat: 
+        path: "{{ nsxlicense }}"
+      register: nsxlicensekey  
+    - name: Deploy and configure NSX-T Edge nodes
+      nsxt_transport_nodes:
+        hostname: "{{ nsxman.nsxman01.hostname }}"
+        username: "{{ nsxmanadminuser }}"
+        password: "{{ nsxmanpassword }}"
+        validate_certs: False
+        display_name: "{{ item.display_name }}"
+        description: "Edge transport node"
+        host_switch_spec:
+          resource_type: StandardHostSwitchSpec
+          host_switches: "{{ item.host_switches }}"
+        node_deployment_info: "{{ item.node_deployment_info }}"
+        state: present
+      with_items:
+        - "{{ edge_transport_nodes }}"
+      register: _deploy_edges
+      when: 
+        - nsxlicensekey.stat.exists == true
+        - use_nfs == true
+        - deploy_nsxt == true
+        - deploy_nsxt_edge == true
+      async: 1800
+      poll: 0
+      ignore_errors: True      
+    - name: Wait 30 minutes for the NSX-T Edge node deployment to finish
+      pause: minutes=30
+      when: 
+        - nsxlicensekey.stat.exists == true
+        - use_nfs == true
+        - deploy_nsxt == true
+        - deploy_nsxt_edge == true
+    - name: Checking if the NSX-T Edge node deployment is finished
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: _jobs
+      until: _jobs.finished
+      delay: 30
+      retries: 10
+      ignore_errors: True       
+      with_items: "{{ _deploy_edges.results }}"
+      when: 
+        - nsxlicensekey.stat.exists == true
+        - use_nfs == true
+        - deploy_nsxt == true
+        - deploy_nsxt_edge == true
+
+
+

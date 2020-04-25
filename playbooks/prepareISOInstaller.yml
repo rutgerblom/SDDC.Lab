@@ -1,0 +1,42 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Mount ESXi ISO
+      action: mount name='/mnt/ESX' src="{{ esxIso }}" opts=loop fstype=iso9660 state=mounted
+    - name: Copy ISO contents
+      copy: src=/mnt/ESX dest=/tmp/
+    - name: Unmount ESXi ISO
+      action: mount name='/mnt/ESX' src="{{ esxIso }}" fstype=iso9660 state=absent
+    - name: Edit boot.cfg
+      replace:
+        dest: /tmp/ESX/boot.cfg
+        regexp: 'kernelopt=cdromBoot runweasel'
+        replace: 'kernelopt=ks=file://etc/vmware/weasel/KS.CFG'
+    - name: insert customks.tgz in boot.cfg modules section
+      replace:
+        dest: /tmp/ESX/boot.cfg
+        regexp: 'imgpayld.tgz$'
+        replace: 'imgpayld.tgz --- /customks.tgz'
+    - name: copy customks.tgz
+      copy: src=../files/customks.tgz dest=/tmp/ESX/
+    - name: Create custom ESXi ISO
+      command: xorrisofs -relaxed-filenames -J -R -o /tmp/customesxv.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table /tmp/ESX/
+      args:
+        chdir: /tmp/ESX/
+    - name: Upload the ESXi ISO to the datastore
+      vsphere_copy: 
+        hostname: "{{ physicalESX.host }}" 
+        username: "{{ physicalESX.user}}" 
+        password: "{{ physicalESX.password }}" 
+        validate_certs: no
+        src: /tmp/customesxv.iso 
+        datastore: "{{ physicalESX.datastore }}" 
+        path: /rutgerISO/customesxv.iso 
+      tags: upload
+    - name: Delete temporary directory
+      file:
+        path: /tmp/ESX/
+        state: absent

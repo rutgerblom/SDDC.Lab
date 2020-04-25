@@ -1,0 +1,432 @@
+
+# Deployment decisions
+deploy_router: true # Deploy a VyOS router for the nested environment?
+deploy_nsxt: true # Deploy NSX-T? (+20 minutes)
+deploy_nsxt_edge: true # Deploy NSX-T Edge nodes? (+30 minutes)
+use_nfs: true # Mount an existing NFS datastore to the nested ESXi hosts? Configure details under "NFS storage"
+
+# Paths to ISO and OVA files
+esxIso: '/iso/VMware-VMvisor-Installer-7.0.0-15843807.x86_64.iso'
+vcIso: '/iso/VMware-VCSA-all-7.0.0-15952498.iso'
+NsxManOva: '/iso/nsx-unified-appliance-3.0.0.0.0.15946739.ova'
+VyosOva: '/iso/vyos-1.1.8-amd64.ova' # Downloaded when missing and deploy_router == true
+
+# Physical ESXi host properties
+physicalESX:
+  host: 'esxi03.demo.local'
+  user: 'root' 
+  password: 'VMware1!' 
+  vswitch: 'vSwitch-Lab' # vSwitch for nested environment. Will be created if missing.
+  vlan: '1611' # Management VLAN for the nested environment.
+  vlanpg: 'pg-1611-lab' # Port group for vCenter appliance. Will be created if missing.
+  trunkpg: 'pg-trunk-lab' # Port group for ESXi VMs. Will be created if missing.
+  datastore: 'demo_nfs01'
+
+# VyOS router properties
+router_hostname: "router01"
+router_public_ip: "10.2.129.101/24" # An IP address reachable on your network.
+router_public_pg: "vlan-301" # Port group for the router's "public" interface. Should be connected to your physical network.
+
+# Some global network properties for the nested environment
+vm_prefix: 'nested-' # This prefix will be added to all the VMs that are deployed on the physical ESXi.
+dns1: '10.2.129.10' # A DNS server available to the nested environment.
+dns2: '8.8.8.8'
+ntp_server: '10.2.129.10' # An NTP server available to the nested environment.
+domain: 'lab.local' # The domain name for the nested environment.
+mgmt_prefix: '172.16.11'
+mgmt_network_mask: '255.255.255.0'
+mgmt_network_gw: "{{ mgmt_prefix }}.1"
+vmotion_prefix: '172.16.12'
+vmotion_network_mask: '255.255.255.0'
+vsan_prefix: '172.16.13'
+vsan_network_mask: '255.255.255.0'
+
+# New vCenter appliance properties
+vcenter:
+  ip: "{{ mgmt_prefix}}.10" # vCenter ip address 
+  mask: '24'
+  gw: "{{ mgmt_network_gw }}"
+  fqdn: "vcenter.{{ domain }}" # vCenter FQDN if there is a working DNS server, otherwise specify the IP address here.
+  vmname: "{{ vm_prefix }}vcenter01"
+  user: 'administrator@vsphere.local' 
+  password: 'VMware1!' 
+  datacenter: 'DC01'
+  domain: 'vsphere.local' # SSO domain
+
+# Nested ESXi shared properties
+nested_esxi_user: 'root'
+nested_esxi_password: 'VMware1!'
+nested_esxi_cpu: '8'
+nested_esxi_ram: '65536'
+vsan_cache_size: '90'
+vsan_capacity_size: '180'
+
+# Properties for the VDS in the nested vSphere environment.
+vds:
+  name: 'vds'
+  mtu: '9000'
+  uplinks: '2'
+  discovery_proto: 'lldp'
+  discovery_operation: 'both'
+  management_pg: 'pg-management'
+  management_vlan: "{{ physicalESX.vlan }}"
+  vmotion_pg: 'pg-vmotion'
+  vmotion_vlan: '1612'
+  vsan_pg: 'pg-vsan'
+  vsan_vlan: '1613'
+  uplink1_pg: 'pg-uplink1'
+  uplink1_vlan: '0-4094'
+  uplink2_pg: 'pg-uplink2'
+  uplink2_vlan: '0-4094'
+
+# NSX-T properties for the nested environment
+nsxlicense: '/tmp/nsxlicense.txt' # Path to the NSX-T license key file (text file should contain just the key).
+uplink_vlan: '1657' # VLAN between the NSX-T Tier-0 Gateway and the "physical" router.
+transport_vlan: '1659' # VLAN for overlay transport
+transport_prefix: '172.16.59'
+transport_network_mask: '255.255.255.0'
+transport_gw: '172.16.59.1'
+router_peer: '172.16.57.1' # Physical router IP on the BGP peering VLAN 
+uplink_ip1: '172.16.57.2' # Tier-0 IP interface 2
+uplink_ip2: '172.16.57.3' # Tier-0 IP interface 2
+nsx_as: '65000'
+router_as: '65001'
+
+# NFS storage
+nfs_server: '10.2.129.90' 
+nfs_datastore: 'nfs01'
+nfs_path: '/nested_nfs01'
+nfs_type: 'nfs'
+
+# Clusters in the nested vSphere environment. You can add, remove or rename nested vSphere clusters below. 
+clusters:
+  Compute:
+    drs: true
+    vsan: false
+  Edge:
+    drs: false
+    vsan: false
+
+# NSX-T Manager node shared properties.
+nsxmanpassword: 'VMware1!VMware1!'
+nsxmanaudituser: 'audit'
+nsxmanadminuser: 'admin'
+nsxmansize: 'small'
+nsxmanrole: 'NSX Manager'
+
+# The NSX-T Manager nodes. You can add, remove or rename NSX-T Manager nodes below.
+nsxman:
+  nsxman01:
+    ip: "{{ mgmt_prefix }}.57"
+    hostname: "nsxmanager01.{{ domain }}"
+    vmname: "{{ vm_prefix }}nsxmanager01"
+
+# NSX-T Transport Zones
+transportzones:
+- display_name: "tz-vlan"
+  transport_type: "VLAN"
+  host_switch_name: "n-vds"
+- display_name: "tz-overlay"
+  transport_type: "OVERLAY"
+  host_switch_name: "n-vds"
+- display_name: "tz-edge"
+  transport_type: "VLAN"
+  host_switch_name: "n-vds"
+
+# NSX-T IP Pool (for the TEP interfaces)
+ip_pools:
+- display_name: tep-pool
+  subnets:
+  - allocation_ranges:
+    - start: "{{ transport_prefix }}.20"
+      end: "{{ transport_prefix }}.50"
+    cidr: "{{ transport_prefix }}.0/24"
+    gateway_ip: "{{ transport_gw }}"
+
+# NSX-T Uplink Profiles
+uplink_profiles:
+- display_name: esxi-uplink-profile
+  teaming:
+    active_list:
+    - uplink_name: "uplink-1"
+      uplink_type: PNIC
+    - uplink_name: "uplink-2"
+      uplink_type: PNIC
+    policy: LOADBALANCE_SRCID
+  transport_vlan: "{{ transport_vlan }}"
+  mtu: 9000
+- display_name: edge-uplink-profile
+  teaming:
+    active_list:
+    - uplink_name: "uplink-1"
+      uplink_type: PNIC
+    - uplink_name: "uplink-2"
+      uplink_type: PNIC
+    policy: LOADBALANCE_SRCID
+  transport_vlan: "{{ transport_vlan }}"
+  mtu: 9000
+
+# NSX-T Edge cluster
+edge_cluster_name: "edge-cluster-1"
+edge_cluster_profile: "nsx-default-edge-high-availability-profile"
+transport_node1: "en01"
+transport_node2: "en02"
+
+# NSX-T Edge Transport Nodes
+edge_transport_nodes:
+- display_name: "{{ transport_node1 }}"
+  host_switches:
+  - host_switch_profiles:
+    - name: edge-uplink-profile
+      type: UplinkHostSwitchProfile
+    host_switch_name: n-vds-edge
+    host_switch_mode: STANDARD
+    pnics:
+    - device_name: "fp-eth0"
+      uplink_name: "uplink-1"
+    - device_name: "fp-eth1"
+      uplink_name: "uplink-2"      
+    ip_assignment_spec:
+      resource_type: StaticIpListSpec
+      ip_list:
+      - "{{ transport_prefix }}.61"
+      - "{{ transport_prefix }}.62"
+      subnet_mask: "{{ transport_network_mask }}"
+      default_gateway: "{{ transport_gw }}"
+    transport_zone_endpoints:
+    - transport_zone_name: "tz-overlay"
+    - transport_zone_name: "tz-edge"
+  node_deployment_info:
+    resource_type: "EdgeNode"
+    display_name: "{{ transport_node1 }}"
+    ip_addresses:
+    deployment_config:
+      form_factor: "SMALL"
+      node_user_settings:
+        cli_password: "VMware1!VMware1!"
+        root_password: "VMware1!VMware1!"
+      vm_deployment_config:
+        placement_type: VsphereDeploymentConfig
+        vc_name: "{{ vcenter.fqdn }}"
+        vc_username: "{{ vcenter.user }}"
+        vc_password: "{{ vcenter.password }}"        
+        data_networks:
+        - "{{ vds.uplink1_pg }}"
+        - "{{ vds.uplink2_pg }}"
+        management_network: "{{ vds.management_pg }}"
+        management_port_subnets:
+        - ip_addresses:
+          - "{{ mgmt_prefix }}.61"
+          prefix_length: 24
+        default_gateway_addresses: 
+        - "{{ mgmt_network_gw }}"
+        hostname: "{{ transport_node1 }}.{{ domain }}"
+        compute: "Edge"
+        storage: "{{ nfs_datastore }}"
+        host: "esxi04.{{ domain }}"
+- display_name: "{{ transport_node2 }}"
+  host_switches:
+  - host_switch_profiles:
+    - name: edge-uplink-profile
+      type: UplinkHostSwitchProfile
+    host_switch_name: n-vds-edge
+    host_switch_mode: STANDARD
+    pnics:
+    - device_name: "fp-eth0"
+      uplink_name: "uplink-1"
+    - device_name: "fp-eth1"
+      uplink_name: "uplink-2"      
+    ip_assignment_spec:
+      resource_type: StaticIpListSpec
+      ip_list:
+      - "{{ transport_prefix }}.63"
+      - "{{ transport_prefix }}.64"
+      subnet_mask: "{{ transport_network_mask }}"
+      default_gateway: "{{ transport_gw }}"
+    transport_zone_endpoints:
+    - transport_zone_name: "tz-overlay"
+    - transport_zone_name: "tz-edge"
+  node_deployment_info:
+    resource_type: "EdgeNode"
+    display_name: "{{ transport_node2 }}"
+    ip_addresses:
+    deployment_config:
+      form_factor: "SMALL"
+      node_user_settings:
+        cli_password: "VMware1!VMware1!"
+        root_password: "VMware1!VMware1!"
+      vm_deployment_config:
+        placement_type: VsphereDeploymentConfig
+        vc_name: "{{ vcenter.fqdn }}"
+        vc_username: "{{ vcenter.user }}"
+        vc_password: "{{ vcenter.password }}"
+        data_networks:
+        - "{{ vds.uplink1_pg }}"
+        - "{{ vds.uplink2_pg }}"
+        management_network: "{{ vds.management_pg }}"
+        management_port_subnets: 
+        - ip_addresses:
+          - "{{ mgmt_prefix }}.62"
+          prefix_length: 24
+        default_gateway_addresses: 
+        - "{{ mgmt_network_gw }}"
+        hostname: "{{ transport_node2 }}.{{ domain }}"
+        compute: "Edge"
+        storage: "{{ nfs_datastore }}"
+        host: "esxi05.{{ domain }}"
+
+# NSX-T Transport Node Profile
+transport_node_profiles:
+- display_name: esxi-tnp
+  host_switches:
+  - host_switch_profiles:
+    - name: esxi-uplink-profile
+      type: UplinkHostSwitchProfile
+    - name: LLDP [Send Packet Enabled]
+      type: LldpHostSwitchProfile
+    - name: nsx-default-nioc-hostswitch-profile
+      type: NiocProfile
+    host_switch_name: n-vds
+    host_switch_mode: STANDARD
+    pnics:
+    - device_name: vmnic3
+      uplink_name: "uplink-1"
+    - device_name: vmnic4
+      uplink_name: "uplink-2"      
+    ip_assignment_spec:
+      resource_type: StaticIpPoolSpec
+      ip_pool_name: "tep-pool"
+    transport_zone_endpoints:
+    - transport_zone_name: "tz-vlan"
+    - transport_zone_name: "tz-overlay"
+
+# NSX-T Segments
+segments:
+- display_name: "seg-vlan-{{ uplink_vlan }}"
+  vlan_id: "{{ uplink_vlan }}"
+  tz: "tz-edge"
+
+# NSX-T Tier-0 Gateway
+tier0_gateways:
+- display_name: "tier-0"
+  ha_mode: "ACTIVE_STANDBY"
+  failover_mode: "NON_PREEMPTIVE"
+  locale_services:
+    - state: "present"
+      id: "t0ls"
+      edge_cluster_info:
+        edge_cluster_display_name: "edge-cluster-1"
+      route_redistribution_config:
+        bgp_enabled: true
+        redistribution_rules:
+          - name: connected
+            route_redistribution_types: ["TIER0_SEGMENT", "TIER1_CONNECTED"]
+      BGP:
+        state: present
+        enabled: true
+        local_as_num: "{{ nsx_as }}"
+        graceful_restart_config:
+          mode: HELPER_ONLY
+        neighbors:
+          - display_name: router01
+            neighbor_address: "{{ router_peer }}"
+            remote_as_num: "{{ router_as }}"
+            bfd:
+              enabled: true
+            state: present        
+      interfaces:
+        - id: "uplink1-en01"
+          state: "present"
+          type: "EXTERNAL"
+          urpf_mode: "NONE"
+          edge_node_info:
+            edge_cluster_display_name: "edge-cluster-1"
+            edge_node_display_name: "{{ transport_node1 }}"
+          segment_display_name: "seg-vlan-1657"
+          subnets:
+          - ip_addresses: ["{{ uplink_ip1 }}"]
+            prefix_len: 29
+        - id: "uplink1-en02"
+          state: "present"
+          type: "EXTERNAL"
+          urpf_mode: "NONE"
+          edge_node_info:
+            edge_cluster_display_name: "edge-cluster-1"
+            edge_node_display_name: "{{ transport_node2 }}"
+          segment_display_name: "seg-vlan-1657"
+          subnets:
+          - ip_addresses: ["{{ uplink_ip2 }}"]
+            prefix_len: 29
+
+# The ESXi hosts. You can add, remove or rename ESXi hosts below.
+vESX:
+  esxi01:
+    ip: "{{ mgmt_prefix }}.11"
+    mask: "{{ mgmt_network_mask }}"
+    gw: "{{ mgmt_network_gw }}"
+    fqdn: "esxi01.{{ domain }}"
+    vmname: "{{ vm_prefix }}esxi01"
+    cluster: 'Compute' # The cluster in the nested vSphere environment this ESXi will be added to.
+    vlan: "{{ physicalESX.vlan }}"
+    vmotion_ip: "{{ vmotion_prefix }}.11"
+    vmotion_mask: "{{ vmotion_network_mask }}"
+    vsan_ip: "{{ vsan_prefix }}.11"
+    vsan_mask: "{{ vsan_network_mask }}"
+    username: "{{ nested_esxi_user }}"
+    password: "{{ nested_esxi_password }}"
+  esxi02:
+    ip: "{{ mgmt_prefix }}.12"
+    mask: "{{ mgmt_network_mask }}"
+    gw: "{{ mgmt_network_gw }}"
+    fqdn: "esxi02.{{ domain }}"
+    vmname: "{{ vm_prefix }}esxi02"
+    cluster: 'Compute' # The cluster in the nested vSphere environment this ESXi will be added to.
+    vlan: "{{ physicalESX.vlan }}"
+    vmotion_ip: "{{ vmotion_prefix }}.12"
+    vmotion_mask: "{{ vmotion_network_mask }}"
+    vsan_ip: "{{ vsan_prefix }}.12"
+    vsan_mask: "{{ vsan_network_mask }}"
+    username: "{{ nested_esxi_user }}"
+    password: "{{ nested_esxi_password }}"
+  esxi03:
+    ip: "{{ mgmt_prefix }}.13"
+    mask: "{{ mgmt_network_mask }}"
+    gw: "{{ mgmt_network_gw }}"
+    fqdn: "esxi03.{{ domain }}"
+    vmname: "{{ vm_prefix }}esxi03"
+    cluster: 'Compute' # The cluster in the nested vSphere environment this ESXi will be added to.
+    vlan: "{{ physicalESX.vlan }}"
+    vmotion_ip: "{{ vmotion_prefix }}.13"
+    vmotion_mask: "{{ vmotion_network_mask }}"
+    vsan_ip: "{{ vsan_prefix }}.13"
+    vsan_mask: "{{ vsan_network_mask }}"
+    username: "{{ nested_esxi_user }}"
+    password: "{{ nested_esxi_password }}"
+  esxi04:
+    ip: "{{ mgmt_prefix }}.14"
+    mask: "{{ mgmt_network_mask }}"
+    gw: "{{ mgmt_network_gw }}"
+    fqdn: "esxi04.{{ domain }}"
+    vmname: "{{ vm_prefix }}esxi04"
+    cluster: Edge # The cluster in the nested vSphere environment this ESXi will be added to.
+    vlan: "{{ physicalESX.vlan }}"
+    vmotion_ip: "{{ vmotion_prefix }}.14"
+    vmotion_mask: "{{ vmotion_network_mask }}"
+    vsan_ip: "{{ vsan_prefix }}.14"
+    vsan_mask: "{{ vsan_network_mask }}"
+    username: "{{ nested_esxi_user }}"
+    password: "{{ nested_esxi_password }}"
+  esxi05:
+    ip: "{{ mgmt_prefix }}.15"
+    mask: "{{ mgmt_network_mask }}"
+    gw: "{{ mgmt_network_gw }}"
+    fqdn: "esxi05.{{ domain }}"
+    vmname: "{{ vm_prefix }}esxi05"
+    cluster: Edge # The cluster in the nested vSphere environment this ESXi will be added to.
+    vlan: "{{ physicalESX.vlan }}"
+    vmotion_ip: "{{ vmotion_prefix }}.15"
+    vmotion_mask: "{{ vmotion_network_mask }}"
+    vsan_ip: "{{ vsan_prefix }}.15"
+    vsan_mask: "{{ vsan_network_mask }}"
+    username: "{{ nested_esxi_user }}"
+    password: "{{ nested_esxi_password }}"

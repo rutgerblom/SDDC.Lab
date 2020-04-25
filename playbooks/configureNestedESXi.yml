@@ -1,0 +1,391 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Configure hostname on the ESXi hosts
+      vmware_vm_shell:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: false
+        vm_id: "{{ item.value.vmname }}"
+        vm_username: "{{ item.value.username }}"
+        vm_password: "{{ item.value.password }}"
+        vm_shell: /bin/esxcli
+        vm_shell_args: "system hostname set --fqdn={{ item.value.fqdn }}"
+        vm_shell_env:
+        - "PATH=/bin"
+        - "VAR=test"
+        vm_shell_cwd: "/tmp"
+      with_dict: "{{ vESX }}"
+      async: 7200
+      poll: 0
+      register: hname
+    - name: Result check for configuring hostname on the ESXi hosts
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      with_items: "{{ hname.results }}"
+      retries: 10
+    - name: Set VLAN on the management portgroup
+      vmware_vm_shell:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: false
+        vm_id: "{{ item.value.vmname }}"
+        vm_username: "{{ item.value.username }}"
+        vm_password: "{{ item.value.password }}"
+        vm_shell: /bin/esxcli
+        vm_shell_args: "network vswitch standard portgroup set --portgroup-name='Management Network' --vlan-id={{ item.value.vlan }}"
+        vm_shell_env: 
+        - "PATH=/bin"
+        - "VAR=test"
+        vm_shell_cwd: "/tmp"
+      with_dict: "{{ vESX }}"
+      async: 7200
+      poll: 0
+      register: hvlan
+    - name: Result check for setting VLAN on the management portgroup
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      with_items: "{{ hvlan.results }}"
+      retries: 10
+    - name: Set IP address on vmk0
+      vmware_vm_shell:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: false
+        vm_id: "{{ item.value.vmname }}"
+        vm_username: "{{ item.value.username }}"
+        vm_password: "{{ item.value.password }}"
+        vm_shell: /bin/esxcli
+        vm_shell_args: "network ip interface ipv4 set --interface-name=vmk0 --ipv4={{ item.value.ip }} --netmask={{ item.value.mask }} --type=static"
+        vm_shell_env: 
+        - "PATH=/bin"
+        - "VAR=test"
+        vm_shell_cwd: "/tmp"
+      with_dict: "{{ vESX }}"
+      async: 7200
+      poll: 0
+      register: hip
+    - name: Result check for setting ip address on vmk0
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      with_items: "{{ hip.results }}"
+      retries: 10
+    - name: Set default gateway on the ESXi hosts
+      vmware_vm_shell:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: false
+        vm_id: "{{ item.value.vmname }}"
+        vm_username: "{{ item.value.username }}"
+        vm_password: "{{ item.value.password }}"
+        vm_shell: /bin/esxcfg-route
+        vm_shell_args: " -a default {{ item.value.gw }}"
+        vm_shell_env: 
+        - "PATH=/bin"
+        - "VAR=test"
+        vm_shell_cwd: "/tmp"
+      with_dict: "{{ vESX }}"
+      async: 7200
+      poll: 0
+      register: hgw
+    - name: Result check for setting default gateway on the ESXi hosts
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      with_items: "{{ hgw.results }}"
+      retries: 10
+    - name: Set search domain on the ESXi hosts
+      vmware_vm_shell:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: false
+        vm_id: "{{ item.value.vmname }}"
+        vm_username: "{{ item.value.username }}"
+        vm_password: "{{ item.value.password }}"
+        vm_shell: /bin/esxcli
+        vm_shell_args: "network ip dns search add --domain={{ domain}}"
+        vm_shell_env: 
+        - "PATH=/bin"
+        - "VAR=test"
+        vm_shell_cwd: "/tmp"
+      with_dict: "{{ vESX }}"
+      async: 7200
+      poll: 0
+      register: hsd
+    - name: Result check for setting search domain on the ESXi hosts
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      with_items: "{{ hsd.results }}"
+      retries: 10
+    - name: Configure DNS on the ESXi hosts
+      vmware_vm_shell:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: false
+        vm_id: "{{ item.value.vmname }}"
+        vm_username: "{{ item.value.username }}"
+        vm_password: "{{ item.value.password }}"
+        vm_shell: /bin/esxcli
+        vm_shell_args: "network ip dns server add --server={{ dns1 }}"
+        vm_shell_env: 
+        - "PATH=/bin"
+        - "VAR=test"
+        vm_shell_cwd: "/tmp"
+      with_dict: "{{ vESX }}"
+      async: 7200
+      poll: 0
+      register: confdns
+    - name: Result check for configuring DNS on the ESXi hosts
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      with_items: "{{ confdns.results }}"
+      retries: 10      
+    - name: Disable SSH warnings on the ESXi hosts
+      vmware_vm_shell:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: false
+        vm_id: "{{ item.value.vmname }}"
+        vm_username: "{{ item.value.username }}"
+        vm_password: "{{ item.value.password }}"
+        vm_shell: /bin/vim-cmd
+        vm_shell_args: "hostsvc/advopt/update UserVars.SuppressShellWarning long 1"
+        vm_shell_env: 
+        - "PATH=/bin"
+        - "VAR=test"
+        vm_shell_cwd: "/tmp"
+      with_dict: "{{ vESX }}"
+      async: 7200
+      poll: 0
+      register: hwrn
+    - name: Result check for disabling SSH warnings on the ESXi hosts
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      with_items: "{{ hwrn.results }}"
+      retries: 10
+    - name: Mark vSAN cache disk as SSD disk
+      vmware_vm_shell:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: false
+        vm_id: "{{ item.value.vmname }}"
+        vm_username: "{{ item.value.username }}"
+        vm_password: "{{ item.value.password }}"
+        vm_shell: /bin/esxcli
+        vm_shell_args: "storage nmp satp rule add -s VMW_SATP_LOCAL -d mpx.vmhba0:C0:T1:L0 -o enable_ssd"
+        vm_shell_env: 
+        - "PATH=/bin"
+        - "VAR=test"
+        vm_shell_cwd: "/tmp"
+      with_dict: "{{ vESX }}"
+      async: 7200
+      poll: 0
+      register: markcachedisk
+    - name: Result check for marking vSAN cache disk
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      with_items: "{{ markcachedisk.results }}"
+      retries: 10      
+    - name: Reclaim vSAN cache disk
+      vmware_vm_shell:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: false
+        vm_id: "{{ item.value.vmname }}"
+        vm_username: "{{ item.value.username }}"
+        vm_password: "{{ item.value.password }}"
+        vm_shell: /bin/esxcli
+        vm_shell_args: "storage core claiming reclaim -d mpx.vmhba0:C0:T1:L0"
+        vm_shell_env: 
+        - "PATH=/bin"
+        - "VAR=test"
+        vm_shell_cwd: "/tmp"
+      with_dict: "{{ vESX }}"
+      async: 7200
+      poll: 0
+      register: claimcachedisk
+    - name: Result check for claiming vSAN cache disk
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      with_items: "{{ claimcachedisk.results }}"
+      retries: 10         
+    - name: Mark vSAN capacity disk as SSD disk
+      vmware_vm_shell:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: false
+        vm_id: "{{ item.value.vmname }}"
+        vm_username: "{{ item.value.username }}"
+        vm_password: "{{ item.value.password }}"
+        vm_shell: /bin/esxcli
+        vm_shell_args: "storage nmp satp rule add -s VMW_SATP_LOCAL -d mpx.vmhba0:C0:T2:L0 -o enable_ssd"
+        vm_shell_env: 
+        - "PATH=/bin"
+        - "VAR=test"
+        vm_shell_cwd: "/tmp"
+      with_dict: "{{ vESX }}"
+      async: 7200
+      poll: 0
+      register: marcapdisk
+    - name: Result check for marking vSAN capacity disk
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      with_items: "{{ marcapdisk.results }}"
+      retries: 10      
+    - name: Reclaim vSAN capacity disk
+      vmware_vm_shell:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: false
+        vm_id: "{{ item.value.vmname }}"
+        vm_username: "{{ item.value.username }}"
+        vm_password: "{{ item.value.password }}"
+        vm_shell: /bin/esxcli
+        vm_shell_args: "storage core claiming reclaim -d mpx.vmhba0:C0:T2:L0"
+        vm_shell_env: 
+        - "PATH=/bin"
+        - "VAR=test"
+        vm_shell_cwd: "/tmp"
+      with_dict: "{{ vESX }}"
+      async: 7200
+      poll: 0
+      register: claimcapdisk
+    - name: Result check for claiming vSAN capacity disk
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      with_items: "{{ claimcapdisk.results }}"
+      retries: 10
+    - name: Add the ESXi hosts to vCenter
+      vmware_host:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        datacenter_name: "{{ vcenter.datacenter }}"
+        validate_certs: false
+        cluster_name: "{{ item.value.cluster }}"
+        esxi_hostname: "{{ item.value.fqdn }}"
+        esxi_username: "{{ item.value.username }}"
+        esxi_password: "{{ item.value.password }}"
+        state: present
+      with_dict: "{{ vESX }}"
+    - name: Configure NTP on the ESXi hosts
+      vmware_host_ntp:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        validate_certs: false        
+        esxi_hostname: "{{ item.value.fqdn }}"
+        ntp_servers:
+          - "{{ ntp_server }}"
+      with_dict: "{{ vESX }}"
+      async: 7200
+      poll: 0
+      register: confntp
+    - name: Result check for configuring NTP
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      with_items: "{{ confntp.results }}"
+      retries: 10
+    - name: Start ntpd on the ESXi hosts and change the service policy
+      vmware_host_service_manager:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        validate_certs: false        
+        esxi_hostname: "{{ item.value.fqdn }}"
+        service_name: ntpd
+        service_policy: on
+        state: present
+      with_dict: "{{ vESX }}"
+      async: 7200
+      poll: 0
+      register: startntp
+    - name: Result check for starting NTP
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      with_items: "{{ startntp.results }}"
+      retries: 10
+    - name: Mount NFS datastore on the ESXi hosts
+      vmware_host_datastore:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        validate_certs: false
+        esxi_hostname: "{{ item.value.fqdn }}"      
+        datastore_name: '{{ nfs_datastore }}'
+        datastore_type: '{{ nfs_type }}'
+        nfs_server: '{{ nfs_server }}'
+        nfs_path: '{{ nfs_path }}'
+        nfs_ro: no
+        state: present
+      with_dict: "{{ vESX }}"
+      async: 7200
+      poll: 0
+      register: mountnfs
+      when: use_nfs|bool
+    - name: Result check for mounting NFS
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      with_items: "{{ mountnfs.results }}"
+      retries: 10
+      when: use_nfs|bool
+    - name: Remove local datastore from the ESXi hosts
+      vmware_host_datastore:
+        hostname: "{{ item.value.fqdn }}" 
+        username: "{{ item.value.username }}"
+        password: "{{ item.value.password }}"
+        validate_certs: false
+        datastore_name: datastore1
+        state: absent
+      with_dict: "{{ vESX }}"
+      async: 7200
+      poll: 0
+      register: removeds
+    - name: Result check for removing datastore
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      with_items: "{{ removeds.results }}"
+      retries: 10

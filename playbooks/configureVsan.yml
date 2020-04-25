@@ -1,0 +1,17 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Enable vSAN and claim storage automatically
+      vmware_cluster_vsan:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        datacenter_name: "{{ vcenter.datacenter }}"
+        validate_certs: false
+        cluster_name: "{{ item.key }}"
+        enable_vsan: "{{ item.value.vsan }}"
+        vsan_auto_claim_storage: true
+      with_dict: "{{ clusters }}"
