@@ -50,7 +50,7 @@
             overwrite: true
       when: deploy_router == true
 
-    - name: Write annotation
+    - name: Write annotation on the VyOS VM
       vmware_guest:
         hostname: "{{ physicalESX.host }}"
         username: "{{ physicalESX.user }}"
@@ -59,7 +59,7 @@
         name: "{{ vm_prefix }}{{ router_hostname }}"
         annotation: "The password for vyos user is VMware1!"
 
-    - name: Reboot VyOS router
+    - name: Reboot VyOS VM
       vmware_guest_powerstate:
         hostname: "{{ physicalESX.host }}"
         username: "{{ physicalESX.user }}"
@@ -68,6 +68,13 @@
         name: "{{ vm_prefix }}{{ router_hostname }}"
         state: reboot-guest
       when: deploy_router == true
+
+    - name: Add host route to Ansible control node
+      command: "./ip route add {{ mgmt_prefix }}.0/24 via {{ router_public_ip }}"
+      args:
+        chdir: /bin/
+      register: iproute
+      ignore_errors: False
 
     - name: Delete the temporary template file for VyOS router
       file: path=/tmp/vyos.conf state=absent
