@@ -70,7 +70,7 @@
         state: reboot-guest
       when: deploy_router == true
 
-    - name: Add static route on the Ansible control node to the nested management VLAN via the VyOS router
+    - name: Add static route on the Ansible control node to the nested management subnet via the VyOS router public interface
       command: ./ip route add "{{ mgmt_prefix }}".0/24 via "{{ router_public_ip }}"
       args:
         chdir: /bin/
