@@ -32,8 +32,8 @@
         power_on: true
         wait: true
         wait_for_ip_address: yes
-      when: deploy_router == true
       delegate_to: localhost
+      when: deploy_router == true
 
     - name: Configure VyOS router
       vmware_guest_file_operation:
@@ -58,6 +58,7 @@
         validate_certs: no
         name: "{{ vm_prefix }}{{ router_hostname }}"
         annotation: "The password for vyos user is VMware1!"
+      when: deploy_router == true
 
     - name: Reboot VyOS VM
       vmware_guest_powerstate:
@@ -81,6 +82,6 @@
       file: path=/tmp/vyos.conf state=absent
       when: deploy_router == true
 
-    - name: Wait a minute 
-      pause: seconds=60
+    - name: Wait 10 seconds
+      pause: seconds=10
       when: deploy_router == true
