@@ -69,7 +69,7 @@
         state: reboot-guest
       when: deploy_router == true
 
-    - name: Add static route to Ansible control node
+    - name: Add static route on the Ansible control node to the nested management VLAN
       command: ./ip route add "{{ mgmt_prefix }}".0/24 via "{{ router_public_ip }}"
       args:
         chdir: /bin/
