@@ -35,15 +35,6 @@
       when: deploy_router == true
       delegate_to: localhost
 
-    - name: Write annotation
-      vmware_guest:
-        hostname: "{{ physicalESX.host }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
-        validate_certs: no
-        name: "{{ vm_prefix }}{{ router_hostname }}"
-        annotation: "username is vyos and password is VMware1!"
-
     - name: Configure VyOS router
       vmware_guest_file_operation:
         hostname: "{{ physicalESX.host }}"
@@ -58,6 +49,15 @@
             dest: "/config/config.boot"
             overwrite: true
       when: deploy_router == true
+
+    - name: Write annotation
+      vmware_guest:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ vm_prefix }}{{ router_hostname }}"
+        annotation: "Login with: vyos / VMware1!"
 
     - name: Reboot VyOS router
       vmware_guest_powerstate:
