@@ -70,7 +70,7 @@
       when: deploy_router == true
 
     - name: Add host route to Ansible control node
-      command: "./ip route add {{ mgmt_prefix }}.0/24 via {{ router_public_ip }}"
+      command: "./ip route add 172.16.11.0/24 via 10.2.129.101"
       args:
         chdir: /bin/
       register: iproute
