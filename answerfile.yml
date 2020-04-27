@@ -102,10 +102,10 @@ nfs_type: 'nfs'
 clusters:
   Compute:
     drs: true
-    vsan: false
+    vsan: false # vSAN requires at least three ESXi hosts.
   Edge:
     drs: false
-    vsan: false
+    vsan: false # vSAN requires at least three ESXi hosts.
 
 # NSX-T Manager node shared properties.
 nsxmanpassword: 'VMware1!VMware1!'
@@ -364,7 +364,7 @@ vESX:
     ip: "{{ mgmt_prefix }}.11"
     mask: "{{ mgmt_network_mask }}"
     gw: "{{ mgmt_network_gw }}"
-    fqdn: "esxi01.{{ domain }}"
+    fqdn: "esxi01.{{ domain }}" # ESXi FQDN if there is a working DNS server, otherwise specify the IP address here.
     vmname: "{{ vm_prefix }}esxi01"
     cluster: 'Compute' # The cluster in the nested vSphere environment this ESXi will be added to.
     vlan: "{{ physicalESX.vlan }}"
@@ -378,7 +378,7 @@ vESX:
     ip: "{{ mgmt_prefix }}.12"
     mask: "{{ mgmt_network_mask }}"
     gw: "{{ mgmt_network_gw }}"
-    fqdn: "esxi02.{{ domain }}"
+    fqdn: "esxi02.{{ domain }}" # ESXi FQDN if there is a working DNS server, otherwise specify the IP address here.
     vmname: "{{ vm_prefix }}esxi02"
     cluster: 'Compute' # The cluster in the nested vSphere environment this ESXi will be added to.
     vlan: "{{ physicalESX.vlan }}"
@@ -392,7 +392,7 @@ vESX:
     ip: "{{ mgmt_prefix }}.13"
     mask: "{{ mgmt_network_mask }}"
     gw: "{{ mgmt_network_gw }}"
-    fqdn: "esxi03.{{ domain }}"
+    fqdn: "esxi03.{{ domain }}" # ESXi FQDN if there is a working DNS server, otherwise specify the IP address here.
     vmname: "{{ vm_prefix }}esxi03"
     cluster: 'Compute' # The cluster in the nested vSphere environment this ESXi will be added to.
     vlan: "{{ physicalESX.vlan }}"
@@ -406,7 +406,7 @@ vESX:
     ip: "{{ mgmt_prefix }}.14"
     mask: "{{ mgmt_network_mask }}"
     gw: "{{ mgmt_network_gw }}"
-    fqdn: "esxi04.{{ domain }}"
+    fqdn: "esxi04.{{ domain }}" # ESXi FQDN if there is a working DNS server, otherwise specify the IP address here.
     vmname: "{{ vm_prefix }}esxi04"
     cluster: Edge # The cluster in the nested vSphere environment this ESXi will be added to.
     vlan: "{{ physicalESX.vlan }}"
@@ -420,7 +420,7 @@ vESX:
     ip: "{{ mgmt_prefix }}.15"
     mask: "{{ mgmt_network_mask }}"
     gw: "{{ mgmt_network_gw }}"
-    fqdn: "esxi05.{{ domain }}"
+    fqdn: "esxi05.{{ domain }}" # ESXi FQDN if there is a working DNS server, otherwise specify the IP address here.
     vmname: "{{ vm_prefix }}esxi05"
     cluster: Edge # The cluster in the nested vSphere environment this ESXi will be added to.
     vlan: "{{ physicalESX.vlan }}"
