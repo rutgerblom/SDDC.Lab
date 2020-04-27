@@ -24,7 +24,7 @@
         validate_certs: no
         datastore: "{{ physicalESX.datastore }}"
         name: "{{ vm_prefix }}{{ router_hostname }}"
-        ovf: "/iso/vyos-1.1.8-amd64.ova"
+        ovf: "{{ VyosOva }}"
         networks:
           "public": "{{ router_public_pg }}"
           "internal": "{{ physicalESX.trunkpg }}"
