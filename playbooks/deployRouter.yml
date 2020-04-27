@@ -70,9 +70,10 @@
         state: reboot-guest
       when: deploy_router == true
 
-    - name: Delete the template file for VyOS router
+    - name: Delete the temporary template file for VyOS router
       file: path=/tmp/vyos.conf state=absent
       when: deploy_router == true
 
     - name: Wait a minute 
       pause: seconds=60
+      when: deploy_router == true
