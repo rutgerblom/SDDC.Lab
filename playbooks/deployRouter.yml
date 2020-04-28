@@ -1,5 +1,6 @@
 ---
 - hosts: 127.0.0.1
+  gather_facts: false
   connection: local
   vars_files:
     - ../answerfile.yml
@@ -18,6 +19,7 @@
       delegate_to: localhost
       register: status
       ignore_errors: true
+      no_log: True
 
     - name: Create template file for VyOS router
       template: 

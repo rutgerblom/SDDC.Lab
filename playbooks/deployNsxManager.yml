@@ -1,5 +1,6 @@
 ---
 - hosts: 127.0.0.1
+  gather_facts: false
   connection: local
   vars_files:
     - ../answerfile.yml
@@ -92,4 +93,3 @@
         - deploy_nsxt == true
         - deployment.changed == true
         - item.started is defined
-  tags: NsxNode

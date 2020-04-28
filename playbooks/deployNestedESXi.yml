@@ -1,5 +1,6 @@
 ---
 - hosts: 127.0.0.1
+  gather_facts: false
   connection: local
   vars_files:
     - ../answerfile.yml
@@ -48,24 +49,31 @@
       async: 7200
       poll: 0
       register: deployment
+
     - name: Wait 3 seconds before we start checking whether the ESXi hosts are ready
       pause: seconds=3
+
     - name: Result check for deployment
       async_status:
         jid: "{{ item.ansible_job_id }}"
       register: job_result
       with_items: "{{ deployment.results }}"
+
     - name: Create a mark if there is a new vESX to deploy
       file: path=/tmp/newESXi state=touch owner=root group=root mode=0555
       when: item.stat is not defined
       with_items: "{{ job_result.results }}"
+
     - stat: path=/tmp/newESXi
       register: newESXi
+
     - name: Wait 15 minutes for the ESXi installation to finish.
       pause: minutes=15
       when: newESXi.stat.exists == True
+
     - name: Delete the temporary mark
       file: path=/tmp/newESXi state=absent
+      
     - name: Check result for deployment
       async_status:
         jid: "{{ item.ansible_job_id }}"
