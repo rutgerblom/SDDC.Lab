@@ -96,4 +96,4 @@ A diagram of the NSX-T logical network.
 
 ## Credits
 
-A lot of credits go to **Yasen Simeonov** and his project at https://github.com/yasensim/vsphere-lab-deploy. This project is inspired on his.
+A lot of credits go to **Yasen Simeonov** and his project at https://github.com/yasensim/vsphere-lab-deploy.
