@@ -4,17 +4,32 @@
   vars_files:
     - ../answerfile.yml
   tasks:
+
+    - name: Gather some info from a guest using the vSphere API output schema
+      vmware_guest_info:
+        hostname: "{{ physicalESX.host }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        datacenter: "ha-datacenter"
+        name: "{{ vm_prefix }}{{ router_hostname }}"
+        schema: "vsphere"
+        properties: ["overallStatus"]
+      delegate_to: localhost
+      register: status
+      ignore_errors: true
+
     - name: Create template file for VyOS router
       template: 
         src=../templates/vyos.conf
         dest=/tmp/vyos.conf
-      when: deploy_router == true
+      when: deploy_router == true and status is failed
 
     - name: Download VyOS OVA
       get_url:
         url: https://downloads.vyos.io/release/legacy/1.1.8/vyos-1.1.8-amd64.ova
         dest: "{{ VyosOva }}"
-      when: deploy_router == true
+      when: deploy_router == true and status is failed
 
     - name: Deploy VyOS router
       vmware_deploy_ovf:
@@ -33,7 +48,7 @@
         wait: true
         wait_for_ip_address: yes
       delegate_to: localhost
-      when: deploy_router == true
+      when: deploy_router == true and status is failed
 
     - name: Configure VyOS router
       vmware_guest_file_operation:
@@ -48,7 +63,7 @@
             src: "/tmp/vyos.conf"
             dest: "/config/config.boot"
             overwrite: true
-      when: deploy_router == true
+      when: deploy_router == true and status is failed
 
     - name: Write annotation on the VyOS VM
       vmware_guest:
@@ -58,7 +73,7 @@
         validate_certs: no
         name: "{{ vm_prefix }}{{ router_hostname }}"
         annotation: "The password for the vyos user is VMware1!"
-      when: deploy_router == true
+      when: deploy_router == true and status is failed
 
     - name: Reboot VyOS VM
       vmware_guest_powerstate:
@@ -68,7 +83,7 @@
         validate_certs: no
         name: "{{ vm_prefix }}{{ router_hostname }}"
         state: reboot-guest
-      when: deploy_router == true
+      when: deploy_router == true and status is failed
 
     - name: Add static route on the Ansible control node to the nested management subnet via the VyOS router public interface
       command: ./ip route add "{{ mgmt_prefix }}".0/24 via "{{ router_public_ip }}"
@@ -76,7 +91,7 @@
         chdir: /bin/
       register: iproute
       ignore_errors: true
-      when: deploy_router == true
+      when: deploy_router == true and status is failed
 
     - name: Delete the temporary template file for VyOS router
       file: path=/tmp/vyos.conf state=absent
@@ -84,4 +99,4 @@
 
     - name: Wait 10 seconds
       pause: seconds=10
-      when: deploy_router == true
+      when: deploy_router == true and status is failed
