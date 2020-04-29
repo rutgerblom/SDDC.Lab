@@ -1,5 +1,6 @@
 ---
 - hosts: 127.0.0.1
+  gather_facts: false
   connection: local
   vars_files:
     - ../answerfile.yml
@@ -17,6 +18,7 @@
         discovery_proto: "{{ vds.discovery_proto }}"
         discovery_operation: "{{ vds.discovery_operation }}"
         state: present
+
     - name: Create Management port group
       vmware_dvs_portgroup:
         hostname: "{{ vcenter.ip }}"
@@ -29,6 +31,7 @@
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
+
     - name: Create vMotion port group
       vmware_dvs_portgroup:
         hostname: "{{ vcenter.ip }}"
@@ -41,6 +44,7 @@
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
+
     - name: Create vSAN port group
       vmware_dvs_portgroup:
         hostname: "{{ vcenter.ip }}"
@@ -53,6 +57,7 @@
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
+
     - name: Create Uplink1 port group
       vmware_dvs_portgroup:
         hostname: "{{ vcenter.ip }}"
@@ -66,6 +71,7 @@
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
+
     - name: Create Uplink2 port group
       vmware_dvs_portgroup:
         hostname: "{{ vcenter.ip }}"
@@ -79,6 +85,7 @@
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
+
     - name: Migrate uplinks to the VDS
       vmware_dvs_host:
         hostname: "{{ vcenter.ip }}"
@@ -92,6 +99,7 @@
           - vmnic2
         state: present
       with_dict: "{{ vESX }}"
+
     - name: Migrate vmk0 to the VDS
       vmware_migrate_vmk:
         hostname: "{{ vcenter.ip }}"
@@ -105,6 +113,7 @@
         validate_certs: False
         migrate_portgroup_name: "{{ vds.management_pg }}"
       with_dict: "{{ vESX }}"
+
     - name: Create vmk1 for vMotion
       vmware_vmkernel:
         hostname: "{{ vcenter.ip }}"
@@ -121,6 +130,7 @@
           ip_address: "{{ item.value.vmotion_ip }}"
           subnet_mask: "{{ item.value.vmotion_mask }}"
       with_dict: "{{ vESX }}"
+
     - name: Create vmk2 for vSAN
       vmware_vmkernel:
         hostname: "{{ vcenter.ip }}"
@@ -137,6 +147,7 @@
           ip_address: "{{ item.value.vsan_ip }}"
           subnet_mask: "{{ item.value.vsan_mask }}"
       with_dict: "{{ vESX }}"
+      
     - name: Remove the standard switch from the ESXi hosts
       vmware_vswitch:
         hostname: '{{ item.value.fqdn }}'
