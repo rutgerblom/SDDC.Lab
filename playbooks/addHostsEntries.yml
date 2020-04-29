@@ -1,0 +1,11 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Add host entries for each ESXi to the Ansible control node hosts file
+      command: ./echo {{ item.value.ip }} {{ item.value.fqdn }} >> /etc/hosts
+      args:
+        chdir: /bin/
+      with_dict: "{{ vESX }}"
