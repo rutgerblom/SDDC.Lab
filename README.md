@@ -28,7 +28,7 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
 
 * A physical ESXi host
 * An Ubuntu 18.04 VM with the following packages:
-  * apt install python3 python3-pip sshpass xorriso
+  * apt install python3 python3-pip xorriso
   * pip3 install ansible pyvim pyvmomi
   * ovftool (free download from [VMware](https://www.vmware.com/support/developer/ovf))
 * ESXi and VCSA ISO files as well as the NSX-T Manager OVA file
