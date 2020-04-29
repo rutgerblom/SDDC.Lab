@@ -8,7 +8,8 @@
     - name: Check if the NSX-T license file exists
       stat: 
         path: "{{ nsxlicense }}"
-      register: nsxlicensekey  
+      register: nsxlicensekey
+      
     - name: Deploy and configure NSX-T Edge nodes
       nsxt_transport_nodes:
         hostname: "{{ nsxman.nsxman01.hostname }}"
