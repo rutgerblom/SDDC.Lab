@@ -2,6 +2,7 @@
 # Deployment decisions
 deploy_router: true # Deploy a VyOS router for the nested environment?
 deploy_nsxt: true # Deploy NSX-T? (+20 minutes)
+nsxt_major_version: 3 # Either 2 or 3
 deploy_nsxt_edge: true # Deploy NSX-T Edge nodes? (+30 minutes)
 use_nfs: true # Mount an existing NFS datastore to the nested ESXi hosts? Configure details under "NFS storage"
 
@@ -48,7 +49,7 @@ vcenter:
   gw: "{{ mgmt_network_gw }}"
   fqdn: "vcenter.{{ domain }}" # vCenter FQDN if there is a working DNS server, otherwise specify the IP address here.
   vmname: "{{ vm_prefix }}vcenter01"
-  user: 'administrator@vsphere.local' 
+  user: "administrator@vsphere.local"
   password: 'VMware1!' 
   datacenter: 'DC01'
   domain: 'vsphere.local' # SSO domain
@@ -172,134 +173,6 @@ edge_cluster_name: "edge-cluster-1"
 edge_cluster_profile: "nsx-default-edge-high-availability-profile"
 transport_node1: "en01"
 transport_node2: "en02"
-
-# NSX-T Edge Transport Nodes
-edge_transport_nodes:
-- display_name: "{{ transport_node1 }}"
-  host_switches:
-  - host_switch_profiles:
-    - name: edge-uplink-profile
-      type: UplinkHostSwitchProfile
-    host_switch_name: n-vds-edge
-    host_switch_mode: STANDARD
-    pnics:
-    - device_name: "fp-eth0"
-      uplink_name: "uplink-1"
-    - device_name: "fp-eth1"
-      uplink_name: "uplink-2"      
-    ip_assignment_spec:
-      resource_type: StaticIpListSpec
-      ip_list:
-      - "{{ transport_prefix }}.61"
-      - "{{ transport_prefix }}.62"
-      subnet_mask: "{{ transport_network_mask }}"
-      default_gateway: "{{ transport_gw }}"
-    transport_zone_endpoints:
-    - transport_zone_name: "tz-overlay"
-    - transport_zone_name: "tz-edge"
-  node_deployment_info:
-    resource_type: "EdgeNode"
-    display_name: "{{ transport_node1 }}"
-    ip_addresses:
-    deployment_config:
-      form_factor: "SMALL"
-      node_user_settings:
-        cli_password: "VMware1!VMware1!"
-        root_password: "VMware1!VMware1!"
-      vm_deployment_config:
-        placement_type: VsphereDeploymentConfig
-        vc_name: "{{ vcenter.fqdn }}"
-        vc_username: "{{ vcenter.user }}"
-        vc_password: "{{ vcenter.password }}"        
-        data_networks:
-        - "{{ vds.uplink1_pg }}"
-        - "{{ vds.uplink2_pg }}"
-        management_network: "{{ vds.management_pg }}"
-        management_port_subnets:
-        - ip_addresses:
-          - "{{ mgmt_prefix }}.61"
-          prefix_length: 24
-        default_gateway_addresses: 
-        - "{{ mgmt_network_gw }}"
-        hostname: "{{ transport_node1 }}.{{ domain }}"
-        compute: "Edge"
-        storage: "{{ nfs_datastore }}"
-        host: "esxi04.{{ domain }}"
-- display_name: "{{ transport_node2 }}"
-  host_switches:
-  - host_switch_profiles:
-    - name: edge-uplink-profile
-      type: UplinkHostSwitchProfile
-    host_switch_name: n-vds-edge
-    host_switch_mode: STANDARD
-    pnics:
-    - device_name: "fp-eth0"
-      uplink_name: "uplink-1"
-    - device_name: "fp-eth1"
-      uplink_name: "uplink-2"      
-    ip_assignment_spec:
-      resource_type: StaticIpListSpec
-      ip_list:
-      - "{{ transport_prefix }}.63"
-      - "{{ transport_prefix }}.64"
-      subnet_mask: "{{ transport_network_mask }}"
-      default_gateway: "{{ transport_gw }}"
-    transport_zone_endpoints:
-    - transport_zone_name: "tz-overlay"
-    - transport_zone_name: "tz-edge"
-  node_deployment_info:
-    resource_type: "EdgeNode"
-    display_name: "{{ transport_node2 }}"
-    ip_addresses:
-    deployment_config:
-      form_factor: "SMALL"
-      node_user_settings:
-        cli_password: "VMware1!VMware1!"
-        root_password: "VMware1!VMware1!"
-      vm_deployment_config:
-        placement_type: VsphereDeploymentConfig
-        vc_name: "{{ vcenter.fqdn }}"
-        vc_username: "{{ vcenter.user }}"
-        vc_password: "{{ vcenter.password }}"
-        data_networks:
-        - "{{ vds.uplink1_pg }}"
-        - "{{ vds.uplink2_pg }}"
-        management_network: "{{ vds.management_pg }}"
-        management_port_subnets: 
-        - ip_addresses:
-          - "{{ mgmt_prefix }}.62"
-          prefix_length: 24
-        default_gateway_addresses: 
-        - "{{ mgmt_network_gw }}"
-        hostname: "{{ transport_node2 }}.{{ domain }}"
-        compute: "Edge"
-        storage: "{{ nfs_datastore }}"
-        host: "esxi05.{{ domain }}"
-
-# NSX-T Transport Node Profile
-transport_node_profiles:
-- display_name: esxi-tnp
-  host_switches:
-  - host_switch_profiles:
-    - name: esxi-uplink-profile
-      type: UplinkHostSwitchProfile
-    - name: LLDP [Send Packet Enabled]
-      type: LldpHostSwitchProfile
-    - name: nsx-default-nioc-hostswitch-profile
-      type: NiocProfile
-    host_switch_name: n-vds
-    host_switch_mode: STANDARD
-    pnics:
-    - device_name: vmnic3
-      uplink_name: "uplink-1"
-    - device_name: vmnic4
-      uplink_name: "uplink-2"      
-    ip_assignment_spec:
-      resource_type: StaticIpPoolSpec
-      ip_pool_name: "tep-pool"
-    transport_zone_endpoints:
-    - transport_zone_name: "tz-vlan"
-    - transport_zone_name: "tz-overlay"
 
 # NSX-T Segments
 segments:
