@@ -25,7 +25,7 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
 
 ## Requirements
 
-* A physical ESXi host
+* A physical standalone ESXi host
 * An Ubuntu 18.04/20.04 VM with the following packages:
   * apt install python3 python3-pip xorriso
   * pip3 install ansible pyvim pyvmomi
