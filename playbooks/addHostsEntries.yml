@@ -1,0 +1,27 @@
+---
+- hosts: 127.0.0.1
+  gather_facts: false
+  connection: local
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Add host entries for each ESXi VM to the Ansible control node hosts file
+      lineinfile:
+        path: /etc/hosts
+        backup: yes
+        line: "{{ item.value.ip }} {{ item.value.fqdn }}"
+        state: present
+      with_dict: "{{ vESX }}"
+    - name: Add host entry for the vCenter appliance to the Ansible control node hosts file
+      lineinfile:
+        path: /etc/hosts
+        backup: yes
+        line: "{{ vcenter.ip }} {{ vcenter.fqdn }}"
+        state: present
+    - name: Add host entries for each NSX Manager node to the Ansible control node hosts file
+      lineinfile:
+        path: /etc/hosts
+        backup: yes
+        line: "{{ item.value.ip }} {{ item.value.hostname }}"
+        state: present
+      with_dict: "{{ nsxman }}"
