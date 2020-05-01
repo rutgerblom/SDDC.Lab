@@ -93,8 +93,9 @@ transport_gw: '172.16.59.1'
 router_peer: "{{ uplink_prefix }}.1" # Router IP on uplink VLAN 
 uplink_ip1: "{{ uplink_prefix }}.2" # Tier-0 interface 1 IP on uplink VLAN
 uplink_ip2: "{{ uplink_prefix }}.3" # Tier-0 interface 2 IP on uplink VLAN
-nsx_as: '65000' # BGP AS number on the NSX-T side
-router_as: '65001' # BGP AS number on your router (VyOS if deploy_router == true)
+nsx_as: "65000" # BGP AS number on the NSX-T side
+router_as: "65001" # BGP AS number on your router (VyOS if deploy_router == true)
+ip_pool_name: "tep-pool"
 
 # NFS storage
 nfs_server: '10.2.129.90' # FQDN or IP address to your NAS
@@ -139,7 +140,7 @@ transportzones:
 
 # NSX-T IP Pool (for the TEP interfaces)
 ip_pools:
-- display_name: "tep-pool"
+- display_name: "{{ ip_pool_name }}"
   subnets:
   - allocation_ranges:
     - start: "{{ transport_prefix }}.20"
