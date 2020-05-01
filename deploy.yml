@@ -2,9 +2,9 @@
 # Nested vSphere deployment starts here
 - import_playbook: playbooks/preparePhysical.yml
 - import_playbook: playbooks/deployRouter.yml
-- import_playbook: playbooks/deployVC.yml
+- import_playbook: playbooks/deployVc.yml
 - import_playbook: playbooks/prepareISOInstaller.yml
-- import_playbook: playbooks/deployNestedESXi.yml
+- import_playbook: playbooks/deployNestedEsxi.yml
 - name: Wait 5 minutes for the ESXi hosts to become fully responsive
   hosts: localhost
   gather_facts: False
@@ -14,7 +14,7 @@
     - name: Wait 5 minutes before checking whether the hosts are ready
       pause: minutes=5
       when: vESX|length > 5
-- import_playbook: playbooks/configureNestedESXi.yml
+- import_playbook: playbooks/configureNestedEsxi.yml
 - import_playbook: playbooks/createVds.yml
 - import_playbook: playbooks/configureVsan.yml
 # Nested vSphere deployment ends here
