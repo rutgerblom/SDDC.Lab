@@ -9,6 +9,7 @@
       stat: 
         path: "{{ nsxlicense }}"
       register: nsxlicensekey
+      when: deploy_nsxt == true
 
     - name: Conditionally load variables for NSX-T 2.5
       include_vars:
