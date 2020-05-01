@@ -1,6 +1,6 @@
 # vsphere-nsxt-lab-deploy
 
-#### Table of Contents
+## Table of Contents
 
 * [Description](#Description)
 * [Changelog](#Changelog)
