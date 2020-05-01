@@ -63,5 +63,15 @@
         datacenter_name: "{{ vcenter.datacenter }}"
         cluster_name: "{{ item.key }}"
         validate_certs: False
+      with_dict: "{{ clusters }}"
+
+    - name: Enable DRS
+      vmware_cluster_drs:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        datacenter_name: "{{ vcenter.datacenter }}"
+        cluster_name: "{{ item.key }}"
+        validate_certs: False
         enable_drs: "{{ item.value.drs }}"
       with_dict: "{{ clusters }}"
