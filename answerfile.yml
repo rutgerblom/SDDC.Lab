@@ -1,17 +1,17 @@
 # Deployment decisions
 deploy_router: true # Deploy a VyOS router for the nested environment?
 deploy_nsxt: true # Deploy NSX-T? (+20 minutes)
-nsxt_major_version: 2 # Either 2 or 3
+nsxt_major_version: 3 # Either 2 or 3
 deploy_nsxt_edge: true # Deploy NSX-T Edge nodes? (+30 minutes)
 use_nfs: true # Mount an existing NFS datastore to the nested ESXi hosts? Configure details under "NFS storage"
 
 # Paths to ISO and OVA files
-#esxIso: "/iso/VMware-VMvisor-Installer-7.0.0-15843807.x86_64.iso" # ESXi 7.0
-esxIso: "/iso/VMware-VMvisor-Installer-201912001-15160138.x86_64.iso" # ESXi 6.7
-#vcIso: "/iso/VMware-VCSA-all-7.0.0-15952498.iso" # vCenter 7.0
-vcIso: "/iso/VMware-VCSA-all-6.7.0-14367737.iso" # vCenter 6.7
-#NsxManOva: "/iso/nsx-unified-appliance-3.0.0.0.0.15946739.ova" # NSX-T 3.0
-NsxManOva: "/iso/nsx-unified-appliance-2.5.1.0.0.15314292.ova" # NSX-T 2.5.1
+esxIso: "/iso/VMware-VMvisor-Installer-7.0.0-15843807.x86_64.iso" # ESXi 7.0
+#esxIso: "/iso/VMware-VMvisor-Installer-201912001-15160138.x86_64.iso" # ESXi 6.7
+vcIso: "/iso/VMware-VCSA-all-7.0.0-15952498.iso" # vCenter 7.0
+#vcIso: "/iso/VMware-VCSA-all-6.7.0-14367737.iso" # vCenter 6.7
+NsxManOva: "/iso/nsx-unified-appliance-3.0.0.0.0.15946739.ova" # NSX-T 3.0
+#NsxManOva: "/iso/nsx-unified-appliance-2.5.1.0.0.15314292.ova" # NSX-T 2.5.1
 VyosOva: "/iso/vyos-1.1.8-amd64.ova" # Will be downloaded if missing and deploy_router == true
 
 # Your physical ESXi host properties
