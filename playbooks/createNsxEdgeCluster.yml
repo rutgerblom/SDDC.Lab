@@ -4,11 +4,13 @@
   connection: local  
   vars_files:
     - ../answerfile.yml
+
   tasks:
     - name: Check if NSX-T license file exists
       stat: 
         path: "{{ nsxlicense }}"
-      register: nsxlicensekey  
+      register: nsxlicensekey
+
     - name: Create NSX-T Edge cluster
       nsxt_edge_clusters:
           hostname: "{{ nsxman.nsxman01.hostname }}"
@@ -17,11 +19,11 @@
           validate_certs: False
           display_name: "{{ edge_cluster_name }}"
           cluster_profile_bindings:
-          - profile_name: "{{ edge_cluster_profile }}"
+          - profile_name: "nsx-default-edge-high-availability-profile"
             resource_type: EdgeHighAvailabilityProfile          
           members:
-          - transport_node_name: "{{ transport_node1 }}"
-          - transport_node_name: "{{ transport_node2 }}"
+          - transport_node_name: "{{ edge_node1 }}"
+          - transport_node_name: "{{ edge_node2 }}"
           state: present
       when: 
         - nsxlicensekey.stat.exists == true
