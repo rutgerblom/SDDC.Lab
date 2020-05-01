@@ -4,7 +4,7 @@ deploy_nsxt: true # Deploy NSX-T? (+20 minutes)
 nsxt_major_version: 2 # Either 2 or 3
 deploy_nsxt_edge: true # Deploy NSX-T Edge nodes? (+30 minutes)
 use_nfs: true # Mount an existing NFS datastore to the nested ESXi hosts? Configure details under "NFS storage"
-vm_prefix: "pod01-" # This prefix will be added to all the VMs that are deployed on the physical ESXi.
+vm_prefix: "pod01" # This prefix will be added to all the VMs that are deployed on the physical ESXi.
 
 # Paths to ISO and OVA files
 #esxIso: "/iso/VMware-VMvisor-Installer-7.0.0-15843807.x86_64.iso" # ESXi 7.0
@@ -20,10 +20,10 @@ physicalESX:
   host: "esxi03.demo.local"
   user: "root"
   password: "VMware1!"
-  vswitch: "vSwitch-Lab" # vSwitch for nested environment. Will be created if missing.
+  vswitch: "vSwitch-{{ vm_prefix }}" # vSwitch for nested environment. Will be created if missing.
   vlan: "1611" # VLAN for the management network in the nested environment.
-  vlanpg: "pg-lab-mgmt" # Port group for vCenter appliance and NSX-T Manager node(s). Will be created if missing.
-  trunkpg: "pg-lab-trunk" # Port group for the ESXi VMs and the VyOS router. Will be created if missing.
+  vlanpg: "pg-{{ vm_prefix }}-mgmt" # Port group for vCenter appliance and NSX-T Manager node(s). Will be created if missing.
+  trunkpg: "pg-{{ vm_prefix }}-trunk" # Port group for the ESXi VMs and the VyOS router. Will be created if missing.
   datastore: "demo_nfs01" # The datastore where all the deployed VMs are stored.
 
 # Your NFS storage
@@ -56,7 +56,7 @@ vcenter:
   mask: "24"
   gw: "{{ mgmt_network_gw }}"
   fqdn: "vcenter.{{ domain }}" # vCenter FQDN if there is a working DNS server, otherwise specify the vCenter IP address here.
-  vmname: "{{ vm_prefix }}vcenter01"
+  vmname: "{{ vm_prefix }}-vcenter01"
   user: "administrator@vsphere.local"
   password: "VMware1!"
   datacenter: "DC01"
@@ -138,7 +138,7 @@ nsxman:
   nsxman01:
     ip: "{{ mgmt_prefix }}.57"
     hostname: "{{ nsxmanager_name }}.{{ domain }}"
-    vmname: "{{ vm_prefix }}{{ nsxmanager_name }}"
+    vmname: "{{ vm_prefix }}-{{ nsxmanager_name }}"
 
 # NSX-T Transport Zones
 transportzones:
@@ -250,7 +250,7 @@ vESX:
     mask: "{{ mgmt_network_mask }}"
     gw: "{{ mgmt_network_gw }}"
     fqdn: "esxi01.{{ domain }}" # ESXi FQDN if there is a working DNS server, otherwise specify the IP address here.
-    vmname: "{{ vm_prefix }}esxi01"
+    vmname: "{{ vm_prefix }}-esxi01"
     cluster: 'Compute' # The cluster in the nested vSphere environment this ESXi will be added to.
     vlan: "{{ physicalESX.vlan }}"
     vmotion_ip: "{{ vmotion_prefix }}.11"
@@ -264,7 +264,7 @@ vESX:
     mask: "{{ mgmt_network_mask }}"
     gw: "{{ mgmt_network_gw }}"
     fqdn: "esxi02.{{ domain }}" # ESXi FQDN if there is a working DNS server, otherwise specify the IP address here.
-    vmname: "{{ vm_prefix }}esxi02"
+    vmname: "{{ vm_prefix }}-esxi02"
     cluster: 'Compute' # The cluster in the nested vSphere environment this ESXi will be added to.
     vlan: "{{ physicalESX.vlan }}"
     vmotion_ip: "{{ vmotion_prefix }}.12"
@@ -278,7 +278,7 @@ vESX:
     mask: "{{ mgmt_network_mask }}"
     gw: "{{ mgmt_network_gw }}"
     fqdn: "esxi03.{{ domain }}" # ESXi FQDN if there is a working DNS server, otherwise specify the IP address here.
-    vmname: "{{ vm_prefix }}esxi03"
+    vmname: "{{ vm_prefix }}-esxi03"
     cluster: 'Compute' # The cluster in the nested vSphere environment this ESXi will be added to.
     vlan: "{{ physicalESX.vlan }}"
     vmotion_ip: "{{ vmotion_prefix }}.13"
@@ -292,7 +292,7 @@ vESX:
     mask: "{{ mgmt_network_mask }}"
     gw: "{{ mgmt_network_gw }}"
     fqdn: "esxi04.{{ domain }}" # ESXi FQDN if there is a working DNS server, otherwise specify the IP address here.
-    vmname: "{{ vm_prefix }}esxi04"
+    vmname: "{{ vm_prefix }}-esxi04"
     cluster: Edge # The cluster in the nested vSphere environment this ESXi will be added to.
     vlan: "{{ physicalESX.vlan }}"
     vmotion_ip: "{{ vmotion_prefix }}.14"
@@ -306,7 +306,7 @@ vESX:
     mask: "{{ mgmt_network_mask }}"
     gw: "{{ mgmt_network_gw }}"
     fqdn: "esxi05.{{ domain }}" # ESXi FQDN if there is a working DNS server, otherwise specify the IP address here.
-    vmname: "{{ vm_prefix }}esxi05"
+    vmname: "{{ vm_prefix }}-esxi05"
     cluster: Edge # The cluster in the nested vSphere environment this ESXi will be added to.
     vlan: "{{ physicalESX.vlan }}"
     vmotion_ip: "{{ vmotion_prefix }}.15"
