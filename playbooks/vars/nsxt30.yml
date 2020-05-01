@@ -5,7 +5,7 @@ edge_transport_nodes:
   - host_switch_profiles:
     - name: edge-uplink-profile
       type: UplinkHostSwitchProfile
-    host_switch_name: "{{ edge_nvds_name }}"
+    host_switch_name: "{{ nvds_name }}"
     host_switch_mode: STANDARD
     pnics:
     - device_name: "fp-eth0"
@@ -20,8 +20,8 @@ edge_transport_nodes:
       subnet_mask: "{{ transport_network_mask }}"
       default_gateway: "{{ transport_gw }}"
     transport_zone_endpoints:
-    - transport_zone_name: "tz-overlay"
-    - transport_zone_name: "tz-edge"
+    - transport_zone_name: "{{ tz_overlay_name }}"
+    - transport_zone_name: "{{ tz_edge_name }}"
   node_deployment_info:
     resource_type: "EdgeNode"
     display_name: "{{ edge_node1 }}"
@@ -47,15 +47,15 @@ edge_transport_nodes:
         default_gateway_addresses: 
         - "{{ mgmt_network_gw }}"
         hostname: "{{ edge_node1 }}.{{ domain }}"
-        compute: "Edge"
+        compute: "{{ edge_node_vsphere_cluster }}"
         storage: "{{ nfs_datastore }}"
-        host: "esxi04.{{ domain }}"
+        host: "{{ edge_node1_vesxi }}"
 - display_name: "{{ edge_node2 }}"
   host_switches:
   - host_switch_profiles:
     - name: edge-uplink-profile
       type: UplinkHostSwitchProfile
-    host_switch_name: "{{ edge_nvds_name }}"
+    host_switch_name: "{{ nvds_name }}"
     host_switch_mode: STANDARD
     pnics:
     - device_name: "fp-eth0"
@@ -70,8 +70,8 @@ edge_transport_nodes:
       subnet_mask: "{{ transport_network_mask }}"
       default_gateway: "{{ transport_gw }}"
     transport_zone_endpoints:
-    - transport_zone_name: "tz-overlay"
-    - transport_zone_name: "tz-edge"
+    - transport_zone_name: "{{ tz_overlay_name }}"
+    - transport_zone_name: "{{ tz_edge_name }}"
   node_deployment_info:
     resource_type: "EdgeNode"
     display_name: "{{ edge_node2 }}"
@@ -97,9 +97,9 @@ edge_transport_nodes:
         default_gateway_addresses: 
         - "{{ mgmt_network_gw }}"
         hostname: "{{ edge_node2 }}.{{ domain }}"
-        compute: "Edge"
+        compute: "{{ edge_node_vsphere_cluster }}"
         storage: "{{ nfs_datastore }}"
-        host: "esxi05.{{ domain }}"
+        host: "{{ edge_node2_vesxi }}"
 
 # NSX-T Transport Node Profile
 transport_node_profiles:
@@ -112,7 +112,7 @@ transport_node_profiles:
       type: LldpHostSwitchProfile
     - name: nsx-default-nioc-hostswitch-profile
       type: NiocProfile
-    host_switch_name: n-vds
+    host_switch_name: "{{ nvds_name }}"
     host_switch_mode: STANDARD
     pnics:
     - device_name: vmnic3
@@ -123,5 +123,5 @@ transport_node_profiles:
       resource_type: StaticIpPoolSpec
       ip_pool_name: "{{ ip_pool_name }}"
     transport_zone_endpoints:
-    - transport_zone_name: "tz-vlan"
-    - transport_zone_name: "tz-overlay"
+    - transport_zone_name: "{{ tz_overlay_name }}"
+    - transport_zone_name: "{{ tz_edge_name }}"

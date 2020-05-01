@@ -5,7 +5,7 @@ edge_transport_nodes:
   - host_switch_profiles:
     - name: edge-uplink-profile
       type: UplinkHostSwitchProfile
-    host_switch_name: "{{ edge_nvds_name }}"
+    host_switch_name: "{{ nvds_name }}"
     pnics:
     - device_name: "fp-eth0"
       uplink_name: "uplink-1"
@@ -43,15 +43,15 @@ edge_transport_nodes:
         default_gateway_addresses: 
         - "{{ mgmt_network_gw }}"
         hostname: "{{ edge_node1 }}.{{ domain }}"
-        compute: "Edge"
+        compute: "{{ edge_node_vsphere_cluster }}"
         storage: "{{ nfs_datastore }}"
-        host: "esxi04.{{ domain }}"
+        host: "{{ edge_node1_vesxi }}"
 - display_name: "{{ edge_node2 }}"
   host_switches:
   - host_switch_profiles:
     - name: edge-uplink-profile
       type: UplinkHostSwitchProfile
-    host_switch_name: "{{ edge_nvds_name }}"
+    host_switch_name: "{{ nvds_name }}"
     pnics:
     - device_name: "fp-eth0"
       uplink_name: "uplink-1"
@@ -89,9 +89,9 @@ edge_transport_nodes:
         default_gateway_addresses: 
         - "{{ mgmt_network_gw }}"
         hostname: "{{ edge_node2 }}.{{ domain }}"
-        compute: "Edge"
+        compute: "{{ edge_node_vsphere_cluster }}"
         storage: "{{ nfs_datastore }}"
-        host: "esxi05.{{ domain }}"
+        host: "{{ edge_node2_vesxi }}"
 
 # NSX-T Transport Node Profile
 transport_node_profiles:
@@ -104,7 +104,7 @@ transport_node_profiles:
       type: LldpHostSwitchProfile
     - name: nsx-default-nioc-hostswitch-profile
       type: NiocProfile
-    host_switch_name: n-vds
+    host_switch_name: "{{ nvds_name }}"
     pnics:
     - device_name: vmnic3
       uplink_name: "uplink-1"

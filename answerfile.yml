@@ -105,11 +105,11 @@ nsxmanadminuser: 'admin'
 nsxmansize: 'small'
 nsxmanrole: 'NSX Manager'
 nsxlicense: '/tmp/nsxlicense.txt' # Path to the NSX-T license key file (text file should contain just the key).
-host_nvds_name: "n-vds01"
-edge_nvds_name: "n-vds-edge"
+nvds_name: "n-vds01"
 tz_vlan_name: "tz-vlan"
 tz_overlay_name: "tz-overlay"
 tz_edge_name: "tz-edge"
+ip_pool_name: "tep-pool"
 uplink_vlan: '1657' # VLAN for the Tier-0 external interfaces.
 uplink_prefix: '172.16.57'
 transport_vlan: '1659' # VLAN for overlay transport
@@ -118,7 +118,10 @@ transport_network_mask: '255.255.255.0'
 transport_gw: '172.16.59.1'
 edge_node1: "en01"
 edge_node2: "en02"
-edge_cluster_name: "edge-cluster-1"
+edge_node_vsphere_cluster: "Edge" # The vSphere cluster in the nested environment where the Edge VMs should be deployed.
+edge_node1_vesxi: "esxi04.{{ domain }}" # The nested ESXi host where Edge VM 1 should be placed on. Specify IP address if there is no working DNS. 
+edge_node2_vesxi: "esxi05.{{ domain }}" # The nested ESXi host where Edge VM 2 should be placed on. Specify IP address if there is no working DNS.
+edge_cluster_name: "edge-cluster-01" # The NSX-T Edge Cluster
 edgepassword: "VMware1!VMware1!"
 tier0_name: "tier-0"
 router_peer: "{{ uplink_prefix }}.1" # Router IP on uplink VLAN 
@@ -126,7 +129,6 @@ uplink_ip1: "{{ uplink_prefix }}.2" # Tier-0 interface 1 IP on uplink VLAN
 uplink_ip2: "{{ uplink_prefix }}.3" # Tier-0 interface 2 IP on uplink VLAN
 nsx_as: "65000" # BGP AS number on the NSX-T side
 router_as: "65001" # BGP AS number on your router (VyOS if deploy_router == true)
-ip_pool_name: "tep-pool"
 
 # The NSX-T Manager nodes. You can add, remove or rename NSX-T Manager nodes below.
 nsxman:
@@ -139,13 +141,13 @@ nsxman:
 transportzones:
 - display_name: "{{ tz_vlan_name }}"
   transport_type: "VLAN"
-  host_switch_name: "{{ host_nvds_name }}"
+  host_switch_name: "{{ nvds_name }}"
 - display_name: "{{ tz_overlay_name }}"
   transport_type: "OVERLAY"
   host_switch_name: "{{ host_nvds_name }}"
 - display_name: "{{ tz_edge_name }}"
   transport_type: "VLAN"
-  host_switch_name: "{{ edge_nvds_name }}"
+  host_switch_name: "{{ nvds_name }}"
 
 # NSX-T IP Pool (for the TEP interfaces)
 ip_pools:
