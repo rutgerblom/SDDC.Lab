@@ -14,7 +14,7 @@ vcIso: "/iso/VMware-VCSA-all-6.7.0-14367737.iso" # vCenter 6.7
 NsxManOva: "/iso/nsx-unified-appliance-2.5.1.0.0.15314292.ova" # NSX-T 2.5.1
 VyosOva: "/iso/vyos-1.1.8-amd64.ova" # Will be downloaded if missing and deploy_router == true
 
-# Physical ESXi host properties
+# Your physical ESXi host properties
 physicalESX:
   host: "esxi03.demo.local"
   user: "root"
@@ -25,7 +25,7 @@ physicalESX:
   trunkpg: "pg-trunk-lab" # Port group for the ESXi VMs and the VyOS router. Will be created if missing.
   datastore: "demo_nfs01" # The datastore where all the deployed VMs are stored.
 
-# NFS storage
+# Your NFS storage
 nfs_server: '10.2.129.90' # FQDN or IP address to your NAS
 nfs_datastore: 'nfs01' # NFS export name
 nfs_path: '/nested_nfs01' # NFS path
@@ -105,7 +105,8 @@ nsxmanadminuser: 'admin'
 nsxmansize: 'small'
 nsxmanrole: 'NSX Manager'
 nsxlicense: '/tmp/nsxlicense.txt' # Path to the NSX-T license key file (text file should contain just the key).
-nvds_name: "n-vds01"
+host_nvds_name: "n-vds01"
+edge_nvds_name: "n-vds-edge"
 tz_vlan_name: "tz-vlan"
 tz_overlay_name: "tz-overlay"
 tz_edge_name: "tz-edge"
@@ -117,8 +118,8 @@ transport_network_mask: '255.255.255.0'
 transport_gw: '172.16.59.1'
 edge_cluster_name: "edge-cluster-1"
 edge_cluster_profile: "nsx-default-edge-high-availability-profile"
-transport_node1: "en01"
-transport_node2: "en02"
+edge_node1: "en01"
+edge_node2: "en02"
 tier0_name: "tier-0"
 router_peer: "{{ uplink_prefix }}.1" # Router IP on uplink VLAN 
 uplink_ip1: "{{ uplink_prefix }}.2" # Tier-0 interface 1 IP on uplink VLAN
@@ -138,13 +139,13 @@ nsxman:
 transportzones:
 - display_name: "{{ tz_vlan_name }}"
   transport_type: "VLAN"
-  host_switch_name: "{{ nvds_name }}"
+  host_switch_name: "{{ host_nvds_name }}"
 - display_name: "{{ tz_overlay_name }}"
   transport_type: "OVERLAY"
-  host_switch_name: "{{ nvds_name }}"
+  host_switch_name: "{{ host_nvds_name }}"
 - display_name: "{{ tz_edge_name }}"
   transport_type: "VLAN"
-  host_switch_name: "{{ nvds_name }}"
+  host_switch_name: "{{ edge_nvds_name }}"
 
 # NSX-T IP Pool (for the TEP interfaces)
 ip_pools:

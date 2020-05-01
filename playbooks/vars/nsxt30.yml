@@ -1,11 +1,11 @@
 # NSX-T Edge Transport Nodes
 edge_transport_nodes:
-- display_name: "{{ transport_node1 }}"
+- display_name: "{{ edge_node1 }}"
   host_switches:
   - host_switch_profiles:
     - name: edge-uplink-profile
       type: UplinkHostSwitchProfile
-    host_switch_name: n-vds-edge
+    host_switch_name: "{{ edge_nvds_name }}"
     host_switch_mode: STANDARD
     pnics:
     - device_name: "fp-eth0"
@@ -24,7 +24,7 @@ edge_transport_nodes:
     - transport_zone_name: "tz-edge"
   node_deployment_info:
     resource_type: "EdgeNode"
-    display_name: "{{ transport_node1 }}"
+    display_name: "{{ edge_node1 }}"
     ip_addresses:
     deployment_config:
       form_factor: "SMALL"
@@ -46,16 +46,16 @@ edge_transport_nodes:
           prefix_length: 24
         default_gateway_addresses: 
         - "{{ mgmt_network_gw }}"
-        hostname: "{{ transport_node1 }}.{{ domain }}"
+        hostname: "{{ edge_node1 }}.{{ domain }}"
         compute: "Edge"
         storage: "{{ nfs_datastore }}"
         host: "esxi04.{{ domain }}"
-- display_name: "{{ transport_node2 }}"
+- display_name: "{{ edge_node2 }}"
   host_switches:
   - host_switch_profiles:
     - name: edge-uplink-profile
       type: UplinkHostSwitchProfile
-    host_switch_name: n-vds-edge
+    host_switch_name: "{{ edge_nvds_name }}"
     host_switch_mode: STANDARD
     pnics:
     - device_name: "fp-eth0"
@@ -74,7 +74,7 @@ edge_transport_nodes:
     - transport_zone_name: "tz-edge"
   node_deployment_info:
     resource_type: "EdgeNode"
-    display_name: "{{ transport_node2 }}"
+    display_name: "{{ edge_node2 }}"
     ip_addresses:
     deployment_config:
       form_factor: "SMALL"
@@ -96,7 +96,7 @@ edge_transport_nodes:
           prefix_length: 24
         default_gateway_addresses: 
         - "{{ mgmt_network_gw }}"
-        hostname: "{{ transport_node2 }}.{{ domain }}"
+        hostname: "{{ edge_node2 }}.{{ domain }}"
         compute: "Edge"
         storage: "{{ nfs_datastore }}"
         host: "esxi05.{{ domain }}"
