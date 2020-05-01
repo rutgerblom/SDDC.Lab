@@ -7,12 +7,6 @@
   vars_files:
     - ../answerfile.yml
   tasks:
-    - name: Check if the NSX-T license file exists
-      stat: 
-        path: "{{ nsxlicense }}"
-      register: nsxlicensekey
-      when: deploy_nsxt == true
-
     - name: Add NSX-T license
       nsxt_licenses:
         hostname: "{{ nsxman.nsxman01.hostname }}"
@@ -22,5 +16,4 @@
         license_key: "{{ nsxlicensekey }}"
         state: "present"
       when: 
-        - nsxlicensekey.stat.exists == True
         - deploy_nsxt == true
