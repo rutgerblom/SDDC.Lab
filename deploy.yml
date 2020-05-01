@@ -31,6 +31,7 @@
 - import_playbook: playbooks/createNsxEdgeCluster.yml
 - import_playbook: playbooks/attachNsxTNP.yml
 # NSX-T deployment ends here
+
 - name: Wait 5 minutes for the NSX-T platform to become fully responsive
   hosts: localhost
   gather_facts: False
@@ -42,7 +43,8 @@
       when: 
         - deploy_nsxt == true
         - deploy_nsxt_edge == true
-# NSX-T logical networking configuration starts here
+
+# NSX-T logical network provisioning starts here
 - import_playbook: playbooks/createNsxSegments.yml
 - import_playbook: playbooks/createNsxT0gateway.yml
-# NSX-T logical networking configuration ends here
+# NSX-T logical network provisioning ends here
