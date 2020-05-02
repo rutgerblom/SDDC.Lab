@@ -40,6 +40,9 @@
           resource_type: StandardHostSwitchSpec
           host_switches: "{{item.host_switches}}"
         state: present
+        transport_zone_endpoints:
+        - transport_zone_name: "{{ tz_overlay_name }}"
+        - transport_zone_name: "{{ tz_vlan_name }}"
       with_items:
         - "{{ transport_node_profiles }}"
       when:
