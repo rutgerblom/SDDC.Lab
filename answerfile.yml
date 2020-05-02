@@ -112,12 +112,12 @@ tz_overlay_name: "tz-overlay"
 tz_edge_name: "tz-edge"
 ip_pool_name: "tep-pool"
 tn_profile_name: "esxi-tnp"
-uplink_vlan: '1657' # VLAN for the Tier-0 external interfaces.
-uplink_prefix: '172.16.57'
-transport_vlan: '1659' # VLAN for overlay transport
-transport_prefix: '172.16.59'
+uplink_vlan: '1614' # VLAN for the Tier-0 external interfaces.
+uplink_prefix: '172.16.14'
+transport_vlan: '1615' # VLAN for Geneve transport
+transport_prefix: '172.16.15'
 transport_network_mask: '255.255.255.0'
-transport_gw: '172.16.59.1'
+transport_gw: "{{ transport_prefix }}.1"
 edge_node1: "en01"
 edge_node2: "en02"
 edge_node_vsphere_cluster: "Edge" # The vSphere cluster in the nested environment where the Edge VMs should be deployed.
