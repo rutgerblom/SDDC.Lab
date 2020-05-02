@@ -1,12 +1,6 @@
 ---
-<<<<<<< HEAD
-- hosts: 127.0.0.1
-  gather_facts: false
-  connection: local
-=======
 - hosts: localhost
   gather_facts: false
->>>>>>> develop
   vars_files:
     - ./answerfile.yml
   tasks:
@@ -22,10 +16,6 @@
         state: absent
       async: 7200
       poll: 0
-<<<<<<< HEAD
-      ignore_errors: true
-=======
->>>>>>> develop
 
     - name: Remove ESXi VMs
       vmware_guest:
@@ -64,16 +54,10 @@
       async: 7200
       poll: 0        
       with_dict: "{{ nsxman }}"
-<<<<<<< HEAD
-      ignore_errors: true
-
-    - name: Remove trunk port group for the lab environment
-=======
       when:
         - deploy_nsxt == true
 
     - name: Remove trunk port group for the nested environment
->>>>>>> develop
       vmware_portgroup:
         hostname: "{{ physicalESX.host }}"
         username: "{{ physicalESX.user }}"
@@ -85,14 +69,8 @@
         state: absent
       async: 7200
       poll: 0
-<<<<<<< HEAD
-      ignore_errors: true
-
-    - name: Remove management port group for the lab environment
-=======
 
     - name: Remove management port group for the nested environment
->>>>>>> develop
       vmware_portgroup:
         hostname: "{{ physicalESX.host }}"
         username: "{{ physicalESX.user }}"
@@ -104,14 +82,8 @@
         state: absent
       async: 7200
       poll: 0
-<<<<<<< HEAD
-      ignore_errors: true
-
-    - name: Remove VMware vSwitch on the ESXi host for the lab environment
-=======
 
     - name: Remove VMware vSwitch on the ESXi host for the nested environment
->>>>>>> develop
       vmware_vswitch:
         hostname: "{{ physicalESX.host }}"
         username: "{{ physicalESX.user }}"
