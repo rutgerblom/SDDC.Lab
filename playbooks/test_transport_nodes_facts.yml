@@ -1,18 +1,13 @@
 ---
 - hosts: localhost
   gather_facts: false
-  vars:
-    nsxlicensekey: "{{ lookup('file', '{{ nsxlicense }}') }}"
   vars_files:
     - ../answerfile.yml
   tasks:
-    - name: Add NSX-T license
-      nsxt_licenses:
+    - name: List Transport Nodes
+      nsxt_transport_nodes_facts:
         hostname: "{{ nsxman.nsxman01.hostname }}"
         username: "{{ nsxmanadminuser }}"
         password: "{{ nsxmanpassword }}"
         validate_certs: False
-        license_key: "{{ nsxlicensekey }}"
-        state: "present"
-      when: 
-        - deploy_nsxt == true
+      check_mode: yes

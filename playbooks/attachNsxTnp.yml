@@ -1,7 +1,6 @@
 ---
-- hosts: 127.0.0.1
+- hosts: localhost
   gather_facts: false
-  connection: local 
   vars_files:
     - ../answerfile.yml
   tasks:
@@ -9,6 +8,14 @@
       stat: 
         path: "{{ nsxlicense }}"
       register: nsxlicensekey
+      when: deploy_nsxt == true
+
+    - name: Load variables for NSX-T
+      include_vars:
+        file: nsxt_vars.yml
+      when: 
+        - nsxlicensekey.stat.exists == True        
+        - deploy_nsxt == true
       
     - name: Attach NSX-T transport node profile to vSphere cluster
       nsxt_transport_node_collections:
@@ -20,9 +27,11 @@
         resource_type: "TransportNodeCollection"
         description: "Transport Node Collections"
         compute_manager_name: "{{ vcenter.fqdn }}"
-        cluster_name: "Compute"
-        transport_node_profile_name: "esxi-tnp"
+        cluster_name: "{{ item.key }}"
+        transport_node_profile_name: "{{ tn_profile_name }}"
         state: present
+      with_dict: "{{ clusters }}"
       when: 
         - nsxlicensekey.stat.exists == True
         - deploy_nsxt == true
+        - item.value.prep_nsx == true

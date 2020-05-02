@@ -1,7 +1,6 @@
 ---
-- hosts: 127.0.0.1
+- hosts: localhost
   gather_facts: false
-  connection: local
   vars_files:
     - ../answerfile.yml
   tasks:
@@ -10,18 +9,16 @@
       stat: 
         path: "{{ nsxlicense }}"
       register: nsxlicensekey
+      when: deploy_nsxt == true
 
-    - name: Conditionally load variables for NSX-T 2.5
+    - name: Load variables for NSX-T
       include_vars:
-        file: nsxt25.yml
-      when: nsxt_major_version == 2
+        file: nsxt_vars.yml
+      when: 
+        - nsxlicensekey.stat.exists == True        
+        - deploy_nsxt == true
 
-    - name: Conditionally load variables for NSX-T 3.0
-      include_vars:
-        file: nsxt30.yml
-      when: nsxt_major_version == 3
-
-    - name: Deploy and configure NSX-T Edge nodes
+    - name: Deploy and configure NSX-T Edge transport nodes
       nsxt_transport_nodes:
         hostname: "{{ nsxman.nsxman01.hostname }}"
         username: "{{ nsxmanadminuser }}"
@@ -34,10 +31,13 @@
           host_switches: "{{ item.host_switches }}"
         node_deployment_info: "{{ item.node_deployment_info }}"
         state: present
+        transport_zone_endpoints:
+        - transport_zone_name: "{{ tz_overlay_name }}"
+        - transport_zone_name: "{{ tz_edge_name }}"  
       with_items:
         - "{{ edge_transport_nodes }}"
       register: _deploy_edges
-      async: 1800
+      async: 900
       poll: 0
       when: 
         - nsxlicensekey.stat.exists == true
@@ -45,13 +45,14 @@
         - deploy_nsxt == true
         - deploy_nsxt_edge == true
 
-    - name: Wait 30 minutes for the NSX-T Edge node deployment to finish
-      pause: minutes=30
+    - name: Wait 15 minutes for the NSX-T Edge node deployment to finish
+      pause: minutes=15
       when: 
         - nsxlicensekey.stat.exists == true
         - use_nfs == true
         - deploy_nsxt == true
         - deploy_nsxt_edge == true
+        
     - name: Checking if the NSX-T Edge node deployment is finished
       async_status:
         jid: "{{ item.ansible_job_id }}"

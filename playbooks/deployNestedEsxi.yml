@@ -1,7 +1,6 @@
 ---
-- hosts: 127.0.0.1
+- hosts: localhost
   gather_facts: false
-  connection: local
   vars_files:
     - ../answerfile.yml
   tasks:
@@ -17,19 +16,19 @@
         esxi_hostname: "{{ physicalESX.host }}"
         folder: /ha-datacenter/vm
         disk:
-        - size_gb: 8
+        - size_gb: "{{ item.value.boot_disk_size }}"
           type: thin
           datastore: "{{ physicalESX.datastore }}"
-        - size_gb: "{{ vsan_cache_size }}"
+        - size_gb: "{{ item.value.vsan_cache_size }}"
           type: thin
           datastore: "{{ physicalESX.datastore }}"
-        - size_gb: "{{ vsan_capacity_size }}"
+        - size_gb: "{{ item.value.vsan_capacity_size }}"
           type: thin
           datastore: "{{ physicalESX.datastore }}"
         hardware:
           nested_virt: true
-          memory_mb: "{{ nested_esxi_ram }}"
-          num_cpus: "{{ nested_esxi_cpu }}"
+          memory_mb: "{{ item.value.ram }}"
+          num_cpus: "{{ item.value.cpu }}"
           scsi: paravirtual
         networks:
           - name: "{{ physicalESX.trunkpg }}"

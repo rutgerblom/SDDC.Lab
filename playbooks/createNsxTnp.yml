@@ -1,20 +1,22 @@
 ---
-- hosts: 127.0.0.1
+- hosts: localhost
   gather_facts: false
-  connection: local
   vars_files:
     - ../answerfile.yml
   tasks:
 
-    - name: Conditionally load variables for NSX-T 2.5
-      include_vars:
-        file: nsxt25.yml
-      when: nsxt_major_version == 2
+    - name: Check if the NSX-T license file exists
+      stat: 
+        path: "{{ nsxlicense }}"
+      register: nsxlicensekey
+      when: deploy_nsxt == true
 
-    - name: Conditionally load variables for NSX-T 3.0
+    - name: Load variables for NSX-T
       include_vars:
-        file: nsxt30.yml
-      when: nsxt_major_version == 3
+        file: nsxt_vars.yml
+      when: 
+        - nsxlicensekey.stat.exists == True        
+        - deploy_nsxt == true
         
     - name: Create NSX-T transport node profile 
       nsxt_transport_node_profiles:
@@ -28,8 +30,12 @@
         host_switch_spec:
           resource_type: StandardHostSwitchSpec
           host_switches: "{{item.host_switches}}"
+        transport_zone_endpoints:
+        - transport_zone_name: "{{ tz_overlay_name }}"
+        - transport_zone_name: "{{ tz_vlan_name }}"
         state: present
       with_items:
         - "{{ transport_node_profiles }}"
       when:
         - deploy_nsxt == true
+        - nsxlicensekey.stat.exists == True

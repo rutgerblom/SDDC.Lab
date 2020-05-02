@@ -1,10 +1,16 @@
 ---
-- hosts: 127.0.0.1
+- hosts: localhost
   gather_facts: false
-  connection: local
   vars_files:
     - ../answerfile.yml
   tasks:
+
+    - name: Load variables for NSX-T
+      include_vars:
+        file: nsxt_vars.yml
+      when:        
+        - deploy_nsxt == true
+
     - name: Create NSX-T IP pool
       nsxt_ip_pools:
         hostname: "{{ nsxman.nsxman01.hostname }}"

@@ -1,7 +1,6 @@
 ---
-- hosts: 127.0.0.1
+- hosts: localhost
   gather_facts: false
-  connection: local
   vars_files:
     - ../answerfile.yml
   tasks:
@@ -56,6 +55,16 @@
 
     - name: Create Clusters
       vmware_cluster:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        datacenter_name: "{{ vcenter.datacenter }}"
+        cluster_name: "{{ item.key }}"
+        validate_certs: False
+      with_dict: "{{ clusters }}"
+
+    - name: Enable DRS
+      vmware_cluster_drs:
         hostname: "{{ vcenter.ip }}"
         username: "{{ vcenter.user }}"
         password: "{{ vcenter.password }}"

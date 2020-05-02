@@ -1,19 +1,18 @@
 ---
-- hosts: 127.0.0.1
+- hosts: localhost
   gather_facts: false
-  connection: local
   vars_files:
     - ../answerfile.yml
   tasks:
 
-    - name: Check if the VyOS router is already depoyed
+    - name: Check if the VyOS router is already deployed
       vmware_guest_info:
         hostname: "{{ physicalESX.host }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
         datacenter: "ha-datacenter"
-        name: "{{ vm_prefix }}{{ router_hostname }}"
+        name: "{{ vm_prefix }}-{{ router_hostname }}"
         schema: "vsphere"
         properties: ["overallStatus"]
       delegate_to: localhost
@@ -40,7 +39,7 @@
         password: "{{ physicalESX.password }}"
         validate_certs: no
         datastore: "{{ physicalESX.datastore }}"
-        name: "{{ vm_prefix }}{{ router_hostname }}"
+        name: "{{ vm_prefix }}-{{ router_hostname }}"
         ovf: "{{ VyosOva }}"
         networks:
           "public": "{{ router_public_pg }}"
@@ -58,7 +57,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        vm_id: "{{ vm_prefix }}{{ router_hostname }}"
+        vm_id: "{{ vm_prefix }}-{{ router_hostname }}"
         vm_username: "vyos"
         vm_password: "vyos"
         copy:
@@ -73,7 +72,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ vm_prefix }}{{ router_hostname }}"
+        name: "{{ vm_prefix }}-{{ router_hostname }}"
         annotation: "The password for the vyos user is VMware1!"
       when: deploy_router == true and status is failed
 
@@ -83,7 +82,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ vm_prefix }}{{ router_hostname }}"
+        name: "{{ vm_prefix }}-{{ router_hostname }}"
         state: reboot-guest
       when: deploy_router == true and status is failed
 

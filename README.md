@@ -1,6 +1,6 @@
 # vsphere-nsxt-lab-deploy
 
-#### Table of Contents
+## Table of Contents
 
 * [Description](#Description)
 * [Changelog](#Changelog)
@@ -14,7 +14,7 @@
 
 ## Description
 
-This repository contains a set of Ansible Playbooks that will deploy and configure vCenter, nested ESXi, NSX-T Manager, and NSX-T Edge nodes. The primary use case is speedy provisioning of a consistent nested lab environment.
+This repository contains a set of Ansible Playbooks that will deploy and configure vCenter, nested ESXi, NSX-T Manager, and NSX-T Edge nodes. The primary use case is speedy provisioning of a consistent nested vSphere/NSX-T lab environment.
 
 ## Changelog
 
@@ -67,8 +67,8 @@ Using the default **deploy.yml** the following is deployed:
    * Transport Node Profile
    * Two NSX-T Edge Transport Nodes
    * Edge Cluster
-   * ESXi Transport Nodes ("Compute" cluster)
-   * Tier-0 Gateway
+   * ESXi Transport Nodes
+   * Tier-0 Gateway (NSX-T 3.0 only)
 
 Ansible Play recap from 25/04/2020:
 
@@ -84,7 +84,7 @@ A diagram of the physical environment.
 A diagram of the nested vSphere environment.
 ![Logicaloverview](images/vsphere-nsxt-deploy-log.png)
 
-A diagram of the NSX-T logical network.
+A diagram of the NSX-T logical network (NSX-T 3.0 only).
 ![Logicalnsxoverview](images/vsphere-nsxt-deploy-nsx.png)
 
 ## Development
