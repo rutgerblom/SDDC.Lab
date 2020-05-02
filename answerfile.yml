@@ -6,10 +6,10 @@ use_nfs: true # Mount an existing NFS datastore to the nested ESXi hosts? Config
 vm_prefix: "pod01" # This prefix will be added to all the VMs that are deployed on the physical ESXi.
 
 # Paths to ISO and OVA files
-#esxIso: "/iso/VMware-VMvisor-Installer-7.0.0-15843807.x86_64.iso" # ESXi 7.0
-esxIso: "/iso/VMware-VMvisor-Installer-201912001-15160138.x86_64.iso" # ESXi 6.7
-#vcIso: "/iso/VMware-VCSA-all-7.0.0-15952498.iso" # vCenter 7.0
-vcIso: "/iso/VMware-VCSA-all-6.7.0-14367737.iso" # vCenter 6.7
+esxIso: "/iso/VMware-VMvisor-Installer-7.0.0-15843807.x86_64.iso" # ESXi 7.0
+#esxIso: "/iso/VMware-VMvisor-Installer-201912001-15160138.x86_64.iso" # ESXi 6.7
+vcIso: "/iso/VMware-VCSA-all-7.0.0-15952498.iso" # vCenter 7.0
+#vcIso: "/iso/VMware-VCSA-all-6.7.0-14367737.iso" # vCenter 6.7
 NsxManOva: "/iso/nsx-unified-appliance-3.0.0.0.0.15946739.ova" # NSX-T 3.0
 #NsxManOva: "/iso/nsx-unified-appliance-2.5.1.0.0.15314292.ova" # NSX-T 2.5.1
 VyosOva: "/iso/vyos-1.1.8-amd64.ova" # Will be downloaded if missing and deploy_router == true
@@ -90,14 +90,6 @@ vds:
   uplink2_pg: 'pg-uplink2'
   uplink2_vlan: '0-4094'
 
-# Nested ESXi configuration
-nested_esxi_user: "root"
-nested_esxi_password: "VMware1!"
-nested_esxi_cpu: "8"
-nested_esxi_ram: "65536"
-vsan_cache_size: "90"
-vsan_capacity_size: "180"
-
 # NSX-T configuration 
 nsxmanager_name: "nsxmanager01"
 nsxmanpassword: 'VMware1!VMware1!'
@@ -153,8 +145,13 @@ vESX:
     vmotion_mask: "{{ vmotion_network_mask }}"
     vsan_ip: "{{ vsan_prefix }}.11"
     vsan_mask: "{{ vsan_network_mask }}"
-    username: "{{ nested_esxi_user }}"
-    password: "{{ nested_esxi_password }}"
+    username: "root"
+    password: "VMware1!"
+    cpu: "8"
+    ram: "65536"
+    boot_disk_size: "8"
+    vsan_cache_size: "90"
+    vsan_capacity_size: "180"
   esxi02:
     ip: "{{ mgmt_prefix }}.12"
     mask: "{{ mgmt_network_mask }}"
@@ -167,8 +164,13 @@ vESX:
     vmotion_mask: "{{ vmotion_network_mask }}"
     vsan_ip: "{{ vsan_prefix }}.12"
     vsan_mask: "{{ vsan_network_mask }}"
-    username: "{{ nested_esxi_user }}"
-    password: "{{ nested_esxi_password }}"
+    username: "root"
+    password: "VMware1!"
+    cpu: "8"
+    ram: "65536"
+    boot_disk_size: "8"
+    vsan_cache_size: "90"
+    vsan_capacity_size: "180"
   esxi03:
     ip: "{{ mgmt_prefix }}.13"
     mask: "{{ mgmt_network_mask }}"
@@ -181,8 +183,13 @@ vESX:
     vmotion_mask: "{{ vmotion_network_mask }}"
     vsan_ip: "{{ vsan_prefix }}.13"
     vsan_mask: "{{ vsan_network_mask }}"
-    username: "{{ nested_esxi_user }}"
-    password: "{{ nested_esxi_password }}"
+    username: "root"
+    password: "VMware1!"
+    cpu: "8"
+    ram: "65536"
+    boot_disk_size: "8"
+    vsan_cache_size: "90"
+    vsan_capacity_size: "180"
   esxi04:
     ip: "{{ mgmt_prefix }}.14"
     mask: "{{ mgmt_network_mask }}"
@@ -195,8 +202,13 @@ vESX:
     vmotion_mask: "{{ vmotion_network_mask }}"
     vsan_ip: "{{ vsan_prefix }}.14"
     vsan_mask: "{{ vsan_network_mask }}"
-    username: "{{ nested_esxi_user }}"
-    password: "{{ nested_esxi_password }}"
+    username: "root"
+    password: "VMware1!"
+    cpu: "8"
+    ram: "65536"
+    boot_disk_size: "8"
+    vsan_cache_size: "90"
+    vsan_capacity_size: "180"
   esxi05:
     ip: "{{ mgmt_prefix }}.15"
     mask: "{{ mgmt_network_mask }}"
@@ -209,5 +221,10 @@ vESX:
     vmotion_mask: "{{ vmotion_network_mask }}"
     vsan_ip: "{{ vsan_prefix }}.15"
     vsan_mask: "{{ vsan_network_mask }}"
-    username: "{{ nested_esxi_user }}"
-    password: "{{ nested_esxi_password }}"
+    username: "root"
+    password: "VMware1!"
+    cpu: "8"
+    ram: "65536"
+    boot_disk_size: "8"
+    vsan_cache_size: "90"
+    vsan_capacity_size: "180"
