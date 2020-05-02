@@ -4,6 +4,14 @@
   vars_files:
     - ../answerfile.yml
   tasks:
+
+    - name: Load variables for NSX-T
+      include_vars:
+        file: nsxt_vars.yml
+      when:        
+        - deploy_nsxt == true
+        - deploy_nsxt_edge == true
+
     - name: Create Uplink segment
       nsxt_policy_segment:
         hostname: "{{ nsxman.nsxman01.hostname }}"

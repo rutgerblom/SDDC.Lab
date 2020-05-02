@@ -19,9 +19,9 @@ edge_transport_nodes:
       - "{{ transport_prefix }}.62"
       subnet_mask: "{{ transport_network_mask }}"
       default_gateway: "{{ transport_gw }}"
-    transport_zone_endpoints:
-    - transport_zone_name: "{{ tz_overlay_name }}"
-    - transport_zone_name: "{{ tz_edge_name }}"
+    #transport_zone_endpoints: # Only NSX-T 3 allows transport zone endpoint configuration at this level.
+    #- transport_zone_name: "{{ tz_overlay_name }}"
+    #- transport_zone_name: "{{ tz_edge_name }}"
   node_deployment_info:
     resource_type: "EdgeNode"
     display_name: "{{ edge_node1 }}"
@@ -69,7 +69,7 @@ edge_transport_nodes:
       - "{{ transport_prefix }}.64"
       subnet_mask: "{{ transport_network_mask }}"
       default_gateway: "{{ transport_gw }}"
-    #transport_zone_endpoints: # Only NSX-T 3 allows transport zone endpoint configuration here.
+    #transport_zone_endpoints: # Only NSX-T 3 allows transport zone endpoint configuration at this level.
     #- transport_zone_name: "{{ tz_overlay_name }}"
     #- transport_zone_name: "{{ tz_edge_name }}"
   node_deployment_info:
@@ -122,6 +122,109 @@ transport_node_profiles:
     ip_assignment_spec:
       resource_type: StaticIpPoolSpec
       ip_pool_name: "{{ ip_pool_name }}"
-    #transport_zone_endpoints: # Only NSX-T 3 allows transport zone endpoint configuration here.
+    #transport_zone_endpoints: # Only NSX-T 3 allows transport zone endpoint configuration at this level.
     #- transport_zone_name: "{{ tz_overlay_name }}"
     #- transport_zone_name: "{{ tz_edge_name }}"
+
+# NSX-T Transport Zones
+transportzones:
+- display_name: "{{ tz_vlan_name }}"
+  transport_type: "VLAN"
+  host_switch_name: "{{ nvds_name }}"
+- display_name: "{{ tz_overlay_name }}"
+  transport_type: "OVERLAY"
+  host_switch_name: "{{ nvds_name }}"
+- display_name: "{{ tz_edge_name }}"
+  transport_type: "VLAN"
+  host_switch_name: "{{ nvds_name }}"
+
+# NSX-T IP Pool (for the TEP interfaces)
+ip_pools:
+- display_name: "{{ ip_pool_name }}"
+  subnets:
+  - allocation_ranges:
+    - start: "{{ transport_prefix }}.20"
+      end: "{{ transport_prefix }}.50"
+    cidr: "{{ transport_prefix }}.0/24"
+    gateway_ip: "{{ transport_gw }}"
+
+# NSX-T Uplink Profiles
+uplink_profiles:
+- display_name: "esxi-uplink-profile"
+  teaming:
+    active_list:
+    - uplink_name: "uplink-1"
+      uplink_type: PNIC
+    - uplink_name: "uplink-2"
+      uplink_type: PNIC
+    policy: "LOADBALANCE_SRCID"
+  transport_vlan: "{{ transport_vlan }}"
+  mtu: "9000"
+- display_name: "edge-uplink-profile"
+  teaming:
+    active_list:
+    - uplink_name: "uplink-1"
+      uplink_type: "PNIC"
+    - uplink_name: "uplink-2"
+      uplink_type: "PNIC"
+    policy: "LOADBALANCE_SRCID"
+  transport_vlan: "{{ transport_vlan }}"
+  mtu: "9000"
+
+# NSX-T Segments
+segments:
+- display_name: "seg-vlan-{{ uplink_vlan }}"
+  vlan_id: "{{ uplink_vlan }}"
+  tz: "{{ tz_edge_name }}"
+
+# NSX-T Tier-0 Gateway
+tier0_gateways:
+- display_name: "{{ tier0_name }}"
+  ha_mode: "ACTIVE_STANDBY"
+  failover_mode: "NON_PREEMPTIVE"
+  locale_services:
+    - state: "present"
+      id: "t0ls"
+      edge_cluster_info:
+        edge_cluster_display_name: "{{ edge_cluster_name }}"
+      route_redistribution_config:
+        bgp_enabled: true
+        redistribution_rules:
+          - name: connected
+            route_redistribution_types: ["TIER0_SEGMENT", "TIER1_CONNECTED"]
+      BGP:
+        state: present
+        enabled: true
+        local_as_num: "{{ nsx_as }}"
+        graceful_restart_config:
+          mode: HELPER_ONLY
+        neighbors:
+          - display_name: router01
+            neighbor_address: "{{ router_peer }}"
+            remote_as_num: "{{ router_as }}"
+            bfd:
+              enabled: true
+            state: present        
+      interfaces:
+        - id: "uplink1-en01"
+          state: "present"
+          type: "EXTERNAL"
+          urpf_mode: "NONE"
+          edge_node_info:
+            edge_cluster_display_name: "{{ edge_cluster_name }}"
+            edge_node_display_name: "{{ edge_node1 }}"
+          segment_display_name: "seg-vlan-{{ uplink_vlan }}"
+          subnets:
+          - ip_addresses: ["{{ uplink_ip1 }}"]
+            prefix_len: 29
+        - id: "uplink1-en02"
+          state: "present"
+          type: "EXTERNAL"
+          urpf_mode: "NONE"
+          edge_node_info:
+            edge_cluster_display_name: "{{ edge_cluster_name }}"
+            edge_node_display_name: "{{ edge_node2 }}"
+          segment_display_name: "seg-vlan-{{ uplink_vlan }}"
+          subnets:
+          - ip_addresses: ["{{ uplink_ip2 }}"]
+            prefix_len: 29
