@@ -37,7 +37,7 @@
       with_items:
         - "{{ edge_transport_nodes }}"
       register: _deploy_edges
-      async: 1800
+      async: 900
       poll: 0
       when: 
         - nsxlicensekey.stat.exists == true
@@ -45,8 +45,8 @@
         - deploy_nsxt == true
         - deploy_nsxt_edge == true
 
-    - name: Wait 30 minutes for the NSX-T Edge node deployment to finish
-      pause: minutes=30
+    - name: Wait 15 minutes for the NSX-T Edge node deployment to finish
+      pause: minutes=15
       when: 
         - nsxlicensekey.stat.exists == true
         - use_nfs == true
