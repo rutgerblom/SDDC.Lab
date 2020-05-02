@@ -68,7 +68,7 @@ Using the default **deploy.yml** the following is deployed:
    * Two NSX-T Edge Transport Nodes
    * Edge Cluster
    * ESXi Transport Nodes
-   * Tier-0 Gateway (NSX-T 3.0 only)
+   * Tier-0 Gateway (provisioned with NSX-T 3.0 only)
 
 Ansible Play recap from 25/04/2020:
 
@@ -84,7 +84,7 @@ A diagram of the physical environment.
 A diagram of the nested vSphere environment.
 ![Logicaloverview](images/vsphere-nsxt-deploy-log.png)
 
-A diagram of the NSX-T logical network (NSX-T 3.0 only).
+A diagram of the NSX-T logical network (provisioned with NSX-T 3.0 only).
 ![Logicalnsxoverview](images/vsphere-nsxt-deploy-nsx.png)
 
 ## Development
