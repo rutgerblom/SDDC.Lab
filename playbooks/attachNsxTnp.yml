@@ -29,9 +29,6 @@
         compute_manager_name: "{{ vcenter.fqdn }}"
         cluster_name: "Compute"
         transport_node_profile_name: "{{ tn_profile_name }}"
-        transport_zone_endpoints:
-        - transport_zone_name: "{{ tz_overlay_name }}"
-        - transport_zone_name: "{{ tz_vlan_name }}"
         state: present
       when: 
         - nsxlicensekey.stat.exists == True
