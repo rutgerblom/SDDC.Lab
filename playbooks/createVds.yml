@@ -26,7 +26,7 @@
         validate_certs: false
         portgroup_name: "{{ vds.management_pg }}"
         switch_name: "{{ vds.name }}"
-        vlan_id: "{{ vds.management_vlan }}"
+        vlan_id: "{{ physicalESX.vlan }}"
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
@@ -39,7 +39,7 @@
         validate_certs: false
         portgroup_name: "{{ vds.vmotion_pg }}"
         switch_name: "{{ vds.name }}"
-        vlan_id: "{{ vds.vmotion_vlan }}"
+        vlan_id: "{{ vmotion_vlan }}"
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
@@ -57,6 +57,19 @@
         portgroup_type: earlyBinding
         state: present
 
+    - name: Create vmnetwork port group
+      vmware_dvs_portgroup:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        validate_certs: false
+        portgroup_name: "{{ vds.vmnetwork_pg }}"
+        switch_name: "{{ vds.name }}"
+        vlan_id: "{{ vmnetwork_vlan }}"
+        num_ports: 8
+        portgroup_type: earlyBinding
+        state: present
+
     - name: Create Uplink1 port group
       vmware_dvs_portgroup:
         hostname: "{{ vcenter.ip }}"
@@ -66,7 +79,7 @@
         portgroup_name: "{{ vds.uplink1_pg }}"
         switch_name: "{{ vds.name }}"
         vlan_trunk: true
-        vlan_id: "{{ vds.uplink1_vlan }}"
+        vlan_id: "0-4094"
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
@@ -80,7 +93,7 @@
         portgroup_name: "{{ vds.uplink2_pg }}"
         switch_name: "{{ vds.name }}"
         vlan_trunk: true
-        vlan_id: "{{ vds.uplink2_vlan }}"
+        vlan_id: "0-4094"
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
