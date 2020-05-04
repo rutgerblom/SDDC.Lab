@@ -51,25 +51,25 @@ dns2: "8.8.8.8"
 ntp_server: "10.2.129.10" # Your NTP server available to the nested environment's management network
 domain: "lab.local" # The DNS domain name for the nested environment.
 vmnetwork_vlan: "{{ pod + vmnetwork }}"
-vmnetwork_prefix: "10.19.{{ pod + vmnetwork }}"
-mgmt_prefix: "10.19.{{ pod + management }}"
+vmnetwork_prefix: "10.240{{ pod + vmnetwork }}"
+mgmt_prefix: "10.240{{ pod + management }}"
 mgmt_network_mask: "255.255.255.0"
-mgmt_network_gw: "10.19.{{ pod + management }}.1"
+mgmt_network_gw: "10.240{{ pod + management }}.1"
 vmotion_vlan: "{{ pod + vmotion }}"
-vmotion_prefix: "10.19.{{ pod + vmotion }}"
+vmotion_prefix: "10.240{{ pod + vmotion }}"
 vmotion_network_mask: "255.255.255.0"
 vsan_vlan: "{{ pod + vsan }}"
-vsan_prefix: "10.19.{{ pod + vsan }}"
+vsan_prefix: "10.240{{ pod + vsan }}"
 vsan_network_mask: "255.255.255.0"
 uplink_vlan: "{{ pod + uplink }}"
-uplink_prefix: "10.19.{{ pod + uplink }}"
+uplink_prefix: "10.240{{ pod + uplink }}"
 transport_vlan: "{{ pod + transport }}"
-transport_prefix: "10.19.{{ pod + transport }}"
+transport_prefix: "10.240{{ pod + transport }}"
 transport_network_mask: '255.255.255.0'
-transport_gw: "10.19.{{ pod + transport }}.1"
-router_peer: "10.19.{{ pod + uplink }}.1" # Router IP on uplink VLAN 
-uplink_ip1: "10.19.{{ pod + uplink }}.2" # IP address of Tier-0 interface 1 on the BGP peering VLAN
-uplink_ip2: "10.19.{{ pod + uplink }}.3" # IP address of Tier-0 interface 2 on the BGP peering VLAN
+transport_gw: "10.240{{ pod + transport }}.1"
+router_peer: "10.240{{ pod + uplink }}.1" # Router IP on uplink VLAN 
+uplink_ip1: "10.240{{ pod + uplink }}.2" # IP address of Tier-0 interface 1 on the BGP peering VLAN
+uplink_ip2: "10.240{{ pod + uplink }}.3" # IP address of Tier-0 interface 2 on the BGP peering VLAN
 nsx_as: "65{{ pod }}" # BGP AS number on the NSX-T side
 router_as: "65{{ pod + 1 }}" # BGP AS number on your router (VyOS if deploy_router == true)
 
