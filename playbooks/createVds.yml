@@ -141,6 +141,7 @@
           type: 'static'
           ip_address: "{{ item.value.vmotion_ip }}"
           subnet_mask: "{{ item.value.vmotion_mask }}"
+          tcpip_stack: vmotion
       with_dict: "{{ vESX }}"
 
     - name: Create vmk2 for vSAN
