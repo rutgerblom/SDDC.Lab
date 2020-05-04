@@ -42,10 +42,10 @@ edge_transport_nodes:
         management_network: "{{ vds.management_pg }}"
         management_port_subnets:
         - ip_addresses:
-          - "{{ mgmt_prefix }}.61"
+          - "10.240.{{ pod + management }}.61"
           prefix_length: 24
         default_gateway_addresses: 
-        - "{{ mgmt_network_gw }}"
+        - "10.240.{{ pod + management }}.1"
         hostname: "{{ edge_node1 }}.{{ domain }}"
         compute: "{{ edge_node_vsphere_cluster }}"
         storage: "{{ nfs_datastore }}"
@@ -92,10 +92,10 @@ edge_transport_nodes:
         management_network: "{{ vds.management_pg }}"
         management_port_subnets: 
         - ip_addresses:
-          - "{{ mgmt_prefix }}.62"
+          - "10.240.{{ pod + management }}.62"
           prefix_length: 24
         default_gateway_addresses: 
-        - "{{ mgmt_network_gw }}"
+        - "10.240.{{ pod + management }}.1"
         hostname: "{{ edge_node2 }}.{{ domain }}"
         compute: "{{ edge_node_vsphere_cluster }}"
         storage: "{{ nfs_datastore }}"
