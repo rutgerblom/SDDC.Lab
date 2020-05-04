@@ -17,7 +17,7 @@ VyosOva: "/iso/vyos-1.1.8-amd64.ova" # Will be downloaded if missing and deploy_
 
 # Your physical ESXi host properties
 physicalESX:
-  host: "esxi03.demo.local"
+  fqdn: "esxi03.demo.local" # Must be resolvable by DNS and must match the actual ESXi hostname (run "hostname" command on your physical ESXi host)
   user: "root"
   password: "VMware1!"
   vswitch: "vSwitch-{{ vm_prefix }}" # vSwitch for nested environment. Will be created if missing.

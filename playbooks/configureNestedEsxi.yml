@@ -6,7 +6,7 @@
   tasks:
     - name: Configure hostname on the ESXi hosts
       vmware_vm_shell:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: false
@@ -32,7 +32,7 @@
       retries: 10
     - name: Set VLAN on the management portgroup
       vmware_vm_shell:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: false
@@ -58,7 +58,7 @@
       retries: 10
     - name: Set IP address on vmk0
       vmware_vm_shell:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: false
@@ -84,7 +84,7 @@
       retries: 10
     - name: Set default gateway on the ESXi hosts
       vmware_vm_shell:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: false
@@ -110,7 +110,7 @@
       retries: 10
     - name: Set search domain on the ESXi hosts
       vmware_vm_shell:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: false
@@ -136,7 +136,7 @@
       retries: 10
     - name: Configure DNS on the ESXi hosts
       vmware_vm_shell:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: false
@@ -162,7 +162,7 @@
       retries: 10      
     - name: Disable SSH warnings on the ESXi hosts
       vmware_vm_shell:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: false
@@ -188,7 +188,7 @@
       retries: 10
     - name: Mark vSAN cache disk as SSD disk
       vmware_vm_shell:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: false
@@ -214,7 +214,7 @@
       retries: 10      
     - name: Reclaim vSAN cache disk
       vmware_vm_shell:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: false
@@ -240,7 +240,7 @@
       retries: 10         
     - name: Mark vSAN capacity disk as SSD disk
       vmware_vm_shell:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: false
@@ -266,7 +266,7 @@
       retries: 10      
     - name: Reclaim vSAN capacity disk
       vmware_vm_shell:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: false

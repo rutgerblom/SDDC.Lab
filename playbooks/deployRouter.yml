@@ -7,7 +7,7 @@
 
     - name: Check if the VyOS router is already deployed
       vmware_guest_info:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
@@ -34,7 +34,7 @@
 
     - name: Deploy VyOS router
       vmware_deploy_ovf:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
@@ -53,7 +53,7 @@
 
     - name: Configure VyOS router
       vmware_guest_file_operation:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
@@ -68,7 +68,7 @@
 
     - name: Write annotation on the VyOS VM
       vmware_guest:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
@@ -78,7 +78,7 @@
 
     - name: Reboot VyOS VM
       vmware_guest_powerstate:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no

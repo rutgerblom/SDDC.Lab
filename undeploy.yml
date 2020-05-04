@@ -7,7 +7,7 @@
 
     - name: Remove VyOS router VM
       vmware_guest:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
@@ -19,7 +19,7 @@
 
     - name: Remove ESXi VMs
       vmware_guest:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
@@ -32,7 +32,7 @@
 
     - name: Remove vCenter VM
       vmware_guest:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
@@ -44,7 +44,7 @@
 
     - name: Remove NSX Manager VM(s)
       vmware_guest:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
@@ -59,11 +59,11 @@
 
     - name: Remove trunk port group for the nested environment
       vmware_portgroup:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: False
-        esxi_hostname: "{{ physicalESX.host }}"
+        esxi_hostname: "{{ physicalESX.fqdn }}"
         switch_name: "{{ physicalESX.vswitch }}"
         portgroup_name: "{{ physicalESX.trunkpg }}"
         state: absent
@@ -72,11 +72,11 @@
 
     - name: Remove management port group for the nested environment
       vmware_portgroup:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: False        
-        esxi_hostname: "{{ physicalESX.host }}"
+        esxi_hostname: "{{ physicalESX.fqdn }}"
         switch_name: "{{ physicalESX.vswitch }}"
         portgroup_name: "{{ physicalESX.vlanpg }}"
         state: absent
@@ -85,11 +85,11 @@
 
     - name: Remove VMware vSwitch on the ESXi host for the nested environment
       vmware_vswitch:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: False
-        esxi_hostname: "{{ physicalESX.host }}"
+        esxi_hostname: "{{ physicalESX.fqdn }}"
         switch_name: "{{ physicalESX.vswitch }}"
         state: absent
       async: 7200
