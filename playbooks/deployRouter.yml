@@ -87,7 +87,7 @@
       when: deploy_router == true and status is failed
 
     - name: Add static route on the Ansible control node
-      command: ./ip route add "{{ mgmt_prefix }}".0/24 via "{{ router_public_ip.split("/")[0] }}"
+      command: ./ip route add "{{ mgmt_prefix }}.0/24" via "{{ router_public_ip.split("/")[0] }}"
       args:
         chdir: /bin/
       register: iproute
