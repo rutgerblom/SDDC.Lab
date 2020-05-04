@@ -71,7 +71,7 @@ router_as: "65{{ pod + 1 }}" # BGP AS number on your router (VyOS if deploy_rout
 
 # New vCenter appliance configuration
 vcenter:
-  ip: "{{ mgmt_prefix}}.10" # vCenter IP address 
+  ip: "10.240.{{ pod + management }}.10" # vCenter IP address 
   mask: "24"
   gw: "10.240.{{ pod + management }}.1"
   fqdn: "vcenter01.{{ domain }}" # vCenter FQDN if there is a working DNS server, otherwise specify the vCenter IP address here.
