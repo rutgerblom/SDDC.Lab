@@ -21,7 +21,15 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
 * **12/04/2020**
   * Initial release
 * **25/04/2020**
-  * Added an optional VyOS router to the deployment
+  * Added an optional VyOS router to the deployment.
+* **1.2.5**
+  * Added variable "pod" for easier deployment with less configuration to fill out. 
+  * vESXi now has a "cores" variable and the default vESXi host is now down to 2 sockets.
+  * vMotion VMkernel adapter is now created on the vMotion TCP/IP stack.
+  * Added a "VM Network" VLAN to the deployment for virtual machine networking within the nested environment. The VyOS router provides a DHCP service for this VLAN.
+  * A default route is now configured in the VyOs router using the "router_default_gw" variable.
+  * Improved format and structure of the answerfile for better readibility.
+  * The "answerfile.yml" has been renamed to "answerfile_sample.yml" to prevent overwriting of the user's local "answerfile.yml". See [Usage](#Usage).
 
 ## Requirements
 
@@ -34,7 +42,7 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
 
 ## Usage
 
-Rename **answerfile_sample.yml** to **answerfile.yml** and modify according to your needs. 
+Rename **answerfile_sample.yml** to **answerfile.yml** and modify the settings according to your needs. 
 
 Start the deployment with: **ansible-playbook deploy.yml**
 
@@ -69,6 +77,7 @@ Using the default **deploy.yml** the following is deployed:
    * Edge Cluster
    * ESXi Transport Nodes
    * Tier-0 Gateway (provisioned with NSX-T 3.0 only)
+   * BGP peering with VyOS router
 
 Ansible Play recap from 25/04/2020:
 
