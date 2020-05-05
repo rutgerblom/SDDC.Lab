@@ -34,7 +34,7 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
 
 ## Usage
 
-Edit **answerfile.yml** and **deploy.yml** according to your needs. 
+Rename **answerfile_sample.yml** to **answerfile.yml** and modify according to your needs. 
 
 Start the deployment with: **ansible-playbook deploy.yml**
 
