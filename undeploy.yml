@@ -94,4 +94,12 @@
         state: absent
       async: 7200
       poll: 0
-      ignore_errors: true   
+      ignore_errors: true
+
+    - name: Remove static route on the Ansible control node
+      command: ./ip route del "10.240.{{ pod + management }}.0/24"
+      args:
+        chdir: /bin/
+      register: iproute
+      ignore_errors: true
+      when: deploy_router == true
