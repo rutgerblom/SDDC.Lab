@@ -4,7 +4,6 @@
   vars_files:
     - ../answerfile.yml
   tasks:
-
     - name: Load variables for NSX-T
       include_vars:
         file: nsxt_vars.yml
@@ -21,7 +20,7 @@
         display_name: "{{ item.display_name }}"
         mtu: "{{ item.mtu }}"
         teaming: "{{ item.teaming }}"
-        transport_vlan: "{{ item.transport_vlan }}"
+        transport_vlan: "{{ pod + transport }}" 
         state: "present"
       with_items:
         - "{{ uplink_profiles }}"

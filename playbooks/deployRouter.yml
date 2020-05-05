@@ -4,7 +4,6 @@
   vars_files:
     - ../answerfile.yml
   tasks:
-
     - name: Check if the VyOS router is already deployed
       vmware_guest_info:
         hostname: "{{ physicalESX.fqdn }}"
@@ -12,7 +11,7 @@
         password: "{{ physicalESX.password }}"
         validate_certs: no
         datacenter: "ha-datacenter"
-        name: "{{ vm_prefix }}-{{ router_hostname }}"
+        name: "{{ pod }}-{{ router_hostname }}"
         schema: "vsphere"
         properties: ["overallStatus"]
       delegate_to: localhost
@@ -39,7 +38,7 @@
         password: "{{ physicalESX.password }}"
         validate_certs: no
         datastore: "{{ physicalESX.datastore }}"
-        name: "{{ vm_prefix }}-{{ router_hostname }}"
+        name: "{{ pod }}-{{ router_hostname }}"
         ovf: "{{ VyosOva }}"
         networks:
           "public": "{{ router_public_pg }}"
@@ -57,7 +56,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        vm_id: "{{ vm_prefix }}-{{ router_hostname }}"
+        vm_id: "{{ pod }}-{{ router_hostname }}"
         vm_username: "vyos"
         vm_password: "vyos"
         copy:
@@ -72,7 +71,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ vm_prefix }}-{{ router_hostname }}"
+        name: "{{ pod }}-{{ router_hostname }}"
         annotation: "The password for the vyos user is VMware1!"
       when: deploy_router == true and status is failed
 
@@ -82,12 +81,12 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ vm_prefix }}-{{ router_hostname }}"
+        name: "{{ pod }}-{{ router_hostname }}"
         state: reboot-guest
       when: deploy_router == true and status is failed
 
     - name: Add static route on the Ansible control node
-      command: ./ip route add "{{ mgmt_prefix }}".0/24 via "{{ router_public_ip.split("/")[0] }}"
+      command: ./ip route add "10.240.{{ pod + management }}.0/24" via "{{ router_public_ip.split("/")[0] }}"
       args:
         chdir: /bin/
       register: iproute

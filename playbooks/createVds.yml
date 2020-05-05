@@ -39,7 +39,7 @@
         validate_certs: false
         portgroup_name: "{{ vds.vmotion_pg }}"
         switch_name: "{{ vds.name }}"
-        vlan_id: "{{ vmotion_vlan }}"
+        vlan_id: "{{ pod + vmotion }}"
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
@@ -52,7 +52,7 @@
         validate_certs: false
         portgroup_name: "{{ vds.vsan_pg }}"
         switch_name: "{{ vds.name }}"
-        vlan_id: "{{ vsan_vlan }}"
+        vlan_id: "{{ pod + vsan }}"
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
@@ -65,7 +65,7 @@
         validate_certs: false
         portgroup_name: "{{ vds.vmnetwork_pg }}"
         switch_name: "{{ vds.name }}"
-        vlan_id: "{{ vmnetwork_vlan }}"
+        vlan_id: "{{ pod + vmnetwork }}"
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
