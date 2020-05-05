@@ -26,10 +26,10 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
   * Added a "VM Network" VLAN to the deployment for virtual machine networking within the nested environment. 
   * The VyOS router provides a DHCP service for the "VM Network" VLAN.
   * The "ntp_server" variable is now used in the VyOS configuration as well.
-  * The "dns2" variable is now used for the nested ESXi hosts (if defined). 
-  * A default route is now configured in the VyOs router using the "router_default_gw" variable.
-  * Improved format and structure of the answerfile for better readibility.
-  * The "answerfile.yml" has been renamed to "answerfile_sample.yml" to prevent overwriting of the user's local "answerfile.yml" (also see [Usage](#Usage)).
+  * The "dns2" variable is now used when DNS is configured on the nested ESXi hosts. 
+  * A default route is now configured on the VyOs router using the new "router_default_gw" variable.
+  * Improved format and structure for the answerfile for better readibility.
+  * The "answerfile.yml" has been renamed to "answerfile_sample.yml" to prevent overwriting of the user's local "answerfile.yml" (see [Usage](#Usage)).
 * **25/04/2020**
   * Added an optional VyOS router to the deployment.
 * **12/04/2020**
