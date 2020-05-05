@@ -8,6 +8,7 @@
       stat: 
         path: "{{ nsxlicense }}"
       register: nsxlicensekey
+      when: deploy_nsxt == true
 
     - name: Create NSX-T Edge cluster
       nsxt_edge_clusters:
