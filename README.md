@@ -18,10 +18,6 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
 
 ## Changelog
 
-* **12/04/2020**
-  * Initial release
-* **25/04/2020**
-  * Added an optional VyOS router to the deployment.
 * **1.2.5**
   * Added variable "pod" for easier deployment with less configuration to fill out. 
   * vESXi now has a "cores" variable and the default vESXi host configuration has 2 sockets.
@@ -30,6 +26,10 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
   * A default route is now configured in the VyOs router using the "router_default_gw" variable.
   * Improved format and structure of the answerfile for better readibility.
   * The "answerfile.yml" has been renamed to "answerfile_sample.yml" to prevent overwriting of the user's local "answerfile.yml" (also see [Usage](#Usage)).
+* **25/04/2020**
+  * Added an optional VyOS router to the deployment.
+* **12/04/2020**
+  * Initial release
 
 ## Requirements
 
