@@ -8,14 +8,19 @@
       stat: 
         path: "{{ nsxlicense }}"
       register: nsxlicensekey
-      when: deploy_nsxt == true
+      when:
+        - deploy_nsxt == true
+        - use_nfs == true
+        - deploy_nsxt_edge == true
 
     - name: Load variables for NSX-T
       include_vars:
         file: nsxt_vars.yml
       when: 
-        - nsxlicensekey.stat.exists == True        
+        - nsxlicensekey.stat.exists == True
+        - use_nfs == true        
         - deploy_nsxt == true
+        - deploy_nsxt_edge == true
 
     - name: Deploy and configure NSX-T Edge transport nodes
       nsxt_transport_nodes:
