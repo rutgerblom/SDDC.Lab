@@ -23,7 +23,8 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
   * vESX now has a "cores" variable so the user can control CPU sockets and cores of the virtual ESXi host.
   * The default vESXi host configuration now has 2 CPU sockets instead of 8.
   * vMotion VMkernel adapter is now created on the vMotion TCP/IP stack.
-  * Added a "VM Network" VLAN to the deployment for virtual machine networking within the nested environment. The VyOS router provides a DHCP service for this VLAN.
+  * Added a "VM Network" VLAN to the deployment for virtual machine networking within the nested environment. 
+  * The VyOS router provides a DHCP service for the "VM Network" VLAN.
   * The "ntp_server" variable is now also used in the VyOS configuration.
   * The "dns2" variable is now also used for the nested ESXi hosts (if defined). 
   * A default route is now configured in the VyOs router using the "router_default_gw" variable.
