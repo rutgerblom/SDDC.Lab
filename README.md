@@ -101,9 +101,9 @@ A diagram of the NSX-T logical network (provisioned with NSX-T 3.0 only).
 
 ## Development
 
-* TODO: Add more Playbooks for NSX-T logical networking
 * TODO: Add an option to deploy against vCenter
 * TODO: Improve NSX-T Edge VM deployment
+* TODO: Add more Playbooks for NSX-T logical networking
 
 ## Credits
 
