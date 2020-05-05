@@ -28,7 +28,7 @@ physicalESX:
   fqdn:                      "esxi03.demo.local"       # Must be resolvable by DNS and must match the actual ESXi hostname (run "hostname" command on your physical ESXi host)
   user:                      "root"
   password:                  "VMware1!"
-  vswitch:                   "vSwitch-pod-{{ pod }}"   # vSwitch for nested environment. Will be created if missing.
+  vswitch:                   "Pod-{{ pod }}-vSwitch"   # vSwitch for nested environment. Will be created if missing.
   vlan:                      "{{ pod + management }}"  # VLAN for the management network in the nested environment.
   vlanpg:                    "Pod-{{ pod }}-mgmt"      # Port group for vCenter appliance and NSX-T Manager node(s). Will be created if missing.
   trunkpg:                   "Pod-{{ pod }}-trunk"     # Port group for the ESXi VMs and the VyOS router. Will be created if missing.
