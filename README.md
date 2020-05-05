@@ -20,9 +20,12 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
 
 * **1.2.5**
   * Added variable "pod" for easier deployment with less configuration to fill out.
-  * vESX now has a "cores" variable and the default vESXi host configuration has 2 sockets.
+  * vESX now has a "cores" variable so the user can control CPU sockets and cores of the virtual ESXi host.
+  * The default vESXi host configuration now has 2 CPU sockets instead of 8.
   * vMotion VMkernel adapter is now created on the vMotion TCP/IP stack.
   * Added a "VM Network" VLAN to the deployment for virtual machine networking within the nested environment. The VyOS router provides a DHCP service for this VLAN.
+  * The "ntp_server" variable is now also used in the VyOS configuration.
+  * The "dns2" variable is now also used for the nested ESXi hosts. 
   * A default route is now configured in the VyOs router using the "router_default_gw" variable.
   * Improved format and structure of the answerfile for better readibility.
   * The "answerfile.yml" has been renamed to "answerfile_sample.yml" to prevent overwriting of the user's local "answerfile.yml" (also see [Usage](#Usage)).
@@ -99,7 +102,8 @@ A diagram of the NSX-T logical network (provisioned with NSX-T 3.0 only).
 ## Development
 
 * TODO: Add more Playbooks for NSX-T logical networking
-* TODO: Optimize / structurize answerfile.yml
+* TODO: Add an option to deploy against vCenter
+* TODO: Improve NSX-T Edge VM deployment
 
 ## Credits
 
