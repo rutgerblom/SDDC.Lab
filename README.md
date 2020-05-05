@@ -29,7 +29,7 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
   * Added a "VM Network" VLAN to the deployment for virtual machine networking within the nested environment. The VyOS router provides a DHCP service for this VLAN.
   * A default route is now configured in the VyOs router using the "router_default_gw" variable.
   * Improved format and structure of the answerfile for better readibility.
-  * The "answerfile.yml" has been renamed to "answerfile_sample.yml" to prevent overwriting of the user's local "answerfile.yml" (also see [Usage](#Usage).
+  * The "answerfile.yml" has been renamed to "answerfile_sample.yml" to prevent overwriting of the user's local "answerfile.yml" (also see [Usage](#Usage)).
 
 ## Requirements
 
