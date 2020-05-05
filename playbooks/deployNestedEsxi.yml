@@ -29,6 +29,7 @@
           nested_virt: true
           memory_mb: "{{ item.value.ram }}"
           num_cpus: "{{ item.value.cpu }}"
+          num_cpu_cores_per_socket: "{{ item.value.cores }}"
           scsi: paravirtual
         networks:
           - name: "{{ physicalESX.trunkpg }}"
