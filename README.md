@@ -7,7 +7,7 @@
 * [Requirements](#Requirements)
 * [Usage](#Usage)
 * [Compatibility](#Compatibility)
-* [The Deployment](#The-Deployment)
+* [The deployment](#The-deployment)
 * [Diagrams](#Diagrams)
 * [Development](#Development)
 * [Credits](#Credits)
@@ -59,7 +59,7 @@ The following versions of vSphere and NSX-T can be deployed:
 * vCenter version 6.7 and 7.0
 * NSX-T version 2.5 and 3.0
 
-## The Deployment
+## The deployment
 
 Using the default **deploy.yml** the following is deployed:
 1. vSwitch and port groups on the physical ESXi host
