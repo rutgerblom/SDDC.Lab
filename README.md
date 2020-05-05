@@ -107,4 +107,6 @@ A diagram of the NSX-T logical network (provisioned with NSX-T 3.0 only).
 
 ## Credits
 
-A lot of credits go to **Yasen Simeonov** and his project at https://github.com/yasensim/vsphere-lab-deploy.
+A big thank you to **Yasen Simeonov**. His project at https://github.com/yasensim/vsphere-lab-deploy was the inspiration for this project.
+Thank you **Luis Chano** for helping me push this project further all the time.
+Thank you **#vCommunity** for trying this out and giving feedback.
