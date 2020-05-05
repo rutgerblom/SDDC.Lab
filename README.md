@@ -19,8 +19,8 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
 ## Changelog
 
 * **1.2.5**
-  * Added variable "pod" for easier deployment with less configuration to fill out. 
-  * vESXi now has a "cores" variable and the default vESXi host configuration has 2 sockets.
+  * Added variable "pod" for easier deployment with less configuration to fill out.
+  * vESX now has a "cores" variable and the default vESXi host configuration has 2 sockets.
   * vMotion VMkernel adapter is now created on the vMotion TCP/IP stack.
   * Added a "VM Network" VLAN to the deployment for virtual machine networking within the nested environment. The VyOS router provides a DHCP service for this VLAN.
   * A default route is now configured in the VyOs router using the "router_default_gw" variable.
