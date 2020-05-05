@@ -20,7 +20,7 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
 
 * **1.2.5**
   * Added variable "pod" for easier deployment with less configuration to fill out.
-  * vESX now has a "cores" variable so the user can control CPU sockets and cores of the virtual ESXi host.
+  * vESX now has a "cores" variable so the user can better control CPU sockets and cores of the virtual ESXi host.
   * The default vESXi host configuration now has 2 CPU sockets instead of 8.
   * vMotion VMkernel adapter is now created on the vMotion TCP/IP stack.
   * Added a "VM Network" VLAN to the deployment for virtual machine networking within the nested environment. 
