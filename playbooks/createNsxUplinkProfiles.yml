@@ -20,7 +20,7 @@
         display_name: "{{ item.display_name }}"
         mtu: "{{ item.mtu }}"
         teaming: "{{ item.teaming }}"
-        pod + transport: "{{ item.pod + transport }}"
+        transport_vlan: "{{ pod + transport }}" 
         state: "present"
       with_items:
         - "{{ uplink_profiles }}"
