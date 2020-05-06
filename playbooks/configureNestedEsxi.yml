@@ -230,7 +230,7 @@
       with_items: "{{ hwrn.results }}"
       retries: 10
 
-    - name: Mark vSAN cache disk as SSD disk
+    - name: Mark vSAN cache disk as Flash disk
       vmware_vm_shell:
         hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
@@ -250,7 +250,7 @@
       poll: 0
       register: markcachedisk
 
-    - name: Result check for marking vSAN cache disk
+    - name: Result check for marking vSAN cache disk as Flash disk
       async_status:
         jid: "{{ item.ansible_job_id }}"
       register: job_result
@@ -258,7 +258,7 @@
       with_items: "{{ markcachedisk.results }}"
       retries: 10
 
-    - name: Reclaim vSAN cache disk
+    - name: Reclaim vSAN Flash disk
       vmware_vm_shell:
         hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
@@ -278,68 +278,12 @@
       poll: 0
       register: claimcachedisk
 
-    - name: Result check for claiming vSAN cache disk
+    - name: Result check for reclaiming Flash disk
       async_status:
         jid: "{{ item.ansible_job_id }}"
       register: job_result
       until: job_result.finished
       with_items: "{{ claimcachedisk.results }}"
-      retries: 10
-
-    - name: Mark vSAN capacity disk as SSD disk
-      vmware_vm_shell:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
-        validate_certs: false
-        vm_id: "{{ item.value.vmname }}"
-        vm_username: "{{ item.value.username }}"
-        vm_password: "{{ item.value.password }}"
-        vm_shell: /bin/esxcli
-        vm_shell_args: "storage nmp satp rule add -s VMW_SATP_LOCAL -d mpx.vmhba0:C0:T2:L0 -o enable_ssd"
-        vm_shell_env: 
-        - "PATH=/bin"
-        - "VAR=test"
-        vm_shell_cwd: "/tmp"
-      with_dict: "{{ vESX }}"
-      async: 7200
-      poll: 0
-      register: marcapdisk
-
-    - name: Result check for marking vSAN capacity disk
-      async_status:
-        jid: "{{ item.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      with_items: "{{ marcapdisk.results }}"
-      retries: 10
-
-    - name: Reclaim vSAN capacity disk
-      vmware_vm_shell:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
-        validate_certs: false
-        vm_id: "{{ item.value.vmname }}"
-        vm_username: "{{ item.value.username }}"
-        vm_password: "{{ item.value.password }}"
-        vm_shell: /bin/esxcli
-        vm_shell_args: "storage core claiming reclaim -d mpx.vmhba0:C0:T2:L0"
-        vm_shell_env: 
-        - "PATH=/bin"
-        - "VAR=test"
-        vm_shell_cwd: "/tmp"
-      with_dict: "{{ vESX }}"
-      async: 7200
-      poll: 0
-      register: claimcapdisk
-
-    - name: Result check for claiming vSAN capacity disk
-      async_status:
-        jid: "{{ item.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      with_items: "{{ claimcapdisk.results }}"
       retries: 10
 
     - name: Remove local datastore from the ESXi hosts
