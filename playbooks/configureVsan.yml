@@ -13,5 +13,14 @@
         validate_certs: false
         cluster_name: "{{ item.key }}"
         enable_vsan: "{{ item.value.vsan }}"
-        vsan_auto_claim_storage: true
+        vsan_auto_claim_storage: false
+      with_dict: "{{ clusters }}"
+
+    - name: Claim disks for vSAN
+      claim_vsan_disks:
+        vcenter: "{{ vcenter.ip }}"
+        user: "{{ vcenter.user }}"
+        passwd: "{{ vcenter.password }}"
+        cluster: "{{ item.key }}"
+      when: item.value.vsan == True
       with_dict: "{{ clusters }}"
