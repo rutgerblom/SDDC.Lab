@@ -97,7 +97,7 @@
       ignore_errors: true
 
     - name: Remove static route on the Ansible control node
-      command: ./ip route del "10.240.{{ pod + management }}.0/24"
+      command: ./ip route del "{{ pod-network }}.{{ pod + management }}.0/24"
       args:
         chdir: /bin/
       register: iproute

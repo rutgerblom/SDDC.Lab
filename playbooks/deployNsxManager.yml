@@ -42,7 +42,7 @@
           nsx_cli_username: "{{ nsxmanadminuser }}"
           nsx_dns1_0: "{{ dns1 }}"
           nsx_domain_0: "{{ domain }}"
-          nsx_gateway_0: "10.240.{{ pod + management }}.1"
+          nsx_gateway_0: "{{ pod-network }}.{{ pod + management }}.1"
           nsx_hostname: "{{ item.item.value.hostname }}"
           nsx_ip_0: "{{ item.item.value.ip }}"
           nsx_isSSHEnabled: True
