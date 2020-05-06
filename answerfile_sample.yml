@@ -63,20 +63,20 @@ transport_gw:                "{{ pod_network }}.{{ pod + transport }}.1"
 router_peer:                 "{{ pod_network }}.{{ pod + uplink }}.1"     # Router IP on uplink VLAN 
 uplink_ip1:                  "{{ pod_network }}.{{ pod + uplink }}.2"     # IP address of Tier-0 interface 1 on the BGP peering VLAN
 uplink_ip2:                  "{{ pod_network }}.{{ pod + uplink }}.3"     # IP address of Tier-0 interface 2 on the BGP peering VLAN
-nsx_as:                      "65{{ pod }}"                     # BGP AS number on the NSX-T side
-router_as:                   "65{{ pod + 1 }}"                 # BGP AS number on your router (VyOS if deploy_router == true)
+nsx_as:                      "65{{ pod }}"                                # BGP AS number on the NSX-T side
+router_as:                   "65{{ pod + 1 }}"                            # BGP AS number on your router (VyOS if deploy_router == true)
 
 # New vCenter appliance configuration
 vcenter:
   ip:                        "{{ pod_network }}.{{ pod + management }}.10"  # vCenter IP address 
   mask:                      "24"  
   gw:                        "{{ pod_network }}.{{ pod + management }}.1"  
-  fqdn:                      "vcenter01.{{ domain }}"            # vCenter FQDN if there is a working DNS server, otherwise specify the vCenter IP address here.
+  fqdn:                      "vcenter01.{{ domain }}"                       # vCenter FQDN if there is a working DNS server, otherwise specify the vCenter IP address here.
   vmname:                    "{{ pod }}-vcenter01"  
   user:                      "administrator@vsphere.local"  
   password:                  "VMware1!"  
   datacenter:                "DC01"  
-  domain:                    "vsphere.local"                     # SSO domain
+  domain:                    "vsphere.local"                                 # SSO domain
 
 # vSphere clusters in the nested environment. You can add, remove or rename nested vSphere clusters below. 
 clusters:
