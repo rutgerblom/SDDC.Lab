@@ -185,7 +185,7 @@ def main():
 
     requests.packages.urllib3.disable_warnings()
     try:
-	SI = connect.SmartConnect(host=module.params['vcenter'],
+    SI = connect.SmartConnect(host=module.params['vcenter'],
                                             user=module.params['user'],
                                             pwd=module.params['passwd'])
 
@@ -193,7 +193,7 @@ def main():
         try:
             context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
             context.verify_mode = ssl.CERT_NONE
-	    SI = connect.SmartConnect(host=module.params['vcenter'],
+        SI = connect.SmartConnect(host=module.params['vcenter'],
                                             user=module.params['user'],
                                             pwd=module.params['passwd'],
                                             sslContext=context)
