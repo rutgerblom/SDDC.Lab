@@ -4,18 +4,10 @@
   vars_files:
     - ../answerfile.yml
   tasks:
-
-    - name: Check if the NSX-T license file exists
-      stat: 
-        path: "{{ nsxlicense }}"
-      register: nsxlicensekey
-      when: deploy_nsxt == true
-
     - name: Load variables for NSX-T
       include_vars:
         file: nsxt_vars.yml
-      when: 
-        - nsxlicensekey.stat.exists == True        
+      when:        
         - deploy_nsxt == true
         
     - name: Create NSX-T transport node profile 
@@ -38,4 +30,3 @@
         - "{{ transport_node_profiles }}"
       when:
         - deploy_nsxt == true
-        - nsxlicensekey.stat.exists == True

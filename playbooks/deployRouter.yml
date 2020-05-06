@@ -4,15 +4,14 @@
   vars_files:
     - ../answerfile.yml
   tasks:
-
     - name: Check if the VyOS router is already deployed
       vmware_guest_info:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
         datacenter: "ha-datacenter"
-        name: "{{ vm_prefix }}-{{ router_hostname }}"
+        name: "{{ pod }}-{{ router_hostname }}"
         schema: "vsphere"
         properties: ["overallStatus"]
       delegate_to: localhost
@@ -34,12 +33,12 @@
 
     - name: Deploy VyOS router
       vmware_deploy_ovf:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
         datastore: "{{ physicalESX.datastore }}"
-        name: "{{ vm_prefix }}-{{ router_hostname }}"
+        name: "{{ pod }}-{{ router_hostname }}"
         ovf: "{{ VyosOva }}"
         networks:
           "public": "{{ router_public_pg }}"
@@ -53,11 +52,11 @@
 
     - name: Configure VyOS router
       vmware_guest_file_operation:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        vm_id: "{{ vm_prefix }}-{{ router_hostname }}"
+        vm_id: "{{ pod }}-{{ router_hostname }}"
         vm_username: "vyos"
         vm_password: "vyos"
         copy:
@@ -68,26 +67,26 @@
 
     - name: Write annotation on the VyOS VM
       vmware_guest:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ vm_prefix }}-{{ router_hostname }}"
+        name: "{{ pod }}-{{ router_hostname }}"
         annotation: "The password for the vyos user is VMware1!"
       when: deploy_router == true and status is failed
 
     - name: Reboot VyOS VM
       vmware_guest_powerstate:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ vm_prefix }}-{{ router_hostname }}"
+        name: "{{ pod }}-{{ router_hostname }}"
         state: reboot-guest
       when: deploy_router == true and status is failed
 
-    - name: Add static route on the Ansible control node to the nested management subnet via the VyOS router public interface
-      command: ./ip route add "{{ mgmt_prefix }}".0/24 via "{{ router_public_ip }}"
+    - name: Add static route on the Ansible control node
+      command: ./ip route add "10.240.{{ pod + management }}.0/24" via "{{ router_public_ip.split("/")[0] }}"
       args:
         chdir: /bin/
       register: iproute

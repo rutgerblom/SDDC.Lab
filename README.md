@@ -7,7 +7,7 @@
 * [Requirements](#Requirements)
 * [Usage](#Usage)
 * [Compatibility](#Compatibility)
-* [The Deployment](#The-Deployment)
+* [The deployment](#The-deployment)
 * [Diagrams](#Diagrams)
 * [Development](#Development)
 * [Credits](#Credits)
@@ -18,10 +18,22 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
 
 ## Changelog
 
+* **1.2.5**
+  * Added variable "pod" for easier deployment with less configuration to fill out.
+  * vESX now has a "cores" variable so the user can better control CPU sockets and cores of the virtual ESXi host.
+  * The default vESXi host configuration now has 2 CPU sockets instead of 8.
+  * vMotion VMkernel adapter is now created on the vMotion TCP/IP stack.
+  * Added a "VM Network" VLAN to the deployment for virtual machine networking within the nested environment. 
+  * The VyOS router provides a DHCP service for the "VM Network" VLAN.
+  * The "ntp_server" variable is now used in the VyOS configuration as well.
+  * The "dns2" variable is now used when DNS is configured on the nested ESXi hosts. 
+  * A default route is now configured on the VyOs router using the new "router_default_gw" variable.
+  * Improved format and structure for the answerfile for better readibility.
+  * The "answerfile.yml" has been renamed to "answerfile_sample.yml" to prevent overwriting of the user's local "answerfile.yml" (see [Usage](#Usage)).
+* **25/04/2020**
+  * Added an optional VyOS router to the deployment.
 * **12/04/2020**
   * Initial release
-* **25/04/2020**
-  * Added an optional VyOS router to the deployment
 
 ## Requirements
 
@@ -34,7 +46,7 @@ This repository contains a set of Ansible Playbooks that will deploy and configu
 
 ## Usage
 
-Edit **answerfile.yml** and **deploy.yml** according to your needs. 
+Rename **answerfile_sample.yml** to **answerfile.yml** and modify the settings according to your needs. 
 
 Start the deployment with: **ansible-playbook deploy.yml**
 
@@ -47,7 +59,7 @@ The following versions of vSphere and NSX-T can be deployed:
 * vCenter version 6.7 and 7.0
 * NSX-T version 2.5 and 3.0
 
-## The Deployment
+## The deployment
 
 Using the default **deploy.yml** the following is deployed:
 1. vSwitch and port groups on the physical ESXi host
@@ -69,8 +81,9 @@ Using the default **deploy.yml** the following is deployed:
    * Edge Cluster
    * ESXi Transport Nodes
    * Tier-0 Gateway (provisioned with NSX-T 3.0 only)
+   * BGP peering with VyOS router
 
-Ansible Play recap from 25/04/2020:
+Ansible play recap from 05/05/2020:
 
 ![](images/play-recap.png)
 
@@ -89,9 +102,10 @@ A diagram of the NSX-T logical network (provisioned with NSX-T 3.0 only).
 
 ## Development
 
+* TODO: Add an option to deploy against vCenter
+* TODO: Improve NSX-T Edge VM deployment
 * TODO: Add more Playbooks for NSX-T logical networking
-* TODO: Optimize / structurize answerfile.yml
 
 ## Credits
 
-A lot of credits go to **Yasen Simeonov** and his project at https://github.com/yasensim/vsphere-lab-deploy.
+A big thank you to **Yasen Simeonov**. His project at https://github.com/yasensim/vsphere-lab-deploy was the inspiration for this project. Another big thank you to **Luis Chanu (VCDX #246)** for helping me push this project forward all the time. And thank you **vCommunity** for trying this out and providing feedback.

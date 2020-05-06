@@ -6,14 +6,14 @@
   tasks:
     - name: Deploy ESXi VMs
       vmware_guest:
-        hostname: "{{ physicalESX.host }}"
+        hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
         name: "{{ item.value.vmname }}"
         state: poweredon
         guest_id: vmkernel65Guest
-        esxi_hostname: "{{ physicalESX.host }}"
+        esxi_hostname: "{{ physicalESX.fqdn }}"
         folder: /ha-datacenter/vm
         disk:
         - size_gb: "{{ item.value.boot_disk_size }}"
@@ -29,6 +29,7 @@
           nested_virt: true
           memory_mb: "{{ item.value.ram }}"
           num_cpus: "{{ item.value.cpu }}"
+          num_cpu_cores_per_socket: "{{ item.value.cores }}"
           scsi: paravirtual
         networks:
           - name: "{{ physicalESX.trunkpg }}"
