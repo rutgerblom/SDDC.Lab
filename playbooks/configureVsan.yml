@@ -21,12 +21,3 @@
         cluster: "{{ item.key }}"
       when: item.value.vsan == True
       with_dict: "{{ clusters }}"
-
-    - name: Wait 3 minutes before clearing the vSAN warnings
-      pause: minutes=3
-
-    - name: Clear vSAN warnings
-      clear_vsan_errors:
-        vcenter: "{{ vcenter.ip }}"
-        user: "{{ vcenter.user }}"
-        passwd: "{{ vcenter.password }}"
