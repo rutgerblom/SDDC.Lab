@@ -41,6 +41,7 @@
         datastore: "{{ physicalESX.datastore }}" 
         path: "/rutgerISO/vyos-rolling-latest.iso"
       tags: upload
+      when: deploy_router == true and status is failed
 
     - name: Deploy VyOS router
       vmware_guest:
@@ -70,6 +71,10 @@
         cdrom:
           type: "iso"
           iso_path: "[{{ physicalESX.datastore }}] rutgerISO/vyos-rolling-latest.iso"
+      when: deploy_router == true and status is failed
+
+    - name: Wait 2 minutes for the VyOS router to get deployed
+      pause: minutes=15
       when: deploy_router == true and status is failed
 
     - name: Configure VyOS router
