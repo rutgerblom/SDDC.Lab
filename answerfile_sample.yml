@@ -1,6 +1,6 @@
 # Deployment decisions
 deploy_router:               true   # Deploy a VyOS router for the nested environment?
-router_version:              latest # Choose between "latest" and "legacy"
+router_version:              latest # Choose between "latest" (vyos-rolling-latest) and "legacy" (vyos-1.1.8)
 deploy_nsxt:                 true   # Deploy NSX-T? (+20 minutes)
 deploy_nsxt_edge:            true   # Deploy NSX-T Edge nodes? (+15 minutes)
 nsxt_major_version:          3      # Version 2 and 3 are supported
@@ -55,7 +55,7 @@ router_public_pg:            "pg-management"           # Change this to an exist
 # Some global network properties for the nested environment
 dns1:                        "10.2.129.10"                                  # Your primary DNS server available to the nested environment.
 dns2:                        "8.8.8.8"                                      # Your secondary DNS server available to the nested environment.
-ntp_server:                  "10.2.129.10"                                  # Your NTP server available to the nested environment's management network
+ntp1:                        "10.2.129.10"                                  # Your NTP server available to the nested environment's management network
 domain:                      "lab.local"                                    # The DNS domain name for the nested environment.
 mgmt_network_mask:           "255.255.255.0"
 vmotion_network_mask:        "255.255.255.0"

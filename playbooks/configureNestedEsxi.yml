@@ -328,8 +328,8 @@
         password: "{{ vcenter.password }}"
         validate_certs: false        
         esxi_hostname: "{{ item.value.fqdn }}"
-        ntp_servers:
-          - "{{ ntp_server }}"
+        ntp1s:
+          - "{{ ntp1 }}"
       with_dict: "{{ vESX }}"
       async: 7200
       poll: 0
