@@ -210,6 +210,10 @@
           - ENTER
       when: deploy_router == true and status is failed
 
+    - name: Wait 30 seconds before reboot
+      pause: seconds=30
+      when: deploy_router == true and status is failed
+
     - name: Reboot VyOS VM
       vmware_guest_powerstate:
         hostname: "{{ physicalESX.fqdn }}"
@@ -248,7 +252,7 @@
         name: "{{ pod }}-{{ router_hostname }}"
         annotation: "The password for the vyos user is VMware1!"
       when: deploy_router == true and status is failed
-      
+
     - name: Reboot VyOS VM
       vmware_guest_powerstate:
         hostname: "{{ physicalESX.fqdn }}"
