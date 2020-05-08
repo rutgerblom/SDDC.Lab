@@ -322,8 +322,8 @@
         state: shutdown-guest
       when: deploy_router == true and status is failed
 
-    - name: Wait 20 seconds for the VyOS VM to shut down.
-      pause: seconds=20
+    - name: Wait 10 seconds for the VyOS VM to shut down.
+      pause: seconds=10
       when: deploy_router == true and status is failed
 
     - name: Disconnect CDROM on VyOS router VM
