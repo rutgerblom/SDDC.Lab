@@ -44,7 +44,7 @@
       tags: upload
       when: deploy_router == true and status is failed
 
-    - name: Boot VyOS router
+    - name: Create VyOS router VM
       vmware_guest:
         hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
@@ -210,8 +210,30 @@
           - ENTER
       when: deploy_router == true and status is failed
 
+    - name: Walk through the setup dialog 13
+      vmware_guest_sendkey:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ pod }}-{{ router_hostname }}"
+        keys_send:
+          - ENTER
+        when: deploy_router == true and status is failed
+
     - name: Wait 30 seconds before reboot
       pause: seconds=30
+      when: deploy_router == true and status is failed
+
+    - name: Disconnect CDROM on VyOS router VM
+      vmware_guest:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ pod }}-{{ router_hostname }}"
+        cdrom:
+          type: "none"
       when: deploy_router == true and status is failed
 
     - name: Reboot VyOS VM
