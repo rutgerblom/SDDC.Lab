@@ -43,7 +43,7 @@
       tags: upload
       when: deploy_router == true and status is failed
 
-    - name: Deploy VyOS router
+    - name: Boot VyOS router
       vmware_guest:
         hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
@@ -73,7 +73,7 @@
           iso_path: "[{{ physicalESX.datastore }}] rutgerISO/vyos-rolling-latest.iso"
       when: deploy_router == true and status is failed
 
-    - name: Wait 2 minutes for the VyOS router to get deployed
+    - name: Wait 2 minutes for the VyOS router to start up
       pause: minutes=15
       when: deploy_router == true and status is failed
 
