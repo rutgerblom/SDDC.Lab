@@ -1,0 +1,124 @@
+---
+- hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Check if the VyOS router is already deployed
+      vmware_guest_info:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        datacenter: "ha-datacenter"
+        name: "{{ pod }}-{{ router_hostname }}"
+        schema: "vsphere"
+        properties: ["overallStatus"]
+      delegate_to: localhost
+      register: status
+      ignore_errors: true
+      no_log: true
+
+    - name: Create template file for VyOS router
+      template: 
+        src=../templates/vyos.conf
+        dest=/tmp/vyos.conf
+      when: deploy_router == true and status is failed
+
+    - name: Download VyOS rolling release ISO
+      get_url:
+        url: https://downloads.vyos.io/rolling/current/amd64/vyos-rolling-latest.iso
+        dest: "{{ VyosOva }}"
+      when: deploy_router == true and status is failed
+
+    - name: Upload the VyOS ISO to the datastore
+      vsphere_copy: 
+        hostname: "{{ physicalESX.fqdn }}" 
+        username: "{{ physicalESX.user}}" 
+        password: "{{ physicalESX.password }}" 
+        validate_certs: false
+        src: "{{ VyosOva }}/vyos-rolling-latest.iso"
+        datastore: "{{ physicalESX.datastore }}" 
+        path: "/rutgerISO/vyos-rolling-latest.iso"
+      tags: upload
+
+    - name: Deploy VyOS router
+      vmware_guest:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ pod }}-{{ router_hostname }}"
+        state: poweredon
+        guest_id: debian10_64Guest
+        esxi_hostname: "{{ physicalESX.fqdn }}"
+        folder: /ha-datacenter/vm
+        disk:
+        - size_gb: "10"
+          type: thin
+          datastore: "{{ physicalESX.datastore }}"
+        hardware:
+          memory_mb: "512"
+          num_cpus: "1"
+          num_cpu_cores_per_socket: "1"
+          scsi: paravirtual
+        networks:
+          - name: "{{ router_public_pg }}"
+            device_type: vmxnet3
+          - name: "{{ physicalESX.trunkpg }}"
+            device_type: vmxnet3
+        cdrom:
+          type: "iso"
+          iso_path: "[{{ physicalESX.datastore }}] rutgerISO/vyos-rolling-latest.iso"
+      when: deploy_router == true and status is failed
+
+    - name: Configure VyOS router
+      vmware_guest_file_operation:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        vm_id: "{{ pod }}-{{ router_hostname }}"
+        vm_username: "vyos"
+        vm_password: "vyos"
+        copy:
+            src: "/tmp/vyos.conf"
+            dest: "/config/config.boot"
+            overwrite: true
+      when: deploy_router == true and status is failed
+
+    - name: Write annotation on the VyOS VM
+      vmware_guest:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ pod }}-{{ router_hostname }}"
+        annotation: "The password for the vyos user is VMware1!"
+      when: deploy_router == true and status is failed
+
+    - name: Reboot VyOS VM
+      vmware_guest_powerstate:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ pod }}-{{ router_hostname }}"
+        state: reboot-guest
+      when: deploy_router == true and status is failed
+
+    - name: Add static route on the Ansible control node
+      command: ./ip route add "{{ pod_network }}.{{ pod + management }}.0/24" via "{{ router_public_ip.split("/")[0] }}"
+      args:
+        chdir: /bin/
+      register: iproute
+      ignore_errors: true
+      when: deploy_router == true and status is failed
+
+    - name: Delete the temporary template file for VyOS router
+      file: path=/tmp/vyos.conf state=absent
+      when: deploy_router == true
+
+    - name: Wait 10 seconds
+      pause: seconds=10
+      when: deploy_router == true and status is failed
