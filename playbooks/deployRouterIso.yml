@@ -258,7 +258,7 @@
       pause: seconds=5
       when: deploy_router == true and status is failed
 
-    - name: Walk through the setup dialog 13
+    - name: Walk through the setup dialog 12
       vmware_guest_sendkey:
         hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
@@ -267,7 +267,7 @@
         name: "{{ pod }}-{{ router_hostname }}"
         keys_send:
           - ENTER
-        when: deploy_router == true and status is failed
+      when: deploy_router == true and status is failed
 
     - name: Wait 30 seconds before reboot
       pause: seconds=30
