@@ -78,6 +78,18 @@
       pause: minutes=1
       when: deploy_router == true and status is failed
 
+    - name: Walk through the setup dialog
+      vmware_guest_sendkey:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        folder: "{{ folder_name }}"
+        name: "{{ vm_name }}"
+        string_send: "user_logon"
+      delegate_to: localhost
+      register: keys_num_sent
+
     - name: Configure VyOS router
       vmware_guest_file_operation:
         hostname: "{{ physicalESX.fqdn }}"
