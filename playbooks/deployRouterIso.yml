@@ -187,7 +187,7 @@
         name: "{{ pod }}-{{ router_hostname }}"
         string_send: "vyos"
       when: deploy_router == true and status is failed
-      
+
     - name: Walk through the setup dialog 11
       vmware_guest_sendkey:
         hostname: "{{ physicalESX.fqdn }}"
@@ -258,7 +258,7 @@
 
     - name: Delete the temporary template file for VyOS router
       file: path=/tmp/vyos.conf state=absent
-      when: deploy_router == true
+      when: deploy_router == true and status is failed
 
     - name: Wait 10 seconds
       pause: seconds=10
