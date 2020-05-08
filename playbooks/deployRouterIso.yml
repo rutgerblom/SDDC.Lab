@@ -168,10 +168,6 @@
           - ENTER
       when: deploy_router == true and status is failed
 
-    - name: Wait 1 minute for the VyOS router to boot
-      pause: minutes=1
-      when: deploy_router == true and status is failed
-
     - name: Walk through the setup dialog 9
       vmware_guest_sendkey:
         hostname: "{{ physicalESX.fqdn }}"
@@ -180,17 +176,9 @@
         validate_certs: no
         name: "{{ pod }}-{{ router_hostname }}"
         string_send: "vyos"
-      when: deploy_router == true and status is failed 
+      when: deploy_router == true and status is failed
+
     - name: Walk through the setup dialog 10
-      vmware_guest_sendkey:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
-        validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
-        string_send: "vyos"
-      when: deploy_router == true and status is failed 
-    - name: Walk through the setup dialog 11
       vmware_guest_sendkey:
         hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
@@ -201,67 +189,88 @@
           - ENTER
       when: deploy_router == true and status is failed
 
-#    - name: Reboot VyOS VM
-#      vmware_guest_powerstate:
-#        hostname: "{{ physicalESX.fqdn }}"
-#        username: "{{ physicalESX.user }}"
-#        password: "{{ physicalESX.password }}"
-#        validate_certs: no
-#        name: "{{ pod }}-{{ router_hostname }}"
-#        state: reboot-guest
-#      when: deploy_router == true and status is failed#
+    - name: Walk through the setup dialog 11
+      vmware_guest_sendkey:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ pod }}-{{ router_hostname }}"
+        string_send: "vyos"
+      when: deploy_router == true and status is failed
 
-#    - name: Wait 1 minute for the VyOS router to boot
-#      pause: minutes=1
-#      when: deploy_router == true and status is failed#
+    - name: Walk through the setup dialog 12
+      vmware_guest_sendkey:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ pod }}-{{ router_hostname }}"
+        keys_send:
+          - ENTER
+      when: deploy_router == true and status is failed
 
-#    - name: Configure VyOS router
-#      vmware_guest_file_operation:
-#        hostname: "{{ physicalESX.fqdn }}"
-#        username: "{{ physicalESX.user }}"
-#        password: "{{ physicalESX.password }}"
-#        validate_certs: no
-#        vm_id: "{{ pod }}-{{ router_hostname }}"
-#        vm_username: "vyos"
-#        vm_password: "vyos"
-#        copy:
-#            src: "/tmp/vyos.conf"
-#            dest: "/config/config.boot"
-#            overwrite: true
-#      when: deploy_router == true and status is failed#
+    - name: Reboot VyOS VM
+      vmware_guest_powerstate:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ pod }}-{{ router_hostname }}"
+        state: reboot-guest
+      when: deploy_router == true and status is failed
 
-#    - name: Write annotation on the VyOS VM
-#      vmware_guest:
-#        hostname: "{{ physicalESX.fqdn }}"
-#        username: "{{ physicalESX.user }}"
-#        password: "{{ physicalESX.password }}"
-#        validate_certs: no
-#        name: "{{ pod }}-{{ router_hostname }}"
-#        annotation: "The password for the vyos user is VMware1!"
-#      when: deploy_router == true and status is failed#
+    - name: Wait 1 minute for the VyOS router to boot
+      pause: minutes=1
+      when: deploy_router == true and status is failed
 
-#    - name: Reboot VyOS VM
-#      vmware_guest_powerstate:
-#        hostname: "{{ physicalESX.fqdn }}"
-#        username: "{{ physicalESX.user }}"
-#        password: "{{ physicalESX.password }}"
-#        validate_certs: no
-#        name: "{{ pod }}-{{ router_hostname }}"
-#        state: reboot-guest
-#      when: deploy_router == true and status is failed#
+    - name: Configure VyOS router
+      vmware_guest_file_operation:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        vm_id: "{{ pod }}-{{ router_hostname }}"
+        vm_username: "vyos"
+        vm_password: "vyos"
+        copy:
+            src: "/tmp/vyos.conf"
+            dest: "/config/config.boot"
+            overwrite: true
+      when: deploy_router == true and status is failed
 
-#    - name: Add static route on the Ansible control node
-#      command: ./ip route add "{{ pod_network }}.{{ pod + management }}.0/24" via "{{ router_public_ip.split("/")[0] }}"
-#      args:
-#        chdir: /bin/
-#      register: iproute
-#      ignore_errors: true
-#      when: deploy_router == true and status is failed#
+    - name: Write annotation on the VyOS VM
+      vmware_guest:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ pod }}-{{ router_hostname }}"
+        annotation: "The password for the vyos user is VMware1!"
+      when: deploy_router == true and status is failed
+      
+    - name: Reboot VyOS VM
+      vmware_guest_powerstate:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ pod }}-{{ router_hostname }}"
+        state: reboot-guest
+      when: deploy_router == true and status is failed
 
-#    - name: Delete the temporary template file for VyOS router
-#      file: path=/tmp/vyos.conf state=absent
-#      when: deploy_router == true and status is failed#
+    - name: Add static route on the Ansible control node
+      command: ./ip route add "{{ pod_network }}.{{ pod + management }}.0/24" via "{{ router_public_ip.split("/")[0] }}"
+      args:
+        chdir: /bin/
+      register: iproute
+      ignore_errors: true
+      when: deploy_router == true and status is failed
 
-#    - name: Wait 10 seconds
-#      pause: seconds=10
-#      when: deploy_router == true and status is failed
+    - name: Delete the temporary template file for VyOS router
+      file: path=/tmp/vyos.conf state=absent
+      when: deploy_router == true and status is failed
+
+    - name: Wait 10 seconds
+      pause: seconds=10
+      when: deploy_router == true and status is failed
