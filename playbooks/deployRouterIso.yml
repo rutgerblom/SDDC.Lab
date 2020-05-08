@@ -88,10 +88,6 @@
         string_send: "vyos"
       when: deploy_router == true and status is failed
 
-    - name: Wait 5 seconds
-      pause: seconds=5
-      when: deploy_router == true and status is failed
-
     - name: Walk through the setup dialog 2
       vmware_guest_sendkey:
         hostname: "{{ physicalESX.fqdn }}"
@@ -103,10 +99,6 @@
           - ENTER
       when: deploy_router == true and status is failed
 
-    - name: Wait 5 seconds
-      pause: seconds=5
-      when: deploy_router == true and status is failed
-
     - name: Walk through the setup dialog 3
       vmware_guest_sendkey:
         hostname: "{{ physicalESX.fqdn }}"
@@ -115,10 +107,6 @@
         validate_certs: no
         name: "{{ pod }}-{{ router_hostname }}"
         string_send: "vyos"
-      when: deploy_router == true and status is failed
-
-    - name: Wait 5 seconds
-      pause: seconds=5
       when: deploy_router == true and status is failed
 
     - name: Walk through the setup dialog 4
@@ -132,10 +120,6 @@
           - ENTER
       when: deploy_router == true and status is failed
 
-    - name: Wait 5 seconds
-      pause: seconds=5
-      when: deploy_router == true and status is failed
-
     - name: Walk through the setup dialog 5
       vmware_guest_sendkey:
         hostname: "{{ physicalESX.fqdn }}"
@@ -144,10 +128,6 @@
         validate_certs: no
         name: "{{ pod }}-{{ router_hostname }}"
         string_send: "install image"
-      when: deploy_router == true and status is failed
-
-    - name: Wait 5 seconds
-      pause: seconds=5
       when: deploy_router == true and status is failed
 
     - name: Walk through the setup dialog 6
@@ -164,10 +144,6 @@
           - ENTER
       when: deploy_router == true and status is failed
 
-    - name: Wait 5 seconds
-      pause: seconds=5
-      when: deploy_router == true and status is failed
-
     - name: Walk through the setup dialog 7
       vmware_guest_sendkey:
         hostname: "{{ physicalESX.fqdn }}"
@@ -176,10 +152,6 @@
         validate_certs: no
         name: "{{ pod }}-{{ router_hostname }}"
         string_send: "yes"
-      when: deploy_router == true and status is failed
-
-    - name: Wait 5 seconds
-      pause: seconds=5
       when: deploy_router == true and status is failed
 
     - name: Walk through the setup dialog 8
@@ -196,10 +168,6 @@
           - ENTER
       when: deploy_router == true and status is failed
 
-    - name: Wait 5 seconds
-      pause: seconds=5
-      when: deploy_router == true and status is failed
-
     - name: Walk through the setup dialog 9
       vmware_guest_sendkey:
         hostname: "{{ physicalESX.fqdn }}"
@@ -208,10 +176,6 @@
         validate_certs: no
         name: "{{ pod }}-{{ router_hostname }}"
         string_send: "vyos"
-      when: deploy_router == true and status is failed
-
-    - name: Wait 5 seconds
-      pause: seconds=5
       when: deploy_router == true and status is failed
 
     - name: Walk through the setup dialog 10
@@ -225,10 +189,6 @@
           - ENTER
       when: deploy_router == true and status is failed
 
-    - name: Wait 5 seconds
-      pause: seconds=5
-      when: deploy_router == true and status is failed
-
     - name: Walk through the setup dialog 11
       vmware_guest_sendkey:
         hostname: "{{ physicalESX.fqdn }}"
@@ -237,10 +197,6 @@
         validate_certs: no
         name: "{{ pod }}-{{ router_hostname }}"
         string_send: "vyos"
-      when: deploy_router == true and status is failed
-
-    - name: Wait 5 seconds
-      pause: seconds=5
       when: deploy_router == true and status is failed
 
     - name: Walk through the setup dialog 12
@@ -252,10 +208,6 @@
         name: "{{ pod }}-{{ router_hostname }}"
         keys_send:
           - ENTER
-      when: deploy_router == true and status is failed
-
-    - name: Wait 5 seconds
-      pause: seconds=5
       when: deploy_router == true and status is failed
 
     - name: Walk through the setup dialog 12
@@ -270,7 +222,17 @@
       when: deploy_router == true and status is failed
 
     - name: Wait 30 seconds before reboot
-      pause: seconds=30
+      pause: seconds=10
+      when: deploy_router == true and status is failed
+
+    - name: Reboot VyOS VM
+      vmware_guest_powerstate:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ pod }}-{{ router_hostname }}"
+        state: reboot-guest
       when: deploy_router == true and status is failed
 
     - name: Disconnect CDROM on VyOS router VM
@@ -282,16 +244,6 @@
         name: "{{ pod }}-{{ router_hostname }}"
         cdrom:
           type: "none"
-      when: deploy_router == true and status is failed
-
-    - name: Reboot VyOS VM
-      vmware_guest_powerstate:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
-        validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
-        state: reboot-guest
       when: deploy_router == true and status is failed
 
     - name: Wait 1 minute for the VyOS router to boot
