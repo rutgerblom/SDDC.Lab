@@ -312,6 +312,20 @@
         annotation: "The password for the vyos user is VMware1!"
       when: deploy_router == true and status is failed
 
+    - name: Shutdown VyOS VM
+      vmware_guest_powerstate:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ pod }}-{{ router_hostname }}"
+        state: shutdown-guest
+      when: deploy_router == true and status is failed
+
+    - name: Wait 1 minute for the VyOS router to shut down.
+      pause: minutes=1
+      when: deploy_router == true and status is failed
+
     - name: Disconnect CDROM on VyOS router VM
       vmware_guest:
         hostname: "{{ physicalESX.fqdn }}"
@@ -323,14 +337,14 @@
           type: "none"
       when: deploy_router == true and status is failed
 
-    - name: Reboot VyOS VM
+    - name: Start VyOS VM
       vmware_guest_powerstate:
         hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
         name: "{{ pod }}-{{ router_hostname }}"
-        state: reboot-guest
+        state: powered-on
       when: deploy_router == true and status is failed
 
     - name: Add static route on the Ansible control node
