@@ -84,7 +84,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ vm_name }}"
+        name: "{{ pod }}-{{ router_hostname }}"
         string_send: "vyos"
     - name: Walk through the setup dialog 2
       vmware_guest_sendkey:
@@ -92,7 +92,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ vm_name }}"
+        name: "{{ pod }}-{{ router_hostname }}"
         keys_send:
           - ENTER
     - name: Walk through the setup dialog 3
@@ -101,7 +101,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ vm_name }}"
+        name: "{{ pod }}-{{ router_hostname }}"
         string_send: "vyos"
     - name: Walk through the setup dialog 4
       vmware_guest_sendkey:
@@ -109,7 +109,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ vm_name }}"
+        name: "{{ pod }}-{{ router_hostname }}"
         keys_send:
           - ENTER
     - name: Walk through the setup dialog 5
@@ -118,7 +118,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ vm_name }}"
+        name: "{{ pod }}-{{ router_hostname }}"
         string_send: "install image"
     - name: Walk through the setup dialog 6
       vmware_guest_sendkey:
@@ -126,7 +126,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ vm_name }}"
+        name: "{{ pod }}-{{ router_hostname }}"
         keys_send:
           - ENTER
 
