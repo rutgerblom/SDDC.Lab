@@ -273,17 +273,6 @@
       pause: seconds=30
       when: deploy_router == true and status is failed
 
-    - name: Disconnect CDROM on VyOS router VM
-      vmware_guest:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
-        validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
-        cdrom:
-          type: "none"
-      when: deploy_router == true and status is failed
-
     - name: Reboot VyOS VM
       vmware_guest_powerstate:
         hostname: "{{ physicalESX.fqdn }}"
@@ -321,6 +310,17 @@
         validate_certs: no
         name: "{{ pod }}-{{ router_hostname }}"
         annotation: "The password for the vyos user is VMware1!"
+      when: deploy_router == true and status is failed
+
+    - name: Disconnect CDROM on VyOS router VM
+      vmware_guest:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ pod }}-{{ router_hostname }}"
+        cdrom:
+          type: "none"
       when: deploy_router == true and status is failed
 
     - name: Reboot VyOS VM
