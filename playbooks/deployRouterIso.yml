@@ -168,36 +168,36 @@
           - ENTER
       when: deploy_router == true and status is failed
 
-    - name: Walk through the setup dialog 9
-      vmware_guest_sendkey:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
-        validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
-        string_send: "vyos"
-      when: deploy_router == true and status is failed
-
-    - name: Walk through the setup dialog 10
-      vmware_guest_sendkey:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
-        validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
-        string_send: "vyos"
-      when: deploy_router == true and status is failed
-
-    - name: Walk through the setup dialog 11
-      vmware_guest_sendkey:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
-        validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
-        keys_send:
-          - ENTER
-      when: deploy_router == true and status is failed
+#   - name: Walk through the setup dialog 9
+#     vmware_guest_sendkey:
+#       hostname: "{{ physicalESX.fqdn }}"
+#       username: "{{ physicalESX.user }}"
+#       password: "{{ physicalESX.password }}"
+#       validate_certs: no
+#       name: "{{ pod }}-{{ router_hostname }}"
+#       string_send: "vyos"
+#     when: deploy_router == true and status is failed
+#
+#   - name: Walk through the setup dialog 10
+#     vmware_guest_sendkey:
+#       hostname: "{{ physicalESX.fqdn }}"
+#       username: "{{ physicalESX.user }}"
+#       password: "{{ physicalESX.password }}"
+#       validate_certs: no
+#       name: "{{ pod }}-{{ router_hostname }}"
+#       string_send: "vyos"
+#     when: deploy_router == true and status is failed
+#
+#   - name: Walk through the setup dialog 11
+#     vmware_guest_sendkey:
+#       hostname: "{{ physicalESX.fqdn }}"
+#       username: "{{ physicalESX.user }}"
+#       password: "{{ physicalESX.password }}"
+#       validate_certs: no
+#       name: "{{ pod }}-{{ router_hostname }}"
+#       keys_send:
+#         - ENTER
+#     when: deploy_router == true and status is failed
 
     - name: Reboot VyOS VM
       vmware_guest_powerstate:
