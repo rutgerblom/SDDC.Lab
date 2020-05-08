@@ -78,17 +78,57 @@
       pause: minutes=1
       when: deploy_router == true and status is failed
 
-    - name: Walk through the setup dialog
+    - name: Walk through the setup dialog 1
       vmware_guest_sendkey:
         hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        folder: "{{ folder_name }}"
         name: "{{ vm_name }}"
-        string_send: "user_logon"
-      delegate_to: localhost
-      register: keys_num_sent
+        string_send: "vyos"
+    - name: Walk through the setup dialog 2
+      vmware_guest_sendkey:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ vm_name }}"
+        keys_send:
+          - ENTER
+    - name: Walk through the setup dialog 3
+      vmware_guest_sendkey:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ vm_name }}"
+        string_send: "vyos"
+    - name: Walk through the setup dialog 4
+      vmware_guest_sendkey:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ vm_name }}"
+        keys_send:
+          - ENTER
+    - name: Walk through the setup dialog 5
+      vmware_guest_sendkey:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ vm_name }}"
+        string_send: "install image"
+    - name: Walk through the setup dialog 6
+      vmware_guest_sendkey:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ vm_name }}"
+        keys_send:
+          - ENTER
 
     - name: Configure VyOS router
       vmware_guest_file_operation:
