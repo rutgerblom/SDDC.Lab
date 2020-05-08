@@ -21,8 +21,8 @@
 
     - name: Create template file for VyOS router
       template: 
-        src=../templates/vyos.conf
-        dest=/tmp/vyos.conf
+        src=../templates/vyos_rolling_release.conf
+        dest=/tmp/vyos_rolling_release.conf
       when: deploy_router == true and status is failed
 
     - name: Download VyOS rolling release ISO
