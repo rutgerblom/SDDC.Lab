@@ -29,6 +29,7 @@
       get_url:
         url: https://downloads.vyos.io/rolling/current/amd64/vyos-rolling-latest.iso
         dest: "{{ VyosIso }}"
+        force: true
       when: deploy_router == true and status is failed
 
     - name: Upload the VyOS ISO to the datastore
@@ -73,8 +74,8 @@
           iso_path: "[{{ physicalESX.datastore }}] rutgerISO/vyos-rolling-latest.iso"
       when: deploy_router == true and status is failed
 
-    - name: Wait 2 minutes for the VyOS router to start up
-      pause: minutes=15
+    - name: Wait 1 minute for the VyOS router to boot
+      pause: minutes=1
       when: deploy_router == true and status is failed
 
     - name: Configure VyOS router
