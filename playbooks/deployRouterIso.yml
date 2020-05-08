@@ -168,6 +168,10 @@
           - ENTER
       when: deploy_router == true and status is failed
 
+    - name: Wait 1 minute for the VyOS router to boot
+      pause: minutes=1
+      when: deploy_router == true and status is failed
+
 #   - name: Walk through the setup dialog 9
 #     vmware_guest_sendkey:
 #       hostname: "{{ physicalESX.fqdn }}"
