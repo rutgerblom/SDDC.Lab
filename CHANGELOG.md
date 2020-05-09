@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.2.6
+
+### Added
+
+- Variable "router_version" to control which version of VyOS wil be deployed.
+- With "router_version == latest" (default) the "management" VIF will listen for NTP queries.
+- Changelog moved from README.md to CHANGELOG.md
+
+### Changed
+
+- vSAN configuration now working
+- vSAN enabled on clusters (answerfile_sample.yml)
+- IP addresses of vCenter, NSX Manager, and Edge vESXi hosts (answerfile_sample.yml)
+- Host names of the vESXi hosts (answerfile_sample.yml)
+- 
+
 ## 1.2.5
 
 ### Added
