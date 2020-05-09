@@ -14,7 +14,6 @@
 - vSAN enabled on clusters (answerfile_sample.yml)
 - IP addresses of vCenter, NSX Manager, and Edge vESXi hosts (answerfile_sample.yml)
 - Host names of the vESXi hosts (answerfile_sample.yml)
-- 
 
 ## 1.2.5
 
