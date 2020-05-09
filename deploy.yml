@@ -35,14 +35,14 @@
 - import_playbook: playbooks/createNsxEdgeCluster.yml
 # NSX-T deployment ends here
 
-- name: Wait 5 minutes for the NSX-T platform to become fully responsive
+- name: Wait 10 minutes for the NSX-T Edge Cluster to become available
   hosts: localhost
   gather_facts: False
   vars_files:
     - ./answerfile.yml
   tasks:
-    - name: Wait 5 minutes before checking whether the NSX-T platform is ready
-      pause: minutes=5
+    - name: Wait 10 minutes for the NSX-T Edge Cluster to become ready
+      pause: minutes=10
       when: 
         - deploy_nsxt == true
         - deploy_nsxt_edge == true
