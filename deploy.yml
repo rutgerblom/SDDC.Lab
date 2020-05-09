@@ -7,15 +7,15 @@
 - import_playbook: playbooks/prepareISOInstaller.yml
 - import_playbook: playbooks/deployNestedEsxi.yml
 
-- name: Wait 5 minutes for the ESXi hosts to become fully responsive
-  hosts: localhost
-  gather_facts: False
-  vars_files:
-    - ./answerfile.yml
-  tasks:
-    - name: Wait 5 minutes before checking whether the hosts are ready
-      pause: minutes=5
-      when: vESX|length > 5
+#- name: Wait 5 minutes for the ESXi hosts to become fully responsive
+#  hosts: localhost
+#  gather_facts: False
+#  vars_files:
+#    - ./answerfile.yml
+#  tasks:
+#    - name: Wait 5 minutes before checking whether the hosts are ready
+#      pause: minutes=5
+#      when: vESX|length > 5
 
 - import_playbook: playbooks/configureNestedEsxi.yml
 - import_playbook: playbooks/createVds.yml
