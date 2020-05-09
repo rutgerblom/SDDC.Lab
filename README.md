@@ -14,7 +14,7 @@
 
 ## Description
 
-This repository contains a set of Ansible Playbooks that will deploy and configure vCenter, nested ESXi, NSX-T Manager, and NSX-T Edge nodes. The primary use case is speedy provisioning of a consistent nested vSphere/NSX-T lab environment.
+This repository contains a set of Ansible Playbooks that deploy and configure vCenter, nested ESXi, NSX-T Manager, and NSX-T Edge nodes. The primary use case is speedy provisioning of a consistent nested vSphere/NSX-T lab environment.
 
 ## Changelog
 
@@ -51,23 +51,24 @@ Using the default **deploy.yml** the following is deployed:
 1. vSwitch and port groups on the physical ESXi host
 1. VyOS router
 1. vCenter Sever Appliance
-1. 5 ESXi VMs
+1. 6 ESXi VMs
 1. Configuration of the nested vSphere environment:
-   * The ESXi hosts
-   * Distributed Switch
-   * vSphere clusters
+   * ESXi hosts
+   * Distributed switch
+   * vSphere clusters "Compute-A" and "Edge"
+   * vSAN
 1. NSX-T:
    * NSX Manager
    * vCenter Compute Manager (the deployed vCenter Server Appliance)
    * Transport Zones
-   * IP pool
+   * IP pool for TEP
    * Uplink Profiles
    * Transport Node Profile
    * Two NSX-T Edge Transport Nodes
-   * Edge Cluster
+   * Edge Node Cluster
    * ESXi Transport Nodes
-   * Tier-0 Gateway (provisioned with NSX-T 3.0 only)
-   * BGP peering with VyOS router
+   * Tier-0 Gateway (NSX-T 3.0 only)
+   * BGP peering with VyOS router (NSX-T 3.0 only))
 
 Ansible play recap from 05/05/2020:
 
