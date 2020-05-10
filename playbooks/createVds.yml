@@ -57,6 +57,32 @@
         portgroup_type: earlyBinding
         state: present
 
+    - name: Create IP Storage port group
+      vmware_dvs_portgroup:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        validate_certs: false
+        portgroup_name: "{{ vds.ipstorage_pg }}"
+        switch_name: "{{ vds.name }}"
+        vlan_id: "{{ pod + ipstorage }}"
+        num_ports: 8
+        portgroup_type: earlyBinding
+        state: present
+
+    - name: Create SVM-Management port group
+      vmware_dvs_portgroup:
+        hostname: "{{ vcenter.ip }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        validate_certs: false
+        portgroup_name: "{{ vds.svmmanagement_pg }}"
+        switch_name: "{{ vds.name }}"
+        vlan_id: "{{ pod + ipstorage }}"
+        num_ports: 8
+        portgroup_type: earlyBinding
+        state: present
+
     - name: Create vmnetwork port group
       vmware_dvs_portgroup:
         hostname: "{{ vcenter.ip }}"
@@ -133,7 +159,7 @@
         username: "{{ vcenter.user }}"
         password: "{{ vcenter.password }}"
         state: present
-        portgroup_name: 'pg-vmotion'
+        portgroup_name: "{{ vds.vmotion_pg }}"
         dvswitch_name: "{{ vds.name }}"
         validate_certs: False
         enable_vmotion: true
@@ -152,13 +178,29 @@
         password: "{{ vcenter.password }}"
         state: present
         enable_vsan: true
-        portgroup_name: 'pg-vsan'
+        portgroup_name: "{{ vds.vsan_pg }}"
         dvswitch_name: "{{ vds.name }}"
         validate_certs: False
         network:
           type: 'static'
           ip_address: "{{ item.value.vsan_ip }}"
           subnet_mask: "{{ item.value.vsan_mask }}"
+      with_dict: "{{ vESX }}"
+      
+    - name: Create vmk3 for IP Storage
+      vmware_vmkernel:
+        hostname: "{{ vcenter.ip }}"
+        esxi_hostname: "{{ item.value.fqdn }}"
+        username: "{{ vcenter.user }}"
+        password: "{{ vcenter.password }}"
+        state: present
+        portgroup_name: "{{ vds.ipstorage_pg }}"
+        dvswitch_name: "{{ vds.name }}"
+        validate_certs: False
+        network:
+          type: 'static'
+          ip_address: "{{ item.value.ipstorage_ip }}"
+          subnet_mask: "{{ item.value.ipstorage_mask }}"
       with_dict: "{{ vESX }}"
       
     - name: Remove the standard switch from the ESXi hosts

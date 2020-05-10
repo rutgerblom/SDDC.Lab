@@ -11,7 +11,7 @@
         password: "{{ physicalESX.password }}"
         validate_certs: no
         datacenter: "ha-datacenter"
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         schema: "vsphere"
         properties: ["overallStatus"]
       delegate_to: localhost
@@ -59,7 +59,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         state: poweredon
         guest_id: debian10_64Guest
         esxi_hostname: "{{ physicalESX.fqdn }}"
@@ -99,7 +99,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         string_send: "vyos"
       when: 
         - deploy_router == true
@@ -119,7 +119,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         keys_send:
           - ENTER
       when: 
@@ -140,7 +140,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         string_send: "vyos"
       when: 
         - deploy_router == true
@@ -160,7 +160,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         keys_send:
           - ENTER
       when: 
@@ -181,7 +181,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         string_send: "install image"
       when: 
         - deploy_router == true
@@ -201,7 +201,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         keys_send:
           - ENTER
           - ENTER
@@ -225,7 +225,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         string_send: "yes"
       when: 
         - deploy_router == true
@@ -245,7 +245,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         keys_send:
           - ENTER
           - ENTER
@@ -269,7 +269,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         string_send: "vyos"
       when: 
         - deploy_router == true
@@ -289,7 +289,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         keys_send:
           - ENTER
       when: 
@@ -310,7 +310,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         string_send: "vyos"
       when: 
         - deploy_router == true
@@ -330,7 +330,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         keys_send:
           - ENTER
       when: 
@@ -351,7 +351,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         keys_send:
           - ENTER
       when: 
@@ -372,7 +372,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         state: reboot-guest
       when: 
         - deploy_router == true
@@ -392,7 +392,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        vm_id: "{{ pod }}-{{ router_hostname }}"
+        vm_id: "Pod-{{ pod }}-{{ router_hostname }}"
         vm_username: "vyos"
         vm_password: "vyos"
         copy:
@@ -410,7 +410,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         annotation: "The password for the vyos user is VMware1!"
       when: 
         - deploy_router == true
@@ -423,7 +423,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         state: shutdown-guest
       when: 
         - deploy_router == true
@@ -443,7 +443,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         cdrom:
           type: "none"
       when: 
@@ -457,7 +457,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         state: powered-on
       when: 
         - deploy_router == true
@@ -481,6 +481,7 @@
         - deploy_router == true
         - status is failed
         - router_version == "latest"
+        - DEBUG_keep_config_files != true
 
     - name: Wait 10 seconds
       pause: seconds=10
