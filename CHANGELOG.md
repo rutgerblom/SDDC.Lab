@@ -1,6 +1,6 @@
 # Changelog
 
-## 10-MAY-2020 by Luis Chanu
+## 1.2.7 10-MAY-2020 by Luis Chanu
 
 ### Added
 
