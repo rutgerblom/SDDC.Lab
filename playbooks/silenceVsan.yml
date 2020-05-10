@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Copy rvc script to vCenter
+      vmware_guest_file_operation:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        vm_id: "{{ vcenter.vmname }}"
+        vm_username: "root"
+        vm_password: "{{ vcenter.password }}"
+        copy:
+            src: "../templates/vsan_silence.rvc"
+            dest: "/tmp/vsan_silence.rvc"
+            overwrite: true
