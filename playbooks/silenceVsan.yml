@@ -17,3 +17,18 @@
             src: "../templates/vsan_silence.rvc"
             dest: "/tmp/vsan_silence.rvc"
             overwrite: true
+    - name: Run rvc script
+      vmware_vm_shell:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: false
+        vm_id: "{{ vcenter.vmname }}"
+        vm_username: "root"
+        vm_password: "{{ vcenter.password }}"
+        vm_shell: /usr/bin/rvc
+        vm_shell_args: "administrator@vsphere.local:VMware1\!@vcenter01.lab.local -s /tmp/vsan_silence.rvc"
+        vm_shell_env: 
+        - "PATH=/usr/bin"
+        - "VAR=test"
+        vm_shell_cwd: "/tmp"
