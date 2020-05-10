@@ -1,0 +1,25 @@
+# Rutger Blom
+# www.rutgerblom.com
+# RVC script for silencing vSAN warnings
+
+datacenter_name = "DC01"
+cluster1_name = "Compute-A"
+cluster2_name = "Edge"
+
+puts "Silence vSAN warnings"
+rvc_exec("vsan.health.silent_health_check_configure -a controllerdiskmode vcenter01.lab.local/#{datacenter_name}/computers/#{cluster1_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a controllerdriver vcenter01.lab.local/#{datacenter_name}/computers/#{cluster1_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a controllerfirmware vcenter01.lab.local/#{datacenter_name}/computers/#{cluster1_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a controllerreleasesupport vcenter01.lab.local/#{datacenter_name}/computers/#{cluster1_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a controlleronhcl vcenter01.lab.local/#{datacenter_name}/computers/#{cluster1_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a perfsvcstatus vcenter01.lab.local/#{datacenter_name}/computers/#{cluster1_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a smalldiskstest vcenter01.lab.local/#{datacenter_name}/computers/#{cluster1_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a vsanenablesupportinsight vcenter01.lab.local/#{datacenter_name}/computers/#{cluster1_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a controllerdiskmode vcenter01.lab.local/#{datacenter_name}/computers/#{cluster2_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a controllerdriver vcenter01.lab.local/#{datacenter_name}/computers/#{cluster2_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a controllerfirmware vcenter01.lab.local/#{datacenter_name}/computers/#{cluster2_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a controllerreleasesupport vcenter01.lab.local/#{datacenter_name}/computers/#{cluster2_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a controlleronhcl vcenter01.lab.local/#{datacenter_name}/computers/#{cluster2_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a perfsvcstatus vcenter01.lab.local/#{datacenter_name}/computers/#{cluster2_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a smalldiskstest vcenter01.lab.local/#{datacenter_name}/computers/#{cluster2_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a vsanenablesupportinsight vcenter01.lab.local/#{datacenter_name}/computers/#{cluster2_name}")
