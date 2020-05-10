@@ -1,5 +1,21 @@
 # Changelog
 
+## 10-MAY-2020 by Luis Chanu
+
+### Added
+
+- Created new "nsxt_edge_uplink_1" and "nsxt_edge_uplink_2" networks (for future use)
+- Created additional "xxx_netmask_cidr" variables to replace hard coded masks found in script
+- Added new segments, includng IP storage and SVM Management, to prepare the lab for additional functionality that a lab user might want
+- Added vmk3 on nested vSphere hosts for IP Storage (should lab user need it) 
+
+### Changed
+
+- Modified nested VM naming to use Pod-###-<vm>
+- Changed hard coded cidr subnets to "xxx_netmask_cidr" variables in template files
+- To preare for NSX-T Global Manager available in v3.0, renamed NSXManager01 to "NSXT-LM", as it's now called the Local Manager
+- Changed segment offset values
+
 ## 1.2.6
 
 ### Added
