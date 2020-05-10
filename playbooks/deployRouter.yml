@@ -11,7 +11,7 @@
         password: "{{ physicalESX.password }}"
         validate_certs: no
         datacenter: "ha-datacenter"
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         schema: "vsphere"
         properties: ["overallStatus"]
       delegate_to: localhost
@@ -44,7 +44,7 @@
         password: "{{ physicalESX.password }}"
         validate_certs: no
         datastore: "{{ physicalESX.datastore }}"
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         ovf: "{{ VyosOva }}"
         networks:
           "public": "{{ router_public_pg }}"
@@ -65,7 +65,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        vm_id: "{{ pod }}-{{ router_hostname }}"
+        vm_id: "Pod-{{ pod }}-{{ router_hostname }}"
         vm_username: "vyos"
         vm_password: "vyos"
         copy:
@@ -83,7 +83,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         annotation: "The password for the vyos user is VMware1!"
       when: 
         - deploy_router == true
@@ -96,7 +96,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "{{ pod }}-{{ router_hostname }}"
+        name: "Pod-{{ pod }}-{{ router_hostname }}"
         state: reboot-guest
       when: 
         - deploy_router == true
@@ -116,7 +116,9 @@
 
     - name: Delete the temporary template file for VyOS router
       file: path=/tmp/vyos.conf state=absent
-      when: deploy_router == true
+      when: 
+        - deploy_router == true
+        - DEBUG_keep_config_files != true
 
     - name: Wait 10 seconds
       pause: seconds=10
