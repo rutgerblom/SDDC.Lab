@@ -4,6 +4,12 @@
   vars_files:
     - ../answerfile.yml
   tasks:
+
+    - name: Create rvc script
+      template: 
+        src=../templates/vsan_silence.rvc
+        dest=/tmp/vsan_silence.rvc
+
     - name: Copy rvc script to vCenter
       vmware_guest_file_operation:
         hostname: "{{ physicalESX.fqdn }}"
@@ -14,7 +20,7 @@
         vm_username: "root"
         vm_password: "{{ vcenter.password }}"
         copy:
-            src: "../templates/vsan_silence.rvc"
+            src: "/tmp/vsan_silence.rvc"
             dest: "/tmp/vsan_silence.rvc"
             overwrite: true
     - name: Run rvc script
@@ -28,3 +34,8 @@
         vm_password: "{{ vcenter.password }}"
         vm_shell: /usr/bin/rvc
         vm_shell_args: '{{ vcenter.user }}:VMware1\!@{{ vcenter.fqdn }} -s /tmp/vsan_silence.rvc'
+
+    - name: Delete the temporary rvc script
+      file: path=/tmp/vsan_silence.rvc state=absent
+      when: 
+        - DEBUG_keep_config_files != true
