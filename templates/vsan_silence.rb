@@ -4,7 +4,7 @@
 
 vcenter_name = "{{ vcenter.fqdn }}"
 datacenter_name = "{{ vcenter.datacenter }}"
-cluster_name = "{{ item.value }}"
+cluster_name = "{{ item.key }}"
 
 
 puts "Silence vSAN warnings"

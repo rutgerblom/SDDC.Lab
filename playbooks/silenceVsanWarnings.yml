@@ -5,14 +5,14 @@
     - ../answerfile.yml
   tasks:
 
-    - name: Create rb script
+    - name: Create Ruby script
       template: 
         src=../templates/vsan_silence.rb
-        dest=/tmp/vsan_silence_{{ item.value }}
+        dest=/tmp/vsan_silence_{{ item.key }}
       when: item.value.vsan == true
       with_dict: "{{ clusters }}"
 
-    - name: Copy rb script to vCenter
+    - name: Copy Ruby script to vCenter
       vmware_guest_file_operation:
         hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
@@ -22,13 +22,13 @@
         vm_username: "root"
         vm_password: "{{ vcenter.password }}"
         copy:
-            src: "/tmp/vsan_silence_{{ item.value }}"
-            dest: "/tmp/vsan_silence_{{ item.value }}"
+            src: "/tmp/vsan_silence_{{ item.key }}"
+            dest: "/tmp/vsan_silence_{{ item.key }}"
             overwrite: true
       when: item.value.vsan == true
       with_dict: "{{ clusters }}"
         
-    - name: Run rb script
+    - name: Run Ruby script
       vmware_vm_shell:
         hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
@@ -38,11 +38,11 @@
         vm_username: "root"
         vm_password: "{{ vcenter.password }}"
         vm_shell: /usr/bin/rvc
-        vm_shell_args: '{{ vcenter.user }}:VMware1\!@{{ vcenter.fqdn }} -s /tmp/vsan_silence_{{ item.value }}'
+        vm_shell_args: '{{ vcenter.user }}:VMware1\!@{{ vcenter.fqdn }} -s /tmp/vsan_silence_{{ item.key }}'
       when: item.value.vsan == true
       with_dict: "{{ clusters }}"
 
-    - name: Delete the temporary rb script
+    - name: Delete the temporary Ruby script
       file: path=/tmp/vsan_silence.rb state=absent
       when: 
         - item.value.vsan == true
