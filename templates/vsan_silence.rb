@@ -4,25 +4,16 @@
 
 vcenter_name = "{{ vcenter.fqdn }}"
 datacenter_name = "{{ vcenter.datacenter }}"
-cluster1_name = "Compute-A"
-cluster2_name = "Edge"
+cluster_name = "{{ item.value }}"
+
 
 puts "Silence vSAN warnings"
-rvc_exec("vsan.health.silent_health_check_configure -a controllerdiskmode #{vcenter_name}/#{datacenter_name}/computers/#{cluster1_name}")
-rvc_exec("vsan.health.silent_health_check_configure -a controllerdriver #{vcenter_name}/#{datacenter_name}/computers/#{cluster1_name}")
-rvc_exec("vsan.health.silent_health_check_configure -a controllerfirmware #{vcenter_name}/#{datacenter_name}/computers/#{cluster1_name}")
-rvc_exec("vsan.health.silent_health_check_configure -a controllerreleasesupport #{vcenter_name}/#{datacenter_name}/computers/#{cluster1_name}")
-rvc_exec("vsan.health.silent_health_check_configure -a controlleronhcl #{vcenter_name}/#{datacenter_name}/computers/#{cluster1_name}")
-rvc_exec("vsan.health.silent_health_check_configure -a perfsvcstatus #{vcenter_name}/#{datacenter_name}/computers/#{cluster1_name}")
-rvc_exec("vsan.health.silent_health_check_configure -a smalldiskstest #{vcenter_name}/#{datacenter_name}/computers/#{cluster1_name}")
-rvc_exec("vsan.health.silent_health_check_configure -a vsanenablesupportinsight #{vcenter_name}/#{datacenter_name}/computers/#{cluster1_name}")
-rvc_exec("vsan.health.silent_health_check_configure -a vumconfig #{vcenter_name}/#{datacenter_name}/computers/#{cluster1_name}")
-rvc_exec("vsan.health.silent_health_check_configure -a controllerdiskmode #{vcenter_name}/#{datacenter_name}/computers/#{cluster2_name}")
-rvc_exec("vsan.health.silent_health_check_configure -a controllerdriver #{vcenter_name}/#{datacenter_name}/computers/#{cluster2_name}")
-rvc_exec("vsan.health.silent_health_check_configure -a controllerfirmware #{vcenter_name}/#{datacenter_name}/computers/#{cluster2_name}")
-rvc_exec("vsan.health.silent_health_check_configure -a controllerreleasesupport #{vcenter_name}/#{datacenter_name}/computers/#{cluster2_name}")
-rvc_exec("vsan.health.silent_health_check_configure -a controlleronhcl #{vcenter_name}/#{datacenter_name}/computers/#{cluster2_name}")
-rvc_exec("vsan.health.silent_health_check_configure -a perfsvcstatus #{vcenter_name}/#{datacenter_name}/computers/#{cluster2_name}")
-rvc_exec("vsan.health.silent_health_check_configure -a smalldiskstest #{vcenter_name}/#{datacenter_name}/computers/#{cluster2_name}")
-rvc_exec("vsan.health.silent_health_check_configure -a vsanenablesupportinsight #{vcenter_name}/#{datacenter_name}/computers/#{cluster2_name}")
-rvc_exec("vsan.health.silent_health_check_configure -a vumconfig #{vcenter_name}/#{datacenter_name}/computers/#{cluster2_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a controllerdiskmode #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a controllerdriver #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a controllerfirmware #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a controllerreleasesupport #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a controlleronhcl #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a perfsvcstatus #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a smalldiskstest #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a vsanenablesupportinsight #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a vumconfig #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")

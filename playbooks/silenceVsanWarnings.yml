@@ -8,7 +8,9 @@
     - name: Create rb script
       template: 
         src=../templates/vsan_silence.rb
-        dest=/tmp/vsan_silence.rb
+        dest=/tmp/vsan_silence_{{ item.value }}
+      when: item.value.vsan == true
+      with_dict: "{{ clusters }}"
 
     - name: Copy rb script to vCenter
       vmware_guest_file_operation:
@@ -20,9 +22,12 @@
         vm_username: "root"
         vm_password: "{{ vcenter.password }}"
         copy:
-            src: "/tmp/vsan_silence.rb"
-            dest: "/tmp/vsan_silence.rb"
+            src: "/tmp/vsan_silence_{{ item.value }}"
+            dest: "/tmp/vsan_silence_{{ item.value }}"
             overwrite: true
+      when: item.value.vsan == true
+      with_dict: "{{ clusters }}"
+        
     - name: Run rb script
       vmware_vm_shell:
         hostname: "{{ physicalESX.fqdn }}"
@@ -33,9 +38,13 @@
         vm_username: "root"
         vm_password: "{{ vcenter.password }}"
         vm_shell: /usr/bin/rvc
-        vm_shell_args: '{{ vcenter.user }}:VMware1\!@{{ vcenter.fqdn }} -s /tmp/vsan_silence.rb'
+        vm_shell_args: '{{ vcenter.user }}:VMware1\!@{{ vcenter.fqdn }} -s /tmp/vsan_silence_{{ item.value }}'
+      when: item.value.vsan == true
+      with_dict: "{{ clusters }}"
 
     - name: Delete the temporary rb script
       file: path=/tmp/vsan_silence.rb state=absent
       when: 
+        - item.value.vsan == true
         - DEBUG_keep_config_files != true
+      with_dict: "{{ clusters }}"
