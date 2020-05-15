@@ -70,7 +70,7 @@ Using the default **deploy.yml** the following is deployed:
    * Tier-0 Gateway (NSX-T 3.0 only)
    * BGP peering with VyOS router (NSX-T 3.0 only))
 
-Ansible play recap from 05/05/2020:
+Ansible play recap from 15/05/2020:
 
 ![](images/play-recap.png)
 
