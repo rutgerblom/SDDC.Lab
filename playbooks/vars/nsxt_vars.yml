@@ -48,7 +48,7 @@ edge_transport_nodes:
         - "{{ pod_network }}.{{ pod + management }}.1"
         hostname: "{{ edge_node1 }}.{{ domain }}"
         compute: "{{ edge_node_vsphere_cluster }}"
-        storage: "{{ nfs_datastore }}"
+        storage: "vsanDatastore{{ nedge_node_vsphere_cluster }}"
         host: "{{ edge_node1_vesxi }}"
 - display_name: "{{ edge_node2 }}"
   host_switches:
