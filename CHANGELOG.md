@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.2.71 15-MAY-2020 by Rutger Blom
+
+### Added
+ 
+- Added tasks in the vSAN configuration playbook that silence vSAN warnings
+
+### Changed
+
+- NSX-T Edge nodes are now by default deployed on vSAN storage instead of NFS
+- Changed the default value of "use_nfs" to "false"
+- Updated the diagrams in README.md so that these reflect what is deployed by default
+
 ## 1.2.7 10-MAY-2020 by Luis Chanu
 
 ### Added
