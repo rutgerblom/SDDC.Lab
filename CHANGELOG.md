@@ -11,6 +11,7 @@
 - NSX-T Edge nodes are now by default deployed on vSAN storage instead of NFS
 - Changed the default value of "use_nfs" to "false" in answerfile_sample.yml
 - Updated the diagrams in README.md so that these accurately reflect what is deployed using the default settings
+
 ## 1.2.7 10-MAY-2020 by Luis Chanu
 
 ### Added
