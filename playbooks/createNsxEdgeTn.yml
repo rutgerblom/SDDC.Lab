@@ -13,8 +13,7 @@
       include_vars:
         file: nsxt_vars.yml
       when: 
-        - nsxlicensekey.stat.exists == True
-        - use_nfs == true        
+        - nsxlicensekey.stat.exists == True      
         - deploy_nsxt == true
         - deploy_nsxt_edge == true
 
@@ -41,7 +40,6 @@
       poll: 0
       when: 
         - nsxlicensekey.stat.exists == true
-        - use_nfs == true
         - deploy_nsxt == true
         - deploy_nsxt_edge == true
 
@@ -49,7 +47,6 @@
       pause: minutes=15
       when: 
         - nsxlicensekey.stat.exists == true
-        - use_nfs == true
         - deploy_nsxt == true
         - deploy_nsxt_edge == true
         
@@ -63,7 +60,6 @@
       with_items: "{{ _deploy_edges.results }}"
       when: 
         - nsxlicensekey.stat.exists == true
-        - use_nfs == true
         - deploy_nsxt == true
         - deploy_nsxt_edge == true
 
