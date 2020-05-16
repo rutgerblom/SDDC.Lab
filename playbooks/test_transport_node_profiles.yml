@@ -1,22 +1,27 @@
----
 - hosts: localhost
   gather_facts: false
   vars_files:
     - ../answerfile.yml
   tasks:
+
+    - name: Load variables for NSX-T
+      include_vars:
+        file: nsxt_vars.yml
+      when: deploy_nsxt == true
+
     - name: Create transport node profile 
       nsxt_transport_node_profiles:
-          hostname: "{{ nsxman.nsxman01.ip }}"
-          username: "{{ nsxmanadminuser }}"
-          password: "{{ nsxmanpassword }}"
-          validate_certs: False
-      resource_type: TransportNodeProfile
-      display_name: "{{item.display_name}}"
-      description: NSX configured Test Transport Node Profile
-      host_switch_spec:
+        hostname: "{{ nsxman.nsxman01.ip }}"
+        username: "{{ nsxmanadminuser }}"
+        password: "{{ nsxmanpassword }}"
+        validate_certs: False
+        resource_type: TransportNodeProfile
+        display_name: "{{item.display_name}}"
+        description: NSX configured Test Transport Node Profile
+        host_switch_spec:
           resource_type: StandardHostSwitchSpec
           host_switches: "{{item.host_switches}}"
           #transport_zone_endpoints: "{{item.transport_zone_endpoints}}"
-      state: present
+        state: present
       with_items:
         - "{{transport_node_profiles}}"
