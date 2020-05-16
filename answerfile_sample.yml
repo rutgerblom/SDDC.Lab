@@ -88,7 +88,7 @@ router_peer:                 "{{ pod_network }}.{{ pod + uplink }}.1"       # Ro
 uplink_ip1:                  "{{ pod_network }}.{{ pod + uplink }}.2"       # IP address of Tier-0 interface 1 on the BGP peering VLAN
 uplink_ip2:                  "{{ pod_network }}.{{ pod + uplink }}.3"       # IP address of Tier-0 interface 2 on the BGP peering VLAN
 nsx_as:                      "65{{ pod }}"                                  # BGP AS number on the NSX-T side
-router_as:                   "65{{ pod + 1 }}"                              # BGP AS number on your router (VyOS if deploy_router == true)
+router_as:                   "65000"                                        # BGP AS number on your router (VyOS if deploy_router == true)
 
 # New vCenter appliance configuration
 vcenter:
