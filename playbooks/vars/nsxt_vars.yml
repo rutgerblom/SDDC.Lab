@@ -101,8 +101,8 @@ edge_transport_nodes:
         storage: "{{ nfs_datastore }}"
         host: "{{ edge_node2_vesxi }}"
 
-# NSX-T Transport Node Profile
-transport_node_profiles:
+# NSX-T Transport Node Profile NSX-T 2.5
+transport_node_profiles2:
 - display_name: "{{ tn_profile_name }}"
   host_switches:
   - host_switch_profiles:
@@ -113,7 +113,6 @@ transport_node_profiles:
     - name: nsx-default-nioc-hostswitch-profile
       type: NiocProfile
     host_switch_name: "{{ nvds_name }}"
-    #host_switch_mode: STANDARD # Only NSX-T 3 allows host switch mode at this level
     pnics:
     - device_name: vmnic3
       uplink_name: "uplink-1"
@@ -122,9 +121,28 @@ transport_node_profiles:
     ip_assignment_spec:
       resource_type: StaticIpPoolSpec
       ip_pool_name: "{{ ip_pool_name }}"
-    #transport_zone_endpoints: # Only NSX-T 3 allows transport zone endpoint configuration at this level.
-    #- transport_zone_name: "{{ tz_overlay_name }}"
-    #- transport_zone_name: "{{ tz_edge_name }}"
+
+# NSX-T Transport Node Profile NSX-T 3.0
+transport_node_profiles3:
+- display_name: "{{ tn_profile_name }}"
+  host_switches:
+  - host_switch_profiles:
+    - name: esxi-uplink-profile
+      type: UplinkHostSwitchProfile
+    host_switch_name: "{{ vds.name }}"
+    host_switch_mode: STANDARD
+    host_switch_tyoe: VDS
+    uplinks:
+    - uplink_name: "uplink-1"
+      vds_uplink_name: "Uplink 1"
+    - uplink_name: "uplink-2"
+      vds_uplink_name: "Uplink 2"  
+    ip_assignment_spec:
+      resource_type: StaticIpPoolSpec
+      ip_pool_name: "{{ ip_pool_name }}"
+    transport_zone_endpoints:
+    - transport_zone_name: "{{ tz_overlay_name }}"
+    - transport_zone_name: "{{ tz_vlan_name }}"
 
 # NSX-T Transport Zones
 transportzones:
@@ -148,8 +166,8 @@ ip_pools:
     cidr: "{{ pod_network }}.{{ pod + transport }}.0/24"
     gateway_ip: "{{ transport_gw }}"
 
-# NSX-T Uplink Profiles
-uplink_profiles:
+# NSX-T Uplink Profiles NSX-T 2.5
+uplink_profiles2:
 - display_name: "esxi-uplink-profile"
   teaming:
     active_list:
@@ -170,6 +188,28 @@ uplink_profiles:
     policy: "LOADBALANCE_SRCID"
   pod + transport: "{{ pod + transport }}"
   mtu: "9000"
+
+# NSX-T Uplink Profiles NSX-T 3.0
+uplink_profiles3:
+- display_name: "esxi-uplink-profile"
+  teaming:
+    active_list:
+    - uplink_name: "uplink-1"
+      uplink_type: PNIC
+    - uplink_name: "uplink-2"
+      uplink_type: PNIC
+    policy: "LOADBALANCE_SRCID"
+  pod + transport: "{{ pod + transport }}"
+  mtu: "9000"
+- display_name: "edge-uplink-profile"
+  teaming:
+    active_list:
+    - uplink_name: "uplink-1"
+      uplink_type: "PNIC"
+    - uplink_name: "uplink-2"
+      uplink_type: "PNIC"
+    policy: "LOADBALANCE_SRCID"
+  pod + transport: "{{ pod + transport }}"
 
 # NSX-T Segments
 segments:

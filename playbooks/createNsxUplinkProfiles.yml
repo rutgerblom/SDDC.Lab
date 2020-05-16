@@ -9,7 +9,7 @@
         file: nsxt_vars.yml
       when: deploy_nsxt == true
 
-    - name: Create NSX-T uplink profiles
+    - name: Create NSX-T 2.5 uplink profiles
       nsxt_uplink_profiles:
         hostname: "{{ nsxman.nsxman01.ip }}"
         username: "{{ nsxmanadminuser }}"
@@ -22,6 +22,25 @@
         transport_vlan: "{{ pod + transport }}" 
         state: "present"
       with_items:
-        - "{{ uplink_profiles }}"
+        - "{{ uplink_profiles2 }}"
       when:
         - deploy_nsxt == true
+        - nsxt_major_version == 2
+
+    - name: Create NSX-T 3.00 uplink profiles
+      nsxt_uplink_profiles:
+        hostname: "{{ nsxman.nsxman01.ip }}"
+        username: "{{ nsxmanadminuser }}"
+        password: "{{ nsxmanpassword }}"
+        validate_certs: False
+        resource_type: UplinkHostSwitchProfile
+        display_name: "{{ item.display_name }}"
+        mtu: "{{ item.mtu }}"
+        teaming: "{{ item.teaming }}"
+        transport_vlan: "{{ pod + transport }}" 
+        state: "present"
+      with_items:
+        - "{{ uplink_profiles3 }}"
+      when:
+        - deploy_nsxt == true
+        - nsxt_major_version == 3
