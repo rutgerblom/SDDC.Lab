@@ -48,7 +48,7 @@
         password: "{{ physicalESX.password }}"
         validate_certs: no
         datastore: "{{ physicalESX.datastore }}"
-        name: "Pod-{{ pod }}-{{ router_hostname }}"
+        name: {{ router_vmname }}
         ovf: "{{ VyosOva }}"
         networks:
           "public": "{{ router_public_pg }}"
@@ -143,7 +143,7 @@
         username: "{{ physicalESX.user }}"
         password: "{{ physicalESX.password }}"
         validate_certs: no
-        name: "Pod-{{ pod }}-{{ router_hostname }}"
+        name: "{{ router_vmname }}"
         state: poweredon
         guest_id: debian10_64Guest
         esxi_hostname: "{{ physicalESX.fqdn }}"
