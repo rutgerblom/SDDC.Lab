@@ -219,7 +219,7 @@
         - status is failed
         - router_version == "latest"
 
-    - name: Walk through the setup dialog 2
+    - name: Walk through the setup dialog 3
       vmware_guest_sendkey:
         hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
@@ -239,7 +239,7 @@
         - status is failed
         - router_version == "latest"
 
-    - name: Walk through the setup dialog 3
+    - name: Walk through the setup dialog 4
       vmware_guest_sendkey:
         hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
@@ -268,7 +268,7 @@
         - status is failed
         - router_version == "latest"
 
-    - name: Walk through the setup dialog 4
+    - name: Walk through the setup dialog 5
       vmware_guest_sendkey:
         hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
@@ -293,31 +293,6 @@
         - status is failed
         - router_version == "latest"
 
-    - name: Walk through the setup dialog 5
-      vmware_guest_sendkey:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
-        validate_certs: no
-        name: "{{ router_vmname }}"
-        keys_send:
-          - ENTER
-          - ENTER
-          - ENTER
-          - ENTER
-        string_send: "vyos"
-      when: 
-        - deploy_router == true
-        - status is failed
-        - router_version == "latest"
-
-    - name: Wait 5 seconds
-      pause: seconds=5
-      when: 
-        - deploy_router == true
-        - status is failed
-        - router_version == "latest"
-
     - name: Walk through the setup dialog 6
       vmware_guest_sendkey:
         hostname: "{{ physicalESX.fqdn }}"
@@ -326,6 +301,9 @@
         validate_certs: no
         name: "{{ router_vmname }}"
         keys_send:
+          - ENTER
+          - ENTER
+          - ENTER
           - ENTER
         string_send: "vyos"
       when: 
@@ -341,6 +319,28 @@
         - router_version == "latest"
 
     - name: Walk through the setup dialog 7
+      vmware_guest_sendkey:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ router_vmname }}"
+        keys_send:
+          - ENTER
+        string_send: "vyos"
+      when: 
+        - deploy_router == true
+        - status is failed
+        - router_version == "latest"
+
+    - name: Wait 5 seconds
+      pause: seconds=5
+      when: 
+        - deploy_router == true
+        - status is failed
+        - router_version == "latest"
+
+    - name: Walk through the setup dialog 8
       vmware_guest_sendkey:
         hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user }}"
