@@ -18,6 +18,9 @@
       register: status
       ignore_errors: true
       no_log: true
+      when: 
+        - deploy_router == true
+        - router_version == "legacy"
 
     - name: Create template file for VyOS router
       template: 
