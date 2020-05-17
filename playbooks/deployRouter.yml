@@ -21,6 +21,8 @@
       when: 
         - deploy_router == true
 
+# The Below tasks are for the deploying the VyOS legacy release
+
     - name: Create template file for VyOS router
       template: 
         src=../templates/vyos.conf
@@ -99,7 +101,7 @@
         - DEBUG_keep_config_files != true
         - router_version == "legacy"
 
-# Below tasks are for the deploying the VyOS rolling release
+# The Below tasks are for the deploying the VyOS rolling release
 
     - name: Create template file for VyOS (latest) router
       template: 
