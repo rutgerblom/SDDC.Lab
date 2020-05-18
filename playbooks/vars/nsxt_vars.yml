@@ -6,7 +6,6 @@ edge_transport_nodes2:
     - name: edge-uplink-profile
       type: UplinkHostSwitchProfile
     host_switch_name: "{{ nvds_name }}"
-    #host_switch_mode: STANDARD # Onlt NSX-T 3 allows host swiych mode at this level
     pnics:
     - device_name: "fp-eth0"
       uplink_name: "uplink-1"
@@ -19,9 +18,6 @@ edge_transport_nodes2:
       - "{{ pod_network }}.{{ pod + transport }}.62"
       subnet_mask: "{{ transport_network_mask }}"
       default_gateway: "{{ transport_gw }}"
-    #transport_zone_endpoints: # Only NSX-T 3 allows transport zone endpoint configuration at this level.
-    #- transport_zone_name: "{{ tz_overlay_name }}"
-    #- transport_zone_name: "{{ tz_edge_name }}"
   node_deployment_info:
     resource_type: "EdgeNode"
     display_name: "{{ edge_node1 }}"
@@ -56,7 +52,6 @@ edge_transport_nodes2:
     - name: edge-uplink-profile
       type: UplinkHostSwitchProfile
     host_switch_name: "{{ nvds_name }}"
-    #host_switch_mode: STANDARD # Onlt NSX-T 3 allows host swiych mode at this level
     pnics:
     - device_name: "fp-eth0"
       uplink_name: "uplink-1"
@@ -69,9 +64,6 @@ edge_transport_nodes2:
       - "{{ pod_network }}.{{ pod + transport }}.64"
       subnet_mask: "{{ transport_network_mask }}"
       default_gateway: "{{ transport_gw }}"
-    #transport_zone_endpoints: # Only NSX-T 3 allows transport zone endpoint configuration at this level.
-    #- transport_zone_name: "{{ tz_overlay_name }}"
-    #- transport_zone_name: "{{ tz_edge_name }}"
   node_deployment_info:
     resource_type: "EdgeNode"
     display_name: "{{ edge_node2 }}"
