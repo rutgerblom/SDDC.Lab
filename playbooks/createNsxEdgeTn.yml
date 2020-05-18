@@ -18,7 +18,7 @@
         - deploy_nsxt_edge == true
 
     - name: Deploy and configure NSX-T 2.5 Edge transport nodes
-      nsxt_transport_nodes2:
+      nsxt_transport_nodes:
         hostname: "{{ nsxman.nsxman01.ip }}"
         username: "{{ nsxmanadminuser }}"
         password: "{{ nsxmanpassword }}"
@@ -34,7 +34,7 @@
         - transport_zone_name: "{{ tz_overlay_name }}"
         - transport_zone_name: "{{ tz_edge_name }}"  
       with_items:
-        - "{{ edge_transport_nodes }}"
+        - "{{ edge_transport_nodes2 }}"
       register: _deploy_edges
       async: 900
       poll: 0
@@ -45,7 +45,7 @@
         - nsxt_major_version == 2
 
     - name: Deploy and configure NSX-T 3.0 Edge transport nodes
-      nsxt_transport_nodes3:
+      nsxt_transport_nodes:
         hostname: "{{ nsxman.nsxman01.ip }}"
         username: "{{ nsxmanadminuser }}"
         password: "{{ nsxmanpassword }}"
@@ -61,7 +61,7 @@
         - transport_zone_name: "{{ tz_overlay_name }}"
         - transport_zone_name: "{{ tz_edge_name }}"  
       with_items:
-        - "{{ edge_transport_nodes }}"
+        - "{{ edge_transport_nodes3 }}"
       register: _deploy_edges
       async: 900
       poll: 0
