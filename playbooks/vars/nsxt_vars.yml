@@ -1,5 +1,5 @@
-# NSX-T Edge Transport Nodes
-edge_transport_nodes:
+# NSX-T 2.5 Edge Transport Nodes
+edge_transport_nodes2:
 - display_name: "{{ edge_node1 }}"
   host_switches:
   - host_switch_profiles:
@@ -101,6 +101,109 @@ edge_transport_nodes:
         storage: "vsanDatastore{{ edge_node_vsphere_cluster }}"
         host: "{{ edge_node2_vesxi }}"
 
+# NSX-T 3.0 Edge Transport Nodes
+edge_transport_nodes3:
+- display_name: "{{ edge_node1 }}"
+  host_switches:
+  - host_switch_profiles:
+    - name: edge-uplink-profile
+      type: UplinkHostSwitchProfile
+    host_switch_name: "{{ nvds_name }}"
+    host_switch_mode: STANDARD
+    pnics:
+    - device_name: "fp-eth0"
+      uplink_name: "uplink-1"
+    - device_name: "fp-eth1"
+      uplink_name: "uplink-2"      
+    ip_assignment_spec:
+      resource_type: StaticIpListSpec
+      ip_list:
+      - "{{ pod_network }}.{{ pod + transport }}.61"
+      - "{{ pod_network }}.{{ pod + transport }}.62"
+      subnet_mask: "{{ transport_network_mask }}"
+      default_gateway: "{{ transport_gw }}"
+    transport_zone_endpoints:
+    - transport_zone_name: "{{ tz_overlay_name }}"
+    - transport_zone_name: "{{ tz_edge_name }}"
+  node_deployment_info:
+    resource_type: "EdgeNode"
+    display_name: "{{ edge_node1 }}"
+    ip_addresses:
+    deployment_config:
+      form_factor: "SMALL"
+      node_user_settings:
+        cli_password: "{{ edgepassword }}"
+        root_password: "{{ edgepassword }}"
+      vm_deployment_config:
+        placement_type: VsphereDeploymentConfig
+        vc_name: "{{ vcenter.fqdn }}"
+        vc_username: "{{ vcenter.user }}"
+        vc_password: "{{ vcenter.password }}"        
+        data_networks:
+        - "{{ vds.uplink1_pg }}"
+        - "{{ vds.uplink2_pg }}"
+        management_network: "{{ vds.management_pg }}"
+        management_port_subnets:
+        - ip_addresses:
+          - "{{ pod_network }}.{{ pod + management }}.61"
+          prefix_length: 24
+        default_gateway_addresses: 
+        - "{{ pod_network }}.{{ pod + management }}.1"
+        hostname: "{{ edge_node1 }}.{{ domain }}"
+        compute: "{{ edge_node_vsphere_cluster }}"
+        storage: "vsanDatastore{{ edge_node_vsphere_cluster }}"
+        host: "{{ edge_node1_vesxi }}"
+- display_name: "{{ edge_node2 }}"
+  host_switches:
+  - host_switch_profiles:
+    - name: edge-uplink-profile
+      type: UplinkHostSwitchProfile
+    host_switch_name: "{{ nvds_name }}"
+    host_switch_mode: STANDARD
+    pnics:
+    - device_name: "fp-eth0"
+      uplink_name: "uplink-1"
+    - device_name: "fp-eth1"
+      uplink_name: "uplink-2"      
+    ip_assignment_spec:
+      resource_type: StaticIpListSpec
+      ip_list:
+      - "{{ pod_network }}.{{ pod + transport }}.63"
+      - "{{ pod_network }}.{{ pod + transport }}.64"
+      subnet_mask: "{{ transport_network_mask }}"
+      default_gateway: "{{ transport_gw }}"
+    transport_zone_endpoints:
+    - transport_zone_name: "{{ tz_overlay_name }}"
+    - transport_zone_name: "{{ tz_edge_name }}"
+  node_deployment_info:
+    resource_type: "EdgeNode"
+    display_name: "{{ edge_node2 }}"
+    ip_addresses:
+    deployment_config:
+      form_factor: "SMALL"
+      node_user_settings:
+        cli_password: "{{ edgepassword }}"
+        root_password: "{{ edgepassword }}"
+      vm_deployment_config:
+        placement_type: VsphereDeploymentConfig
+        vc_name: "{{ vcenter.fqdn }}"
+        vc_username: "{{ vcenter.user }}"
+        vc_password: "{{ vcenter.password }}"
+        data_networks:
+        - "{{ vds.uplink1_pg }}"
+        - "{{ vds.uplink2_pg }}"
+        management_network: "{{ vds.management_pg }}"
+        management_port_subnets: 
+        - ip_addresses:
+          - "{{ pod_network }}.{{ pod + management }}.62"
+          prefix_length: 24
+        default_gateway_addresses: 
+        - "{{ pod_network }}.{{ pod + management }}.1"
+        hostname: "{{ edge_node2 }}.{{ domain }}"
+        compute: "{{ edge_node_vsphere_cluster }}"
+        storage: "vsanDatastore{{ edge_node_vsphere_cluster }}"
+        host: "{{ edge_node2_vesxi }}"
+
 # NSX-T Transport Node Profile NSX-T 2.5
 transport_node_profiles2:
 - display_name: "{{ tn_profile_name }}"
@@ -144,7 +247,7 @@ transport_node_profiles3:
     - transport_zone_name: "{{ tz_overlay_name }}"
     - transport_zone_name: "{{ tz_vlan_name }}"
 
-# NSX-T Transport Zones
+# NSX-T 2.5 Transport Zones
 transportzones2:
 - display_name: "{{ tz_vlan_name }}"
   transport_type: "VLAN"
@@ -156,7 +259,7 @@ transportzones2:
   transport_type: "VLAN"
   host_switch_name: "{{ nvds_name }}"
 
-# NSX-T Transport Zones
+# NSX-T 3.0 Transport Zones
 transportzones3:
 - display_name: "{{ tz_vlan_name }}"
   transport_type: "VLAN"

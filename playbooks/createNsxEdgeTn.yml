@@ -17,8 +17,8 @@
         - deploy_nsxt == true
         - deploy_nsxt_edge == true
 
-    - name: Deploy and configure NSX-T Edge transport nodes
-      nsxt_transport_nodes:
+    - name: Deploy and configure NSX-T 2.5 Edge transport nodes
+      nsxt_transport_nodes2:
         hostname: "{{ nsxman.nsxman01.ip }}"
         username: "{{ nsxmanadminuser }}"
         password: "{{ nsxmanpassword }}"
@@ -42,6 +42,34 @@
         - nsxlicensekey.stat.exists == true
         - deploy_nsxt == true
         - deploy_nsxt_edge == true
+        - nsxt_major_version == 2
+
+    - name: Deploy and configure NSX-T 3.0 Edge transport nodes
+      nsxt_transport_nodes3:
+        hostname: "{{ nsxman.nsxman01.ip }}"
+        username: "{{ nsxmanadminuser }}"
+        password: "{{ nsxmanpassword }}"
+        validate_certs: False
+        display_name: "{{ item.display_name }}"
+        description: "Edge transport node"
+        host_switch_spec:
+          resource_type: StandardHostSwitchSpec
+          host_switches: "{{ item.host_switches }}"
+        node_deployment_info: "{{ item.node_deployment_info }}"
+        state: present
+        transport_zone_endpoints:
+        - transport_zone_name: "{{ tz_overlay_name }}"
+        - transport_zone_name: "{{ tz_edge_name }}"  
+      with_items:
+        - "{{ edge_transport_nodes }}"
+      register: _deploy_edges
+      async: 900
+      poll: 0
+      when: 
+        - nsxlicensekey.stat.exists == true
+        - deploy_nsxt == true
+        - deploy_nsxt_edge == true
+        - nsxt_major_version == 3
 
     - name: Wait 15 minutes for the NSX-T Edge node deployment to finish
       pause: minutes=15
