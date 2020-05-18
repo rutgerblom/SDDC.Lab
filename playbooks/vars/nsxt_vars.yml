@@ -145,7 +145,7 @@ transport_node_profiles3:
     - transport_zone_name: "{{ tz_vlan_name }}"
 
 # NSX-T Transport Zones
-transportzones:
+transportzones2:
 - display_name: "{{ tz_vlan_name }}"
   transport_type: "VLAN"
   host_switch_name: "{{ nvds_name }}"
@@ -155,6 +155,15 @@ transportzones:
 - display_name: "{{ tz_edge_name }}"
   transport_type: "VLAN"
   host_switch_name: "{{ nvds_name }}"
+
+# NSX-T Transport Zones
+transportzones3:
+- display_name: "{{ tz_vlan_name }}"
+  transport_type: "VLAN"
+- display_name: "{{ tz_overlay_name }}"
+  transport_type: "OVERLAY"
+- display_name: "{{ tz_edge_name }}"
+  transport_type: "VLAN"
 
 # NSX-T IP Pool (for the TEP interfaces)
 ip_pools:
