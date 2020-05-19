@@ -477,6 +477,7 @@
       ignore_errors: true
       when: 
         - deploy_router == true
+        - router.protocol == "static"
         - status is failed
 
     - name: Wait 10 seconds
