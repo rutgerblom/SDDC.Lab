@@ -12,7 +12,7 @@ use_nfs:                     false   # Mount an existing NFS datastore to the ne
 pod:                         230    # The pod ID should be between 10-240
 
 # Pod Network prefix (First 2 octets of Pod Networks)
-pod_network:                 "10.240"    # First 2 octets only
+pod_network:                 "10.203"    # First 2 octets only
 
 # Networks/VLAN offsets for various services (Offset from Pod)
 management:                  0
@@ -54,11 +54,18 @@ nfs_path:                    "/nested_nfs01"           # NFS path
 nfs_type:                    "nfs"                     # NFS version 3
 
 # VyOS router configuration
-router_hostname:             "router01"
-router_public_ip:            "10.2.129.101/24"                        # CIDR notation. Should be an IP address in the same subnet as your Ansible control node.
-router_default_gw:           "10.2.129.1"                             # IP address of the next-hop on your physical network (upstream router)
+router_hostname:             "Router"
+router_public_ip:            "10.203.0.{{ pod }}/24"                  # CIDR notation. Should be an IP address in the same subnet as your Ansible control node.
+router_default_gw:           "10.203.0.1"                             # IP address of the next-hop on your physical network (upstream router)
 router_public_pg:            "pg-management"                          # Change this to an existing port group for the router's public interface.
+router_as:                   "65000"                                  # BGP AS number on your router (VyOS if deploy_router == true)
 router_vmname:               "Pod-{{ pod }}-{{ router_hostname }}"
+
+router:
+  protocol: ospf                                                      # Either "static" or "ospf" are supported
+  ospf:
+    area: 666                                                         # specify OSPF area for uplink peering connction
+
 
 # Some global network properties for the nested environment
 dns1:                        "10.2.129.10"                                  # Your primary DNS server available to the nested environment.
@@ -81,15 +88,14 @@ nsx_edge_uplink_1_network_mask:       "255.255.255.0"
 nsx_edge_uplink_1_network_mask_cidr:  "24"
 nsx_edge_uplink_2_network_mask:       "255.255.255.0"
 nsx_edge_uplink_2_network_mask_cidr:  "24"
-
 vmnetwork_network_mask:      "255.255.255.0"
 vmnetwork_network_mask_cidr: "24"
+
 transport_gw:                "{{ pod_network }}.{{ pod + transport }}.1"
 router_peer:                 "{{ pod_network }}.{{ pod + uplink }}.1"       # Router IP on uplink VLAN 
 uplink_ip1:                  "{{ pod_network }}.{{ pod + uplink }}.2"       # IP address of Tier-0 interface 1 on the BGP peering VLAN
 uplink_ip2:                  "{{ pod_network }}.{{ pod + uplink }}.3"       # IP address of Tier-0 interface 2 on the BGP peering VLAN
 nsx_as:                      "65{{ pod }}"                                  # BGP AS number on the NSX-T side
-router_as:                   "65000"                                        # BGP AS number on your router (VyOS if deploy_router == true)
 
 # New vCenter appliance configuration
 vcenter:
