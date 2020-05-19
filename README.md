@@ -25,7 +25,7 @@ See [CHANGELOG.md](CHANGELOG.md)
 * A physical standalone ESXi host
 * An Ubuntu 18.04/20.04 VM with the following packages:
   * apt install python3 python3-pip xorriso
-  * pip3 install ansible pyvim pyvmomi
+  * pip3 install ansible pyvim pyvmomi netaddr
   * git clone https://github.com/rutgerblom/vsphere-nsxt-lab-deploy.git
 * ESXi and VCSA ISO files as well as the NSX-T Manager OVA file
 * If deploying NSX-T you'll need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval))
