@@ -315,8 +315,11 @@ uplink_profiles3:
 
 # NSX-T Segments
 segments:
-- display_name: "seg-vlan-{{ pod + uplink }}"
-  vlan_id: "{{ pod + uplink }}"
+- display_name: "seg-vlan-{{ pod + nsx_edge_uplink_1 }}"
+  vlan_id: "{{ pod + nsx_edge_uplink_1 }}"
+  tz: "{{ tz_edge_name }}"
+- display_name: "seg-vlan-{{ pod + nsx_edge_uplink_2 }}"
+  vlan_id: "{{ pod + nsx_edge_uplink_2 }}"
   tz: "{{ tz_edge_name }}"
 
 # NSX-T Tier-0 Gateway
@@ -341,32 +344,60 @@ tier0_gateways:
         graceful_restart_config:
           mode: HELPER_ONLY
         neighbors:
-          - display_name: router01
-            neighbor_address: "{{ router_peer }}"
+          - display_name: router01_uplink_1
+            neighbor_address: "{{ router_peer_ip1}}"
             remote_as_num: "{{ router_as }}"
             bfd:
               enabled: false
-            state: present        
+            state: present
+          - display_name: router01_uplink_2
+            neighbor_address: "{{ router_peer_ip2}}"
+            remote_as_num: "{{ router_as }}"
+            bfd:
+              enabled: false
+            state: present          
       interfaces:
-        - id: "uplink1-en01"
+        - id: "en01-uplink1"
           state: "present"
           type: "EXTERNAL"
           urpf_mode: "NONE"
           edge_node_info:
             edge_cluster_display_name: "{{ edge_cluster_name }}"
             edge_node_display_name: "{{ edge_node1 }}"
-          segment_display_name: "seg-vlan-{{ pod + uplink }}"
+          segment_display_name: "seg-vlan-{{ pod + nsx_edge_uplink_1 }}"
           subnets:
-          - ip_addresses: ["{{ uplink_ip1 }}"]
+          - ip_addresses: ["{{ uplink_1_ip1 }}"]
             prefix_len: 24
-        - id: "uplink1-en02"
+        - id: "en01-uplink2"
+          state: "present"
+          type: "EXTERNAL"
+          urpf_mode: "NONE"
+          edge_node_info:
+            edge_cluster_display_name: "{{ edge_cluster_name }}"
+            edge_node_display_name: "{{ edge_node1 }}"
+          segment_display_name: "seg-vlan-{{ pod + nsx_edge_uplink_2 }}"
+          subnets:
+          - ip_addresses: ["{{ uplink_2_ip1 }}"]
+            prefix_len: 24
+        - id: "en02-uplink1"
           state: "present"
           type: "EXTERNAL"
           urpf_mode: "NONE"
           edge_node_info:
             edge_cluster_display_name: "{{ edge_cluster_name }}"
             edge_node_display_name: "{{ edge_node2 }}"
-          segment_display_name: "seg-vlan-{{ pod + uplink }}"
+          segment_display_name: "seg-vlan-{{ pod + nsx_edge_uplink_1 }}"
           subnets:
-          - ip_addresses: ["{{ uplink_ip2 }}"]
+          - ip_addresses: ["{{ uplink_1_ip2 }}"]
+            prefix_len: 24
+        - id: "en02-uplink2"
+          state: "present"
+          type: "EXTERNAL"
+          urpf_mode: "NONE"
+          edge_node_info:
+            edge_cluster_display_name: "{{ edge_cluster_name }}"
+            edge_node_display_name: "{{ edge_node2 }}"
+          segment_display_name: "seg-vlan-{{ pod + nsx_edge_uplink_2 }}"
+          subnets:
+          - ip_addresses: ["{{ uplink_2_ip2 }}"]
             prefix_len: 24

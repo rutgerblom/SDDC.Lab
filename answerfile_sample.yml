@@ -21,9 +21,8 @@ vsan:                        2
 ipstorage:                   3           # Not used by the lab, but included should the lab user want to test/lab IP Storage solutions
 transport:                   4           # Geneve Overlay Transport
 svmmanagement:               5           # Not used by the lab, but included should an 3rd party solution want to be tested
-uplink:                      6           # VLAN for BGP peering between Tier-0 and the router.
-nsx_edge_uplink_1:           6           # 1st VLAN for BGP peerig between Tier-0 and the router.  (*** NOT YET IMPLEMENTED ***)
-nsx_edge_uplink_2:           7           # 2nd VLAN for BGP peerig between Tier-0 and the router.  (*** NOT YET IMPLEMENTED ***)
+nsx_edge_uplink_1:           6           # 1st VLAN for BGP peerig between Tier-0 and the router.
+nsx_edge_uplink_2:           7           # 2nd VLAN for BGP peerig between Tier-0 and the router.
 vmnetwork:                   9
 
 # Paths to ISO and OVA files
@@ -91,11 +90,14 @@ nsx_edge_uplink_2_network_mask_cidr:  "24"
 vmnetwork_network_mask:      "255.255.255.0"
 vmnetwork_network_mask_cidr: "24"
 
-transport_gw:                "{{ pod_network }}.{{ pod + transport }}.1"
-router_peer:                 "{{ pod_network }}.{{ pod + uplink }}.1"       # Router IP on uplink VLAN 
-uplink_ip1:                  "{{ pod_network }}.{{ pod + uplink }}.2"       # IP address of Tier-0 interface 1 on the BGP peering VLAN
-uplink_ip2:                  "{{ pod_network }}.{{ pod + uplink }}.3"       # IP address of Tier-0 interface 2 on the BGP peering VLAN
-nsx_as:                      "65{{ pod }}"                                  # BGP AS number on the NSX-T side
+transport_gw:                  "{{ pod_network }}.{{ pod + transport }}.1"
+router_peer_ip1:               "{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.1"       # IP address of the router on the 1st BGP peering VLAN
+router_peer_ip2:               "{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.1"       # IP address of the router on the 2nd BGP peering VLAN
+uplink_1_ip1:                  "{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.2"       # IP address of Tier-0 external interface 1 on the 1st BGP peering VLAN
+uplink_1_ip2:                  "{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.3"       # IP address of Tier-0 external interface 2 on the 1st BGP peering VLAN
+uplink_2_ip1:                  "{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.2"       # IP address of Tier-0 external interface 3 on the 2nd BGP peering VLAN
+uplink_2_ip2:                  "{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.3"       # IP address of Tier-0 external interface 4 on the 2nd BGP peering VLAN
+nsx_as:                        "65{{ pod }}"                                             # BGP AS number on the NSX-T side
 
 # New vCenter appliance configuration
 vcenter:
