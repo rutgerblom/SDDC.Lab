@@ -21,16 +21,15 @@
       when: 
         - deploy_router == true
 
-# The Below tasks are for the deploying the VyOS legacy release
-
-    - name: Create template file for VyOS router
+    - name: Create template file for the VyOS router
       template: 
         src=../templates/vyos.conf
         dest=/tmp/vyos.conf
       when: 
         - deploy_router == true
         - status is failed
-        - router_version == "legacy"
+
+# The below tasks are for the deploying the VyOS legacy release
 
     - name: Download VyOS OVA
       get_url:
@@ -102,15 +101,6 @@
         - router_version == "legacy"
 
 # The Below tasks are for the deploying the VyOS rolling release
-
-    - name: Create template file for VyOS (latest) router
-      template: 
-        src=../templates/vyos_rolling_release.conf
-        dest=/tmp/vyos_rolling_release.conf
-      when: 
-        - deploy_router == true
-        - status is failed
-        - router_version == "latest"
 
     - name: Download VyOS rolling release ISO
       get_url:
