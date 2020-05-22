@@ -76,10 +76,13 @@ Ansible play recap from 15/05/2020:
 
 ### Diagrams
 
-The following diagrams show what is deployed when using the default settings
+The following diagrams show what is deployed when using the default settings.
 
-A diagram of the physical environment.
-![Physicaloverview](images/vsphere-nsxt-deploy-phys.png)
+A diagram of the phyisical lab environment.
+![Physicaloverview](images/vsphere-nsxt-deploy-pod2phys.png)
+
+A diagram of the physical ESXi host.
+![PhysicalESXi](images/vsphere-nsxt-deploy-phys.png)
 
 A diagram of the nested vSphere environment.
 ![Logicaloverview](images/vsphere-nsxt-deploy-log.png)
