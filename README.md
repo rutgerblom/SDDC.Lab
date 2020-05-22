@@ -47,9 +47,9 @@ The following versions of vSphere and NSX-T can be deployed:
 
 ## The deployment
 
-Using the default **deploy.yml** the following is deployed:
+Using the default settings the following is deployed:
 1. vSwitch and port groups on the physical ESXi host
-1. VyOS router
+1. VyOS router (rolling latest)
 1. vCenter Sever Appliance
 1. 6 ESXi VMs
 1. Configuration of the nested vSphere environment:
@@ -76,7 +76,7 @@ Ansible play recap from 15/05/2020:
 
 ### Diagrams
 
-The following diagrams show what is deployed when using the default settings in **answerfile.yml**
+The following diagrams show what is deployed when using the default settings
 
 A diagram of the physical environment.
 ![Physicaloverview](images/vsphere-nsxt-deploy-phys.png)
@@ -90,9 +90,8 @@ A diagram of the NSX-T logical network (provisioned with NSX-T 3.0 only).
 ## Development
 
 * TODO: Add an option to deploy against vCenter
-* TODO: Improve NSX-T Edge VM deployment
-* TODO: Add more Playbooks for NSX-T logical networking
+* TODO: Utilize data structures
 
 ## Credits
 
-A big thank you to **Yasen Simeonov**. His project at https://github.com/yasensim/vsphere-lab-deploy was the inspiration for this project. Another big thank you to **Luis Chanu (VCDX #246)** for helping me push this project forward all the time. And thank you **vCommunity** for trying this out and providing feedback.
+A big thank you to **Yasen Simeonov**. His project at https://github.com/yasensim/vsphere-lab-deploy was the inspiration for this project. Another big thank you to **Luis Chanu (VCDX #246)** for helping me push this project forward all the time. And thank you **vCommunity** for trying this out and providing valuable feedback.
