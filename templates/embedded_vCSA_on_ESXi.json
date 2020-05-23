@@ -23,7 +23,7 @@
             "ip": "{{ vcenter.ip }}",
             "dns_servers": [
                 "{{ dns1 }}",
-		"{{ dns2 }}"
+		        "{{ dns2 }}"
             ],
             "system_name": "{{ vcenter.fqdn }}",
             "gateway": "{{ vcenter.gw }}",
@@ -31,7 +31,12 @@
         },
         "os": {
             "password": "{{ vcenter.password}}",
-            "ntp_servers": "{{ ntp1 }}",
+            "ntp_servers":  [
+                "{{ ntp1 }}",
+                "{{ ntp2 }}",
+                "{{ ntp3 }}",
+                "{{ ntp4 }}"
+            ],
             "ssh_enable": true
         },
         "sso": {
