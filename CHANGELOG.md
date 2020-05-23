@@ -1,6 +1,19 @@
 # Changelog
 
-## 1.2.9 21-MAY-2020 by Luis Chanu / Rutger Blom
+## TBD 21-MAY-2020 by Rutger Blom
+
+### Added
+
+- The NSX-T Tier-0 gateway is now configured with four external interfaces that are connected to the two different BGP peering VLANs.
+- The NSX-T Tier-0 gateway is now configured with two BGP neighbors which are two VIFs on the VyOS router.
+- The VyOS router is now configured with four BGP neighbors which are the four external interfaces on the Tier-0 gateway.
+
+### Changed
+
+- The two VyOS configuration files have been consolidated into one file using jinja conditional statements for the different versions.
+
+
+## TBD 19-MAY-2020 by Luis Chanu
 
 ### Added
 
@@ -9,16 +22,12 @@
 - Added small "router" data structure into answerfile_sample.yml to provide required dynamic routing informaiton.
 - Added Jinja2 conditional logic around OSPF and Static configuration so that only the requested configuration is deployed.
 - New variable called "router.protocol" controls if deployment uses static routing or OSPF. Variable is set to either "static" or "ospf".
-- The NSX-T Tier-0 gateway is now configured with four external interfaces that are connected to the two different BGP peering VLANs.
-- The NSX-T Tier-0 gateway is now configured with two BGP neighbors which are two VIFs on the VyOS router.
-- The VyOS router is now configured with four BGP neighbors which are the four external interfaces on the Tier-0 gateway.
 
 ### Changed
 
 - Answerfile_sample.yml variable values were modified to align configuration with "standard" OSPF deployment testbed.
 - Modified BGP "router-id" value so that the 3rd octet matches the Pod #, making it easier to identify.
 - Set the OSPF "router-id" value to match the IP address of the uplink Vyos router interface, thus making it easier to identify which Vyos instance an entry is referring to from the OSPF process running on the physical lab switch.
-- The two VyOS configuration files have been consolidated into one file using jinja conditional statements for the different versions.
 
 
 ## 1.2.8 15-MAY-2020 by Rutger Blom
