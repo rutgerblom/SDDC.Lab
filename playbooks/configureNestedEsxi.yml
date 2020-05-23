@@ -330,6 +330,9 @@
         esxi_hostname: "{{ item.value.fqdn }}"
         ntp_servers:
           - "{{ ntp1 }}"
+          - "{{ ntp2 }}"
+          - "{{ ntp3 }}"
+          - "{{ ntp4 }}"
       with_dict: "{{ vESX }}"
       async: 7200
       poll: 0
