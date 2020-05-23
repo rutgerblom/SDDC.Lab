@@ -81,4 +81,29 @@
       until: job_result.finished
       with_items: "{{ deployment.results }}"
       retries: 20         
+
+    - name: Disconnect CD-ROM from Nested ESXi VMs
+      vmware_guest:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        name: "{{ item.value.vmname }}"
+        cdrom:
+          type: "none"
+      with_dict: "{{ vESX }}"
+      async: 7200
+      poll: 0
+
+    - name: Delete Custom ESXi ISO image used for Pod ESXi deployment
+      vsphere_file:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user}}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        datacenter: /ha-datacenter
+        datastore: "{{ physicalESX.datastore }}"
+        path: "/rutgerISO/customesxv.iso"
+        state: absent
+      delegate_to: localhost
   tags: nestedESX
