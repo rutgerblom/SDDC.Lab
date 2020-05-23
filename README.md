@@ -29,7 +29,7 @@ See [CHANGELOG.md](CHANGELOG.md)
   * git clone https://github.com/rutgerblom/vsphere-nsxt-lab-deploy.git
 * ESXi and vCenter ISO files as well as the NSX-T Manager OVA file
 * If deploying NSX-T you need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval))
-* A layer-3 switch for dynamic routing between the physical network and the pod(s). Required when dynamic routing is enabled in the answerfile.
+* A layer-3 switch for dynamic routing between your physical network and the pod(s) network(s). Required when dynamic routing is enabled in the answerfile.
 
 ## Usage
 
