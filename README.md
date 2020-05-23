@@ -28,8 +28,8 @@ See [CHANGELOG.md](CHANGELOG.md)
   * pip3 install ansible pyvim pyvmomi netaddr
   * git clone https://github.com/rutgerblom/vsphere-nsxt-lab-deploy.git
 * ESXi and vCenter ISO files as well as the NSX-T Manager OVA file
-* If deploying NSX-T you'll need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval))
-* For dynamic routing between the lab environment(s) and your physical network you'll need a switch that supports OSPF.
+* If deploying NSX-T you need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval))
+* For dynamic routing between the lab environment(s) and your physical network you need a switch that supports OSPF. Dynamic routing is enabled by default but can be changed to static routing in **answerfile.yml**.
 
 ## Usage
 
@@ -77,9 +77,9 @@ Ansible play recap from 15/05/2020:
 
 ### Diagrams
 
-The following diagrams show what is deployed when using the default settings.
+The following diagrams help you understand the environment and compponoents deployed when using the default settings in the answerfile.
 
-A diagram of the phyisical lab environment.
+A diagram of the physical network.
 ![Physicaloverview](images/vsphere-nsxt-deploy-pod2phys.png)
 
 A diagram of the physical ESXi host.
