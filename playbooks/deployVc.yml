@@ -4,7 +4,7 @@
   vars_files:
     - ../answerfile.yml
   tasks:
-    - name: Check if VCSA is already installed
+    - name: Check if vCenter is already installed
       uri:
         url: https://{{ vcenter.ip }}
         validate_certs: False
@@ -14,7 +14,7 @@
       failed_when: false
       no_log: True
 
-    - name: Create JSON template file for VCSA with embeded PSC
+    - name: Create JSON template file for vCenter with embeded PSC
       template: 
         src=../templates/embedded_vCSA_on_ESXi.json
         dest=/tmp/vCSA_on_ESXi.json
@@ -25,7 +25,7 @@
       when: vcenter_check.status != 200
 
     - debug:
-        msg: "Deploying the VCSA will take about 20 minutes, so go grab some coffee !!!"
+        msg: "Deploying the vCenter will take about 20 minutes, so go grab some coffee !!!"
       when: vcenter_check.status != 200
       
     - name: Perform vCenter CLI-based installation
