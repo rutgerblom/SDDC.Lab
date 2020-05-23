@@ -29,6 +29,7 @@ See [CHANGELOG.md](CHANGELOG.md)
   * git clone https://github.com/rutgerblom/vsphere-nsxt-lab-deploy.git
 * ESXi and vCenter ISO files as well as the NSX-T Manager OVA file
 * If deploying NSX-T you'll need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval))
+* For dynamic routing between the lab environment(s) and your physical network you'll need a switch that supports OSPF.
 
 ## Usage
 
@@ -49,7 +50,7 @@ The following versions of vSphere and NSX-T can be deployed:
 
 Using the default settings the following is deployed:
 1. vSwitch and port groups on the physical ESXi host
-1. VyOS router (rolling latest)
+1. VyOS router
 1. vCenter Sever Appliance
 1. 6 ESXi VMs
 1. Configuration of the nested vSphere environment:
