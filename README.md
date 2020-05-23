@@ -14,7 +14,7 @@
 
 ## Description
 
-This repository contains a set of Ansible Playbooks that deploy and configure vCenter, nested ESXi, NSX-T Manager, and NSX-T Edge nodes. The primary use case is speedy provisioning of a consistent nested vSphere/NSX-T lab environment.
+This repository contains a set of Ansible Playbooks that deploy and configure complete vSphere-NSX-T pods. Each pod contains a router, vCenter, ESXi, NSX-T Manager, and NSX-T Edge nodes. The primary use case is speedy provisioning of consistent nested vSphere-NSX-T lab environments.
 
 ## Changelog
 
