@@ -1,19 +1,14 @@
 # Changelog
 
-## TBD 21-MAY-2020 by Rutger Blom
-
-### Added
-
-- The NSX-T Tier-0 gateway is now configured with four external interfaces that are connected to the two different BGP peering VLANs.
-- The NSX-T Tier-0 gateway is now configured with two BGP neighbors which are two VIFs on the VyOS router.
-- The VyOS router is now configured with four BGP neighbors which are the four external interfaces on the Tier-0 gateway.
+## 1.2.9 21-MAY-2020 by Rutger Blom
 
 ### Changed
 
-- The two VyOS configuration files have been consolidated into one file using jinja conditional statements for the different versions.
+- The VyOS configuration templates have been consolidated into one template using jinja conditional statements for the different versions.
+- The NSX-T Tier-0 gateway is now configured with four external interfaces and two BGP neighbors leveraging "nsx_edge_uplink_2".
+- The VyOS router is now configured with four BGP neighbors leveraging "nsx_edge_uplink_2".
 
-
-## TBD 19-MAY-2020 by Luis Chanu
+## 1.2.9 19-MAY-2020 by Luis Chanu
 
 ### Added
 
@@ -28,7 +23,6 @@
 - Answerfile_sample.yml variable values were modified to align configuration with "standard" OSPF deployment testbed.
 - Modified BGP "router-id" value so that the 3rd octet matches the Pod #, making it easier to identify.
 - Set the OSPF "router-id" value to match the IP address of the uplink Vyos router interface, thus making it easier to identify which Vyos instance an entry is referring to from the OSPF process running on the physical lab switch.
-
 
 ## 1.2.8 15-MAY-2020 by Rutger Blom
 
