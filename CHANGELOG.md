@@ -12,7 +12,6 @@
 - The NSX-T Tier-0 gateway is now configured with four external interfaces that are connected to the two different BGP peering VLANs.
 - The NSX-T Tier-0 gateway is now configured with two BGP neighbors which are two VIFs on the VyOS router.
 - The VyOS router is now configured with four BGP neighbors which are the four external interfaces on the Tier-0 gateway.
-- Added more NTP servers to answerfile_sample.yml.
 
 ### Changed
 
