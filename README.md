@@ -77,7 +77,7 @@ Ansible play recap from 15/05/2020:
 
 ### Diagrams
 
-The following diagrams help you understand the environment and compponoents deployed when using the default settings in the answerfile.
+The following diagrams help you understand the environment and components deployed with the default settings in the answerfile.
 
 A diagram of the physical network.
 ![Physicaloverview](images/vsphere-nsxt-deploy-pod2phys.png)
