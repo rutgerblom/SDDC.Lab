@@ -120,7 +120,7 @@
         validate_certs: false
         src: "{{ VyosIso }}"
         datastore: "{{ physicalESX.datastore }}" 
-        path: "/rutgerISO/vyos-rolling-latest.iso"
+        path: "/Lab-ISO-Folder/vyos-rolling-latest.iso"
       tags: upload
       when: 
         - deploy_router == true
@@ -154,7 +154,7 @@
             device_type: vmxnet3
         cdrom:
           type: "iso"
-          iso_path: "[{{ physicalESX.datastore }}] rutgerISO/vyos-rolling-latest.iso"
+          iso_path: "[{{ physicalESX.datastore }}] Lab-ISO-Folder/vyos-rolling-latest.iso"
       when: 
         - deploy_router == true
         - status is failed
