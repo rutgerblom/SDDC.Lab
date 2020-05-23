@@ -46,6 +46,10 @@ The following versions of vSphere and NSX-T can be deployed:
 * vCenter version 6.7 and 7.0
 * NSX-T version 2.5 and 3.0
 
+The following combinations can be deployed:
+* NSX-T 2.5 on vSphere 6.7
+* NSX-T 3.0 on vSphere 7.0
+
 ## The deployment
 
 Using the default settings the following is deployed:
