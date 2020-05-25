@@ -103,7 +103,7 @@ vcenter:
   ip:                        "{{ pod_network }}.{{ pod + management }}.5"   # vCenter IP address 
   mask:                      "24"  
   gw:                        "{{ pod_network }}.{{ pod + management }}.1"  
-  fqdn:                      "vcenter01.{{ domain }}"                       # vCenter FQDN if there is a working DNS server, otherwise specify the vCenter IP address here.
+  fqdn:                      "pod-{{ pod }}-vcenter.{{ domain }}"           # vCenter FQDN if there is a working DNS server, otherwise specify the vCenter IP address here.
   vmname:                    "Pod-{{ pod }}-vCenter"  
   user:                      "administrator@vsphere.local"  
   password:                  "VMware1!"  
