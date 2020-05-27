@@ -1,5 +1,12 @@
 # Changelog
 
+## TBD 25-MAY-2020 by Rutger Blom
+
+### Changed
+
+- FQDN for vCenter changed to "pod-{{ pod }}-vcenter.{{ domain }}" so it's compliant with the pod naming standard.
+- FQDN for Edge nodes changed to "pod-{{ pod }}-en0x" so it's compliant with pod naming standard.
+
 ## 1.2.9 21-MAY-2020 by Rutger Blom
 
 ### Changed
