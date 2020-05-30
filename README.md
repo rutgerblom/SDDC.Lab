@@ -27,9 +27,9 @@ See [CHANGELOG.md](CHANGELOG.md)
   * apt install python3 python3-pip xorriso
   * pip3 install ansible pyvim pyvmomi netaddr
   * git clone https://github.com/rutgerblom/vsphere-nsxt-lab-deploy.git
-* ESXi and vCenter ISO files as well as the NSX-T Manager OVA file
-* If deploying NSX-T you need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval))
-* A layer-3 switch for dynamic routing between your physical network and the pod(s) network(s). Required when dynamic routing is enabled in the answerfile.
+* ESXi and vCenter ISO files as well as the NSX-T Manager OVA file.
+* If deploying NSX-T you need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval)).
+* A layer-3 switch with an appropriate OSPFv2 configuration matching the OSPFv2 settings in your answerfile. This is required when dynamic routing between the pod(s) and the physical network is enabled in your answerfile.
 
 ## Usage
 
