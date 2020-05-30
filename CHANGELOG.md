@@ -1,6 +1,6 @@
 # Changelog
 
-## TBD 25-MAY-2020 by Rutger Blom
+## 1.2.9.1 25-MAY-2020 by Rutger Blom
 
 ### Changed
 
