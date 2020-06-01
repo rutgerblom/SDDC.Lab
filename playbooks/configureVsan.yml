@@ -65,4 +65,5 @@
         passwd: "{{ vcenter.password }}"
         cluster: "{{ item.key }}"
       when: item.value.vsan == True
+      ignore_errors: true
       with_dict: "{{ clusters }}"
