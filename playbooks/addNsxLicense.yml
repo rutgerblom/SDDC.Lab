@@ -6,6 +6,27 @@
   vars_files:
     - ../answerfile.yml
   tasks:
+
+    - name: Check if the NSX-T management cluster is stable
+      uri:
+        url: https://{{ item.value.ip }}/api/v1/cluster/status
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ nsxmanadminuser }}"
+        url_password: "{{ nsxmanpassword }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      with_dict: "{{ nsxman }}"
+      register: nsxman_check
+      until: nsxman_check.json.mgmt_cluster_status.status == "STABLE"
+      retries: 60
+      delay: 30
+      when: 
+        - deploy_nsxt == true
+
     - name: Add NSX-T license
       nsxt_licenses:
         hostname: "{{ nsxman.nsxman01.ip }}"
