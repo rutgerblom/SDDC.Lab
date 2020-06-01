@@ -22,7 +22,8 @@ See [CHANGELOG.md](CHANGELOG.md)
 
 ## Requirements
 
-* A physical standalone ESXi 6.7 host
+* A physical standalone ESXi host running version 6.7
+* The physical standalone ESXi host hostname must be resolvable by DNS and must also match the actual ESXi hostname. Run the "hostname" command on your physical ESXi host to see the ESXi hostname. The value for "physicalESX.fqdn" in your answerfile.yml must match the name resolved by DNS. 
 * An Ubuntu 18.04/20.04 VM with the following packages:
   * apt install python3 python3-pip xorriso
   * pip3 install ansible pyvim pyvmomi netaddr
@@ -30,6 +31,17 @@ See [CHANGELOG.md](CHANGELOG.md)
 * ESXi and vCenter ISO files as well as the NSX-T Manager OVA file.
 * If deploying NSX-T you need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval)).
 * A layer-3 switch with an appropriate OSPFv2 configuration matching the OSPFv2 settings in your answerfile. This is required when dynamic routing between the pod(s) and the physical network is enabled in your answerfile.
+* The default settings in answerfile_sample.yml require a DNS server accessible to the pod. The following DNS "A" and corresponding "PTR" records should be created on that DNS server: 
+  * pod-230-vcenter.lab.local - 10.203.230.5
+  * pod-230-nsxt-lm.lab.local - 10.203.230.8
+  * pod-230-esxi11.lab.local  - 10.203.230.11
+  * pod-230-esxi12.lab.local  - 10.203.230.12
+  * pod-230-esxi13.lab.local  - 10.203.230.13
+  * pod-230-en01.lab.local    - 10.203.230.61
+  * pod-230-en01.lab.local    - 10.203.230.61
+  * pod-230-esxi91.lab.local  - 10.203.230.91
+  * pod-230-esxi92.lab.local  - 10.203.230.92
+  * pod-230-esxi93.lab.local  - 10.203.230.93
 
 ## Usage
 
