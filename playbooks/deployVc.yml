@@ -62,6 +62,7 @@
         datacenter_name: "{{ vcenter.datacenter }}"
         state: present
         validate_certs: False
+      when: vcenter_check.status != 200        
 
     - name: Create Clusters
       vmware_cluster:
@@ -72,8 +73,9 @@
         cluster_name: "{{ item.key }}"
         validate_certs: False
       with_dict: "{{ clusters }}"
+      when: vcenter_check.status != 200
 
-    - name: Enable DRS
+    - name: Enable DRS if applicable
       vmware_cluster_drs:
         hostname: "{{ vcenter.ip }}"
         username: "{{ vcenter.user }}"
@@ -83,3 +85,4 @@
         validate_certs: False
         enable_drs: "{{ item.value.drs }}"
       with_dict: "{{ clusters }}"
+      when: vcenter_check.status != 200
