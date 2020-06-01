@@ -7,11 +7,24 @@
     - name: Mount ESXi ISO
       action: mount name='/mnt/ESX' src="{{ esxIso }}" opts=loop fstype=iso9660 state=mounted
 
+    - name: Mount ESXi ISO  
+      mount:
+        path: /mnt/ESX
+        src: "{{ esxIso }}"
+        fstype: iso9660
+        opts: ro,loop
+        state: present
+
     - name: Copy ISO contents
       copy: src=/mnt/ESX dest=/tmp/
 
-    - name: Unmount ESXi ISO
-      action: mount name='/mnt/ESX' src="{{ esxIso }}" fstype=iso9660 state=absent
+    - name: Unmount ESXi ISO  
+      mount:
+        path: /mnt/ESX
+        src: "{{ esxIso }}"
+        fstype: iso9660
+        opts: ro,loop
+        state: absent
 
     - name: Edit boot.cfg
       replace:
