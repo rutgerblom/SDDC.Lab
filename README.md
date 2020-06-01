@@ -22,7 +22,7 @@ See [CHANGELOG.md](CHANGELOG.md)
 
 ## Requirements
 
-* A physical standalone ESXi host (tested with ESXi version 6.7)
+* A physical standalone ESXi 6.7 host
 * An Ubuntu 18.04/20.04 VM with the following packages:
   * apt install python3 python3-pip xorriso
   * pip3 install ansible pyvim pyvmomi netaddr
