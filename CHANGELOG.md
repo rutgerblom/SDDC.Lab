@@ -4,7 +4,7 @@
 
 ### Changed
 
-- Added a check with retries to "addNsxLicense.yml" that checks whether the NSX-T management cluster is stable. 
+- Added a check with retries to "addNsxLicense.yml" to determine whether the NSX-T management cluster is stable. 
 - Added conditionals to "deployVc.yml" for idempotency.
 - Added "ignore_errors" to "configureVsan.yml" and "createNsxEdgeTn.yml" for idempotency.
 - FQDN for NSX Manager changed to "pod-{{ pod }}-{{ nsxmanager_name }}.{{ domain }}" so it's compliant with pod naming standard.
