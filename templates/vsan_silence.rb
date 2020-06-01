@@ -14,6 +14,7 @@ rvc_exec("vsan.health.silent_health_check_configure -a controllerfirmware #{vcen
 rvc_exec("vsan.health.silent_health_check_configure -a controllerreleasesupport #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
 rvc_exec("vsan.health.silent_health_check_configure -a controlleronhcl #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
 rvc_exec("vsan.health.silent_health_check_configure -a autohclupdate #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
+rvc_exec("vsan.health.silent_health_check_configure -a hcldbuptodate #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
 rvc_exec("vsan.health.silent_health_check_configure -a releasecataloguptodate #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
 rvc_exec("vsan.health.silent_health_check_configure -a perfsvcstatus #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
 rvc_exec("vsan.health.silent_health_check_configure -a smalldiskstest #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
