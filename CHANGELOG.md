@@ -6,7 +6,8 @@
 
 - Added a check to "addNsxLicense.yml" that checks whether the NSX-T management cluster is stable.
 - Changed to the Ansible mount module for mounting ISO files. 
-- Add conditionals to "deployVc.yml" for idempotency. 
+- Added conditionals to "deployVc.yml" for idempotency. 
+- Added "ignore_errors" to "configureVsan.yml" for idempotency.
 
 ## 1.2.9.1 25-MAY-2020 by Rutger Blom
 
