@@ -21,12 +21,7 @@
       when: vcenter_check.status != 200
 
     - name: Mount vCenter ISO
-      mount:
-        path: /mnt/VCSA
-        src: "{{ vcIso }}"
-        fstype: iso9660
-        opts: ro,loop
-        state: present
+      action: mount name='/mnt/VCSA' src="{{ vcIso }}" opts=loop fstype=iso9660 state=mounted
       when: vcenter_check.status != 200
 
     - debug:
@@ -41,13 +36,8 @@
       ignore_errors: True
       when: vcenter_check.status != 200
 
-    - name: Unmount vCenter ISO  
-      mount:
-        path: /mnt/VCSA
-        src: "{{ vcIso }}"
-        fstype: iso9660
-        opts: ro,loop
-        state: absent
+    - name: Unmount vCenter ISO
+      action: mount name='/mnt/VCSA' src="{{ esxIso }}" fstype=iso9660 state=absent
       when: vcenter_check.status != 200
 
     - name: Delete the temporary JSON template file
