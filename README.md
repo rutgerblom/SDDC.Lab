@@ -31,7 +31,7 @@ See [CHANGELOG.md](CHANGELOG.md)
 * ESXi and vCenter ISO files as well as the NSX-T Manager OVA file.
 * If deploying NSX-T you need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval)).
 * A layer-3 switch with an appropriate OSPFv2 configuration matching the OSPFv2 settings in your answerfile. This is required when dynamic routing between the pod(s) and the physical network is enabled in your answerfile.
-* The default settings in answerfile_sample.yml require that a DNS server is accessible to the pod. Unless you configure your answerfile.yml so that IP addresses are used instead, the following DNS zones, "A", and corresponding "PTR" records must be created on the DNS server:
+* The default settings in answerfile_sample.yml require that a DNS server is accessible to the pod. Unless you configure your answerfile.yml so that IP addresses are used, the following DNS zones, "A" with corresponding "PTR" records must be created on the DNS server:
 
   * lab.local                 - forward lookup zone
   * 230.203.10.in-addr.arpa   - reverse lookup zone 
@@ -41,7 +41,7 @@ See [CHANGELOG.md](CHANGELOG.md)
   * pod-230-esxi12.lab.local  - 10.203.230.12
   * pod-230-esxi13.lab.local  - 10.203.230.13
   * pod-230-en01.lab.local    - 10.203.230.61
-  * pod-230-en01.lab.local    - 10.203.230.61
+  * pod-230-en01.lab.local    - 10.203.230.62
   * pod-230-esxi91.lab.local  - 10.203.230.91
   * pod-230-esxi92.lab.local  - 10.203.230.92
   * pod-230-esxi93.lab.local  - 10.203.230.93
