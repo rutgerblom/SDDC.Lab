@@ -35,8 +35,7 @@
         - transport_zone_name: "{{ tz_edge_name }}"  
       with_items:
         - "{{ edge_transport_nodes2 }}"
-      register: _deploy_edges
-      async: 900
+      async: 7200
       poll: 0
       when: 
         - nsxlicensekey.stat.exists == true
@@ -59,8 +58,7 @@
         state: present 
       with_items:
         - "{{ edge_transport_nodes3 }}"
-      register: _deploy_edges
-      async: 900
+      async: 7200
       poll: 0
       when: 
         - nsxlicensekey.stat.exists == true
