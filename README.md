@@ -23,7 +23,7 @@ See [CHANGELOG.md](CHANGELOG.md)
 ## Requirements
 
 * A physical standalone ESXi host running version 6.7
-* The physical standalone ESXi host hostname must be resolvable by DNS and must also match the actual ESXi hostname. Run the "hostname" command on your physical ESXi host to see the ESXi hostname. The value for "physicalESX.fqdn" in your answerfile.yml must match the name resolved by DNS. 
+* The physical standalone ESXi host hostname must be resolvable by DNS. Run the "hostname" command on your physical ESXi host to see the ESXi hostname. The value for "physicalESX.fqdn" in your answerfile.yml must match the name resolved by DNS. 
 * An Ubuntu 18.04/20.04 VM with the following packages:
   * apt install python3 python3-pip xorriso
   * pip3 install ansible pyvim pyvmomi netaddr
