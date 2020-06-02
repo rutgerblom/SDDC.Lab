@@ -68,26 +68,24 @@
         - deploy_nsxt_edge == true
         - nsxt_major_version == 3
 
-    - name: Wait 15 minutes for the NSX-T Edge node deployment to finish
-      pause: minutes=15
-      when: 
-        - nsxlicensekey.stat.exists == true
-        - deploy_nsxt == true
-        - deploy_nsxt_edge == true
-        
-    - name: Checking if the NSX-T Edge node deployment is finished
-      async_status:
-        jid: "{{ item.ansible_job_id }}"
-      register: _jobs
-      until: _jobs.finished
+    - name: Wait until the NSX-T edge nodes are operational (for max 1,5 hour)
+      uri:
+        url: https://{{ item.value.ip }}/api/v1/transport-nodes/status?node_type=EDGE
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ nsxmanadminuser }}"
+        url_password: "{{ nsxmanpassword }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      with_dict: "{{ nsxman }}"
+      register: result
+      until: result.json.up_count == 2
+      retries: 180
       delay: 30
-      retries: 10      
-      with_items: "{{ _deploy_edges.results }}"
       when: 
         - nsxlicensekey.stat.exists == true
         - deploy_nsxt == true
         - deploy_nsxt_edge == true
-      ignore_errors: true
-
-
-
