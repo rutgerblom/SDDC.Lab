@@ -7,7 +7,22 @@
     - ../answerfile.yml
   tasks:
 
-    - name: Check if the NSX-T management cluster is stable
+    - name: Check if NSX-T manager is responding with status 200
+      uri:
+        url: https://{{ item.value.ip }}
+        validate_certs: False
+        timeout: 5
+        method: GET
+        status_code: 200
+      with_dict: "{{ nsxman }}"
+      register: result
+      until: result.status == 200
+      retries: 60
+      delay: 30
+      when: 
+        - deploy_nsxt == true
+
+    - name: Check if the NSX-T management cluster is reporting "STABLE"
       uri:
         url: https://{{ item.value.ip }}/api/v1/cluster/status
         validate_certs: no
