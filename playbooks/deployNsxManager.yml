@@ -75,20 +75,22 @@
         - deployment.changed == true
         - item.started is defined
 
-    - name: Wait 20 minutes for the NSX-T Manager node deployment to finish
-      pause: minutes=20
-      when:
+    - name: Check until the NSX-T management cluster is reporting "200"
+      uri:
+        url: https://{{ item.value.ip }}/api/v1/cluster/status
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ nsxmanadminuser }}"
+        url_password: "{{ nsxmanpassword }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      with_dict: "{{ nsxman }}"
+      register: result
+      until: result.status == 200
+      retries: 120
+      delay: 30
+      when: 
         - deploy_nsxt == true
-        - deployment.changed == true
-
-    - name: Result check for deployment
-      async_status:
-        jid: "{{ item.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      with_items: "{{ deployment.results }}"
-      retries: 60
-      when:
-        - deploy_nsxt == true
-        - deployment.changed == true
-        - item.started is defined
