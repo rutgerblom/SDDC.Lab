@@ -106,4 +106,7 @@
         chdir: /bin/
       register: iproute
       ignore_errors: true
+      when: 
+        - deploy_router == true
+        - router.protocol == "static"
 
