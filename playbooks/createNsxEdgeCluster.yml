@@ -29,7 +29,7 @@
         - deploy_nsxt == true
         - deploy_nsxt_edge == true
 
-    - name: Wait until NSX-T edge cluster is opertational ( max 30 minutes) 
+    - name: Wait until NSX-T edge cluster is opertational (max 30 minutes) 
       uri:
         url: https://{{ item.value.ip }}/api/v1/edge-clusters/{{ edge_cluster.id }}/status?source=realtime
         validate_certs: no
