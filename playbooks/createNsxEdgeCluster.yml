@@ -44,7 +44,7 @@
       with_dict: "{{ nsxman }}"
       register: result
       until: result.json.edge_cluster_status == "UP"
-      retries: 10
+      retries: 60
       delay: 30
       when: 
         - nsxlicensekey.stat.exists == true
