@@ -4,7 +4,7 @@
 
 ### Changed
 
-- Replaced timers (pause) with polling in the NSX-T playbooks. 
+- Replaced timers (pauses) with polling in the NSX-T playbooks. 
 - Added conditionals to "deployVc.yml" for idempotency.
 - Added "ignore_errors" to "configureVsan.yml" and "createNsxEdgeTn.yml" for idempotency.
 - FQDN for NSX Manager changed to "pod-{{ pod }}-{{ nsxmanager_name }}.{{ domain }}" so it's compliant with pod naming standard.
