@@ -34,19 +34,6 @@
 - import_playbook: playbooks/createNsxEdgeCluster.yml
 # NSX-T deployment ends here
 
-- name: Wait 10 minutes for the NSX-T Edge Cluster to become available
-  hosts: localhost
-  gather_facts: False
-  vars_files:
-    - ./answerfile.yml
-  tasks:
-    - name: Wait 10 minutes for the NSX-T Edge Cluster to become ready
-      pause: minutes=10
-      when: 
-        - deploy_nsxt == true
-        - deploy_nsxt_edge == true
-        - nsxt_major_version == 3
-
 # NSX-T logical network provisioning starts here
 - import_playbook: playbooks/createNsxSegments.yml
 - import_playbook: playbooks/createNsxT0gateway.yml
