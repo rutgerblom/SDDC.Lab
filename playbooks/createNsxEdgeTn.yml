@@ -87,3 +87,10 @@
         - nsxlicensekey.stat.exists == true
         - deploy_nsxt == true
         - deploy_nsxt_edge == true
+
+    - name: Wait 10 minutes for the NSX-T edge nodes to become ready
+      pause: minutes=10
+      when: 
+        - nsxlicensekey.stat.exists == true
+        - deploy_nsxt == true
+        - deploy_nsxt_edge == true
