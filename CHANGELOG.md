@@ -1,10 +1,10 @@
 # Changelog
 
-## 1.2.9.2 2-JUNE-2020 by Rutger Blom
+## 1.2.9.2 4-JUNE-2020 by Rutger Blom
 
 ### Changed
 
-- Replaced timers (pauses) with polling (via URI) in the NSX-T playbooks. 
+- Replaced a couple of timers (pauses) with API polling (via URI) in the NSX-T playbooks. 
 - Added conditionals to "deployVc.yml" for idempotency.
 - Added "ignore_errors" to "configureVsan.yml" for idempotency.
 - FQDN for NSX Manager changed to "pod-{{ pod }}-{{ nsxmanager_name }}.{{ domain }}" so it's compliant with pod naming standard.
