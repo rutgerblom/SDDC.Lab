@@ -86,7 +86,6 @@
         method: GET
         body_format: json
         return_content: yes
-        status_code: 200
       with_dict: "{{ nsxman }}"
       register: result
       until: result.detailed_cluster_status.overall_status == "STABLE"
