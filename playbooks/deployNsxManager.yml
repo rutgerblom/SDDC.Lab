@@ -55,8 +55,8 @@
       when:
         - deploy_nsxt == true
         - item.status != 200
-      #async: 7200
-      #poll: 0
+      async: 7200
+      poll: 0
       register: deployment
 
     - name: Wait 3 seconds before start checking whether the NSX-T Manager node is ready
