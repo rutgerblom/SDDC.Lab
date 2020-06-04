@@ -89,7 +89,7 @@
         status_code: 200
       with_dict: "{{ nsxman }}"
       register: result
-      until: result.json.detailed_cluster_status.overall_status == "STABLE"
+      until: result.status == 200 and result.json.detailed_cluster_status.overall_status == "STABLE"
       retries: 120
       delay: 30
       when: 
