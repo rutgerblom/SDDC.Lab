@@ -66,9 +66,16 @@
         - deploy_nsxt_edge == true
         - nsxt_major_version == 3
 
-    - name: Wait until the NSX-T API reports that the edge nodes are "UP" (wait max 90 minutes)
+    - name: Wait 1 minute for the NSX-T API to process edge node deployment information
+      pause: minutes=1
+      when: 
+        - nsxlicensekey.stat.exists == true
+        - deploy_nsxt == true
+        - deploy_nsxt_edge == true
+
+    - name: Wait until the NSX-T API reports that no edge nodes are in "PENDING" state (wait max 90 minutes)
       uri:
-        url: https://{{ item.value.ip }}/api/v1/transport-nodes/status?node_type=EDGE
+        url: https://{{ item.value.ip }}/api/v1/transport-nodes/state?status=PENDING
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
@@ -80,16 +87,9 @@
         status_code: 200
       with_dict: "{{ nsxman }}"
       register: result
-      until: result.json.up_count == 2
+      until: result.json.result_count == 0
       retries: 180
       delay: 30
-      when: 
-        - nsxlicensekey.stat.exists == true
-        - deploy_nsxt == true
-        - deploy_nsxt_edge == true
-
-    - name: Wait 10 minutes for the NSX-T edge nodes to become READY
-      pause: minutes=10
       when: 
         - nsxlicensekey.stat.exists == true
         - deploy_nsxt == true
