@@ -76,35 +76,42 @@ tr:nth-child(even) {
 <table>
   <tr>
     <th>Description</th>
-    <th>Login Credentials</th>
+    <th>Username</th>
+    <th>Password</th>
   </tr>
   <tr>
     <td>vCenter</td>
-    <td>{{ vcenter.user }} / {{ vcenter.password }}</td>
+    <td>{{ vcenter.user }}</td>
+    <td>{{ vcenter.password }}</td>
   </tr>
   <tr>
     <td>ESXi</td>
-    <td>root / {{ vcenter.password }}</td>
+    <td>root</td>
+    <td>{{ vcenter.password }}</td>
   </tr>
 {% if deploy_nsxt == true %}
   <tr>
     <td>NSX-T Managers</td>
-    <td>{{ nsxmanadminuser }} / {{ nsxmanpassword }}</td>
+    <td>{{ nsxmanadminuser }}</td>
+    <td>{{ nsxmanpassword }}</td>
   </tr>
 {% endif %}
 {% if deploy_nsxt_edge == true %}
   <tr>
     <td>NSX-T Edge Transport Nodes</td>
-    <td>admin / {{ edgepassword }}</td>
+    <td>admin</td>
+    <td>{{ edgepassword }}</td>
   </tr>
 {% endif %}
   <tr>
     <td>vCenter VAMI and CLI</td>
-    <td>root / {{ vcenter.password }}</td>
+    <td>root</td>
+    <td>{{ vcenter.password }}</td>
   </tr>
 {% if deploy_router == true %}
     <td>VyOS Router</td>
-    <td>vyos / VMware1!</td>
+    <td>vyos</td>
+    <td>VMware1!</td>
   </tr>
 {% endif %}
 </table>
