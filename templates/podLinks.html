@@ -22,9 +22,9 @@ tr:nth-child(even) {
 <body>
 <h1>vsphere-nsxt-lab-deploy</h1>
 
-<h2>Pod Links</h2>
+<h2>Pod Documentation</h2>
 
-<h3>Pod-{{ pod }}</h3>
+<h3>Pod-{{ pod }} Links</h3>
 
 <table>
   <tr>
@@ -54,7 +54,7 @@ tr:nth-child(even) {
     <td>NSX-T Edge Transport Node 2 CLI</td>
     <td><a href="ssh://admin@pod-{{ pod }}-{{ edge_node2 }}.{{ domain }}">ssh://admin@pod-{{ pod }}-{{ edge_node2 }}.{{ domain }}</a>/</td>
   </tr>
-  {% endif %}
+{% endif %}
   <tr>
     <td>vCenter VAMI</td>
     <td><a href="https://pod-{{ pod }}-vcenter.{{ domain }}:5480">https://pod-{{ pod }}-vcenter.{{ domain }}:5480</a></td>
@@ -63,6 +63,81 @@ tr:nth-child(even) {
     <td>vCenter CLI</td>
     <td><a href="ssh://root@pod-{{ pod }}-vcenter.{{ domain }}">ssh://root@pod-{{ pod }}-vcenter.{{ domain }}</a></td>
   </tr>
+  <tr>
+{% if deploy_router == true %}
+    <td>VyOS Router</td>
+    <td><a href="ssh://vyos@{{ router_public_ip }}">ssh://vyos@{{ router_public_ip }}</a></td>
+  </tr>
+{% endif %}
+</table>
+
+<h3>Pod-{{ pod }} Login Credentials</h3>
+
+<table>
+  <tr>
+    <th>Description</th>
+    <th>Login Credentials</th>
+  </tr>
+  <tr>
+    <td>vCenter</td>
+    <td>{{ vcenter.user }} / {{ vcenter.password }}</td>
+  </tr>
+  <tr>
+    <td>ESXi</td>
+    <td>root / {{ vcenter.password }}</td>
+  </tr>
+{% if deploy_nsxt == true %}
+  <tr>
+    <td>NSX-T Managers</td>
+    <td>{{ nsxmanadminuser }} / {{ nsxmanpassword }}</td>
+  </tr>
+{% endif %}
+{% if deploy_nsxt_edge == true %}
+  <tr>
+    <td>NSX-T Edge Transport Nodes</td>
+    <td>admin / {{ edgepassword }}</td>
+  </tr>
+{% endif %}
+  <tr>
+    <td>vCenter VAMI and CLI</td>
+    <td>root / {{ vcenter.password }}</td>
+  </tr>
+{% if deploy_router == true %}
+    <td>VyOS Router</td>
+    <td>vyos / VMware1!</td>
+  </tr>
+{% endif %}
+</table>
+
+<h3>Pod-{{ pod }} FQDN and IP addresses</h3>
+
+<table>
+  <tr>
+    <th>FQDN</th>
+    <th>IP address</th>
+  </tr>
+  <tr>
+    <td>{{ vcenter.fqdn }}</td>
+    <td>{{ vcenter.ip}}</td>
+  </tr>
+{% for item in vESX %}
+  <tr>
+    <td>item.fqdn</td>
+    <td>item.ip</td>
+  </tr>
+{% endfor %}
+{% if deploy_nsxt == true %}
+  <tr>
+    <td>pod-{{ pod }}-nsxt-lm.{{ domain }}</td>
+    <td>10</td>
+  </tr>
+{% endif %}
+{% if deploy_nsxt_edge == true %}
+  <tr>
+    <td>NSX-T Edge Transport Nodes</td>
+    <td>admin / {{ edgepassword }}</td>
+  </tr>
+{% endif %}
 </table>
 
 </body>
