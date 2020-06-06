@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ../answerfile.yml
+  tasks:
+    - name: Write pod documentation
+      template: 
+        src=../templates/podLinks.html
+        dest=/tmp/pod-{{ pod }}-links.html

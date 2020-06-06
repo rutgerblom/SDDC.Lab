@@ -1,4 +1,7 @@
 ---
+# Writing Pod documentation
+- import_playbook: playbooks/writePodDoc.yml
+
 # Nested vSphere deployment starts here
 - import_playbook: playbooks/preparePhysical.yml
 - import_playbook: playbooks/deployRouter.yml
@@ -24,15 +27,3 @@
 # NSX-T logical network provisioning starts here
 - import_playbook: playbooks/createNsxSegments.yml
 - import_playbook: playbooks/createNsxT0gateway.yml
-
-# Create HTML file with pod links
-- name: Create HTML file with pod links
-  hosts: localhost
-  gather_facts: false
-  vars_files:
-    - ./answerfile.yml
-  tasks:
-    - name: Create HTML file
-      template: 
-        src=../templates/podLinks.html
-        dest=/tmp/pod-{{ pod }}-links.html
