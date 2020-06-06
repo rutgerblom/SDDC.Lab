@@ -134,10 +134,12 @@ tr:nth-child(even) {
   </tr>
 {% endfor %}
 {% if deploy_nsxt == true %}
+{% for item in nsxman %}
   <tr>
-    <td>pod-{{ pod }}-nsxt-lm.{{ domain }}</td>
-    <td>10</td>
+    <td>{{ nsxman[item].hostname }}</td>
+    <td>{{ nsxman[item].ip }}</td>
   </tr>
+{% endfor %}
 {% endif %}
 {% if deploy_nsxt_edge == true %}
   <tr>
