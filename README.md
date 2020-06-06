@@ -9,9 +9,9 @@
 * [Compatibility](#Compatibility)
 * [The deployment](#The-deployment)
   * [Footprint](#Footprint)
-  * [Diagrams](#Diagrams)
   * [Ansible play recap](#Ansible-play-recap)
-* [Diagrams](#Diagrams)
+  * [Pod documentation](#Pod-documentation)
+  * [Diagrams](#Diagrams)
 * [Development](#Development)
 * [Credits](#Credits)
 
@@ -104,6 +104,11 @@ Using the default settings the total configured footprint on the physical ESXi h
 
 Ansible play recap from 6-JUNE-2020:
 ![](images/play-recap.png)
+
+### Pod documentation
+
+Pod documentation is generated as part of the deployment:
+![](images/pod-doc.png)
 
 ### Diagrams
 
