@@ -1,14 +1,16 @@
 # Changelog
 
-## 1.2.9.2 4-JUNE-2020 by Rutger Blom
+## 1.2.9.2 6-JUNE-2020 by Rutger Blom
 
 ### Changed
 
-- Replaced a couple of timers (pauses) with API polling (via URI) in the NSX-T playbooks. 
+- Replaced most hard coded timers (pauses) with API polling (using uri) in the NSX-T deployment playbooks. 
 - Added conditionals to "deployVc.yml" for idempotency.
 - Added "ignore_errors" to "configureVsan.yml" for idempotency.
 - FQDN for NSX Manager changed to "pod-{{ pod }}-{{ nsxmanager_name }}.{{ domain }}" so it's compliant with pod naming standard.
 - Added clarifications and additional information under "Requirements" in "README.md"
+- Disabled some more vSAN health checks that do not make sense in a nested environment
+- Changed the default value of "vcIso" to match the latest vCenter 7.0 version 
 
 ## 1.2.9.1 25-MAY-2020 by Rutger Blom
 

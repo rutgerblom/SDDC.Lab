@@ -47,7 +47,7 @@ physicalESX:
   datastore:                 "demo_nfs01"              # The datastore where all the deployed VMs are stored.
 
 # Your NFS storage
-nfs_server:                  "192.168.0.12"             # Change this to the FQDN or IP address of your NAS
+nfs_server:                  "192.168.0.12"            # Change this to the FQDN or IP address of your NAS
 nfs_datastore:               "nfs01"                   # NFS export name
 nfs_path:                    "/nested_nfs01"           # NFS path
 nfs_type:                    "nfs"                     # NFS version 3
@@ -66,10 +66,10 @@ router:
     area: 666                                                         # specify OSPF area for uplink peering connction
 
 # Some global network properties for the nested environment
-dns1:                        "192.168.0.10"                                # Your primary DNS server available to the nested environment.
-dns2:                        "192.168.0.11"                                # Your secondary DNS server available to the nested environment.
+dns1:                        "192.168.0.10"                         # Your primary DNS server available to the nested environment.
+dns2:                        "192.168.0.11"                         # Your secondary DNS server available to the nested environment.
 ntp1:                        "192.168.0.10"                         # Your 1st NTP server available to the nested environment's management network
-domain:                      "lab.local"                              # The DNS domain name for the nested environment.
+domain:                      "lab.local"                            # The DNS domain name for the nested environment.
 mgmt_network_mask:           "255.255.255.0"
 mgmt_network_mask_cidr:      "24"
 vmotion_network_mask:        "255.255.255.0"
@@ -114,11 +114,11 @@ vcenter:
 clusters:
   Compute-A:
     drs:                     true
-    vsan:                    true  # vSAN requires at least three ESXi hosts in the cluster.
+    vsan:                    true   # vSAN requires at least three ESXi hosts in the cluster.
     prep_nsx:                true   # Attach NSX-T transport node profile to this cluster? Only relevant when deploy_nsxt == true
   Edge:           
     drs:                     false
-    vsan:                    true  # vSAN requires at least three ESXi hosts in the cluster.
+    vsan:                    true   # vSAN requires at least three ESXi hosts in the cluster.
     prep_nsx:                false  # Attach NSX-T transport node profile to this cluster? Only relevant when deploy_nsxt == true
 
 # Configuration for the VDS within the nested vSphere environment.
