@@ -114,6 +114,69 @@ tr:nth-child(even) {
 {% endif %}
 </table>
 
+<h3>VLANs</h3>
+<table>
+  <tr>
+    <th>VLAN Description</th>
+    <th>VLAN ID</th>
+    <th>CIDR</th>
+    <th>Gateway</th>
+  </tr>
+  <tr>
+    <td>Management</td>
+    <td>{{ physicalESX.vlan }}</td>
+    <td>{{ pod_network }}.{{ pod + management }}.0/{{ mgmt_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + management }}.1</td>
+  </tr>
+  <tr>
+    <td>vMotion</td>
+    <td>{{ pod + vmotion }}</td>
+    <td>{{ pod_network }}.{{ pod + vmotion }}.0/{{ vmotion_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + vmotion }}.1</td>
+  </tr>
+  <tr>
+    <td>vSAN</td>
+    <td>{{ pod + vsan }}</td>
+    <td>{{ pod_network }}.{{ pod + vsan }}.0/{{ vsan_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + vsan }}.1</td>
+  </tr>
+  <tr>
+    <td>IP Storage</td>
+    <td>{{ pod + ipstorage }}</td>
+    <td>{{ pod_network }}.{{ pod + ipstorage }}.0/{{ ipstorage_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + ipstorage }}.1</td>
+  </tr>
+  <tr>
+    <td>Overlay transport</td>
+    <td>{{ pod + transport }}</td>
+    <td>{{ pod_network }}.{{ pod + transport }}.0/{{ transport_network_mask_cidr }}</td>
+    <td>{{ transport_gw }}</td>
+  </tr>
+  <tr>
+    <td>Service VM Management</td>
+    <td>{{ pod + svmmanagement }}</td>
+    <td>{{ pod_network }}.{{ pod + svmmanagement }}.0/{{ svmmanagement_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + svmmanagement }}.1</td>
+  </tr>
+  <tr>
+    <td>"NSX Edge Uplink #1</td>
+    <td>{{ pod + nsx_edge_uplink_1 }}</td>
+    <td>{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.0/{{ nsx_edge_uplink_1_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.1</td>
+  </tr>
+  <tr>
+    <td>"NSX Edge Uplink #2</td>
+    <td>{{ pod + nsx_edge_uplink_2 }}</td>
+    <td>{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.0/{{ nsx_edge_uplink_2_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.1</td>
+  </tr>
+  <tr>
+    <td>"VM network</td>
+    <td>{{ pod + vmnetwork }}</td>
+    <td>{{ pod_network }}.{{ pod + vmnetwork }}.0/{{ vmnetwork_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + vmnetwork }}.1</td>
+  </tr>
+
 <h3>FQDNs and IP addresses</h3>
 <table>
   <tr>
@@ -122,7 +185,7 @@ tr:nth-child(even) {
   </tr>
   <tr>
     <td>{{ vcenter.fqdn }}</td>
-    <td>{{ vcenter.ip}}</td>
+    <td>{{ vcenter.ip }}</td>
   </tr>
 {% for item in vESX %}
   <tr>
