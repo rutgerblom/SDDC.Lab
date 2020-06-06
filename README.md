@@ -8,6 +8,8 @@
 * [Usage](#Usage)
 * [Compatibility](#Compatibility)
 * [The deployment](#The-deployment)
+  * [Footprint](#Footprint)
+  * [Diagrams](#Diagrams)
 * [Diagrams](#Diagrams)
 * [Development](#Development)
 * [Credits](#Credits)
@@ -87,6 +89,15 @@ Using the default settings the following is deployed:
    * ESXi Transport Nodes
    * Tier-0 Gateway (NSX-T 3.0 only)
    * BGP peering with VyOS router (NSX-T 3.0 only)
+
+### Footprint
+
+Using the default settings the total configured footprint on the physical ESXi host is:
+* 9 virtual machines
+* 57 vCPU
+* 420 GB vRAM
+* 2076 GB storage (100% thin provisioned)
+* 34 vNICS
 
 Ansible play recap from 6-JUNE-2020:
 
