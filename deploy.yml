@@ -32,6 +32,7 @@
   vars_files:
     - ./answerfile.yml
   tasks:
-    template: 
-     src=../templates/podLinks.html
-     dest=/tmp/pod-{{ pod }}-links.html
+    - name: Create HTML file
+      template: 
+        src=../templates/podLinks.html
+        dest=/tmp/pod-{{ pod }}-links.html
