@@ -140,8 +140,12 @@ tr:nth-child(even) {
 {% endif %}
 {% if deploy_nsxt_edge == true %}
   <tr>
-    <td>NSX-T Edge Transport Nodes</td>
-    <td>admin / {{ edgepassword }}</td>
+    <td>{{ edge_node1 }}.{{ domain }}</td>
+    <td>{{ pod_network }}.{{ pod + management }}.61</td>
+  </tr>
+  <tr>
+    <td>{{ edge_node2 }}.{{ domain }}</td>
+    <td>{{ pod_network }}.{{ pod + management }}.62</td>
   </tr>
 {% endif %}
 </table>
