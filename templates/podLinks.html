@@ -24,7 +24,7 @@ tr:nth-child(even) {
 
 <h2>Pod Links</h2>
 
-<h3>Pod-230</h3>
+<h3>Pod-{{ pod }}</h3>
 
 <table>
   <tr>
@@ -33,12 +33,28 @@ tr:nth-child(even) {
   </tr>
   <tr>
     <td>vCenter</td>
-    <td><a href="https://pod-230-vcenter.lab.local">https://pod-230-vcenter.lab.local</a></td>
+    <td><a href="https://pod-{{ pod }}-vcenter.{{ domain }}">https://pod-{{ pod }}-vcenter.{{ domain }}</a></td>
   </tr>
+{% if deploy_nsxt == true %}
   <tr>
     <td>NSX-T Local Manager</td>
-    <td><a href="https://pod-230-nsxt-lm.lab.local">https://pod-230-nsxt-lm.lab.local</a>/</td>
+    <td><a href="https://pod-{{ pod }}-{{ nsxmanager_name }}.{{ domain }}">https://pod-{{ pod }}-{{ nsxmanager_name }}.{{ domain }}</a>/</td>
   </tr>
+  <tr>
+    <td>NSX-T Local Manager CLI</td>
+    <td><a href="ssh://admin@pod-{{ pod }}-{{ nsxmanager_name }}.{{ domain }}">ssh://admin@pod-{{ pod }}-{{ nsxmanager_name }}.{{ domain }}</a>/</td>
+  </tr>
+{% endif %}
+{% if deploy_nsxt_edge == true %}
+  <tr>
+    <td>NSX-T Edge Transport Node 1 CLI</td>
+    <td><a href="ssh://admin@pod-{{ pod }}-{{ edge_node1 }}.{{ domain }}">ssh://admin@pod-{{ pod }}-{{ edge_node1 }}.{{ domain }}</a>/</td>
+  </tr>
+  <tr>
+    <td>NSX-T Edge Transport Node 2 CLI</td>
+    <td><a href="ssh://admin@pod-{{ pod }}-{{ edge_node2 }}.{{ domain }}">ssh://admin@pod-{{ pod }}-{{ edge_node2 }}.{{ domain }}</a>/</td>
+  </tr>
+  {% endif %}
 </table>
 
 </body>

@@ -106,4 +106,10 @@
         path: "/rutgerISO/customesxv.iso"
         state: absent
       delegate_to: localhost
+
+    - name: Wait 5 minutes before checking whether the hosts are ready
+      pause: minutes=5
+      when: vESX|length > 6
+
   tags: nestedESX
+

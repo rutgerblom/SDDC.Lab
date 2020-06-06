@@ -5,21 +5,9 @@
 - import_playbook: playbooks/deployVc.yml
 - import_playbook: playbooks/prepareISOInstaller.yml
 - import_playbook: playbooks/deployNestedEsxi.yml
-
-- name: Wait 5 minutes for the ESXi hosts to become fully responsive
-  hosts: localhost
-  gather_facts: False
-  vars_files:
-    - ./answerfile.yml
-  tasks:
-    - name: Wait 5 minutes before checking whether the hosts are ready
-      pause: minutes=5
-      when: vESX|length > 6
-
 - import_playbook: playbooks/configureNestedEsxi.yml
 - import_playbook: playbooks/createVds.yml
 - import_playbook: playbooks/configureVsan.yml
-# Nested vSphere deployment ends here
 
 # NSX-T deployment starts here
 - import_playbook: playbooks/deployNsxManager.yml
@@ -32,9 +20,18 @@
 - import_playbook: playbooks/attachNsxTnp.yml
 - import_playbook: playbooks/createNsxEdgeTn.yml
 - import_playbook: playbooks/createNsxEdgeCluster.yml
-# NSX-T deployment ends here
 
 # NSX-T logical network provisioning starts here
 - import_playbook: playbooks/createNsxSegments.yml
 - import_playbook: playbooks/createNsxT0gateway.yml
-# NSX-T logical network provisioning ends here
+
+# Create HTML file with pod links
+- name: Create HTML file with pod links
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ./answerfile.yml
+  tasks:
+    template: 
+     src=../templates/podLinks.html
+     dest=/tmp/podLinks.html
