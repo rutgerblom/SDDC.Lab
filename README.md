@@ -10,6 +10,7 @@
 * [The deployment](#The-deployment)
   * [Footprint](#Footprint)
   * [Diagrams](#Diagrams)
+  * [Ansible play recap](#Ansible-play-recap)
 * [Diagrams](#Diagrams)
 * [Development](#Development)
 * [Credits](#Credits)
@@ -99,8 +100,9 @@ Using the default settings the total configured footprint on the physical ESXi h
 * 2076 GB storage (100% thin provisioned)
 * 34 vNICS
 
-Ansible play recap from 6-JUNE-2020:
+### Ansible play recap
 
+Ansible play recap from 6-JUNE-2020:
 ![](images/play-recap.png)
 
 ### Diagrams
