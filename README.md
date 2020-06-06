@@ -88,7 +88,7 @@ Using the default settings the following is deployed:
    * Tier-0 Gateway (NSX-T 3.0 only)
    * BGP peering with VyOS router (NSX-T 3.0 only)
 
-Ansible play recap from 4-JUNE-2020:
+Ansible play recap from 6-JUNE-2020:
 
 ![](images/play-recap.png)
 
