@@ -7,7 +7,7 @@
 * [Requirements](#Requirements)
 * [Usage](#Usage)
 * [Compatibility](#Compatibility)
-* [The deployment](#The-deployment)
+* [Pod deployment](#Pod-deployment)
   * [Footprint](#Footprint)
   * [Ansible play recap](#Ansible-play-recap)
   * [Pod documentation](#Pod-documentation)
@@ -17,7 +17,7 @@
 
 ## Description
 
-This repository contains a set of Ansible Playbooks that deploy and configure complete vSphere-NSX-T pods. Each pod contains a router, vCenter, ESXi, NSX-T Manager, and NSX-T Edge nodes. The primary use case is speedy provisioning of consistent nested vSphere-NSX-T lab environments.
+This repository contains Ansible Playbooks that perform automated deployments of complete vSphere-NSX-T pods. Each pod contains a router, vCenter, ESXi hosts, NSX-T Manager, and NSX-T Edge nodes. The primary use case is consistent provisioning of nested vSphere-NSX-T lab environments.
 
 ## Changelog
 
@@ -26,20 +26,19 @@ See [CHANGELOG.md](CHANGELOG.md)
 ## Requirements
 
 * A physical standalone ESXi host running version 6.7
-* The physical standalone ESXi host hostname must be resolvable by DNS. Run the "hostname" command on your physical ESXi host to see the ESXi hostname. The value for "physicalESX.fqdn" in your answerfile.yml must match the name resolved by DNS. 
+* The physical standalone ESXi host hostname must be resolvable by DNS.
 * An Ubuntu 18.04/20.04 VM with the following packages:
   * sudo apt install python3 python3-pip xorriso
   * pip3 install ansible pyvim pyvmomi netaddr
   * git clone https://github.com/rutgerblom/vsphere-nsxt-lab-deploy.git
-* ESXi and vCenter ISO files as well as the NSX-T Manager OVA file.
-* If deploying NSX-T you need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval)).
+  * ESXi and vCenter ISO files as well as the NSX-T Manager OVA file.
+* For deploying NSX-T you need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval)).
 * A layer-3 switch with an appropriate OSPFv2 configuration matching the OSPFv2 settings in your answerfile. This is required when dynamic routing between the pod(s) and the physical network is enabled in your answerfile.
-* The default settings in answerfile_sample.yml require a working DNS name resolution. Unless you configure your answerfile.yml so that IP addresses are used for vCenter and the the ESXi hosts, the following DNS zones and "A" records (with corresponding "PTR" records) must be created on the DNS server when deploying using the default settings:
+* The default settings in answerfile_sample.yml require a working DNS name resolution. Unless you configure your answerfile.yml to use IP addresses for vCenter and the ESXi hosts, the following DNS zones and records must be created on the DNS server:
 
-  * lab.local                 - forward lookup zone
-  * 230.203.10.in-addr.arpa   - reverse lookup zone 
+  * lab.local (forward lookup zone)
+  * 230.203.10.in-addr.arpa (reverse lookup zone)
   * pod-230-vcenter.lab.local - 10.203.230.5
-  * pod-230-nsxt-lm.lab.local - 10.203.230.8
   * pod-230-esxi11.lab.local  - 10.203.230.11
   * pod-230-esxi12.lab.local  - 10.203.230.12
   * pod-230-esxi13.lab.local  - 10.203.230.13
@@ -51,9 +50,9 @@ See [CHANGELOG.md](CHANGELOG.md)
 
 Copy **answerfile_sample.yml** to **answerfile.yml** and modify the settings according to your needs. 
 
-Start a deployment with: **sudo ansible-playbook deploy.yml**
+Start a pod deployment with: **sudo ansible-playbook deploy.yml**
 
-Remove a deployment with: **ansible-playbook undeploy.yml**
+Remove a pod deployment with: **ansible-playbook undeploy.yml**
 
 ## Compatibility
 
@@ -66,7 +65,7 @@ The following combinations can be deployed:
 * NSX-T 2.5 on vSphere 6.7
 * NSX-T 3.0 on vSphere 7.0
 
-## The deployment
+## Pod deployment
 
 Using the default settings the following is deployed:
 1. vSwitch and port groups on the physical ESXi host
