@@ -51,9 +51,9 @@ See [CHANGELOG.md](CHANGELOG.md)
 
 Copy **answerfile_sample.yml** to **answerfile.yml** and modify the settings according to your needs. 
 
-Start the deployment with: **ansible-playbook deploy.yml**
+Start a deployment with: **sudo ansible-playbook deploy.yml**
 
-Remove the deployment with: **ansible-playbook undeploy.yml**
+Remove a deployment with: **ansible-playbook undeploy.yml**
 
 ## Compatibility
 
