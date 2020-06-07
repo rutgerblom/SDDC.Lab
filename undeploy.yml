@@ -110,3 +110,10 @@
         - deploy_router == true
         - router.protocol == "static"
 
+    - name: Delete the Pod documentation
+      file: 
+        path: "/home/$SUDO_USER/pod-{{ pod }}-doc.html"
+        state: absent
+      when: 
+        - DEBUG_keep_config_files != true
+
