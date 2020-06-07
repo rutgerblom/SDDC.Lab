@@ -5,7 +5,8 @@
     - ../answerfile.yml
   tasks:
     - name: Create variable with current date time
-      set_fact: time="{{lookup('pipe','date \"+%d-%m-%Y %H:%M\"')}}"
+      set_fact: 
+        time: "{{lookup('pipe','date \"+%d-%m-%Y %H:%M\"')}}"
 
     - name: Write Pod documentation
       template: 
