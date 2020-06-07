@@ -27,7 +27,7 @@ See [CHANGELOG.md](CHANGELOG.md)
 
 * A physical standalone ESXi host running version 6.7
 * The physical standalone ESXi host hostname must be resolvable by DNS.
-* An Ubuntu 18.04/20.04 VM with the following packages:
+* An Ubuntu 18.04/20.04 VM with the following software:
   * sudo apt install python3 python3-pip xorriso
   * pip3 install ansible pyvim pyvmomi netaddr
   * git clone https://github.com/rutgerblom/vsphere-nsxt-lab-deploy.git
