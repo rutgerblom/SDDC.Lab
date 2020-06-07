@@ -92,11 +92,11 @@ Using the default settings the following is deployed:
 
 ### Footprint
 
-Using the default settings the total configured footprint on the physical ESXi host is:
+Using the default settings the configured footprint for one pod is:
 * 9 virtual machines
 * 57 vCPU
 * 420 GB vRAM
-* 2076 GB storage (100% thin provisioned)
+* 2076 GB storage (thin provisioned)
 * 34 vNICS
 
 ### Ansible play recap
