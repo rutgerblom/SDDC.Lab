@@ -126,7 +126,7 @@
         vm_username: "{{ item.value.username }}"
         vm_password: "{{ item.value.password }}"
         vm_shell: /bin/esxcli
-        vm_shell_args: "network ip dns search add --domain={{ domain}}"
+        vm_shell_args: "network ip dns search add --domain={{ domain }}"
         vm_shell_env: 
         - "PATH=/bin"
         - "VAR=test"
@@ -163,6 +163,7 @@
       async: 7200
       poll: 0
       register: confdns1
+      when: dns1 is defined
 
     - name: Result check for configuring primary DNS on the ESXi hosts
       async_status:
@@ -171,6 +172,7 @@
       until: job_result.finished
       with_items: "{{ confdns1.results }}"
       retries: 10
+      when: dns1 is defined
 
     - name: Configure secondary DNS on the ESXi hosts
       vmware_vm_shell:
@@ -334,6 +336,7 @@
       async: 7200
       poll: 0
       register: confntp
+      when: ntp1 is defined
 
     - name: Result check for configuring NTP
       async_status:
@@ -342,6 +345,7 @@
       until: job_result.finished
       with_items: "{{ confntp.results }}"
       retries: 10
+      when: ntp1 is defined
 
     - name: Start ntpd on the ESXi hosts and change the service policy
       vmware_host_service_manager:
@@ -357,6 +361,7 @@
       async: 7200
       poll: 0
       register: startntp
+      when: ntp1 is defined
 
     - name: Result check for starting NTP
       async_status:
@@ -365,6 +370,7 @@
       until: job_result.finished
       with_items: "{{ startntp.results }}"
       retries: 10
+      when: ntp1 is defined
 
     - name: Mount NFS datastore on the ESXi hosts
       vmware_host_datastore:
