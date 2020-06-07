@@ -51,7 +51,8 @@
       register: deployment
 
     - name: Wait 3 seconds before we start checking whether the ESXi hosts are ready
-      pause: seconds=3
+      pause: 
+        seconds: 3
 
     - name: Result check for deployment
       async_status:
@@ -60,19 +61,29 @@
       with_items: "{{ deployment.results }}"
 
     - name: Create a mark if there is a new vESX to deploy
-      file: path=/tmp/newESXi state=touch owner=root group=root mode=0555
+      file: 
+        path: "/tmp/newESXi"
+        state: "touch"
+        owner: "root"
+        group: "root" 
+        mode: "0555"
       when: item.stat is not defined
       with_items: "{{ job_result.results }}"
 
-    - stat: path=/tmp/newESXi
+    - name: Check that markfile exists  
+      stat: 
+        path: "/tmp/newESXi"
       register: newESXi
 
     - name: Wait 15 minutes for the ESXi installation to finish.
-      pause: minutes=15
+      pause: 
+        minutes: 15
       when: newESXi.stat.exists == True
 
     - name: Delete the temporary mark
-      file: path=/tmp/newESXi state=absent
+      file: 
+        path: "/tmp/newESXi"
+        state: absent
       
     - name: Check result for deployment
       async_status:
@@ -108,7 +119,8 @@
       delegate_to: localhost
 
     - name: Wait 5 minutes before checking whether the hosts are ready
-      pause: minutes=5
+      pause: 
+        minutes: "5"
       when: vESX|length > 6
 
   tags: nestedESX
