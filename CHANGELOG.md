@@ -4,7 +4,11 @@
 
 ### Added
 
-- Pod documentation is generated and saved to "$HOME/pod-{{ pod }}.html".
+- Pod documentation is generated and saved to "~/pod-{{ pod }}.html".
+
+### Changed
+
+- Updates to README.md
 
 ## 1.2.9.2 6-JUNE-2020 by Rutger Blom
 
