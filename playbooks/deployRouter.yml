@@ -94,7 +94,9 @@
         - router_version == "legacy"
 
     - name: Delete the temporary template file for VyOS router
-      file: path=/tmp/vyos.conf state=absent
+      file: 
+        path: "/tmp/vyos.conf"
+        state: absent
       when: 
         - deploy_router == true
         - DEBUG_keep_config_files != true
@@ -161,7 +163,8 @@
         - router_version == "latest"
 
     - name: Wait 1 minute for the VyOS router to boot
-      pause: minutes=1
+      pause:
+        minutes: 1
       when: 
         - deploy_router == true
         - status is failed
@@ -181,7 +184,8 @@
         - router_version == "latest"
 
     - name: Wait 5 seconds
-      pause: seconds=5
+      pause:
+        seconds: 5
       when: 
         - deploy_router == true
         - status is failed
@@ -203,7 +207,8 @@
         - router_version == "latest"
 
     - name: Wait 5 seconds
-      pause: seconds=5
+      pause:
+        seconds: 5
       when: 
         - deploy_router == true
         - status is failed
@@ -223,7 +228,8 @@
         - router_version == "latest"
 
     - name: Wait 5 seconds
-      pause: seconds=5
+      pause:
+        seconds: 5
       when: 
         - deploy_router == true
         - status is failed
@@ -245,14 +251,16 @@
         - router_version == "latest"
 
     - name: Wait 5 seconds
-      pause: seconds=5
+      pause:
+        seconds: 5
       when: 
         - deploy_router == true
         - status is failed
         - router_version == "latest"
 
     - name: Wait 5 seconds
-      pause: seconds=5
+      pause:
+        seconds: 5
       when: 
         - deploy_router == true
         - status is failed
@@ -277,7 +285,8 @@
         - router_version == "latest"
 
     - name: Wait 5 seconds
-      pause: seconds=5
+      pause:
+        seconds: 5
       when: 
         - deploy_router == true
         - status is failed
@@ -302,7 +311,8 @@
         - router_version == "latest"
 
     - name: Wait 5 seconds
-      pause: seconds=5
+      pause: 
+        seconds: 5
       when: 
         - deploy_router == true
         - status is failed
@@ -324,7 +334,8 @@
         - router_version == "latest"
 
     - name: Wait 5 seconds
-      pause: seconds=5
+      pause: 
+        seconds: 5
       when: 
         - deploy_router == true
         - status is failed
@@ -346,7 +357,8 @@
         - router_version == "latest"
 
     - name: Wait 30 seconds before rebooting the VyOS router
-      pause: seconds=30
+      pause: 
+        seconds: 30
       when: 
         - deploy_router == true
         - status is failed
@@ -366,7 +378,8 @@
         - router_version == "latest"
 
     - name: Wait 1 minute for the VyOS router to boot
-      pause: minutes=1
+      pause: 
+        minutes: 1
       when: 
         - deploy_router == true
         - status is failed
@@ -404,7 +417,8 @@
         - router_version == "latest"
 
     - name: Wait 10 seconds for the VyOS VM to shut down.
-      pause: seconds=10
+      pause: 
+        seconds: 10
       when: 
         - deploy_router == true
         - status is failed
@@ -438,7 +452,9 @@
         - router_version == "latest"
 
     - name: Delete the temporary template file for VyOS router
-      file: path=/tmp/vyos.conf state=absent
+      file: 
+        path: "/tmp/vyos.conf"
+        state: absent
       when: 
         - deploy_router == true
         - status is failed

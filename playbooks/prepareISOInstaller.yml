@@ -8,7 +8,9 @@
       action: mount name='/mnt/ESX' src="{{ esxIso }}" opts=loop fstype=iso9660 state=mounted
 
     - name: Copy ISO contents
-      copy: src=/mnt/ESX dest=/tmp/
+      copy: 
+        src: "/mnt/ESX"
+        dest: "/tmp/"
 
     - name: Unmount ESXi ISO
       action: mount name='/mnt/ESX' src="{{ esxIso }}" fstype=iso9660 state=absent
@@ -24,7 +26,7 @@
         dest: /tmp/ESX/boot.cfg
         regexp: 'imgpayld.tgz$'
         replace: 'imgpayld.tgz --- /customks.tgz'
-        
+
     - name: copy customks.tgz
       copy: src=../files/customks.tgz dest=/tmp/ESX/
 
