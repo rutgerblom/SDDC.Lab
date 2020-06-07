@@ -5,7 +5,7 @@
 table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
-  width: 70%;
+  width: 80%;
 }
 
 td, th {
@@ -22,8 +22,10 @@ tr:nth-child(even) {
 <body>
 <h1>vsphere-nsxt-lab-deploy</h1>
 
-<h2>Pod-{{ pod }} Documentation</h2>
-<p>Creation time: {{ time }}</p>
+<p>Deployed by: {{ lookup('env','SUDO_USER') }}<br>
+  Deployed at: {{ time }}</p>
+<p>Physical ESXi host: {{ physicalESX.fqdn }}</p>
+  
 
 <h3>Links</h3>
 <table>
