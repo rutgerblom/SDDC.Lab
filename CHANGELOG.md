@@ -1,5 +1,11 @@
 # Changelog
 
+## TBD 7-JUNE-2020 by Rytger Blom
+
+### Changed
+
+- Miscellaneous code cleaning
+
 ## TBD 6-JUNE-2020 by Rutger Blom
 
 ### Added
