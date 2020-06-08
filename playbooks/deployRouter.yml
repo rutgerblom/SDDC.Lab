@@ -1,7 +1,11 @@
+## Luis has ownership of this file for the v2 migration ##
 ---
 - hosts: localhost
   gather_facts: false
   vars_files:
+    - ../software.yml
+    - ../licenses.yml
+    - ../config.yml
     - ../answerfile.yml
   tasks:
     - name: Check if the VyOS router is already deployed
