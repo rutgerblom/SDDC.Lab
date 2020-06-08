@@ -50,9 +50,9 @@
       poll: 0
       register: deployment
 
-    - name: Wait 3 seconds before we start checking whether the ESXi hosts are ready
+    - name: Wait 10 seconds before we start checking whether the ESXi hosts are ready
       pause: 
-        seconds: 3
+        seconds: 10
 
     - name: Result check for deployment
       async_status:
@@ -85,14 +85,9 @@
         name: "{{ item.value.vmname }}"
         schema: "vsphere"
         properties: ["guest.ipAddress"]
-      register: status
+      register: vm_facts
       until: "'10.10.10.80' in vm_facts.instance.guest.ipAddress"
       with_dict: "{{ vESX }}"
-
-    - name: Wait 15 minutes for the ESXi installation to finish.
-      pause: 
-        minutes: 15
-      when: newESXi.stat.exists == True
 
     - name: Delete the temporary mark
       file: 
