@@ -52,7 +52,7 @@ Copy **answerfile_sample.yml** to **answerfile.yml** and modify the settings acc
 
 Start a pod deployment with: **sudo ansible-playbook deploy.yml**
 
-Remove a pod deployment with: **ansible-playbook undeploy.yml**
+Remove a pod deployment with: **sudo ansible-playbook undeploy.yml**
 
 ## Compatibility
 
