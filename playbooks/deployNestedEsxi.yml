@@ -75,15 +75,6 @@
         path: "/tmp/newESXi"
       register: newESXi
 
-    - name: Wait for VMware tools to become available by name
-      vmware_guest_tools_wait:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
-        validate_certs: no
-        name: "{{ item.value.vmname }}"
-      register: vmtools_facts
-
    # - name: Wait 15 minutes for the ESXi installation to finish.
    #   pause: 
    #     minutes: 15
