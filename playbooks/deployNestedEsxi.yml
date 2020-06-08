@@ -75,6 +75,20 @@
         path: "/tmp/newESXi"
       register: newESXi
 
+    - name: Check if the ESXi hosts are ready
+      vmware_guest_info:
+        hostname: "{{ physicalESX.fqdn }}"
+        username: "{{ physicalESX.user }}"
+        password: "{{ physicalESX.password }}"
+        validate_certs: no
+        datacenter: "ha-datacenter"
+        name: "{{ item.value.vmname }}"
+        schema: "vsphere"
+        properties: ["guest.ipAddress"]
+      register: status
+      until: "'10.10.10.80' in vm_facts.instance.guest.ipAddress"
+      with_dict: "{{ vESX }}"
+
     - name: Wait 15 minutes for the ESXi installation to finish.
       pause: 
         minutes: 15
@@ -106,7 +120,7 @@
       async: 7200
       poll: 0
 
-    - name: Delete Custom ESXi ISO image used for Pod ESXi deployment
+    - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the datastore
       vsphere_file:
         hostname: "{{ physicalESX.fqdn }}"
         username: "{{ physicalESX.user}}"
@@ -114,14 +128,15 @@
         validate_certs: no
         datacenter: /ha-datacenter
         datastore: "{{ physicalESX.datastore }}"
-        path: "/rutgerISO/customesxv.iso"
+        path: "/Lab-ISO-Folder/customesxv.iso"
         state: absent
-      delegate_to: localhost
 
-    - name: Wait 5 minutes before checking whether the hosts are ready
-      pause: 
-        minutes: "5"
-      when: vESX|length > 6
+    - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the local filesystem
+      file: 
+        path: "/tmp/customesxv.iso"
+        state: absent
+      when: 
+        - DEBUG_keep_config_files != true
 
   tags: nestedESX
 
