@@ -75,10 +75,10 @@
         path: "/tmp/newESXi"
       register: newESXi
 
-   # - name: Wait 15 minutes for the ESXi installation to finish.
-   #   pause: 
-   #     minutes: 15
-   #   when: newESXi.stat.exists == True
+    - name: Wait 15 minutes for the ESXi installation to finish.
+      pause: 
+        minutes: 15
+      when: newESXi.stat.exists == True
 
     - name: Delete the temporary mark
       file: 
