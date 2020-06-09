@@ -85,7 +85,7 @@
         name: "{{ item.value.vmname }}"
         schema: "vsphere"
       register: vm_facts
-      until: vm_facts is search("10.10.10.80")
+      until: vm_facts is search("1.1.1.1")
       retries: 30
       delay: 30
       with_dict: "{{ vESX }}"
