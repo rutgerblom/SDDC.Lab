@@ -1,5 +1,11 @@
 # Changelog
 
+## TBD 9-JUNE-2020 by Rutger Blom
+
+### Changed
+
+- Hard coded timer for ESXi installation has been replaced with a polling loop.
+
 ## 1.2.9.2 6-JUNE-2020 by Rutger Blom
 
 ### Added

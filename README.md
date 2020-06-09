@@ -101,7 +101,7 @@ Using the default settings the configured footprint for one pod is:
 
 ### Ansible play recap
 
-Ansible play recap from 6-JUNE-2020:
+Ansible play recap from 9-JUNE-2020:
 ![](images/play-recap.png)
 
 ### Pod documentation
