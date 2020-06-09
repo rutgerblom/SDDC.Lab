@@ -204,34 +204,6 @@
       retries: 10
       when: dns2 is defined
 
-    - name: Disable SSH warnings on the ESXi hosts
-      vmware_vm_shell:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
-        validate_certs: false
-        vm_id: "{{ item.value.vmname }}"
-        vm_username: "{{ item.value.username }}"
-        vm_password: "{{ item.value.password }}"
-        vm_shell: /bin/vim-cmd
-        vm_shell_args: "hostsvc/advopt/update UserVars.SuppressShellWarning long 1"
-        vm_shell_env: 
-        - "PATH=/bin"
-        - "VAR=test"
-        vm_shell_cwd: "/tmp"
-      with_dict: "{{ vESX }}"
-      async: 7200
-      poll: 0
-      register: hwrn
-
-    - name: Result check for disabling SSH warnings on the ESXi hosts
-      async_status:
-        jid: "{{ item.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      with_items: "{{ hwrn.results }}"
-      retries: 10
-
     - name: Mark vSAN cache disk as Flash disk
       vmware_vm_shell:
         hostname: "{{ physicalESX.fqdn }}"
