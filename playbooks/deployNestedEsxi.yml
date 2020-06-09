@@ -75,10 +75,6 @@
         path: "/tmp/newESXi"
       register: newESXi
 
-    - name: Wait 5 minutes before checking whether the ESXi hosts are ready
-      pause: 
-        seconds: 300
-
     - name: Check if the ESXi hosts are ready (wait max 15 minutes)
       vmware_guest_info:
         hostname: "{{ physicalESX.fqdn }}"
@@ -88,12 +84,10 @@
         datacenter: "ha-datacenter"
         name: "{{ item.value.vmname }}"
         schema: "vsphere"
-        properties: ["guest.ipAddress"]
       register: vm_facts
-      until: "'10.10.10.80' in vm_facts.instance.guest.ipAddress != -1"
+      until: vm_facts is search("10.10.10.80")
       retries: 30
       delay: 30
-      ignore_errors: true
       with_dict: "{{ vESX }}"
 
     - name: Delete the temporary mark
