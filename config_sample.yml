@@ -8,7 +8,7 @@ DEBUG:
   DisplayVariables: false
 
 Pod:
-  Number: 230
+  Number: 100
   BaseNetwork:
     IPv4: '10.203'
     IPv6: FD00:0000:0000
@@ -27,32 +27,34 @@ Deploy:
   EnableSSH: true
   Software:
     vCenter:
-      Vendor: VMware
+      Vendor:  VMware
       Product: vCenter
       Version: '7.00A'
-      Patch: false
-      Config: Pod-{{ Pod.Number }}-vCenter.conf
+      Patch:   false
+      Config:  "Pod-{{ Pod.Number }}-vCenter.conf"
     ESXi:
-      Vendor: VMware
+      Vendor:  VMware
       Product: ESXi
       Version: '7.00'
-      Patch: false
-      Config: Pod-{{ Pod.Number }}-ESXi.conf
+      Patch:   false
+      Config:  "Pod-{{ Pod.Number }}-ESXi.conf"
     NSXT:
-      Vendor: VMware
+      Vendor:  VMware
       Product: NSXT
       Version: 3.0.0
-      Patch: false
-      Config: Pod-{{ Pod.Number }}-NSXT.conf
+      Patch:   false
+      Config:  "Pod-{{ Pod.Number }}-NSXT.conf"
     Router:
-      Vendor: VyOS
+      Vendor:  VyOS
       Product: Router
       Version: Latest
-      Patch: false
-      Config: Pod-{{ Pod.Number }}-Router.conf
+      Patch:   false
+      Config:  "Pod-{{ Pod.Number }}-Router.conf"
 
+##
+## Users should change entries in the 'Common' section to match their environment
+##
 Common:
-  __Comment: Users should change entries in this 'Common' section to match their environment
   Password:
     Nested: VMware1!
     Physical: VMware1!
@@ -84,34 +86,52 @@ Common:
     Path: "/nested_nfs01"
     Type: nfs
 
-__Target: __Items listed under Target specify agsinst what entity the lab is deployed against
-Target:
+##
+## Users should specify their deployment target settings in the 'TargetConfig' section
+##
+TargetConfig:
   Deployment: Host
   Host:
     FQDN: Host32.NetLab.Home
     User: root
     Password: "{{ Common.Password.Physical }}"
-    vSwitch: Pod-{{ Pod.Number }}-vSwitch
+    vSwitch: "Pod-{{ Pod.Number }}-vSwitch"
     VLAN: "{{ Pod.Number + Net.Management.Offset }}"
-    Datacenter: "/ha-datacenter"
+    DataCenter: "/ha-datacenter"
     Cluster: 
     Datastore: Local_VMs
     Folder: 
     PortGroup:
-      VLAN: Pod-{{ Pod.Number }}-Mgmt
-      Trunk: Pod-{{ Pod.Number }}-Trunk
+      VLAN: "Pod-{{ Pod.Number }}-Mgmt"
+      Trunk: "Pod-{{ Pod.Number }}-Trunk"
   vCenter:
     FQDN: NetLab-vCenter.NetLab.Home
     User: administrator@vsphere.local
     Password: "{{ Common.Password.Physical }}"
     vSwitch: Lab-vDS
-    Datacenter: NetLab
+    DataCenter: NetLab
     Cluster: Pod-Cluster
     Datastore: vsanDatastore
-    Folder: Nested Labs/Pod-{{ Pod.Number }}
+    Folder: "Nested Labs/Pod-{{ Pod.Number }}"
     PortGroup:
-      VLAN: Pod-{{ Pod.Number }}-Mgmt
-      Trunk: Pod-{{ Pod.Number }}-Trunk
+      VLAN:  "Pod-{{ Pod.Number }}-Mgmt"
+      Trunk: "Pod-{{ Pod.Number }}-Trunk"
+
+##
+## Determine effective Target settings to use throughout deployment script
+##
+Target:
+  FQDN:       "{{ TargetConfig[TargetConfig.Deployment].FQDN }}"
+  User:       "{{ TargetConfig[TargetConfig.Deployment].User }}"
+  Password:   "{{ TargetConfig[TargetConfig.Deployment].Password }}"
+  vSwitch:    "{{ TargetConfig[TargetConfig.Deployment].vSwitch }}"
+  DataCenter: "{{ TargetConfig[TargetConfig.Deployment].DataCenter }}"
+  Cluster:    "{{ TargetConfig[TargetConfig.Deployment].Cluster }}"
+  Datastore:  "{{ TargetConfig[TargetConfig.Deployment].Datastore }}"
+  Folder:     "{{ TargetConfig[TargetConfig.Deployment].Folder }}"
+  PortGroup:
+    VLAN:  "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].VLAN }}"
+    Trunk: "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].Trunk }}"
 
 Net:
   Management:

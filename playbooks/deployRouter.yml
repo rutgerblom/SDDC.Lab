@@ -10,12 +10,12 @@
   tasks:
     - name: Check if the VyOS router is already deployed
       vmware_guest_info:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: no
-        datacenter: "ha-datacenter"
-        name: "Pod-{{ pod }}-{{ router_hostname }}"
+        datacenter: "{{ Target.DataCenter }}"
+        name: "{{ Nested.Router.Name }}"
         schema: "vsphere"
         properties: ["overallStatus"]
       delegate_to: localhost
@@ -23,91 +23,93 @@
       ignore_errors: true
       no_log: true
       when: 
-        - deploy_router == true
+        - Deploy.Router == true
 
     - name: Create template file for the VyOS router
       template: 
-        src: "../templates/vyos.conf"
-        dest: "/tmp/vyos.conf"
+	src: "../templates/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Template }}"
+        dest: "{{ Deploy.Software.Router.Config }}"
       when: 
-        - deploy_router == true
+        - Deploy.Router == true
         - status is failed
 
 # The below tasks are for the deploying the VyOS legacy release
 
     - name: Download VyOS OVA
       get_url:
-        url: https://downloads.vyos.io/release/legacy/1.1.8/vyos-1.1.8-amd64.ova
-        dest: "{{ VyosOva }}"
+        url: "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Location }}/{{Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
+        dest: "{{ Deploy.Software.Router.Installer }}"
       when: 
-        - deploy_router == true
+        - Deploy.Router == true
         - status is failed
-        - router_version == "legacy"
+        - Deploy.Software.Router.Version == "Legacy"
 
+### *TBD* - Add additional fields: folder, etc.
     - name: Deploy VyOS router
       vmware_deploy_ovf:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: no
-        datastore: "{{ physicalESX.datastore }}"
-        name: "{{ router_vmname }}"
-        ovf: "{{ VyosOva }}"
+        datastore: "{{ Target.Datastore }}"
+        name: "{{ Nested.Router.Name }}"
+        ovf: "{{ Deploy.Software.Router.Installer }}"
         networks:
-          "public": "{{ router_public_pg }}"
-          "internal": "{{ physicalESX.trunkpg }}"
-        disk_provisioning: "thin"
+          "public": "{{ Nested.Router.Uplink.PortGroup }}"
+          "internal": "{{ Target.PortGroup.Trunk }}"
+        disk_provisioning: {{ Common.DiskProvisioning }}"
         power_on: true
         wait: true
         wait_for_ip_address: yes
       delegate_to: localhost
       when: 
-        - deploy_router == true
+        - Deploy.Router == true
         - status is failed
-        - router_version == "legacy"
+        - Deploy.Software.Router.Version == "Legacy"
 
     - name: Configure VyOS router
       vmware_guest_file_operation:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ router_vmname }}"
+        vm_id: "{{ Nested.Router.Name }}"
         vm_username: "vyos"
         vm_password: "vyos"
         copy:
-            src: "/tmp/vyos.conf"
+            src: "{{ Deploy.Software.Router.Config }}"
             dest: "/config/config.boot"
             overwrite: true
       when: 
-        - deploy_router == true
+        - Deploy.Router == true
         - status is failed
-        - router_version == "legacy"
+        - Deploy.Software.Router.Version == "Legacy"
 
     - name: Reboot VyOS VM
       vmware_guest_powerstate:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ router_vmname }}"
+        name: "{{ Nested.Router.Name }}"
         state: reboot-guest
       when: 
-        - deploy_router == true
+        - Deploy.Router == true
         - status is failed
-        - router_version == "legacy"
+        - Deploy.Software.Router.Version == "Legacy"
 
     - name: Delete the temporary template file for VyOS router
       file: 
-        path: "/tmp/vyos.conf"
+        path: "{{ Deploy.Software.Router.Config }}"
         state: absent
       when: 
-        - deploy_router == true
-        - DEBUG_keep_config_files != true
-        - router_version == "legacy"
+        - Deploy.Router == true
+        - Deploy.Software.Router.Version == "Legacy"
+        - DEBUG.KeepConfigFiles != true
 
 # The Below tasks are for the deploying the VyOS rolling release
 
+### *TBD* Stopped here
     - name: Download VyOS rolling release ISO
       get_url:
         url: https://downloads.vyos.io/rolling/current/amd64/vyos-rolling-latest.iso
