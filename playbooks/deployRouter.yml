@@ -27,37 +27,40 @@
 
     - name: Create template file for the VyOS router
       template: 
-	src: "../templates/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Template }}"
+      	src: "../templates/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Template }}"
         dest: "{{ Deploy.Software.Router.Config }}"
+      when: 
+        - Deploy.Router == true
+        - status is failed
+
+    - name: Download VyOS OVA (Both Legacy and Latest)
+      get_url:
+        url: "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Location }}/{{Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
+        dest: "{{ Deploy.Software.Router.Installer }}"
+        force: "{{ 'yes' if Deploy.Software.Router.Version == 'Latest' else 'no' }}"
       when: 
         - Deploy.Router == true
         - status is failed
 
 # The below tasks are for the deploying the VyOS legacy release
 
-    - name: Download VyOS OVA
-      get_url:
-        url: "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Location }}/{{Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
-        dest: "{{ Deploy.Software.Router.Installer }}"
-      when: 
-        - Deploy.Router == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Legacy"
-
-### *TBD* - Add additional fields: folder, etc.
     - name: Deploy VyOS router
       vmware_deploy_ovf:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
+        allow_duplicates: no
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
         datastore: "{{ Target.Datastore }}"
         name: "{{ Nested.Router.Name }}"
         ovf: "{{ Deploy.Software.Router.Installer }}"
         networks:
           "public": "{{ Nested.Router.Uplink.PortGroup }}"
           "internal": "{{ Target.PortGroup.Trunk }}"
-        disk_provisioning: {{ Common.DiskProvisioning }}"
+        disk_provisioning: "{{ Common.DiskProvisioning }}"
         power_on: true
         wait: true
         wait_for_ip_address: yes
@@ -107,33 +110,39 @@
         - Deploy.Software.Router.Version == "Legacy"
         - DEBUG.KeepConfigFiles != true
 
-# The Below tasks are for the deploying the VyOS rolling release
 
-### *TBD* Stopped here
-    - name: Download VyOS rolling release ISO
-      get_url:
-        url: https://downloads.vyos.io/rolling/current/amd64/vyos-rolling-latest.iso
-        dest: "{{ VyosIso }}"
-        force: true
-      when: 
-        - deploy_router == true
-        - status is failed
-        - router_version == "latest"
+
+# The Below tasks are for the deploying the VyOS rolling ('Latest') release
+
+### Merged with "Legacy" download using a conditional.  Move above Legacy/Latest sections
+#    - name: Download VyOS rolling release ISO
+#      get_url:
+#        url: https://downloads.vyos.io/rolling/current/amd64/vyos-rolling-latest.iso
+#        dest: "{{ VyosIso }}"
+#        force: true
+#      when: 
+#        - deploy_router == true
+#        - status is failed
+#        - router_version == "latest"
 
     - name: Upload the VyOS ISO to the datastore
       vsphere_copy: 
-        hostname: "{{ physicalESX.fqdn }}" 
-        username: "{{ physicalESX.user}}" 
-        password: "{{ physicalESX.password }}" 
-        validate_certs: false
-        src: "{{ VyosIso }}"
-        datastore: "{{ physicalESX.datastore }}" 
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        src: "{{ Deploy.Software.Router.Installer }}"
+        datastore: "{{ Target.Datastore }}" 
         path: "/Lab-ISO-Folder/vyos-rolling-latest.iso"
       tags: upload
       when: 
         - deploy_router == true
         - status is failed
         - router_version == "latest"
+
+
+"/{{Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
+
 
     - name: Create VyOS router VM
       vmware_guest:

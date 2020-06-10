@@ -98,9 +98,10 @@ TargetConfig:
     vSwitch: "Pod-{{ Pod.Number }}-vSwitch"
     VLAN: "{{ Pod.Number + Net.Management.Offset }}"
     DataCenter: "/ha-datacenter"
-    Cluster: 
+    Cluster: ""
     Datastore: Local_VMs
-    Folder: 
+    VMFolder: ""
+    ISOFolder: "/Lab-ISO-Folder"
     PortGroup:
       VLAN: "Pod-{{ Pod.Number }}-Mgmt"
       Trunk: "Pod-{{ Pod.Number }}-Trunk"
@@ -112,7 +113,8 @@ TargetConfig:
     DataCenter: NetLab
     Cluster: Pod-Cluster
     Datastore: vsanDatastore
-    Folder: "Nested Labs/Pod-{{ Pod.Number }}"
+    VMFolder: "Nested Labs/Pod-{{ Pod.Number }}"
+    ISOFolder: "/Lab-ISO-Folder"
     PortGroup:
       VLAN:  "Pod-{{ Pod.Number }}-Mgmt"
       Trunk: "Pod-{{ Pod.Number }}-Trunk"
@@ -128,7 +130,8 @@ Target:
   DataCenter: "{{ TargetConfig[TargetConfig.Deployment].DataCenter }}"
   Cluster:    "{{ TargetConfig[TargetConfig.Deployment].Cluster }}"
   Datastore:  "{{ TargetConfig[TargetConfig.Deployment].Datastore }}"
-  Folder:     "{{ TargetConfig[TargetConfig.Deployment].Folder }}"
+  VMFolder:   "{{ TargetConfig[TargetConfig.Deployment].VMFolder }}"
+  ISOFolder:  "{{ TargetConfig[TargetConfig.Deployment].ISOFolder }}"
   PortGroup:
     VLAN:  "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].VLAN }}"
     Trunk: "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].Trunk }}"
