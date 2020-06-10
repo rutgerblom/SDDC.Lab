@@ -31,25 +31,29 @@ Deploy:
       Product: vCenter
       Version: '7.00A'
       Patch:   false
-      Config:  "Pod-{{ Pod.Number }}-vCenter.conf"
+      Config:  "/tmp/Pod-{{ Pod.Number }}-vCenter.conf"
+      Installer: "/tmp/Pod-{{ Pod.Number }}-vCenter"
     ESXi:
       Vendor:  VMware
       Product: ESXi
       Version: '7.00'
       Patch:   false
-      Config:  "Pod-{{ Pod.Number }}-ESXi.conf"
+      Config:  "/tmp/Pod-{{ Pod.Number }}-ESXi.conf"
+      Installer: "/tmp/Pod-{{ Pod.Number }}-ESXi"
     NSXT:
       Vendor:  VMware
       Product: NSXT
       Version: 3.0.0
       Patch:   false
-      Config:  "Pod-{{ Pod.Number }}-NSXT.conf"
+      Config:  "/tmp/Pod-{{ Pod.Number }}-NSXT.conf"
+      Installer: "/tmp/Pod-{{ Pod.Number }}-NSXT"
     Router:
       Vendor:  VyOS
       Product: Router
       Version: Latest
       Patch:   false
-      Config:  "Pod-{{ Pod.Number }}-Router.conf"
+      Config:  "/tmp/Pod-{{ Pod.Number }}-Router.conf"
+      Installer: "/tmp/Pod-{{ Pod.Number }}-Router"
 
 ##
 ## Users should change entries in the 'Common' section to match their environment
@@ -76,7 +80,7 @@ Common:
   Syslog:
     IPv4: 10.203.100.26
     IPv6: 
-  ThinProvisioning: true
+  DiskProvisioning: "thin"
   SSH: true
   NFS:
     Server:
