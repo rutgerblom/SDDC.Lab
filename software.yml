@@ -12,6 +12,7 @@ Software:
           Name: vCenter Server v6.00 Update 3H
           Location: "{{ RootDirectory }}/VMware/vCenter/v6.0.0U3H"
           File: VMware-VCSA-all-6.0.0-9451619.iso
+          Version: "6.0"
           Media: iso
           Template:
             vCenter: vCenter_v6.0.0U3H_embedded_vCSA_on_VC.json
@@ -20,6 +21,7 @@ Software:
           Name: vCenter Server v6.50 Update 2C
           Location: "{{ RootDirectory }}/VMware/vCenter/v6.5.0U2C"
           File: VMware-VCSA-all-6.5.0-9451637.iso
+          Version: "6.5"
           Media: iso
           Template:
             vCenter: vCenter_v6.5.0U2C_embedded_vCSA_on_VC.json
@@ -28,6 +30,7 @@ Software:
           Name: vCenter Server v6.70 Update 3B
           Location: "{{ RootDirectory }}/VMware/vCenter/v6.7.0U3B"
           File: VMware-VCSA-all-6.7.0-15132721.iso
+          Version: "6.7"
           Media: iso
           Template:
             vCenter: vCenter_v6.7.0U3B_embedded_vCSA_on_VC.json
@@ -36,6 +39,7 @@ Software:
           Name: vCenter Server v7.00
           Location: "{{ RootDirectory }}/VMware/vCenter/v7.0.0"
           File: VMware-VCSA-all-7.0.0-15952498.iso
+          Version: "7.0"
           Media: iso
           Template:
             vCenter: vCenter_v7.0.0_embedded_vCSA_on_VC.json
@@ -44,10 +48,11 @@ Software:
           Name: vCenter Server v7.00a
           Location: "{{ RootDirectory }}/VMware/vCenter/v7.0.0A"
           File: VMware-VCSA-all-7.0.0-16189094.iso
+          Version: "7.0"
           Media: iso
           Template:
-            vCenter: vCenter_v7.0.0a_embedded_vCSA_on_VC.json
-            ESXi:    vCenter_v7.0.0a_embedded_vCSA_on_ESXi.json
+            vCenter: vCenter_v7.0.0A_embedded_vCSA_on_VC.json
+            ESXi:    vCenter_v7.0.0A_embedded_vCSA_on_ESXi.json
       Patches: []
 
     ESXi:
@@ -57,6 +62,7 @@ Software:
           Location: "{{ RootDirectory }}/VMware/ESXi/v5.5.0U3B"
           File: VMware-VMvisor-Installer-201512001-3248547.x86_64.iso
           Template: ESXi_v5.x.x_Kickstart.cfg
+          Version: "5.5"
           Media: iso
           vSwitch: 5.5.0
         6.00U3A:
@@ -64,6 +70,7 @@ Software:
           Location: "{{ RootDirectory }}/VMware/ESXi/v6.0.0U3A"
           File: VMware-VMvisor-Installer-201706001-5572656.x86_64.iso
           Template: ESXi_v6.x.x_Kickstart.cfg
+          Version: "6.0"
           Media: iso
           vSwitch: 6.0.0
         6.50U2:
@@ -71,6 +78,7 @@ Software:
           Location: "{{ RootDirectory }}/VMware/ESXi/v6.5.0U2"
           File: VMware-VMvisor-Installer-6.5.0.update02-8294253.x86_64.iso
           Template: ESXi_v6.x.x_Kickstart.cfg
+          Version: "6.5"
           Media: iso
           vSwitch: 6.5.0
         6.70U3B:
@@ -78,13 +86,15 @@ Software:
           Location: "{{ RootDirectory }}/VMware/ESXi/v6.7.0U3B"
           File: VMware-VMvisor-Installer-201912001-15160138.x86_64.iso
           Template: ESXi_v6.x.x_Kickstart.cfg
+          Version: "6.7"
           Media: iso
           vSwitch: 6.6.0
-        7.00:
+        "7.00":
           Name: ESXi v7.0.0
           Location: "{{ RootDirectory }}/VMware/ESXi/v7.0.0"
           File: VMware-VMvisor-Installer-7.0.0-15843807.x86_64.iso
           Template: ESXi_v7.x.x_Kickstart.cfg
+          Version: "7.0"
           Media: iso
           vSwitch: 7.0.0
       Patches:
@@ -100,181 +110,217 @@ Software:
           Name: NSX for vSphere v6.0.2
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.0.2"
           File: VMware-NSX-Manager-6.0.2-1550219.ova
+          Version: "6.0"
           Media: ova
         6.0.4:
           Name: NSX for vSphere v6.0.4
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.0.4"
           File: VMware-NSX-Manager-6.0.4-1752381.ova
+          Version: "6.0"
           Media: ova
         6.0.5:
           Name: NSX for vSphere v6.0.5
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.0.5"
           File: VMware-NSX-Manager-6.0.5-1911278.ova
+          Version: "6.0"
           Media: ova
         6.0.6:
           Name: NSX for vSphere v6.0.6
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.0.6"
           File: VMware-NSX-Manager-6.0.6-2103699.ova
+          Version: "6.0"
           Media: ova
         6.0.7:
           Name: NSX for vSphere v6.0.7
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.0.7"
           File: VMware-NSX-Manager-6.0.7-2176282.ova
+          Version: "6.0"
           Media: ova
         6.1.0:
           Name: NSX for vSphere v6.1.0
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.1.0"
           File: VMware-NSX-Manager-6.1.0-2107742.ova
+          Version: "6.1"
           Media: ova
         6.1.1:
           Name: NSX for vSphere v6.1.1
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.1.1"
           File: VMware-NSX-Manager-6.1.1-2179522.ova
+          Version: "6.1"
           Media: ova
         6.1.2:
           Name: NSX for vSphere v6.1.2
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.1.2"
           File: VMware-NSX-Manager-6.1.2-2318232.ova
+          Version: "6.1"
           Media: ova
         6.1.3:
           Name: NSX for vSphere v6.1.3
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.1.3"
           File: VMware-NSX-Manager-6.1.3-2591148.ova
+          Version: "6.1"
           Media: ova
         6.1.4:
           Name: NSX for vSphere v6.1.4
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.1.4"
           File: VMware-NSX-Manager-6.1.4-2691049.ova
+          Version: "6.1"
           Media: ova
         6.1.5:
           Name: NSX for vSphere v6.1.5
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.1.5"
           File: VMware-NSX-Manager-6.1.5-3102213.ova
+          Version: "6.1"
           Media: ova
         6.1.6:
           Name: NSX for vSphere v6.1.6
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.1.6"
           File: VMware-NSX-Manager-6.1.6-3615148.ova
+          Version: "6.1"
           Media: ova
         6.1.7:
           Name: NSX for vSphere v6.1.7
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.1.7"
           File: VMware-NSX-Manager-6.1.7-3949567.ova
+          Version: "6.1"
           Media: ova
         6.2.0:
           Name: NSX for vSphere v6.2.0
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.2.0"
           File: VMware-NSX-Manager-6.2.0-2986609.ova
+          Version: "6.2"
           Media: ova
         6.2.1:
           Name: NSX for vSphere v6.2.1
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.2.1"
           File: VMware-NSX-Manager-6.2.1-3300239.ova
+          Version: "6.2"
           Media: ova
         6.2.2:
           Name: NSX for vSphere v6.2.2
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.2.2"
           File: VMware-NSX-Manager-6.2.2-3604087.ova
+          Version: "6.2"
           Media: ova
         6.2.3:
           Name: NSX for vSphere v6.2.3
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.2.3"
           File: VMware-NSX-Manager-6.2.3-3979471.ova
+          Version: "6.2"
           Media: ova
         6.2.4:
           Name: NSX for vSphere v6.2.4
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.2.4"
           File: VMware-NSX-Manager-6.2.4-4292526.ova
+          Version: "6.2"
           Media: ova
         6.2.5:
           Name: NSX for vSphere v6.2.5
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.2.5"
           File: VMware-NSX-Manager-6.2.5-4818372.ova
+          Version: "6.2"
           Media: ova
         6.2.6:
           Name: NSX for vSphere v6.2.6
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.2.6"
           File: VMware-NSX-Manager-6.2.6-4977495.ova
+          Version: "6.2"
           Media: ova
         6.2.7:
           Name: NSX for vSphere v6.2.7
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.2.7"
           File: VMware-NSX-Manager-6.2.7-5343628.ova
+          Version: "6.2"
           Media: ova
         6.2.8:
           Name: NSX for vSphere v6.2.8
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.2.8"
           File: VMware-NSX-Manager-6.2.8-5901733.ova
+          Version: "6.2"
           Media: ova
         6.2.9:
           Name: NSX for vSphere v6.2.9
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.2.9"
           File: VMware-NSX-Manager-6.2.9-6926419.ova
+          Version: "6.2"
           Media: ova
         6.3.0:
           Name: NSX for vSphere v6.3.0
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.3.0"
           File: VMware-NSX-Manager-6.3.0-5007049.ova
+          Version: "6.3"
           Media: ova
         6.3.1:
           Name: NSX for vSphere v6.3.1
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.3.1"
           File: VMware-NSX-Manager-6.3.1-5124716.ova
+          Version: "6.3"
           Media: ova
         6.3.2:
           Name: NSX for vSphere v6.3.2
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.3.2"
           File: VMware-NSX-Manager-6.3.2-5672532.ova
+          Version: "6.3"
           Media: ova
         6.3.3:
           Name: NSX for vSphere v6.3.3
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.3.3"
           File: VMware-NSX-Manager-6.3.3-7087283.ova
+          Version: "6.3"
           Media: ova
         6.3.4:
           Name: NSX for vSphere v6.3.4
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.3.4"
           File: VMware-NSX-Manager-6.3.4-7087695.ova
+          Version: "6.3"
           Media: ova
         6.3.5:
           Name: NSX for vSphere v6.3.5
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.3.5"
           File: VMware-NSX-Manager-6.3.5-7119875.ova
+          Version: "6.3"
           Media: ova
         6.4.0:
           Name: NSX for vSphere v6.4.0
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.4.0"
           File: VMware-NSX-Manager-6.4.0-7564187.ova
+          Version: "6.4"
           Media: ova
         6.4.1:
           Name: NSX for vSphere v6.4.1
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.4.1"
           File: VMware-NSX-Manager-6.4.1-8599035.ova
+          Version: "6.4"
           Media: ova
         6.4.2:
           Name: NSX for vSphere v6.4.2
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.4.2"
           File: VMware-NSX-Manager-6.4.2-9643711.ova
+          Version: "6.4"
           Media: ova
         6.4.3:
           Name: NSX for vSphere v6.4.3
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.4.3"
           File: VMware-NSX-Manager-6.4.3-9927516.ova
+          Version: "6.4"
           Media: ova
         6.4.4:
           Name: NSX for vSphere v6.4.4
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.4.4"
           File: VMware-NSX-Manager-6.4.4-11197766.ova
+          Version: "6.4"
           Media: ova
         6.4.5:
           Name: NSX for vSphere v6.4.5
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.4.5"
           File: VMware-NSX-Manager-6.4.5-13282012.ova
+          Version: "6.4"
           Media: ova
         6.4.6:
           Name: NSX for vSphere v6.4.6
           Location: "{{ RootDirectory }}/VMware/NSX-v/v6.4.6"
           File: VMware-NSX-Manager-6.4.6-14819921.ova
+          Version: "6.4"
           Media: ova
       Patches: []
 
@@ -284,41 +330,49 @@ Software:
           Name: NSX Transformers v2.4.0
           Location: "{{ RootDirectory }}/VMware/NSX-T/v2.4.0"
           File: nsx-unified-appliance-2.4.0.0.0.12456291.ova
+          Version: "2.4"
           Media: ova
         2.4.1:
           Name: NSX Transformers v2.4.1
           Location: "{{ RootDirectory }}/VMware/NSX-T/v2.4.1"
           File: nsx-unified-appliance-2.4.1.0.0.13716579.ova
+          Version: "2.4"
           Media: ova
         2.4.2:
           Name: NSX Transformers v2.4.2
           Location: "{{ RootDirectory }}/VMware/NSX-T/v2.4.2"
           File: nsx-unified-appliance-2.4.2.0.0.14269551.ova
+          Version: "2.4"
           Media: ova
         2.4.3:
           Name: NSX Transformers v2.4.3
           Location: "{{ RootDirectory }}/VMware/NSX-T/v2.4.3"
           File: nsx-unified-appliance-2.4.3.0.0.15008154.ova
+          Version: "2.4"
           Media: ova
         2.5.0:
           Name: NSX Transformers v2.5.0
           Location: "{{ RootDirectory }}/VMware/NSX-T/v2.5.0"
           File: nsx-unified-appliance-2.5.0.0.0.14663978.ova
+          Version: "2.4"
           Media: ova
         2.5.1:
           Name: NSX Transformers v2.5.1
           Location: "{{ RootDirectory }}/VMware/NSX-T/v2.5.1"
           File: nsx-unified-appliance-2.5.1.0.0.15314292.ova
+          Version: "2.4"
           Media: ova
         3.0.0:
           Name: NSX Transformers v3.0.0
           Location: "{{ RootDirectory }}/VMware/NSX-T/v3.0.0"
           File: nsx-unified-appliance-3.0.0.0.0.15946739.ova
+          Version: "3.0"
           Media: ova
         3.0.1:
           Name: NSX Transformers v3.0.1
           Location: "{{ RootDirectory }}/VMware/NSX-T/v3.0.1"
           File: TBD
+          Version: "3.0"
           Media: ova
       Patches: []
 
@@ -328,16 +382,19 @@ Software:
           Name: NSX Intelligence v1.0.0
           Location: "{{ RootDirectory }}/VMware/NSXIntelligence/v1.0.0"
           File: VMware-NSX-Intelligence-appliance-1.0.0.0.0.14576942.tar
+          Version: "1.0"
           Media: tar
         1.0.1:
           Name: NSX Intelligence v1.0.1
           Location: "{{ RootDirectory }}/VMware/NSXIntelligence/v1.0.1"
           File: VMware-NSX-Intelligence-appliance-1.0.1.0.0.15188324.tar
+          Version: "1.0"
           Media: tar
         1.1.0:
           Name: NSX Intelligence v1.1.0
           Location: "{{ RootDirectory }}/VMware/NSXIntelligence/v1.1.0"
           File: VMware-NSX-Intelligence-appliance-1.1.0.0.0.15918914.ova
+          Version: "1.1"
           Media: ova
       Patches: []
 
@@ -347,6 +404,7 @@ Software:
           Name: vRealize Network Insight v5.1.0
           Location: "{{ RootDirectory }}/VMware/vRNI/v5.1.0"
           File: VMware-vRealize-Network-Insight-5.1.0.1578493419-platform.ova
+          Version: "5.1"
           Media: ova
       Patches: []
 
@@ -358,10 +416,12 @@ Software:
           Location: "https://downloads.vyos.io/release/legacy/1.1.8"
           File: vyos-1.1.8-amd64.ova
           Template: vyos.conf
+          Version: "1.1"
           Media: ova
         Latest:
           Name: VyOS Latest Rolling Nightly Build
           Location: "https://downloads.vyos.io/rolling/current/amd64"
           File: vyos-rolling-latest.iso
           Template: vyos.conf
+          Version: "0.0"
           Media: iso
