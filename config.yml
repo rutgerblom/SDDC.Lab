@@ -1357,7 +1357,7 @@ Nested:
             Neighbors:
             - Address:
                 IPv4:
-                  Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Network + Net.NSXEdgeUplink1.Offset }}.1"
+                  Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink1.Offset }}.1"
                   Prefix: "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
                 IPv6:
                   Address: "{{ Pod.BaseNetwork.IPv6 }}.{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink1.Offset|int) }}::1"
@@ -1375,7 +1375,7 @@ Nested:
                   Multiplier: 3
             - Address:
                 IPv4:
-                  Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Network + Net.NSXEdgeUplink2.Offset }}.1"
+                  Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink2.Offset }}.1"
                   Prefix: "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
                 IPv6:
                   Address: "{{ Pod.BaseNetwork.IPv6 }}.{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink2.Offset|int) }}::1"
