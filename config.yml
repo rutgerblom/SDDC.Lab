@@ -1,11 +1,7 @@
 ---
-__version: '0.2'
-__Comment1: Configuration file for vsphere-nsxt-lab-deploy Ansible deployment scripts.
-__Comment2: Keys below which start with double underscore (__) are comments/information for the item named after the underscores
-
 DEBUG:
   KeepConfigFiles: true
-  DisplayVariables: false
+  DisplayVariables: true
 
 Pod:
   Number: 10
@@ -61,15 +57,15 @@ Deploy:
 ##
 Common:
   Password:
-    Nested: VMware1!
-    Physical: VMware1!
+    Nested: "VMware1!"
+    Physical: "VMware1!"
   DNS:
-    Domain: lab.local
+    Domain: "lab.local"
     Server1:
-      IPv4: 10.203.100.254
+      IPv4: "10.203.100.254"
       IPv6: 
     Server2:
-      IPv4: 10.203.100.253
+      IPv4: "10.203.100.253"
       IPv6: 
   NTP:
     Server1:
@@ -79,12 +75,12 @@ Common:
       IPv4: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.1"
       IPv6: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::1"
   Syslog:
-    IPv4: 10.203.100.26
+    IPv4: "10.203.100.26"
     IPv6: 
   DiskProvisioning: "thin"
   NFS:
     Server:
-      IPv4: 192.168.0.12
+      IPv4: "192.168.0.12"
       IPv6: 
     Datastore: nfs01
     Path: "/nested_nfs01"
@@ -94,16 +90,16 @@ Common:
 ## Users should specify their deployment target settings in the 'TargetConfig' section
 ##
 TargetConfig:
-  Deployment: Host
+  Deployment: "Host"
   Host:
-    FQDN: Host32.NetLab.Home
-    User: root
+    FQDN: "Host32.NetLab.Home"
+    User: "root"
     Password: "{{ Common.Password.Physical }}"
     vSwitch: "Pod-{{ Pod.Number }}-vSwitch"
     VLAN: "{{ Pod.Number + Net.Management.Offset }}"
     DataCenter: "/ha-datacenter"
     Cluster: ""
-    Datastore: Local_VMs
+    Datastore: "Local_VMs"
     VMFolder: "/ha-datacenter/vm"
     ISOFolder: "/Lab-ISO-Folder"
     TempFolder: "/tmp"
@@ -111,13 +107,13 @@ TargetConfig:
       VLAN: "Pod-{{ Pod.Number }}-Mgmt"
       Trunk: "Pod-{{ Pod.Number }}-Trunk"
   vCenter:
-    FQDN: NetLab-vCenter.NetLab.Home
-    User: administrator@vsphere.local
+    FQDN: "NetLab-vCenter.NetLab.Home"
+    User: "administrator@vsphere.local"
     Password: "{{ Common.Password.Physical }}"
-    vSwitch: Lab-vDS
-    DataCenter: NetLab
-    Cluster: Pod-Cluster
-    Datastore: vsanDatastore
+    vSwitch: "Lab-vDS"
+    DataCenter: "NetLab"
+    Cluster: "Pod-Cluster"
+    Datastore: "vsanDatastore"
     VMFolder: "Nested Labs/Pod-{{ Pod.Number }}"
     ISOFolder: "/Lab-ISO-Folder"
     TempFolder: "/tmp"
@@ -226,7 +222,6 @@ Net:
       Prefix: 64
       Network: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+9|int) }}"
 
-__Nested: Items in this section define the settings used by the nested elements that make up the lab
 Nested:
   Router:
     Name: "Pod-{{ Pod.Number }}-Router"
@@ -374,7 +369,6 @@ Nested:
       Prep_NSX: false
       DeployHosts: true
   ESXi:
-    __HardwareSettings: __Defines per cluster nested ESXi host hardware configuration
     HardwareSettings:
       Management:
         CPU: 5
@@ -1072,13 +1066,11 @@ Nested:
     Networking:
       vSwitch:
         Pod-{{ Pod.Number }}-vSwitch:
-          __Clusters: __Defines what vSphere clusters are using this vDS
           Clusters:
           - Management
           - Compute-A
           - Edge
           Config:
-            __Version: Obtain vSwitch version from VMware.ESXi.Installers.Version, then use vSwitch variable
             Version: "{{ Software.VMware.ESXi.Installers[Deploy.Software.ESXi.Version].vSwitch }}"
             NumberOfUplinks: 2
             MTU: 9000
@@ -1089,8 +1081,6 @@ Nested:
             Management:
               Create: true
               VLAN:
-                __Type: __Type can be None, VLAN, or VLAN Trunking
-                __ID: '__ID can be null (None), single VLAN # (VLAN), or a Range of VLANs (VLAN Trunking)'
                 Type: VLAN
                 ID: "{{ Net.Management.VLAN }}"
               Security:
@@ -1100,8 +1090,6 @@ Nested:
             vMotion:
               Create: true
               VLAN:
-                __Type: __Type can be None, VLAN, or VLAN Trunking
-                __ID: '__ID can be null (None), single VLAN # (VLAN), or a Range of VLANs (VLAN Trunking)'
                 Type: VLAN
                 ID: "{{ Net.vMotion.VLAN }}"
               Security:
@@ -1111,8 +1099,6 @@ Nested:
             vSAN:
               Create: true
               VLAN:
-                __Type: __Type can be None, VLAN, or VLAN Trunking
-                __ID: '__ID can be null (None), single VLAN # (VLAN), or a Range of VLANs (VLAN Trunking)'
                 Type: VLAN
                 ID: "{{ Net.vSAN.VLAN }}"
               Security:
@@ -1122,8 +1108,6 @@ Nested:
             Transport:
               Create: true
               VLAN:
-                __Type: __Type can be None, VLAN, or VLAN Trunking
-                __ID: '__ID can be null (None), single VLAN # (VLAN), or a Range of VLANs (VLAN Trunking)'
                 Type: VLAN
                 ID: "{{ Net.Transport.VLAN }}"
               Security:
@@ -1133,8 +1117,6 @@ Nested:
             ServiceVMs:
               Create: true
               VLAN:
-                __Type: __Type can be None, VLAN, or VLAN Trunking
-                __ID: '__ID can be null (None), single VLAN # (VLAN), or a Range of VLANs (VLAN Trunking)'
                 Type: VLAN
                 ID: "{{ Net.ServiceVM.VLAN }}"
               Security:
@@ -1144,8 +1126,6 @@ Nested:
             NSXEdgeUplink1:
               Create: true
               VLAN:
-                __Type: __Type can be None, VLAN, or VLAN Trunking
-                __ID: '__ID can be null (None), single VLAN # (VLAN), or a Range of VLANs (VLAN Trunking)'
                 Type: VLAN
                 ID: "{{ Net.NSXEdgeUplink1.VLAN }}"
               Security:
@@ -1155,8 +1135,6 @@ Nested:
             NSXEdgeUplink2:
               Create: true
               VLAN:
-                __Type: __Type can be None, VLAN, or VLAN Trunking
-                __ID: '__ID can be null (None), single VLAN # (VLAN), or a Range of VLANs (VLAN Trunking)'
                 Type: VLAN
                 ID: "{{ Net.NSXEdgeUplink2.VLAN }}"
               Security:
@@ -1166,8 +1144,6 @@ Nested:
             VMNetwork:
               Create: true
               VLAN:
-                __Type: __Type can be None, VLAN, or VLAN Trunking
-                __ID: '__ID can be null (None), single VLAN # (VLAN), or a Range of VLANs (VLAN Trunking)'
                 Type: VLAN
                 ID: "{{ Net.VMNetwork.VLAN }}"
               Security:
@@ -1183,7 +1159,6 @@ Nested:
         Answer: true
         Enabled: false
     GlobalManager:
-      __password: __Uses Common.Password.Nested for the admin password
       VMName: Pod-{{ Pod.Number }}-NSXT-GM
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-NSXT-GM.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.7{% endif %}"
       Deployment:
@@ -1209,7 +1184,6 @@ Nested:
           Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::7"
           Prefix: "{{ Net.Management.IPv6.Prefix }}"
     LocalManager:
-      __password: __Uses Common.Password.Nested for the admin password
       VMName: Pod-{{ Pod.Number }}-NSXT-LM
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-NSXT-LM.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.8{% endif %}"
       Deployment:
@@ -1236,7 +1210,6 @@ Nested:
           Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::8"
           Prefix: "{{ Net.Management.IPv6.Prefix }}"
     CloudServicesManager:
-      __password: __Uses Common.Password.Nested for the admin password
       VMName: Pod-{{ Pod.Number }}-NSXT-CSM
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-NSXT-CSM.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.9{% endif %}"
       Deployment:

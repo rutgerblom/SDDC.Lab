@@ -4,10 +4,16 @@
   gather_facts: false
   vars_files:
     - ../software.yml
-    - ../licenses.yml
+#    - ../licenses.yml
     - ../config.yml
 #    - ../answerfile.yml
   tasks:
+    - name: DEBUG before 'Check if the VyOS router is already deployed' module
+      debug:
+        msg: "Target.FQDN={{ Target.FQDN }},   Target.User={{ Target.User }},  Target.Password={{ Target.Password }}, Target.DataCenter={{ Target.DataCenter }},  Target.VMFolder={{ Target.VMFolder }}, Nested.Router.Name={{ Nested.Router.Name }},  Deploy.Router={{ Deploy.Router }}"
+      when:
+        - DEBUG.DisplayVariables == true
+
     - name: Check if the VyOS router is already deployed
       vmware_guest_info:
         hostname: "{{ Target.FQDN }}"
@@ -15,6 +21,7 @@
         password: "{{ Target.Password }}"
         validate_certs: no
         datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
         name: "{{ Nested.Router.Name }}"
         schema: "vsphere"
         properties: ["overallStatus"]
