@@ -6,7 +6,7 @@
     - ../software.yml
     - ../licenses.yml
     - ../config.yml
-    - ../answerfile.yml
+#    - ../answerfile.yml
   tasks:
     - name: Check if the VyOS router is already deployed
       vmware_guest_info:
@@ -27,7 +27,7 @@
 
     - name: Create template file for the VyOS router
       template: 
-      	src: "../templates/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Template }}"
+        src: "../templates/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Template }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
       when: 
         - Deploy.Router == true
@@ -497,7 +497,7 @@
         - status is failed
 
     - name: Add static route on the Ansible control node
-      command: ./ip route add "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Network + Net.Management.Offset }}.0/{{ Net.Management.IPv4.Prefix }}" via "{{ Nested.Router.Uplink.IPv4.Address }}"
+      command: ./ip route add "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}" via "{{ Nested.Router.Uplink.IPv4.Address }}"
       args:
         chdir: /bin/
       register: iproute

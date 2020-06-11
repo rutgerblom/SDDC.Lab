@@ -4,11 +4,11 @@ __Comment1: Configuration file for vsphere-nsxt-lab-deploy Ansible deployment sc
 __Comment2: Keys below which start with double underscore (__) are comments/information for the item named after the underscores
 
 DEBUG:
-  KeepConfigFiles: false
+  KeepConfigFiles: true
   DisplayVariables: false
 
 Pod:
-  Number: 100
+  Number: 10
   BaseNetwork:
     IPv4: '10.203'
     IPv6: FD00:0000:0000
@@ -320,7 +320,7 @@ Nested:
       RouterID: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.1"
       Neighbors:
       - Name: "T0-EdgeNode-1-1"
-        ASN: {{ 65000 + Pod.Number }}
+        ASN: "{{ 65000 + Pod.Number }}"
         IPv4:
           Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink1.Offset }}.2"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
           Prefix: "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
@@ -328,7 +328,7 @@ Nested:
           Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink1.Offset|int) }}::2"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
           Prefix: "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
       - Name: "T0-EdgeNode-1-2"
-        ASN: {{ 65000 + Pod.Number }}
+        ASN: "{{ 65000 + Pod.Number }}"
         IPv4:
           Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink2.Offset }}.2"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
           Prefix: "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
@@ -336,7 +336,7 @@ Nested:
           Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink2.Offset|int) }}::2"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
           Prefix: "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
       - Name: "T0-EdgeNode-2-1"
-        ASN: {{ 65000 + Pod.Number }}
+        ASN: "{{ 65000 + Pod.Number }}"
         IPv4:
           Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink1.Offset }}.3"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
           Prefix: "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
@@ -344,7 +344,7 @@ Nested:
           Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink1.Offset|int) }}::3"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
           Prefix: "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
       - Name: "T0-EdgeNode-2-2"
-        ASN: {{ 65000 + Pod.Number }}
+        ASN: "{{ 65000 + Pod.Number }}"
         IPv4:
           Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink2.Offset }}.3"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
           Prefix: "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
