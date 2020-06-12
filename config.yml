@@ -49,7 +49,7 @@ Deploy:
     Router:
       Vendor:  VyOS
       Product: Router
-      Version: Latest
+      Version: Legacy
       Patch:   false
       Config:  "Pod-{{ '%03d'|format(Pod.Number|int) }}-Router.conf"
       Installer: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Installer-Router"
@@ -100,7 +100,7 @@ TargetConfig:
     User: "root"
     Password: "{{ Common.Password.Physical }}"
     vSwitch: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"
-    VLAN: "{{ Pod.Number + Net.Management.Offset }}"                # Replace with Net.Management.VLAN
+    VLAN: "{{ Net.Management.VLAN }}"
     DataCenter: "ha-datacenter"
     Cluster: ""
     Datastore: "Local_VMs"

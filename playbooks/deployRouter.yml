@@ -14,33 +14,27 @@
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          =============== DEBUG: Target Variables ================
+          ========================= DEBUG: Display Variables ==========================
 
-                Target.Deployment: {{ Target.Deployment }}
+                          Target.Deployment: {{ Target.Deployment }}
 
-                      Target.FQDN: {{ Target.FQDN }}
-                      Target.User: {{ Target.User }}
-                  Target.Password: {{ Target.Password }}
-                   Target.vSwitch: {{ Target.vSwitch }}
-                   Target.Cluster: {{ Target.Cluster }}
-                Target.DataCenter: {{ Target.DataCenter }}
-                 Target.Datastore: {{ Target.Datastore }}
-                  Target.VMFolder: {{ Target.VMFolder }}
-                 Target.ISOFolder: {{ Target.ISOFolder }}
-                Target.TempFolder: {{ Target.TempFolder }}
+                                Target.FQDN: {{ Target.FQDN }}
+                                Target.User: {{ Target.User }}
+                            Target.Password: {{ Target.Password }}
+                             Target.vSwitch: {{ Target.vSwitch }}
+                             Target.Cluster: {{ Target.Cluster }}
+                          Target.DataCenter: {{ Target.DataCenter }}
+                           Target.Datastore: {{ Target.Datastore }}
+                            Target.VMFolder: {{ Target.VMFolder }}
+                           Target.ISOFolder: {{ Target.ISOFolder }}
+                          Target.TempFolder: {{ Target.TempFolder }}
 
-           Target.PortGroup.VLAN : {{ Target.PortGroup.VLAN }}
-           Target.PortGroup.Trunk: {{ Target.PortGroup.Trunk }}
+                     Target.PortGroup.VLAN : {{ Target.PortGroup.VLAN }}
+                     Target.PortGroup.Trunk: {{ Target.PortGroup.Trunk }}
 
-          ========================================================
-      when:
-        - DEBUG.DisplayVariables == true
+             Deploy.Software.Router.Version: {{ Deploy.Software.Router.Version }}
 
-
-    - name: DEBUG -- Display Target Variables (Debug)
-      debug:
-        msg: "{{ item.key }}: {{ item.value }}"
-      with_dict: "{{ Target }}"
+          =============================================================================
       when:
         - DEBUG.DisplayVariables == true
 
@@ -72,6 +66,7 @@
         - Deploy.Router == true
         - status is failed
 
+
     - name: Download VyOS OVA (Both Legacy and Latest)
       get_url:
         url: "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Location }}/{{Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
@@ -86,7 +81,7 @@
 ## The below tasks are for the deploying the VyOS **LEGACY**  release
 ##
 
-    - name: Deploy VyOS router
+    - name: Deploy VyOS router (Legacy)
       vmware_deploy_ovf:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -113,7 +108,7 @@
         - Deploy.Software.Router.Version == "Legacy"
 
 
-    - name: Configure VyOS router
+    - name: Configure VyOS router (Legacy)
       vmware_guest_file_operation:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -132,7 +127,7 @@
         - Deploy.Software.Router.Version == "Legacy"
 
 
-    - name: Reboot VyOS VM
+    - name: Reboot VyOS VM (Legacy)
       vmware_guest_powerstate:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -177,7 +172,7 @@
 ## The Below tasks are for the deploying the VyOS rolling ('**Latest**') release
 ##
 
-    - name: Upload the VyOS ISO to the datastore
+    - name: Upload the VyOS ISO to the datastore (Latest)
       vsphere_copy: 
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -193,7 +188,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Create VyOS router VM on vCenter
+    - name: Create VyOS router VM on vCenter (Latest)
       vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -229,7 +224,7 @@
         - Target.Deployment == "vCenter"
 
 
-    - name: Create VyOS router VM directly onto the ESXi Host
+    - name: Create VyOS router VM directly onto the ESXi Host (Latest)
       vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -507,7 +502,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Configure VyOS router
+    - name: Configure VyOS router (Latest)
       vmware_guest_file_operation:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
