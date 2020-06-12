@@ -136,8 +136,8 @@ Target:
   ISOFolder:  "{{ TargetConfig[TargetConfig.Deployment].ISOFolder }}"
   TempFolder: "{{ TargetConfig[TargetConfig.Deployment].TempFolder }}"
   PortGroup:
-    VLAN:  "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].VLAN }}"
-    Trunk: "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].Trunk }}"
+    VLAN:     "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].VLAN }}"
+    Trunk:    "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].Trunk }}"
 
 Net:
   Management:
@@ -398,7 +398,7 @@ Nested:
           CacheSize: 20
           CapacitySize: 180
     Hosts:
-      Pod-{{ Pod.Number }}-ESXi-11:
+      ESXi-11:
         Cluster: Management
         FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-11.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.11{% endif %}"
         VMName: "Pod-{{ Pod.Number }}-ESXi-11"
@@ -469,7 +469,7 @@ Nested:
               IPv6:
                 Address: "{{ Net.IPStorage.IPv6.Network }}::11"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
-      Pod-{{ Pod.Number }}-ESXi-12:
+      ESXi-12:
         Cluster: Management
         FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-12.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.12{% endif %}"
         VMName: "Pod-{{ Pod.Number }}-ESXi-12"
@@ -540,7 +540,7 @@ Nested:
               IPv6:
                 Address: "{{ Net.IPStorage.IPv6.Network }}::12"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
-      Pod-{{ Pod.Number }}-ESXi-13:
+      ESXi-13:
         Cluster: Management
         FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-13.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.13{% endif %}"
         VMName: "Pod-{{ Pod.Number }}-ESXi-13"
@@ -611,7 +611,7 @@ Nested:
               IPv6:
                 Address: "{{ Net.IPStorage.IPv6.Network }}::13"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
-      Pod-{{ Pod.Number }}-ESXi-21:
+      ESXi-21:
         Cluster: Compute-A
         FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-21.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.21{% endif %}"
         VMName: "Pod-{{ Pod.Number }}-ESXi-21"
@@ -682,7 +682,7 @@ Nested:
               IPv6:
                 Address: "{{ Net.IPStorage.IPv6.Network }}::21"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
-      Pod-{{ Pod.Number }}-ESXi-22:
+      ESXi-22:
         Cluster: Compute-A
         FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-22.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.22{% endif %}"
         VMName: "Pod-{{ Pod.Number }}-ESXi-22"
@@ -753,7 +753,7 @@ Nested:
               IPv6:
                 Address: "{{ Net.IPStorage.IPv6.Network }}::22"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
-      Pod-{{ Pod.Number }}-ESXi-23:
+      ESXi-23:
         Cluster: Compute-A
         FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-23.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.23{% endif %}"
         VMName: "Pod-{{ Pod.Number }}-ESXi-23"
@@ -824,7 +824,7 @@ Nested:
               IPv6:
                 Address: "{{ Net.IPStorage.IPv6.Network }}::23"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
-      Pod-{{ Pod.Number }}-ESXi-91:
+      ESXi-91:
         Cluster: Edge
         FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-91.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.91{% endif %}"
         VMName: "Pod-{{ Pod.Number }}-ESXi-91"
@@ -895,7 +895,7 @@ Nested:
               IPv6:
                 Address: "{{ Net.IPStorage.IPv6.Network }}::91"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
-      Pod-{{ Pod.Number }}-ESXi-92:
+      ESXi-92:
         Cluster: Edge
         FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-92.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.92{% endif %}"
         VMName: "Pod-{{ Pod.Number }}-ESXi-92"
@@ -966,7 +966,7 @@ Nested:
               IPv6:
                 Address: "{{ Net.IPStorage.IPv6.Network }}::92"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
-      Pod-{{ Pod.Number }}-ESXi-93:
+      ESXi-93:
         Cluster: Edge
         FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-93.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.93{% endif %}"
         VMName: "Pod-{{ Pod.Number }}-ESXi-93"
