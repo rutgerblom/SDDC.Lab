@@ -4,13 +4,13 @@
   gather_facts: false
   vars_files:
     - ../software.yml
-#    - ../licenses.yml
+    - ../licenses.yml
     - ../config.yml
 #    - ../answerfile.yml
   tasks:
     - name: DEBUG before 'Check if the VyOS router is already deployed' module
       debug:
-        msg: "Target.FQDN={{ Target.FQDN }},   Target.User={{ Target.User }},  Target.Password={{ Target.Password }}, Target.DataCenter={{ Target.DataCenter }},  Target.VMFolder={{ Target.VMFolder }}, Nested.Router.Name={{ Nested.Router.Name }},  Deploy.Router={{ Deploy.Router }}"
+        msg: "Target.FQDN={{ Target.FQDN }},   Target.User={{ Target.User }},  Target.Password={{ Target.Password }}, Target.DataCenter={{ Target.DataCenter }},  Target.VMFolder={{ Target.VMFolder }}, Nested_Router.Name={{ Nested_Router.Name }},  Deploy.Router={{ Deploy.Router }}"
       when:
         - DEBUG.DisplayVariables == true
 
@@ -22,7 +22,7 @@
         validate_certs: no
         datacenter: "{{ Target.DataCenter }}"
         folder: "{{ Target.VMFolder }}"
-        name: "{{ Nested.Router.Name }}"
+        name: "{{ Nested_Router.Name }}"
         schema: "vsphere"
         properties: ["overallStatus"]
       delegate_to: localhost
@@ -64,10 +64,10 @@
         datacenter: "{{ Target.DataCenter }}"
         folder: "{{ Target.VMFolder }}"
         datastore: "{{ Target.Datastore }}"
-        name: "{{ Nested.Router.Name }}"
+        name: "{{ Nested_Router.Name }}"
         ovf: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         networks:
-          "public": "{{ Nested.Router.Uplink.PortGroup }}"
+          "public": "{{ Nested_Router.Uplink.PortGroup }}"
           "internal": "{{ Target.PortGroup.Trunk }}"
         disk_provisioning: "{{ Common.DiskProvisioning }}"
         power_on: true
@@ -85,7 +85,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ Nested.Router.Name }}"
+        vm_id: "{{ Nested_Router.Name }}"
         vm_username: "vyos"
         vm_password: "vyos"
         copy:
@@ -103,7 +103,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested.Router.Name }}"
+        name: "{{ Nested_Router.Name }}"
         state: reboot-guest
       when: 
         - Deploy.Router == true
@@ -162,7 +162,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested.Router.Name }}"
+        name: "{{ Nested_Router.Name }}"
         state: poweredon
         guest_id: debian10_64Guest
         esxi_hostname: "{{ Target.FQDN }}"
@@ -179,7 +179,7 @@
           num_cpu_cores_per_socket: "1"
           scsi: paravirtual
         networks:
-          - name: "{{ Nested.Router.Uplink.PortGroup }}"
+          - name: "{{ Nested_Router.Uplink.PortGroup }}"
             device_type: vmxnet3
           - name: "{{ Target.PortGroup.Trunk }}"
             device_type: vmxnet3
@@ -205,7 +205,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested.Router.Name }}"
+        name: "{{ Nested_Router.Name }}"
         string_send: "vyos"
       when: 
         - Deploy.Router == true
@@ -226,7 +226,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested.Router.Name }}"
+        name: "{{ Nested_Router.Name }}"
         keys_send:
           - ENTER
         string_send: "vyos"
@@ -249,7 +249,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested.Router.Name }}"
+        name: "{{ Nested_Router.Name }}"
         string_send: "vyos"
       when: 
         - Deploy.Router == true
@@ -270,7 +270,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested.Router.Name }}"
+        name: "{{ Nested_Router.Name }}"
         keys_send:
           - ENTER
         string_send: "install image"
@@ -301,7 +301,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested.Router.Name }}"
+        name: "{{ Nested_Router.Name }}"
         keys_send:
           - ENTER
           - ENTER
@@ -327,7 +327,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested.Router.Name }}"
+        name: "{{ Nested_Router.Name }}"
         keys_send:
           - ENTER
           - ENTER
@@ -353,7 +353,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested.Router.Name }}"
+        name: "{{ Nested_Router.Name }}"
         keys_send:
           - ENTER
         string_send: "vyos"
@@ -376,7 +376,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested.Router.Name }}"
+        name: "{{ Nested_Router.Name }}"
         keys_send:
           - ENTER
           - ENTER
@@ -399,7 +399,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested.Router.Name }}"
+        name: "{{ Nested_Router.Name }}"
         state: reboot-guest
       when: 
         - Deploy.Router == true
@@ -420,7 +420,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ Nested.Router.Name }}"
+        vm_id: "{{ Nested_Router.Name }}"
         vm_username: "vyos"
         vm_password: "vyos"
         copy:
@@ -438,7 +438,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested.Router.Name }}"
+        name: "{{ Nested_Router.Name }}"
         state: shutdown-guest
       when: 
         - Deploy.Router == true
@@ -459,7 +459,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested.Router.Name }}"
+        name: "{{ Nested_Router.Name }}"
         cdrom:
           type: "none"
       when: 
@@ -473,7 +473,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested.Router.Name }}"
+        name: "{{ Nested_Router.Name }}"
         state: powered-on
       when: 
         - Deploy.Router == true
@@ -497,21 +497,21 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested.Router.Name }}"
+        name: "{{ Nested_Router.Name }}"
         annotation: "The password for the vyos user is {{ Common.Password.Nested }}"
       when: 
         - Deploy.Router == true
         - status is failed
 
     - name: Add static route on the Ansible control node
-      command: ./ip route add "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}" via "{{ Nested.Router.Uplink.IPv4.Address }}"
+      command: ./ip route add "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}" via "{{ Nested_Router.Uplink.IPv4.Address }}"
       args:
         chdir: /bin/
       register: iproute
       ignore_errors: true
       when: 
         - Deploy.Router == true
-        - Nested.Router.Protocol == "Static"
+        - Nested_Router.Protocol == "Static"
         - status is failed
 
     - name: Wait 10 seconds
