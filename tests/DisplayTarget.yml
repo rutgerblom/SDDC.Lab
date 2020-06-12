@@ -3,13 +3,25 @@
   gather_facts: false
   vars_files:
     - ../config.yml
-    - ../answerfile.yml
+#    - ../answerfile.yml
     - ../software.yml
     - ../licenses.yml
   tasks:
+    - name: Display Nested.Router.Interface.Management.VLAN
+      debug:
+        msg: "{{ Nested.Router.Interface.Management.VLAN }}"
+
     - name: Display Nested.Router.Name
       debug:
         msg: "{{ Nested.Router.Name }}"
+
+    - name: Display Nested.ESXi.Hosts
+      debug:
+        msg: "{{ Nested.ESXi.Hosts }}"
+
+    - name: Display Nested.vCenter.User
+      debug:
+        msg: "{{ Nested.vCenter.User }}"
 
     - name: Display Target
       debug:
@@ -41,7 +53,7 @@
 
     - name: Display Deploy.Router
       debug:
-        msg: "{{ Deplay.Router }}"
+        msg: "{{ Deploy.Router }}"
 
     - name: Display Target.PortGroup
       debug:

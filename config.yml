@@ -346,6 +346,7 @@ Nested:
         IPv6:
           Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::3"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
           Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
+
   Clusters:
     Management:
       DRS: true
@@ -368,6 +369,7 @@ Nested:
       vsanDatastore: Edge_vSAN
       Prep_NSX: false
       DeployHosts: true
+
   ESXi:
     HardwareSettings:
       Management:
@@ -1037,6 +1039,7 @@ Nested:
               IPv6:
                 Address: "{{ Net.IPStorage.IPv6.Network }}::93"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
   vCenter:
     Question:
       EULA:
@@ -1065,91 +1068,92 @@ Nested:
     Datacenter: "Pod{{ Pod.Number }}-DataCenter"
     Networking:
       vSwitch:
-        Pod-{{ Pod.Number }}-vSwitch:
-          Clusters:
-          - Management
-          - Compute-A
-          - Edge
-          Config:
-            Version: "{{ Software.VMware.ESXi.Installers[Deploy.Software.ESXi.Version].vSwitch }}"
-            NumberOfUplinks: 2
-            MTU: 9000
-            LinkDiscoveryProtocol:
-              Type: lldp
-              Operation: both
-          PortGroup:
-            Management:
-              Create: true
-              VLAN:
-                Type: VLAN
-                ID: "{{ Net.Management.VLAN }}"
-              Security:
-                MACAddressChanges: false
-                ForgedTransmits: false
-                PromiscuousMode: false
-            vMotion:
-              Create: true
-              VLAN:
-                Type: VLAN
-                ID: "{{ Net.vMotion.VLAN }}"
-              Security:
-                MACAddressChanges: false
-                ForgedTransmits: false
-                PromiscuousMode: false
-            vSAN:
-              Create: true
-              VLAN:
-                Type: VLAN
-                ID: "{{ Net.vSAN.VLAN }}"
-              Security:
-                MACAddressChanges: false
-                ForgedTransmits: false
-                PromiscuousMode: false
-            Transport:
-              Create: true
-              VLAN:
-                Type: VLAN
-                ID: "{{ Net.Transport.VLAN }}"
-              Security:
-                MACAddressChanges: false
-                ForgedTransmits: false
-                PromiscuousMode: false
-            ServiceVMs:
-              Create: true
-              VLAN:
-                Type: VLAN
-                ID: "{{ Net.ServiceVM.VLAN }}"
-              Security:
-                MACAddressChanges: false
-                ForgedTransmits: false
-                PromiscuousMode: false
-            NSXEdgeUplink1:
-              Create: true
-              VLAN:
-                Type: VLAN
-                ID: "{{ Net.NSXEdgeUplink1.VLAN }}"
-              Security:
-                MACAddressChanges: false
-                ForgedTransmits: false
-                PromiscuousMode: false
-            NSXEdgeUplink2:
-              Create: true
-              VLAN:
-                Type: VLAN
-                ID: "{{ Net.NSXEdgeUplink2.VLAN }}"
-              Security:
-                MACAddressChanges: false
-                ForgedTransmits: false
-                PromiscuousMode: false
-            VMNetwork:
-              Create: true
-              VLAN:
-                Type: VLAN
-                ID: "{{ Net.VMNetwork.VLAN }}"
-              Security:
-                MACAddressChanges: false
-                ForgedTransmits: false
-                PromiscuousMode: false
+        Name: "Pod-{{ Pod.Number }}-vSwitch"
+        Clusters:
+        - Management
+        - Compute-A
+        - Edge
+        Config:
+          Version: "{{ Software.VMware.ESXi.Installers[Deploy.Software.ESXi.Version].vSwitch }}"
+          NumberOfUplinks: 2
+          MTU: 9000
+          LinkDiscoveryProtocol:
+            Type: lldp
+            Operation: both
+        PortGroup:
+          Management:
+            Create: true
+            VLAN:
+              Type: VLAN
+              ID: "{{ Net.Management.VLAN }}"
+            Security:
+              MACAddressChanges: false
+              ForgedTransmits: false
+              PromiscuousMode: false
+          vMotion:
+            Create: true
+            VLAN:
+              Type: VLAN
+              ID: "{{ Net.vMotion.VLAN }}"
+            Security:
+              MACAddressChanges: false
+              ForgedTransmits: false
+              PromiscuousMode: false
+          vSAN:
+            Create: true
+            VLAN:
+              Type: VLAN
+              ID: "{{ Net.vSAN.VLAN }}"
+            Security:
+              MACAddressChanges: false
+              ForgedTransmits: false
+              PromiscuousMode: false
+          Transport:
+            Create: true
+            VLAN:
+              Type: VLAN
+              ID: "{{ Net.Transport.VLAN }}"
+            Security:
+              MACAddressChanges: false
+              ForgedTransmits: false
+              PromiscuousMode: false
+          ServiceVMs:
+            Create: true
+            VLAN:
+              Type: VLAN
+              ID: "{{ Net.ServiceVM.VLAN }}"
+            Security:
+              MACAddressChanges: false
+              ForgedTransmits: false
+              PromiscuousMode: false
+          NSXEdgeUplink1:
+            Create: true
+            VLAN:
+              Type: VLAN
+              ID: "{{ Net.NSXEdgeUplink1.VLAN }}"
+            Security:
+              MACAddressChanges: false
+              ForgedTransmits: false
+              PromiscuousMode: false
+          NSXEdgeUplink2:
+            Create: true
+            VLAN:
+              Type: VLAN
+              ID: "{{ Net.NSXEdgeUplink2.VLAN }}"
+            Security:
+              MACAddressChanges: false
+              ForgedTransmits: false
+              PromiscuousMode: false
+          VMNetwork:
+            Create: true
+            VLAN:
+              Type: VLAN
+              ID: "{{ Net.VMNetwork.VLAN }}"
+            Security:
+              MACAddressChanges: false
+              ForgedTransmits: false
+              PromiscuousMode: false
+NestedA:
   NSXT:
     Question:
       EULA:
