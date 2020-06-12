@@ -70,10 +70,10 @@ Common:
   NTP:
     Server1:
       IPv4: "{{ Net.Management.IPv4.Network }}.1"
-      IPv6: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::1"
+      IPv6: "{{ Net.Management.IPv6.Network }}::1"
     Server2:
       IPv4: "{{ Net.Management.IPv4.Network }}.1"
-      IPv6: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::1"
+      IPv6: "{{ Net.Management.IPv6.Network }}::1"
   Syslog:
     IPv4: "10.203.100.26"
     IPv6: 
@@ -233,10 +233,10 @@ Nested:
             Prefix: 24
             Gateway: "{{ Pod.BaseNetwork.IPv4 }}.0.1"
           IPv6:
-            Address: "{{ Pod.BaseNetwork.IPv6 }}:0:{{ '%04d'|format(Pod.Number|int) }}"
+            Address: "{{ Pod.BaseNetwork.IPv6 }}:0::{{ '%04d'|format(Pod.Number|int) }}"
             Prefix: 64
       Management:
-          VLAN: Net.Management.VLAN
+          VLAN: "{{ Net.Management.VLAN }}"
           IPv4:
             Address: "{{ Net.Management.IPv4.Network }}.1"
             Prefix:  "{{ Net.Management.IPv4.Prefix }}"
@@ -244,7 +244,7 @@ Nested:
             Address: "{{ Net.Management.IPv6.Network }}::1"
             Prefix:  "{{ Net.Management.IPv6.Prefix }}"
       vMotion:
-          VLAN: Net.vMotion.VLAN
+          VLAN: "{{ Net.vMotion.VLAN }}"
           IPv4:
             Address: "{{ Net.vMotion.IPv4.Network }}.1"
             Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
@@ -252,7 +252,7 @@ Nested:
             Address: "{{ Net.vMotion.IPv6.Network }}::1"
             Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
       vSAN:
-          VLAN: Net.vSAN.VLAN
+          VLAN: "{{ Net.vSAN.VLAN }}"
           IPv4:
             Address: "{{ Net.vSAN.IPv4.Network }}.1"
             Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
@@ -260,7 +260,7 @@ Nested:
             Address: "{{ Net.vSAN.IPv6.Network }}::1"
             Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
       IPStorage:
-          VLAN: Net.IPStorage.VLAN
+          VLAN: "{{ Net.IPStorage.VLAN }}"
           IPv4:
             Address: "{{ Net.IPStorage.IPv4.Network }}.1"
             Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
@@ -268,7 +268,7 @@ Nested:
             Address: "{{ Net.IPStorage.IPv6.Network }}::1"
             Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
       Transport:
-          VLAN: Net.Transport.VLAN
+          VLAN: "{{ Net.Transport.VLAN }}"
           IPv4:
             Address: "{{ Net.Transport.IPv4.Network }}.1"
             Prefix:  "{{ Net.Transport.IPv4.Prefix }}"
@@ -276,7 +276,7 @@ Nested:
             Address: "{{ Net.Transport.IPv6.Network }}::1"
             Prefix:  "{{ Net.Transport.IPv6.Prefix }}"
       ServiceVM:
-          VLAN: Net.ServiceVM.VLAN
+          VLAN: "{{ Net.ServiceVM.VLAN }}"
           IPv4:
             Address: "{{ Net.ServiceVM.IPv4.Network }}.1"
             Prefix:  "{{ Net.ServiceVM.IPv4.Prefix }}"
@@ -284,7 +284,7 @@ Nested:
             Address: "{{ Net.ServiceVM.IPv6.Network }}::1"
             Prefix:  "{{ Net.ServiceVM.IPv6.Prefix }}"
       NSXEdgeUplink1:
-          VLAN: Net.NSXEdgeUplink1.VLAN
+          VLAN: "{{ Net.NSXEdgeUplink1.VLAN }}"
           IPv4:
             Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.1"
             Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
@@ -292,7 +292,7 @@ Nested:
             Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::1"
             Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
       NSXEdgeUplink2:
-          VLAN: Net.NSXEdgeUplink2.VLAN
+          VLAN: "{{ Net.NSXEdgeUplink2.VLAN }}"
           IPv4:
             Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.1"
             Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
@@ -300,7 +300,7 @@ Nested:
             Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::1"
             Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
       VMNetwork:
-          VLAN: Net.VMNetwork.VLAN
+          VLAN: "{{ Net.VMNetwork.VLAN }}"
           IPv4:
             Address: "{{ Net.VMNetwork.IPv4.Network }}.1"
             Prefix:  "{{ Net.VMNetwork.IPv4.Prefix }}"
@@ -317,34 +317,34 @@ Nested:
       - Name: "T0-EdgeNode-1-1"
         ASN: "{{ 65000 + Pod.Number }}"
         IPv4:
-          Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink1.Offset }}.2"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
+          Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
           Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
         IPv6:
-          Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink1.Offset|int) }}::2"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
+          Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::2"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
           Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
       - Name: "T0-EdgeNode-1-2"
         ASN: "{{ 65000 + Pod.Number }}"
         IPv4:
-          Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink2.Offset }}.2"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
+          Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
           Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
         IPv6:
-          Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink2.Offset|int) }}::2"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
+          Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::2"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
           Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
       - Name: "T0-EdgeNode-2-1"
         ASN: "{{ 65000 + Pod.Number }}"
         IPv4:
-          Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink1.Offset }}.3"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
+          Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
           Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
         IPv6:
-          Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink1.Offset|int) }}::3"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
+          Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::3"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
           Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
       - Name: "T0-EdgeNode-2-2"
         ASN: "{{ 65000 + Pod.Number }}"
         IPv4:
-          Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink2.Offset }}.3"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
+          Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.3"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
           Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
         IPv6:
-          Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink2.Offset|int) }}::3"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
+          Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::3"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
           Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
   Clusters:
     Management:
@@ -419,7 +419,7 @@ Nested:
                 Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::11"
+                Address: "{{ Net.Management.IPv6.Network }}::11"
                 Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
@@ -436,7 +436,7 @@ Nested:
                 Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::11"
+                Address: "{{ Net.vMotion.IPv6.Network }}::11"
                 Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
@@ -452,7 +452,7 @@ Nested:
                 Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::11"
+                Address: "{{ Net.vSAN.IPv6.Network }}::11"
                 Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
@@ -467,7 +467,7 @@ Nested:
                 Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::11"
+                Address: "{{ Net.IPStorage.IPv6.Network }}::11"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
       Pod-{{ Pod.Number }}-ESXi-12:
         Cluster: Management
@@ -490,7 +490,7 @@ Nested:
                 Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::12"
+                Address: "{{ Net.Management.IPv6.Network }}::12"
                 Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
@@ -507,7 +507,7 @@ Nested:
                 Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::12"
+                Address: "{{ Net.vMotion.IPv6.Network }}::12"
                 Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
@@ -523,7 +523,7 @@ Nested:
                 Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::12"
+                Address: "{{ Net.vSAN.IPv6.Network }}::12"
                 Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
@@ -538,7 +538,7 @@ Nested:
                 Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::12"
+                Address: "{{ Net.IPStorage.IPv6.Network }}::12"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
       Pod-{{ Pod.Number }}-ESXi-13:
         Cluster: Management
@@ -561,7 +561,7 @@ Nested:
                 Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::13"
+                Address: "{{ Net.Management.IPv6.Network }}::13"
                 Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
@@ -578,7 +578,7 @@ Nested:
                 Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::13"
+                Address: "{{ Net.vMotion.IPv6.Network }}::13"
                 Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
@@ -594,7 +594,7 @@ Nested:
                 Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::13"
+                Address: "{{ Net.vSAN.IPv6.Network }}::13"
                 Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
@@ -609,7 +609,7 @@ Nested:
                 Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::13"
+                Address: "{{ Net.IPStorage.IPv6.Network }}::13"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
       Pod-{{ Pod.Number }}-ESXi-21:
         Cluster: Compute-A
@@ -632,7 +632,7 @@ Nested:
                 Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::21"
+                Address: "{{ Net.Management.IPv6.Network }}::21"
                 Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
@@ -649,7 +649,7 @@ Nested:
                 Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::21"
+                Address: "{{ Net.vMotion.IPv6.Network }}::21"
                 Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
@@ -665,7 +665,7 @@ Nested:
                 Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::21"
+                Address: "{{ Net.vSAN.IPv6.Network }}::21"
                 Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
@@ -680,7 +680,7 @@ Nested:
                 Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::21"
+                Address: "{{ Net.IPStorage.IPv6.Network }}::21"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
       Pod-{{ Pod.Number }}-ESXi-22:
         Cluster: Compute-A
@@ -703,7 +703,7 @@ Nested:
                 Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::22"
+                Address: "{{ Net.Management.IPv6.Network }}::22"
                 Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
@@ -720,7 +720,7 @@ Nested:
                 Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::22"
+                Address: "{{ Net.vMotion.IPv6.Network }}::22"
                 Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
@@ -736,7 +736,7 @@ Nested:
                 Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::22"
+                Address: "{{ Net.vSAN.IPv6.Network }}::22"
                 Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
@@ -751,7 +751,7 @@ Nested:
                 Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::22"
+                Address: "{{ Net.IPStorage.IPv6.Network }}::22"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
       Pod-{{ Pod.Number }}-ESXi-23:
         Cluster: Compute-A
@@ -774,7 +774,7 @@ Nested:
                 Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::23"
+                Address: "{{ Net.Management.IPv6.Network }}::23"
                 Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
@@ -791,7 +791,7 @@ Nested:
                 Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::23"
+                Address: "{{ Net.vMotion.IPv6.Network }}::23"
                 Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
@@ -807,7 +807,7 @@ Nested:
                 Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::23"
+                Address: "{{ Net.vSAN.IPv6.Network }}::23"
                 Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
@@ -822,7 +822,7 @@ Nested:
                 Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::23"
+                Address: "{{ Net.IPStorage.IPv6.Network }}::23"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
       Pod-{{ Pod.Number }}-ESXi-91:
         Cluster: Edge
@@ -845,7 +845,7 @@ Nested:
                 Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::91"
+                Address: "{{ Net.Management.IPv6.Network }}::91"
                 Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
@@ -862,7 +862,7 @@ Nested:
                 Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::91"
+                Address: "{{ Net.vMotion.IPv6.Network }}::91"
                 Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
@@ -878,7 +878,7 @@ Nested:
                 Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::91"
+                Address: "{{ Net.vSAN.IPv6.Network }}::91"
                 Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
@@ -893,7 +893,7 @@ Nested:
                 Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::91"
+                Address: "{{ Net.IPStorage.IPv6.Network }}::91"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
       Pod-{{ Pod.Number }}-ESXi-92:
         Cluster: Edge
@@ -916,7 +916,7 @@ Nested:
                 Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::92"
+                Address: "{{ Net.Management.IPv6.Network }}::92"
                 Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
@@ -933,7 +933,7 @@ Nested:
                 Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::92"
+                Address: "{{ Net.vMotion.IPv6.Network }}::92"
                 Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
@@ -949,7 +949,7 @@ Nested:
                 Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::92"
+                Address: "{{ Net.vSAN.IPv6.Network }}::92"
                 Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
@@ -964,7 +964,7 @@ Nested:
                 Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::92"
+                Address: "{{ Net.IPStorage.IPv6.Network }}::92"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
       Pod-{{ Pod.Number }}-ESXi-93:
         Cluster: Edge
@@ -987,7 +987,7 @@ Nested:
                 Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::93"
+                Address: "{{ Net.Management.IPv6.Network }}::93"
                 Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
@@ -1004,7 +1004,7 @@ Nested:
                 Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::93"
+                Address: "{{ Net.vMotion.IPv6.Network }}::93"
                 Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
@@ -1020,7 +1020,7 @@ Nested:
                 Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::93"
+                Address: "{{ Net.vSAN.IPv6.Network }}::93"
                 Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
@@ -1035,7 +1035,7 @@ Nested:
                 Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::93"
+                Address: "{{ Net.IPStorage.IPv6.Network }}::93"
                 Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
   vCenter:
     Question:
@@ -1056,7 +1056,7 @@ Nested:
         Prefix:  "{{ Net.Management.IPv4.Prefix }}"
         Gateway: "{{ Net.Management.IPv4.Network }}.1"
       IPv6:
-        Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::5"
+        Address: "{{ Net.Management.IPv6.Network }}::5"
         Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     SSO:
       Domain: vsphere.local
@@ -1181,7 +1181,7 @@ Nested:
           Prefix:  "{{ Net.Management.IPv4.Prefix }}"
           Gateway: "{{ Net.Management.IPv4.Network }}.1"
         IPv6:
-          Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::7"
+          Address: "{{ Net.Management.IPv6.Network }}::7"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     LocalManager:
       VMName: Pod-{{ Pod.Number }}-NSXT-LM
@@ -1207,7 +1207,7 @@ Nested:
           Prefix:  "{{ Net.Management.IPv4.Prefix }}"
           Gateway: "{{ Net.Management.IPv4.Network }}.1"
         IPv6:
-          Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::8"
+          Address: "{{ Net.Management.IPv6.Network }}::8"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     CloudServicesManager:
       VMName: "Pod-{{ Pod.Number }}-NSXT-CSM"
@@ -1232,7 +1232,7 @@ Nested:
           Prefix:  "{{ Net.Management.IPv4.Prefix }}"
           Gateway: "{{ Net.Management.IPv4.Network }}.1"
         IPv6:
-          Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::9"
+          Address: "{{ Net.Management.IPv6.Network }}::9"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     NVDS:
       Name: "NVDS-1"
@@ -1256,14 +1256,14 @@ Nested:
         TEP-Pool:
           IPRange:
             IPv4:
-              Start: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Transport.Offset }}.10"
-              End: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Transport.Offset }}.99"
+              Start:   "{{ Net.Transport.IPv4.Network }}.10"
+              End:     "{{ Net.Transport.IPv4.Network }}.99"
               Gateway: "{{ Net.Transport.IPv4.Network }}.1"
-              Prefix: "{{ Net.Transport.IPv4.Prefix }}"
+              Prefix:  "{{ Net.Transport.IPv4.Prefix }}"
             IPv6:
-              Start: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Transport.Offset }}.10"
-              End: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Transport.Offset }}.99"
-              Prefix: "{{ Net.Transport.IPv6.Prefix }}"
+              Start:   "{{ Net.Transport.IPv6.Network }}::10"
+              End:     "{{ Net.Transport.IPv6.Network }}::99"
+              Prefix:  "{{ Net.Transport.IPv6.Prefix }}"
       VNI:
         Range:
           Start: "{{ Pod.Number * 1000 }}"
@@ -1300,7 +1300,7 @@ Nested:
                 Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::101"
+                Address: "{{ Net.Management.IPv6.Network }}::101"
                 Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           T0-EdgeNode-02:
             DeployToHost: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-92.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.92{% endif %}"
@@ -1310,7 +1310,7 @@ Nested:
                 Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
-                Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::102"
+                Address: "{{ Net.Management.IPv6.Network }}::102"
                 Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     Gateway:
       T0:
@@ -1330,10 +1330,10 @@ Nested:
             Neighbors:
             - Address:
                 IPv4:
-                  Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink1.Offset }}.1"
+                  Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.1"
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
                 IPv6:
-                  Address: "{{ Pod.BaseNetwork.IPv6 }}.{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink1.Offset|int) }}::1"
+                  Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::1"
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
               ASN: "{{ Nested.Router.BGP.ASN }}"
               BFD: true
@@ -1348,10 +1348,10 @@ Nested:
                   Multiplier: 3
             - Address:
                 IPv4:
-                  Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink2.Offset }}.1"
+                  Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.1"
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
                 IPv6:
-                  Address: "{{ Pod.BaseNetwork.IPv6 }}.{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink2.Offset|int) }}::1"
+                  Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::1"
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
               ASN: "{{ Nested.Router.BGP.ASN }}"
               BFD: true
@@ -1369,37 +1369,37 @@ Nested:
               Interface:
                 Uplink1:
                   IPv4:
-                    Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink1.Offset }}.2"
+                    Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"
                     Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
                     Gateway: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.1"
                   IPv6:
-                    Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink1.Offset|int) }}::2"
+                    Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::2"
                     Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
                 Uplink2:
                   IPv4:
-                    Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink2.Offset }}.2"
+                    Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"
                     Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
                     Gateway: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.1"
                   IPv6:
-                    Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink2.Offset|int) }}::2"
+                    Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::2"
                     Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
             T0-EdgeNode-02:
               Interface:
                 Uplink1:
                   IPv4:
-                    Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink1.Offset }}.3"
+                    Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"
                     Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
                     Gateway: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.1"
                   IPv6:
-                    Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink1.Offset|int) }}::3"
+                    Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::3"
                     Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
                 Uplink2:
                   IPv4:
-                    Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink2.Offset }}.3"
+                    Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.3"
                     Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
                     Gateway: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.1"
                   IPv6:
-                    Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink2.Offset|int) }}::3"
+                    Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::3"
                     Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
     Segments:
       SEG-T0-Edge-Uplink1:
