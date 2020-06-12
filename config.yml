@@ -7,7 +7,7 @@ Pod:
   Number: 10
   BaseNetwork:
     IPv4: '10.203'
-    IPv6: FD00:0000:0000
+    IPv6: "FD00:0000:0000"
 
 Deploy:
   Router: true
@@ -69,10 +69,10 @@ Common:
       IPv6: 
   NTP:
     Server1:
-      IPv4: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.1"
+      IPv4: "{{ Net.Management.IPv4.Network }}.1"
       IPv6: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::1"
     Server2:
-      IPv4: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.1"
+      IPv4: "{{ Net.Management.IPv4.Network }}.1"
       IPv6: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::1"
   Syslog:
     IPv4: "10.203.100.26"
@@ -312,40 +312,40 @@ Nested:
       RouterID: "{{ Pod.BaseNetwork.IPv4 }}.0.{{ Pod.Number }}"
     BGP:
       ASN: 65000
-      RouterID: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.1"
+      RouterID: "{{ Net.Management.IPv4.Network }}.1"
       Neighbors:
       - Name: "T0-EdgeNode-1-1"
         ASN: "{{ 65000 + Pod.Number }}"
         IPv4:
           Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink1.Offset }}.2"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
-          Prefix: "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
+          Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
         IPv6:
           Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink1.Offset|int) }}::2"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
-          Prefix: "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
+          Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
       - Name: "T0-EdgeNode-1-2"
         ASN: "{{ 65000 + Pod.Number }}"
         IPv4:
           Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink2.Offset }}.2"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
-          Prefix: "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
+          Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
         IPv6:
           Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink2.Offset|int) }}::2"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
-          Prefix: "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
+          Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
       - Name: "T0-EdgeNode-2-1"
         ASN: "{{ 65000 + Pod.Number }}"
         IPv4:
           Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink1.Offset }}.3"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
-          Prefix: "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
+          Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
         IPv6:
           Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink1.Offset|int) }}::3"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
-          Prefix: "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
+          Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
       - Name: "T0-EdgeNode-2-2"
         ASN: "{{ 65000 + Pod.Number }}"
         IPv4:
           Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink2.Offset }}.3"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
-          Prefix: "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
+          Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
         IPv6:
           Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink2.Offset|int) }}::3"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
-          Prefix: "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
+          Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
   Clusters:
     Management:
       DRS: true
@@ -400,8 +400,8 @@ Nested:
     Hosts:
       Pod-{{ Pod.Number }}-ESXi-11:
         Cluster: Management
-        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-11.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.11{% endif %}"
-        VMName: Pod-{{ Pod.Number }}-ESXi-11
+        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-11.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.11{% endif %}"
+        VMName: "Pod-{{ Pod.Number }}-ESXi-11"
         User: root
         Password: "{{ Common.Password.Nested }}"
         vmk:
@@ -415,12 +415,12 @@ Nested:
             - Management
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.11"
-                Prefix: "{{ Net.Management.IPv4.Prefix }}"
+                Address: "{{ Net.Management.IPv4.Network }}.11"
+                Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::11"
-                Prefix: "{{ Net.Management.IPv6.Prefix }}"
+                Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
             VLAN: "{{ Net.vMotion.VLAN }}"
@@ -432,12 +432,12 @@ Nested:
             - Fault Tolerance
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vMotion.Offset }}.11"
-                Prefix: "{{ Net.vMotion.IPv4.Prefix }}"
+                Address: "{{ Net.vMotion.IPv4.Network }}.11"
+                Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::11"
-                Prefix: "{{ Net.vMotion.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
             VLAN: "{{ Net.vSAN.VLAN }}"
@@ -448,12 +448,12 @@ Nested:
             - vSAN
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vSAN.Offset }}.11"
-                Prefix: "{{ Net.vSAN.IPv4.Prefix }}"
+                Address: "{{ Net.vSAN.IPv4.Network }}.11"
+                Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::11"
-                Prefix: "{{ Net.vSAN.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
             VLAN: "{{ Net.IPStorage.VLAN }}"
@@ -463,16 +463,16 @@ Nested:
             Services: []
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.IPStorage.Offset }}.11"
-                Prefix: "{{ Net.IPStorage.IPv4.Prefix }}"
+                Address: "{{ Net.IPStorage.IPv4.Network }}.11"
+                Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::11"
-                Prefix: "{{ Net.IPStorage.IPv6.Prefix }}"
+                Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
       Pod-{{ Pod.Number }}-ESXi-12:
         Cluster: Management
-        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-12.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.12{% endif %}"
-        VMName: Pod-{{ Pod.Number }}-ESXi-12
+        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-12.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.12{% endif %}"
+        VMName: "Pod-{{ Pod.Number }}-ESXi-12"
         User: root
         Password: "{{ Common.Password.Nested }}"
         vmk:
@@ -486,12 +486,12 @@ Nested:
             - Management
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.12"
-                Prefix: "{{ Net.Management.IPv4.Prefix }}"
+                Address: "{{ Net.Management.IPv4.Network }}.12"
+                Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::12"
-                Prefix: "{{ Net.Management.IPv6.Prefix }}"
+                Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
             VLAN: "{{ Net.vMotion.VLAN }}"
@@ -503,12 +503,12 @@ Nested:
             - Fault Tolerance
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vMotion.Offset }}.12"
-                Prefix: "{{ Net.vMotion.IPv4.Prefix }}"
+                Address: "{{ Net.vMotion.IPv4.Network }}.12"
+                Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::12"
-                Prefix: "{{ Net.vMotion.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
             VLAN: "{{ Net.vSAN.VLAN }}"
@@ -519,12 +519,12 @@ Nested:
             - vSAN
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vSAN.Offset }}.12"
-                Prefix: "{{ Net.vSAN.IPv4.Prefix }}"
+                Address: "{{ Net.vSAN.IPv4.Network }}.12"
+                Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::12"
-                Prefix: "{{ Net.vSAN.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
             VLAN: "{{ Net.IPStorage.VLAN }}"
@@ -534,16 +534,16 @@ Nested:
             Services: []
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.IPStorage.Offset }}.12"
-                Prefix: "{{ Net.IPStorage.IPv4.Prefix }}"
+                Address: "{{ Net.IPStorage.IPv4.Network }}.12"
+                Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::12"
-                Prefix: "{{ Net.IPStorage.IPv6.Prefix }}"
+                Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
       Pod-{{ Pod.Number }}-ESXi-13:
         Cluster: Management
-        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-13.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.13{% endif %}"
-        VMName: Pod-{{ Pod.Number }}-ESXi-13
+        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-13.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.13{% endif %}"
+        VMName: "Pod-{{ Pod.Number }}-ESXi-13"
         User: root
         Password: "{{ Common.Password.Nested }}"
         vmk:
@@ -557,12 +557,12 @@ Nested:
             - Management
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.13"
-                Prefix: "{{ Net.Management.IPv4.Prefix }}"
+                Address: "{{ Net.Management.IPv4.Network }}.13"
+                Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::13"
-                Prefix: "{{ Net.Management.IPv6.Prefix }}"
+                Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
             VLAN: "{{ Net.vMotion.VLAN }}"
@@ -574,12 +574,12 @@ Nested:
             - Fault Tolerance
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vMotion.Offset }}.13"
-                Prefix: "{{ Net.vMotion.IPv4.Prefix }}"
+                Address: "{{ Net.vMotion.IPv4.Network }}.13"
+                Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::13"
-                Prefix: "{{ Net.vMotion.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
             VLAN: "{{ Net.vSAN.VLAN }}"
@@ -590,12 +590,12 @@ Nested:
             - vSAN
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vSAN.Offset }}.13"
-                Prefix: "{{ Net.vSAN.IPv4.Prefix }}"
+                Address: "{{ Net.vSAN.IPv4.Network }}.13"
+                Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::13"
-                Prefix: "{{ Net.vSAN.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
             VLAN: "{{ Net.IPStorage.VLAN }}"
@@ -605,16 +605,16 @@ Nested:
             Services: []
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.IPStorage.Offset }}.13"
-                Prefix: "{{ Net.IPStorage.IPv4.Prefix }}"
+                Address: "{{ Net.IPStorage.IPv4.Network }}.13"
+                Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::13"
-                Prefix: "{{ Net.IPStorage.IPv6.Prefix }}"
+                Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
       Pod-{{ Pod.Number }}-ESXi-21:
         Cluster: Compute-A
-        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-21.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.21{% endif %}"
-        VMName: Pod-{{ Pod.Number }}-ESXi-21
+        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-21.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.21{% endif %}"
+        VMName: "Pod-{{ Pod.Number }}-ESXi-21"
         User: root
         Password: "{{ Common.Password.Nested }}"
         vmk:
@@ -628,12 +628,12 @@ Nested:
             - Management
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.21"
-                Prefix: "{{ Net.Management.IPv4.Prefix }}"
+                Address: "{{ Net.Management.IPv4.Network }}.21"
+                Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::21"
-                Prefix: "{{ Net.Management.IPv6.Prefix }}"
+                Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
             VLAN: "{{ Net.vMotion.VLAN }}"
@@ -645,12 +645,12 @@ Nested:
             - Fault Tolerance
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vMotion.Offset }}.21"
-                Prefix: "{{ Net.vMotion.IPv4.Prefix }}"
+                Address: "{{ Net.vMotion.IPv4.Network }}.21"
+                Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::21"
-                Prefix: "{{ Net.vMotion.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
             VLAN: "{{ Net.vSAN.VLAN }}"
@@ -661,12 +661,12 @@ Nested:
             - vSAN
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vSAN.Offset }}.21"
-                Prefix: "{{ Net.vSAN.IPv4.Prefix }}"
+                Address: "{{ Net.vSAN.IPv4.Network }}.21"
+                Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::21"
-                Prefix: "{{ Net.vSAN.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
             VLAN: "{{ Net.IPStorage.VLAN }}"
@@ -676,16 +676,16 @@ Nested:
             Services: []
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.IPStorage.Offset }}.21"
-                Prefix: "{{ Net.IPStorage.IPv4.Prefix }}"
+                Address: "{{ Net.IPStorage.IPv4.Network }}.21"
+                Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::21"
-                Prefix: "{{ Net.IPStorage.IPv6.Prefix }}"
+                Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
       Pod-{{ Pod.Number }}-ESXi-22:
         Cluster: Compute-A
-        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-22.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.22{% endif %}"
-        VMName: Pod-{{ Pod.Number }}-ESXi-22
+        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-22.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.22{% endif %}"
+        VMName: "Pod-{{ Pod.Number }}-ESXi-22"
         User: root
         Password: "{{ Common.Password.Nested }}"
         vmk:
@@ -699,12 +699,12 @@ Nested:
             - Management
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.22"
-                Prefix: "{{ Net.Management.IPv4.Prefix }}"
+                Address: "{{ Net.Management.IPv4.Network }}.22"
+                Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::22"
-                Prefix: "{{ Net.Management.IPv6.Prefix }}"
+                Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
             VLAN: "{{ Net.vMotion.VLAN }}"
@@ -716,12 +716,12 @@ Nested:
             - Fault Tolerance
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vMotion.Offset }}.22"
-                Prefix: "{{ Net.vMotion.IPv4.Prefix }}"
+                Address: "{{ Net.vMotion.IPv4.Network }}.22"
+                Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::22"
-                Prefix: "{{ Net.vMotion.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
             VLAN: "{{ Net.vSAN.VLAN }}"
@@ -732,12 +732,12 @@ Nested:
             - vSAN
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vSAN.Offset }}.22"
-                Prefix: "{{ Net.vSAN.IPv4.Prefix }}"
+                Address: "{{ Net.vSAN.IPv4.Network }}.22"
+                Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::22"
-                Prefix: "{{ Net.vSAN.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
             VLAN: "{{ Net.IPStorage.VLAN }}"
@@ -747,16 +747,16 @@ Nested:
             Services: []
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.IPStorage.Offset }}.22"
-                Prefix: "{{ Net.IPStorage.IPv4.Prefix }}"
+                Address: "{{ Net.IPStorage.IPv4.Network }}.22"
+                Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::22"
-                Prefix: "{{ Net.IPStorage.IPv6.Prefix }}"
+                Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
       Pod-{{ Pod.Number }}-ESXi-23:
         Cluster: Compute-A
-        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-23.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.23{% endif %}"
-        VMName: Pod-{{ Pod.Number }}-ESXi-23
+        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-23.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.23{% endif %}"
+        VMName: "Pod-{{ Pod.Number }}-ESXi-23"
         User: root
         Password: "{{ Common.Password.Nested }}"
         vmk:
@@ -770,12 +770,12 @@ Nested:
             - Management
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.23"
-                Prefix: "{{ Net.Management.IPv4.Prefix }}"
+                Address: "{{ Net.Management.IPv4.Network }}.23"
+                Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::23"
-                Prefix: "{{ Net.Management.IPv6.Prefix }}"
+                Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
             VLAN: "{{ Net.vMotion.VLAN }}"
@@ -787,12 +787,12 @@ Nested:
             - Fault Tolerance
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vMotion.Offset }}.23"
-                Prefix: "{{ Net.vMotion.IPv4.Prefix }}"
+                Address: "{{ Net.vMotion.IPv4.Network }}.23"
+                Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::23"
-                Prefix: "{{ Net.vMotion.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
             VLAN: "{{ Net.vSAN.VLAN }}"
@@ -803,12 +803,12 @@ Nested:
             - vSAN
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vSAN.Offset }}.23"
-                Prefix: "{{ Net.vSAN.IPv4.Prefix }}"
+                Address: "{{ Net.vSAN.IPv4.Network }}.23"
+                Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::23"
-                Prefix: "{{ Net.vSAN.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
             VLAN: "{{ Net.IPStorage.VLAN }}"
@@ -818,16 +818,16 @@ Nested:
             Services: []
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.IPStorage.Offset }}.23"
-                Prefix: "{{ Net.IPStorage.IPv4.Prefix }}"
+                Address: "{{ Net.IPStorage.IPv4.Network }}.23"
+                Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::23"
-                Prefix: "{{ Net.IPStorage.IPv6.Prefix }}"
+                Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
       Pod-{{ Pod.Number }}-ESXi-91:
         Cluster: Edge
-        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-91.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.91{% endif %}"
-        VMName: Pod-{{ Pod.Number }}-ESXi-91
+        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-91.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.91{% endif %}"
+        VMName: "Pod-{{ Pod.Number }}-ESXi-91"
         User: root
         Password: "{{ Common.Password.Nested }}"
         vmk:
@@ -841,12 +841,12 @@ Nested:
             - Management
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.91"
-                Prefix: "{{ Net.Management.IPv4.Prefix }}"
+                Address: "{{ Net.Management.IPv4.Network }}.91"
+                Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::91"
-                Prefix: "{{ Net.Management.IPv6.Prefix }}"
+                Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
             VLAN: "{{ Net.vMotion.VLAN }}"
@@ -858,12 +858,12 @@ Nested:
             - Fault Tolerance
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vMotion.Offset }}.91"
-                Prefix: "{{ Net.vMotion.IPv4.Prefix }}"
+                Address: "{{ Net.vMotion.IPv4.Network }}.91"
+                Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::91"
-                Prefix: "{{ Net.vMotion.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
             VLAN: "{{ Net.vSAN.VLAN }}"
@@ -874,12 +874,12 @@ Nested:
             - vSAN
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vSAN.Offset }}.91"
-                Prefix: "{{ Net.vSAN.IPv4.Prefix }}"
+                Address: "{{ Net.vSAN.IPv4.Network }}.91"
+                Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::91"
-                Prefix: "{{ Net.vSAN.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
             VLAN: "{{ Net.IPStorage.VLAN }}"
@@ -889,16 +889,16 @@ Nested:
             Services: []
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.IPStorage.Offset }}.91"
-                Prefix: "{{ Net.IPStorage.IPv4.Prefix }}"
+                Address: "{{ Net.IPStorage.IPv4.Network }}.91"
+                Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::91"
-                Prefix: "{{ Net.IPStorage.IPv6.Prefix }}"
+                Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
       Pod-{{ Pod.Number }}-ESXi-92:
         Cluster: Edge
-        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-92.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.92{% endif %}"
-        VMName: Pod-{{ Pod.Number }}-ESXi-92
+        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-92.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.92{% endif %}"
+        VMName: "Pod-{{ Pod.Number }}-ESXi-92"
         User: root
         Password: "{{ Common.Password.Nested }}"
         vmk:
@@ -912,12 +912,12 @@ Nested:
             - Management
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.92"
-                Prefix: "{{ Net.Management.IPv4.Prefix }}"
+                Address: "{{ Net.Management.IPv4.Network }}.92"
+                Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::92"
-                Prefix: "{{ Net.Management.IPv6.Prefix }}"
+                Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
             VLAN: "{{ Net.vMotion.VLAN }}"
@@ -929,12 +929,12 @@ Nested:
             - Fault Tolerance
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vMotion.Offset }}.92"
-                Prefix: "{{ Net.vMotion.IPv4.Prefix }}"
+                Address: "{{ Net.vMotion.IPv4.Network }}.92"
+                Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::92"
-                Prefix: "{{ Net.vMotion.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
             VLAN: "{{ Net.vSAN.VLAN }}"
@@ -945,12 +945,12 @@ Nested:
             - vSAN
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vSAN.Offset }}.92"
-                Prefix: "{{ Net.vSAN.IPv4.Prefix }}"
+                Address: "{{ Net.vSAN.IPv4.Network }}.92"
+                Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::92"
-                Prefix: "{{ Net.vSAN.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
             VLAN: "{{ Net.IPStorage.VLAN }}"
@@ -960,16 +960,16 @@ Nested:
             Services: []
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.IPStorage.Offset }}.92"
-                Prefix: "{{ Net.IPStorage.IPv4.Prefix }}"
+                Address: "{{ Net.IPStorage.IPv4.Network }}.92"
+                Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::92"
-                Prefix: "{{ Net.IPStorage.IPv6.Prefix }}"
+                Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
       Pod-{{ Pod.Number }}-ESXi-93:
         Cluster: Edge
-        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-93.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.93{% endif %}"
-        VMName: Pod-{{ Pod.Number }}-ESXi-93
+        FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-93.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.93{% endif %}"
+        VMName: "Pod-{{ Pod.Number }}-ESXi-93"
         User: root
         Password: "{{ Common.Password.Nested }}"
         vmk:
@@ -983,12 +983,12 @@ Nested:
             - Management
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.93"
-                Prefix: "{{ Net.Management.IPv4.Prefix }}"
+                Address: "{{ Net.Management.IPv4.Network }}.93"
+                Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::93"
-                Prefix: "{{ Net.Management.IPv6.Prefix }}"
+                Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           vmk1:
             PortGroup: vMotion
             VLAN: "{{ Net.vMotion.VLAN }}"
@@ -1000,12 +1000,12 @@ Nested:
             - Fault Tolerance
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vMotion.Offset }}.93"
-                Prefix: "{{ Net.vMotion.IPv4.Prefix }}"
+                Address: "{{ Net.vMotion.IPv4.Network }}.93"
+                Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
                 Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vMotion.Offset|int) }}::93"
-                Prefix: "{{ Net.vMotion.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
           vmk2:
             PortGroup: vSAN
             VLAN: "{{ Net.vSAN.VLAN }}"
@@ -1016,12 +1016,12 @@ Nested:
             - vSAN
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.vSAN.Offset }}.93"
-                Prefix: "{{ Net.vSAN.IPv4.Prefix }}"
+                Address: "{{ Net.vSAN.IPv4.Network }}.93"
+                Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
                 Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.vSAN.Offset|int) }}::93"
-                Prefix: "{{ Net.vSAN.IPv6.Prefix }}"
+                Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
           vmk3:
             PortGroup: IPStorage
             VLAN: "{{ Net.IPStorage.VLAN }}"
@@ -1031,12 +1031,12 @@ Nested:
             Services: []
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.IPStorage.Offset }}.93"
-                Prefix: "{{ Net.IPStorage.IPv4.Prefix }}"
+                Address: "{{ Net.IPStorage.IPv4.Network }}.93"
+                Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
                 Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.IPStorage.Offset|int) }}::93"
-                Prefix: "{{ Net.IPStorage.IPv6.Prefix }}"
+                Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
   vCenter:
     Question:
       EULA:
@@ -1045,24 +1045,24 @@ Nested:
       CEIP:
         Answer: true
         Enabled: false
-    User: administrator@vsphere.local
+    User: "administrator@vsphere.local"
     Password: "{{ Common.Password.Nested }}"
     DeploymentSize: small
     VMName: "Pod-{{ Pod.Number }}-vCenter"
-    FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-vCenter.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.10{% endif %}"
+    FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-vCenter.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.10{% endif %}"
     Address:
       IPv4:
-        Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.5"
-        Prefix: "{{ Net.Management.IPv4.Prefix }}"
+        Address: "{{ Net.Management.IPv4.Network }}.5"
+        Prefix:  "{{ Net.Management.IPv4.Prefix }}"
         Gateway: "{{ Net.Management.IPv4.Network }}.1"
       IPv6:
         Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::5"
-        Prefix: "{{ Net.Management.IPv6.Prefix }}"
+        Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     SSO:
       Domain: vsphere.local
-      Site: Pod{{ Pod.Number }}-Site
+      Site: "Pod{{ Pod.Number }}-Site"
       ReplicationPartner: ''
-    Datacenter: Pod{{ Pod.Number }}-Datacenter
+    Datacenter: "Pod{{ Pod.Number }}-DataCenter"
     Networking:
       vSwitch:
         Pod-{{ Pod.Number }}-vSwitch:
@@ -1159,8 +1159,8 @@ Nested:
         Answer: true
         Enabled: false
     GlobalManager:
-      VMName: Pod-{{ Pod.Number }}-NSXT-GM
-      FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-NSXT-GM.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.7{% endif %}"
+      VMName: "Pod-{{ Pod.Number }}-NSXT-GM"
+      FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-NSXT-GM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.7{% endif %}"
       Deployment:
         Size: small
         role: NSX Global Manager
@@ -1177,19 +1177,19 @@ Nested:
           Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
       Address:
         IPv4:
-          Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.7"
-          Prefix: "{{ Net.Management.IPv4.Prefix }}"
+          Address: "{{ Net.Management.IPv4.Network }}.7"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
           Gateway: "{{ Net.Management.IPv4.Network }}.1"
         IPv6:
           Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::7"
-          Prefix: "{{ Net.Management.IPv6.Prefix }}"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     LocalManager:
       VMName: Pod-{{ Pod.Number }}-NSXT-LM
-      FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-NSXT-LM.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.8{% endif %}"
+      FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-NSXT-LM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.8{% endif %}"
       Deployment:
         Size: small
         Role: NSX Manager
-        SiteName: NSX-Site-{{ Pod.Number }}
+        SiteName: "NSX-Site-{{ Pod.Number }}"
         EnableSSH: "{{ Deploy.EnableSSH }}"
         AllowRootSSH: "{{ Deploy.EnableSSH }}"
       User:
@@ -1203,18 +1203,18 @@ Nested:
           Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
       Address:
         IPv4:
-          Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.8"
-          Prefix: "{{ Net.Management.IPv4.Prefix }}"
+          Address: "{{ Net.Management.IPv4.Network }}.8"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
           Gateway: "{{ Net.Management.IPv4.Network }}.1"
         IPv6:
           Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::8"
-          Prefix: "{{ Net.Management.IPv6.Prefix }}"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     CloudServicesManager:
-      VMName: Pod-{{ Pod.Number }}-NSXT-CSM
-      FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-NSXT-CSM.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.9{% endif %}"
+      VMName: "Pod-{{ Pod.Number }}-NSXT-CSM"
+      FQDN: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-NSXT-CSM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.9{% endif %}"
       Deployment:
         Size: small
-        role: nsx-cloud-service-manager
+        role: "nsx-cloud-service-manager"
         EnableSSH: "{{ Deploy.EnableSSH }}"
         AllowRootSSH: "{{ Deploy.EnableSSH }}"
       User:
@@ -1228,14 +1228,14 @@ Nested:
           Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
       Address:
         IPv4:
-          Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.9"
-          Prefix: "{{ Net.Management.IPv4.Prefix }}"
+          Address: "{{ Net.Management.IPv4.Network }}.9"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
           Gateway: "{{ Net.Management.IPv4.Network }}.1"
         IPv6:
           Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::9"
-          Prefix: "{{ Net.Management.IPv6.Prefix }}"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     NVDS:
-      Name: NVDS-1
+      Name: "NVDS-1"
     TransportZone:
       TZ-LAN:
         Type: vlan
@@ -1278,7 +1278,7 @@ Nested:
           Switches:
           - Type: nvds
             Mode: standard
-            Name: NVDS-1
+            Name: "NVDS-1"
             TransportZones:
             - TZ-Overlay
             - TZ-VLAN
@@ -1289,33 +1289,33 @@ Nested:
         Clusters:
           T0-Edge-Cluster:
             Members:
-            - T0-EdgeNode-01
-            - T0-EdgeNode-02
+            - "T0-EdgeNode-01"
+            - "T0-EdgeNode-02"
         Nodes:
           T0-EdgeNode-01:
-            DeployToHost: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-91.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.91{% endif %}"
+            DeployToHost: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-91.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.91{% endif %}"
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.101"
-                Prefix: "{{ Net.Management.IPv4.Prefix }}"
+                Address: "{{ Net.Management.IPv4.Network }}.101"
+                Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::101"
-                Prefix: "{{ Net.Management.IPv6.Prefix }}"
+                Prefix:  "{{ Net.Management.IPv6.Prefix }}"
           T0-EdgeNode-02:
-            DeployToHost: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-92.{{ Common.DNS.Domain }}{% else %}{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.92{% endif %}"
+            DeployToHost: "{% if Deploy.UseDNS %}Pod-{{ Pod.Number }}-ESXi-92.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.92{% endif %}"
             Address:
               IPv4:
-                Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.Management.Offset }}.102"
-                Prefix: "{{ Net.Management.IPv4.Prefix }}"
+                Address: "{{ Net.Management.IPv4.Network }}.102"
+                Prefix:  "{{ Net.Management.IPv4.Prefix }}"
                 Gateway: "{{ Net.Management.IPv4.Network }}.1"
               IPv6:
                 Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.Management.Offset|int) }}::102"
-                Prefix: "{{ Net.Management.IPv6.Prefix }}"
+                Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     Gateway:
       T0:
         T0-Gateway-1:
-          EdgeCluster: T0-Edge-Cluster
+          EdgeCluster: "T0-Edge-Cluster"
           BGP:
             Self:
               Enabled: true
@@ -1331,10 +1331,10 @@ Nested:
             - Address:
                 IPv4:
                   Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink1.Offset }}.1"
-                  Prefix: "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
+                  Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
                 IPv6:
                   Address: "{{ Pod.BaseNetwork.IPv6 }}.{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink1.Offset|int) }}::1"
-                  Prefix: "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
+                  Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
               ASN: "{{ Nested.Router.BGP.ASN }}"
               BFD: true
               AllowAS_In: false
@@ -1349,10 +1349,10 @@ Nested:
             - Address:
                 IPv4:
                   Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink2.Offset }}.1"
-                  Prefix: "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
+                  Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
                 IPv6:
                   Address: "{{ Pod.BaseNetwork.IPv6 }}.{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink2.Offset|int) }}::1"
-                  Prefix: "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
+                  Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
               ASN: "{{ Nested.Router.BGP.ASN }}"
               BFD: true
               AllowAS_In: false
@@ -1370,43 +1370,43 @@ Nested:
                 Uplink1:
                   IPv4:
                     Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink1.Offset }}.2"
-                    Prefix: "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
+                    Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
                     Gateway: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.1"
                   IPv6:
                     Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink1.Offset|int) }}::2"
-                    Prefix: "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
+                    Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
                 Uplink2:
                   IPv4:
                     Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink2.Offset }}.2"
-                    Prefix: "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
+                    Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
                     Gateway: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.1"
                   IPv6:
                     Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink2.Offset|int) }}::2"
-                    Prefix: "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
+                    Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
             T0-EdgeNode-02:
               Interface:
                 Uplink1:
                   IPv4:
                     Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink1.Offset }}.3"
-                    Prefix: "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
+                    Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
                     Gateway: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.1"
                   IPv6:
                     Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink1.Offset|int) }}::3"
-                    Prefix: "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
+                    Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
                 Uplink2:
                   IPv4:
                     Address: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + Net.NSXEdgeUplink2.Offset }}.3"
-                    Prefix: "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
+                    Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
                     Gateway: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.1"
                   IPv6:
                     Address: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+Net.NSXEdgeUplink2.Offset|int) }}::3"
-                    Prefix: "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
+                    Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
     Segments:
       SEG-T0-Edge-Uplink1:
         AdminStateEnabled: true
         Connectivity: 
-        Description: NSX T0 Edge Uplink 1
-        TransportZone: TZ-Edge
+        Description: "NSX T0-Edge Uplink 1"
+        TransportZone: "TZ-Edge"
         ReplicationMode: ''
         Subnet:
           IPv4:
@@ -1420,8 +1420,8 @@ Nested:
       SEG-T0-Edge-Uplink2:
         AdminStateEnabled: true
         Connectivity: 
-        Description: NSX T0-Edge Uplink 2
-        TransportZone: TZ-Edge
+        Description: "NSX T0-Edge Uplink 2"
+        TransportZone: "TZ-Edge"
         ReplicationMode: ''
         Subnet:
           IPv4:
@@ -1436,11 +1436,11 @@ Nested:
         AdminStateEnabled: true
         Connectivity: 
         Description: Web Segment
-        TransportZone: TZ-Overlay
+        TransportZone: "TZ-Overlay"
         ReplicationMode: ''
         Subnet:
           IPv4:
-            Address: 172.16.{{ Pod.Number }}.1
+            Address: "172.16.{{ Pod.Number }}.1"
             Prefix: 28
           IPv6:
             Address: 
@@ -1450,11 +1450,11 @@ Nested:
         AdminStateEnabled: true
         Connectivity: 
         Description: App Segment
-        TransportZone: TZ-Overlay
+        TransportZone: "TZ-Overlay"
         ReplicationMode: ''
         Subnet:
           IPv4:
-            Address: 172.16.{{ Pod.Number + 1 }.17
+            Address: "172.16.{{ Pod.Number + 1 }}.17"
             Prefix: 28
           IPv6:
             Address: 
@@ -1464,11 +1464,11 @@ Nested:
         AdminStateEnabled: true
         Connectivity: 
         Description: DB Segment
-        TransportZone: TZ-Overlay
+        TransportZone: "TZ-Overlay"
         ReplicationMode: ''
         Subnet:
           IPv4:
-            Address: 172.16.{{ Pod.Number + 2 }.33
+            Address: "172.16.{{ Pod.Number + 2 }}.33"
             Prefix: 28
           IPv6:
             Address: 
