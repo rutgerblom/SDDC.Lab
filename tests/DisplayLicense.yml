@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ../config.yml
+    - ../answerfile.yml
+    - ../software.yml
+    - ../licenses.yml
+  tasks:
+    - name: Display License
+      debug:
+        msg: "{{ License }}"
+
+    - name: Display Licenses for vCenter
+      debug:
+        msg: "Qty={{ item.Quantity }}, License={{ item.KeyCode }}"
+      loop: "{{ License[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Licenses'] }}"
+
