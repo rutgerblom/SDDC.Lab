@@ -1,0 +1,46 @@
+## Luis has ownership of this file for the v2 migration ##
+---
+- hosts: localhost
+  gather_facts: false
+  vars:
+    NewLine: "\n"
+  vars_files:
+    - ../software.yml
+    - ../licenses.yml
+    - ../config.yml
+#    - ../answerfile.yml
+  tasks:
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ========================= DEBUG: Display Variables ==========================
+
+                          Target.Deployment: {{ Target.Deployment }}
+
+                                Target.FQDN: {{ Target.FQDN }}
+                                Target.User: {{ Target.User }}
+                            Target.Password: {{ Target.Password }}
+                             Target.vSwitch: {{ Target.vSwitch }}
+                             Target.Cluster: {{ Target.Cluster }}
+                          Target.DataCenter: {{ Target.DataCenter }}
+                           Target.Datastore: {{ Target.Datastore }}
+                            Target.VMFolder: {{ Target.VMFolder }}
+                           Target.ISOFolder: {{ Target.ISOFolder }}
+                          Target.TempFolder: {{ Target.TempFolder }}
+
+                     Target.PortGroup.VLAN : {{ Target.PortGroup.VLAN }}
+                     Target.PortGroup.Trunk: {{ Target.PortGroup.Trunk }}
+
+             Deploy.Software.Router.Version: {{ Deploy.Software.Router.Version }}
+
+          =============================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+
+    - name: Create template file for the VyOS router
+      template: 
+        src: "../templates/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Template }}"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
+
