@@ -1,9 +1,5 @@
 ### Luis will take owneship of this playbook
 ##
-## While we are converting from v1 to v2, we need to create vSwitches for Both environments
-##    v1 Environment does not force 3 digits Pod numbers
-##    v2 Environment does force 3 digit Pod numbers
-##
 ---
 - hosts: localhost
   gather_facts: false
@@ -63,48 +59,49 @@
 
 
 ##
-## Version 1 -- This can be deleted once full conversion is complete
+## Version 1 -- This can be deleted once full conversion is complete 
+##              Answerfile migrated to 3-digit "pod" value, so we can use v2.  Thus, this is commented out.
 ##
-    - name: Create a VMware vSwitch on the ESXi host for the lab environment
-      vmware_vswitch:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
-        validate_certs: False
-        esxi_hostname: "{{ physicalESX.fqdn }}"
-        switch_name: "{{ physicalESX.vswitch }}"
-        mtu: 9000
-
-
-    - name: Create a management port group for the lab environment
-      vmware_portgroup:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
-        validate_certs: False        
-        esxi_hostname: "{{ physicalESX.fqdn }}"
-        switch_name: "{{ physicalESX.vswitch }}"
-        portgroup_name: "{{ physicalESX.vlanpg }}"
-        vlan_id: "{{ physicalESX.vlan }}"
-        network_policy:
-          promiscuous_mode: True
-
-
-    - name: Create trunk port group for the lab environment
-      vmware_portgroup:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
-        validate_certs: False
-        esxi_hostname: "{{ physicalESX.fqdn }}"
-        switch_name: "{{ physicalESX.vswitch }}"
-        portgroup_name: "{{ physicalESX.trunkpg }}"
-        vlan_id: "4095"
-        network_policy:
-          promiscuous_mode: True
-          forged_transmits: True
-          mac_changes: True
-          
-
-    - name: Wait 5 seconds for the port groups to become available
-      pause: seconds=5
+#    - name: Create a VMware vSwitch on the ESXi host for the lab environment
+#      vmware_vswitch:
+#        hostname: "{{ physicalESX.fqdn }}"
+#        username: "{{ physicalESX.user }}"
+#        password: "{{ physicalESX.password }}"
+#        validate_certs: False
+#        esxi_hostname: "{{ physicalESX.fqdn }}"
+#        switch_name: "{{ physicalESX.vswitch }}"
+#        mtu: 9000
+#
+#
+#    - name: Create a management port group for the lab environment
+#      vmware_portgroup:
+#        hostname: "{{ physicalESX.fqdn }}"
+#        username: "{{ physicalESX.user }}"
+#        password: "{{ physicalESX.password }}"
+#        validate_certs: False        
+#        esxi_hostname: "{{ physicalESX.fqdn }}"
+#        switch_name: "{{ physicalESX.vswitch }}"
+#        portgroup_name: "{{ physicalESX.vlanpg }}"
+#        vlan_id: "{{ physicalESX.vlan }}"
+#        network_policy:
+#          promiscuous_mode: True
+#
+#
+#    - name: Create trunk port group for the lab environment
+#      vmware_portgroup:
+#        hostname: "{{ physicalESX.fqdn }}"
+#        username: "{{ physicalESX.user }}"
+#        password: "{{ physicalESX.password }}"
+#        validate_certs: False
+#        esxi_hostname: "{{ physicalESX.fqdn }}"
+#        switch_name: "{{ physicalESX.vswitch }}"
+#        portgroup_name: "{{ physicalESX.trunkpg }}"
+#        vlan_id: "4095"
+#        network_policy:
+#          promiscuous_mode: True
+#          forged_transmits: True
+#          mac_changes: True
+#          
+#
+#    - name: Wait 5 seconds for the port groups to become available
+#      pause: seconds=5

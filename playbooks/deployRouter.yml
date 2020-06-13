@@ -6,7 +6,7 @@
     NewLine: "\n"
   vars_files:
     - ../software.yml
-    - ../licenses.yml
+#    - ../licenses.yml
     - ../config.yml
 #    - ../answerfile.yml
   tasks:
@@ -58,7 +58,7 @@
         - Deploy.Router == true
 
 
-    - name: Create template file for the VyOS router
+    - name: Create configuration template file for VyOS router
       template: 
         src: "../templates/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Template }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
@@ -75,6 +75,7 @@
       when: 
         - Deploy.Router == true
         - status is failed
+        - false
 
 
 ##
@@ -186,6 +187,7 @@
         - Deploy.Router  == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
+        - false
 
 
     - name: Create VyOS router VM on vCenter (Latest)
@@ -259,16 +261,16 @@
         - Target.Deployment == "Host"
 
 
-    - name: Wait 1 minute for the VyOS router to boot
+    - name: Wait 45 seconds for the VyOS router to boot
       pause:
-        minutes: 1
+        seconds: 45
       when: 
         - Deploy.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Walk through the setup dialog 1
+    - name: Walk through the setup dialog 1 (Enter 'vyos' username)
       vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -282,16 +284,16 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Wait 5 seconds
-      pause:
-        seconds: 5
-      when: 
-        - Deploy.Router == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Latest"
+#    - name: Wait 5 seconds
+#      pause:
+#        seconds: 5
+#      when: 
+#        - Deploy.Router == true
+#        - status is failed
+#        - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Walk through the setup dialog 2
+    - name: Walk through the setup dialog 2 (Press 'ENTER' after username and enter password)
       vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -307,36 +309,39 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Wait 5 seconds
-      pause:
-        seconds: 5
-      when: 
-        - Deploy.Router == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Latest"
+#    - name: Wait 5 seconds
+#      pause:
+#        seconds: 5
+#      when: 
+#        - Deploy.Router == true
+#        - status is failed
+#        - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Walk through the setup dialog 3
-      vmware_guest_sendkey:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: no
-        name: "{{ Nested_Router.Name }}"
-        string_send: "vyos"
-      when: 
-        - Deploy.Router == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Latest"
+##
+#### This may be an extra 'vyos' send, changed to just sending ENTER
+##
+#    - name: Walk through the setup dialog 3 (Press 'vyos' password)
+#      vmware_guest_sendkey:
+#        hostname: "{{ Target.FQDN }}"
+#        username: "{{ Target.User }}"
+#        password: "{{ Target.Password }}"
+#        validate_certs: no
+#        name: "{{ Nested_Router.Name }}"
+#        string_send: "vyos"
+#      when: 
+#        - Deploy.Router == true
+#        - status is failed
+#        - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Wait 5 seconds
-      pause:
-        seconds: 5
-      when: 
-        - Deploy.Router == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Latest"
+#    - name: Wait 5 seconds
+#      pause:
+#        seconds: 5
+#      when: 
+#        - Deploy.Router == true
+#        - status is failed
+#        - Deploy.Software.Router.Version == "Latest"
 
 
     - name: Walk through the setup dialog 4
@@ -348,6 +353,9 @@
         name: "{{ Nested_Router.Name }}"
         keys_send:
           - ENTER
+          - ENTER
+          - ENTER
+          - ENTER
         string_send: "install image"
       when: 
         - Deploy.Router == true
@@ -355,25 +363,16 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Wait 5 seconds
-      pause:
-        seconds: 5
-      when: 
-        - Deploy.Router == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Latest"
+#    - name: Wait 5 seconds
+#      pause:
+#        seconds: 5
+#      when: 
+#        - Deploy.Router == true
+#        - status is failed
+#        - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Wait 5 seconds
-      pause:
-        seconds: 5
-      when: 
-        - Deploy.Router == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Latest"
-
-
-    - name: Walk through the setup dialog 5
+    - name: Walk through the setup dialog 5 (Destroy data on /dev/sda)
       vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -392,16 +391,16 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Wait 5 seconds
-      pause:
-        seconds: 5
-      when: 
-        - Deploy.Router == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Latest"
+#    - name: Wait 5 seconds
+#      pause:
+#        seconds: 5
+#      when: 
+#        - Deploy.Router == true
+#        - status is failed
+#        - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Walk through the setup dialog 6
+    - name: Walk through the setup dialog 6 (Create root partition and confirm with 'vyos' password)
       vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -420,16 +419,16 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Wait 5 seconds
-      pause: 
-        seconds: 5
-      when: 
-        - Deploy.Router == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Latest"
+#    - name: Wait 5 seconds
+#      pause: 
+#        seconds: 5
+#      when: 
+#        - Deploy.Router == true
+#        - status is failed
+#        - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Walk through the setup dialog 7
+    - name: Walk through the setup dialog 7 (Re-enter 'vyos' password to confirm)
       vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -445,16 +444,16 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Wait 5 seconds
-      pause: 
-        seconds: 5
-      when: 
-        - Deploy.Router == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Latest"
+#    - name: Wait 5 seconds
+#      pause: 
+#        seconds: 5
+#      when: 
+#        - Deploy.Router == true
+#        - status is failed
+#        - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Walk through the setup dialog 8
+    - name: Walk through the setup dialog 8 (Configure GRUB on boot partition)
       vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -502,7 +501,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Configure VyOS router (Latest)
+    - name: Copy configuration to VyOS router (Latest)
       vmware_guest_file_operation:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -585,6 +584,16 @@
         - Deploy.Router == true
         - status is failed
         - DEBUG.KeepConfigFiles != true
+
+
+    - name: Delete the temporary installer file for VyOS router (Both Legacy and Latest)
+      file: 
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
+        state: absent
+      when: 
+        - Deploy.Router == true
+        - status is failed
+        - DEBUG.KeepInstallerFiles != true
 
 
     - name: Write annotation on the VyOS VM
