@@ -5,13 +5,9 @@
   gather_facts: false
   vars_files:
     - ../config.yml
-    - ../licenses.yml
     - ../software.yml
-    - ../answerfile.yml
+#    - ../licenses.yml
   tasks:
-##
-## version 2
-##
     - name: Create a VMware vSwitch on the ESXi host for the lab environment
       vmware_vswitch:
         hostname: "{{ Target.FQDN }}"
@@ -56,52 +52,3 @@
     - name: Wait 5 seconds for the port groups to become available
       pause: seconds=5
 
-
-
-##
-## Version 1 -- This can be deleted once full conversion is complete 
-##              Answerfile migrated to 3-digit "pod" value, so we can use v2.  Thus, this is commented out.
-##
-#    - name: Create a VMware vSwitch on the ESXi host for the lab environment
-#      vmware_vswitch:
-#        hostname: "{{ physicalESX.fqdn }}"
-#        username: "{{ physicalESX.user }}"
-#        password: "{{ physicalESX.password }}"
-#        validate_certs: False
-#        esxi_hostname: "{{ physicalESX.fqdn }}"
-#        switch_name: "{{ physicalESX.vswitch }}"
-#        mtu: 9000
-#
-#
-#    - name: Create a management port group for the lab environment
-#      vmware_portgroup:
-#        hostname: "{{ physicalESX.fqdn }}"
-#        username: "{{ physicalESX.user }}"
-#        password: "{{ physicalESX.password }}"
-#        validate_certs: False        
-#        esxi_hostname: "{{ physicalESX.fqdn }}"
-#        switch_name: "{{ physicalESX.vswitch }}"
-#        portgroup_name: "{{ physicalESX.vlanpg }}"
-#        vlan_id: "{{ physicalESX.vlan }}"
-#        network_policy:
-#          promiscuous_mode: True
-#
-#
-#    - name: Create trunk port group for the lab environment
-#      vmware_portgroup:
-#        hostname: "{{ physicalESX.fqdn }}"
-#        username: "{{ physicalESX.user }}"
-#        password: "{{ physicalESX.password }}"
-#        validate_certs: False
-#        esxi_hostname: "{{ physicalESX.fqdn }}"
-#        switch_name: "{{ physicalESX.vswitch }}"
-#        portgroup_name: "{{ physicalESX.trunkpg }}"
-#        vlan_id: "4095"
-#        network_policy:
-#          promiscuous_mode: True
-#          forged_transmits: True
-#          mac_changes: True
-#          
-#
-#    - name: Wait 5 seconds for the port groups to become available
-#      pause: seconds=5
