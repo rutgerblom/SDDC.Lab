@@ -75,7 +75,6 @@
       when: 
         - Deploy.Router == true
         - status is failed
-        - false
 
 
 ##
@@ -187,7 +186,6 @@
         - Deploy.Router  == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
-        - false
 
 
     - name: Create VyOS router VM on vCenter (Latest)
@@ -321,18 +319,18 @@
 ##
 #### This may be an extra 'vyos' send, changed to just sending ENTER
 ##
-#    - name: Walk through the setup dialog 3 (Press 'vyos' password)
-#      vmware_guest_sendkey:
-#        hostname: "{{ Target.FQDN }}"
-#        username: "{{ Target.User }}"
-#        password: "{{ Target.Password }}"
-#        validate_certs: no
-#        name: "{{ Nested_Router.Name }}"
-#        string_send: "vyos"
-#      when: 
-#        - Deploy.Router == true
-#        - status is failed
-#        - Deploy.Software.Router.Version == "Latest"
+    - name: Walk through the setup dialog 3 (Press 'vyos' password)
+      vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        string_send: "vyos"
+      when: 
+        - Deploy.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
 
 
 #    - name: Wait 5 seconds
@@ -352,9 +350,6 @@
         validate_certs: no
         name: "{{ Nested_Router.Name }}"
         keys_send:
-          - ENTER
-          - ENTER
-          - ENTER
           - ENTER
         string_send: "install image"
       when: 

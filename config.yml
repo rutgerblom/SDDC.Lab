@@ -1,8 +1,8 @@
 ---
 DEBUG:
   KeepConfigFiles: true
-  KeepInstallerFiles: true
-  DisplayVariables: false
+  KeepInstallerFiles: false
+  DisplayVariables: true
   DisplayDelayInSeconds: 15
 
 
@@ -50,7 +50,7 @@ Deploy:
     Router:
       Vendor:  VyOS
       Product: Router
-      Version: Latest
+      Version: Legacy
       Patch:   false
       Config:  "Pod-{{ '%03d'|format(Pod.Number|int) }}-Router.conf"
       Installer: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Installer-Router"
