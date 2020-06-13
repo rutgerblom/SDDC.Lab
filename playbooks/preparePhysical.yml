@@ -1,4 +1,7 @@
-### Luis will take owneship of this playbook
+###     Module Owner: Luis
+### Conversion to V2: Done
+##
+##  ToDo: Set network_policy items based on ESXi version to optimize network usage
 ##
 ---
 - hosts: localhost
@@ -18,7 +21,6 @@
         switch_name: "{{ Target.vSwitch }}"
         mtu: 9000
 
-
     - name: Create a management port group for the lab environment
       vmware_portgroup:
         hostname: "{{ Target.FQDN }}"
@@ -31,7 +33,6 @@
         vlan_id: "{{ Target.PortGroup.VLANID }}"
         network_policy:
           promiscuous_mode: True
-
 
     - name: Create trunk port group for the lab environment
       vmware_portgroup:
