@@ -11,48 +11,37 @@
     - ../software.yml
   tasks:
     - name: Mount ESXi ISO
-      action: 
-        mount: 
-          name: "/mnt/ESX" 
-          src: "{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].Location }}/{{Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].File }}"
-          opts: loop 
-          fstype: iso9660 
-          state: mounted
+      action: mount name='/mnt/ESX' src="{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].Location }}/{{Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].File }}" opts=loop fstype=iso9660 state=mounted
 
     - name: Copy ISO contents
       copy: 
         src: "/mnt/ESX"
-        dest: "/tmp/"
+        dest: "{{ Target.TempFolder }}"
 
     - name: Unmount ESXi ISO
-      action: 
-        mount:
-          name: "/mnt/ESX" 
-          src: "{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].Location }}/{{Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].File }}" 
-          fstype: iso9660 
-          state: absent
+      action: mount name='/mnt/ESX' src="{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].Location }}/{{Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].File }}" fstype=iso9660 state=absent
 
     - name: Edit boot.cfg
       replace:
-        dest: /tmp/ESX/boot.cfg
+        dest: "{{ Target.TempFolder }}/ESX/boot.cfg"
         regexp: 'kernelopt=cdromBoot runweasel'
         replace: 'kernelopt=ks=file://etc/vmware/weasel/KS.CFG'
 
     - name: insert customks.tgz in boot.cfg modules section
       replace:
-        dest: /tmp/ESX/boot.cfg
+        dest: "{{ Target.TempFolder }}/ESX/boot.cfg"
         regexp: 'imgpayld.tgz$'
         replace: 'imgpayld.tgz --- /customks.tgz'
 
     - name: copy customks.tgz
       copy: 
         src: "../files/customks.tgz"
-        dest: "/tmp/ESX/"
+        dest: "{{ Target.TempFolder }}/ESX/"
 
     - name: Create custom ESXi ISO
-      command: xorrisofs -relaxed-filenames -J -R -o /tmp/customesxv.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table /tmp/ESX/
+      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/customesxv.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/ESX/"
       args:
-        chdir: /tmp/ESX/
+        chdir: "{{ Target.TempFolder }}/ESX/"
 
     - name: Upload the ESXi ISO to the datastore
       vsphere_copy: 
@@ -60,12 +49,12 @@
         username: "{{ physicalESX.user}}" 
         password: "{{ physicalESX.password }}" 
         validate_certs: no
-        src: /tmp/customesxv.iso 
+        src: "{{ Target.TempFolder }}/customesxv.iso" 
         datastore: "{{ physicalESX.datastore }}" 
         path: /Lab-ISO-Folder/customesxv.iso
       tags: upload
       
     - name: Delete temporary directory
       file:
-        path: /tmp/ESX/
+        path: "{{ Target.TempFolder }}/ESX/"
         state: absent
