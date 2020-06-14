@@ -158,14 +158,14 @@ Target-Placeholder:
 ##
 Target:
   Deployment: "Host"
-  FQDN: "Host32.NetLab.Home"
+  FQDN: "esxi03.demo.local"
   User: "root"
   Password: "{{ Common.Password.Physical }}"
   vSwitch: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"
   VLAN: "{{ Net.Management.VLAN }}"
   DataCenter: "ha-datacenter"
   Cluster: ""
-  Datastore: "Local_VMs"
+  Datastore: "demo_nfs01"
   VMFolder: "ha-datacenter/vm"
   ISOFolder: "/Lab-ISO-Folder"
   TempFolder: "/tmp"
