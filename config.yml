@@ -134,7 +134,7 @@ TargetConfig:
 ##
 ## Determine effective Target settings to use throughout deployment script
 ##
-Target:
+Target-Placeholder:
   Deployment: "{{ TargetConfig.Deployment }}"
   FQDN:       "{{ TargetConfig[TargetConfig.Deployment].FQDN }}"
   User:       "{{ TargetConfig[TargetConfig.Deployment].User }}"
@@ -151,6 +151,30 @@ Target:
     VLAN:     "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].VLAN }}"
     Trunk:    "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].Trunk }}"
     RouterUplink: "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].RouterUplink }}"
+
+
+##
+## Putting Host values directly into Target to speed up deployment
+##
+Target:
+  Deployment: "Host"
+  FQDN: "Host32.NetLab.Home"
+  User: "root"
+  Password: "{{ Common.Password.Physical }}"
+  vSwitch: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"
+  VLAN: "{{ Net.Management.VLAN }}"
+  DataCenter: "ha-datacenter"
+  Cluster: ""
+  Datastore: "Local_VMs"
+  VMFolder: "ha-datacenter/vm"
+  ISOFolder: "/Lab-ISO-Folder"
+  TempFolder: "/tmp"
+  PortGroup:
+    VLANID: "{{ Net.Management.VLAN }}"
+    VLAN:  "Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt"
+    Trunk: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Trunk"
+    RouterUplink: "Lab-Routers"
+
 
 
 Net:
@@ -323,6 +347,14 @@ Nested_Router:
       IPv6:
         Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::1"
         Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
+    RTEP:
+      VLAN: "{{ Net.RTEP.VLAN }}"
+      IPv4:
+        Address: "{{ Net.RTEP.IPv4.Network }}.1"
+        Prefix:  "{{ Net.RTEP.IPv4.Prefix }}"
+      IPv6:
+        Address: "{{ Net.RTEP.IPv6.Network }}::1"
+        Prefix:  "{{ Net.RTEP.IPv6.Prefix }}"
     VMNetwork:
       VLAN: "{{ Net.VMNetwork.VLAN }}"
       IPv4:
