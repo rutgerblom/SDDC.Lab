@@ -38,7 +38,6 @@
       when:
         - DEBUG.DisplayVariables == true
 
-
     - name: Check if the VyOS router is already deployed
       vmware_guest_info:
         hostname: "{{ Target.FQDN }}"
@@ -57,7 +56,6 @@
       when: 
         - Deploy.Router == true
 
-
     - name: Create configuration template file for VyOS router
       template: 
         src: "../templates/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Template }}"
@@ -66,8 +64,7 @@
         - Deploy.Router == true
         - status is failed
 
-
-    - name: Download VyOS OVA (Both Legacy and Latest)
+    - name: Download VyOS installation media
       get_url:
         url: "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Location }}/{{Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
@@ -107,7 +104,6 @@
         - status is failed
         - Deploy.Software.Router.Version == "Legacy"
 
-
     - name: Configure VyOS router (Legacy)
       vmware_guest_file_operation:
         hostname: "{{ Target.FQDN }}"
@@ -126,7 +122,6 @@
         - status is failed
         - Deploy.Software.Router.Version == "Legacy"
 
-
     - name: Reboot VyOS VM (Legacy)
       vmware_guest_powerstate:
         hostname: "{{ Target.FQDN }}"
@@ -139,33 +134,6 @@
         - Deploy.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Legacy"
-
-
-##
-## Delete moved to end as it's needed for both Legacy and Latest
-##
-#    - name: Delete the temporary template file for VyOS router
-#      file: 
-#        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
-#        state: absent
-#      when: 
-#        - Deploy.Router == true
-#        - Deploy.Software.Router.Version == "Legacy"
-#        - DEBUG.KeepConfigFiles != true
-
-
-##
-## Merged with "Legacy" download using a conditional.  Move above Legacy/Latest sections
-##
-#    - name: Download VyOS rolling release ISO
-#      get_url:
-#        url: https://downloads.vyos.io/rolling/current/amd64/vyos-rolling-latest.iso
-#        dest: "{{ VyosIso }}"
-#        force: true
-#      when: 
-#        - deploy_router == true
-#        - status is failed
-#        - router_version == "latest"
 
 
 ##
@@ -259,9 +227,9 @@
         - Target.Deployment == "Host"
 
 
-    - name: Wait 45 seconds for the VyOS router to boot
+    - name: Wait 1 minute for the VyOS router to boot
       pause:
-        seconds: 45
+        minutes: 1
       when: 
         - Deploy.Router == true
         - status is failed
@@ -282,16 +250,16 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-#    - name: Wait 5 seconds
-#      pause:
-#        seconds: 5
-#      when: 
-#        - Deploy.Router == true
-#        - status is failed
-#        - Deploy.Software.Router.Version == "Latest"
+    - name: Wait 5 seconds
+      pause:
+        seconds: 5
+      when: 
+        - Deploy.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
 
 
-    - name: Walk through the setup dialog 2 (Press 'ENTER' after username and enter password)
+    - name: Walk through the setup dialog 2 (Press 'ENTER' after username)
       vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -300,26 +268,22 @@
         name: "{{ Nested_Router.Name }}"
         keys_send:
           - ENTER
-        string_send: "vyos"
       when: 
         - Deploy.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
 
-#    - name: Wait 5 seconds
-#      pause:
-#        seconds: 5
-#      when: 
-#        - Deploy.Router == true
-#        - status is failed
-#        - Deploy.Software.Router.Version == "Latest"
+    - name: Wait 5 seconds
+      pause:
+        seconds: 5
+      when: 
+        - Deploy.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
 
 
-##
-#### This may be an extra 'vyos' send, changed to just sending ENTER
-##
-    - name: Walk through the setup dialog 3 (Press 'vyos' password)
+    - name: Walk through the setup dialog 3 (Send 'vyos' password)
       vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -333,13 +297,13 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-#    - name: Wait 5 seconds
-#      pause:
-#        seconds: 5
-#      when: 
-#        - Deploy.Router == true
-#        - status is failed
-#        - Deploy.Software.Router.Version == "Latest"
+    - name: Wait 5 seconds
+      pause:
+        seconds: 5
+      when: 
+        - Deploy.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
 
 
     - name: Walk through the setup dialog 4
@@ -351,6 +315,7 @@
         name: "{{ Nested_Router.Name }}"
         keys_send:
           - ENTER
+          - ENTER
         string_send: "install image"
       when: 
         - Deploy.Router == true
@@ -358,13 +323,13 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-#    - name: Wait 5 seconds
-#      pause:
-#        seconds: 5
-#      when: 
-#        - Deploy.Router == true
-#        - status is failed
-#        - Deploy.Software.Router.Version == "Latest"
+    - name: Wait 5 seconds
+      pause:
+        seconds: 5
+      when: 
+        - Deploy.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
 
 
     - name: Walk through the setup dialog 5 (Destroy data on /dev/sda)
@@ -386,13 +351,13 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-#    - name: Wait 5 seconds
-#      pause:
-#        seconds: 5
-#      when: 
-#        - Deploy.Router == true
-#        - status is failed
-#        - Deploy.Software.Router.Version == "Latest"
+    - name: Wait 5 seconds
+      pause:
+        seconds: 5
+      when: 
+        - Deploy.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
 
 
     - name: Walk through the setup dialog 6 (Create root partition and confirm with 'vyos' password)
@@ -414,13 +379,13 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-#    - name: Wait 5 seconds
-#      pause: 
-#        seconds: 5
-#      when: 
-#        - Deploy.Router == true
-#        - status is failed
-#        - Deploy.Software.Router.Version == "Latest"
+    - name: Wait 5 seconds
+      pause: 
+        seconds: 5
+      when: 
+        - Deploy.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
 
 
     - name: Walk through the setup dialog 7 (Re-enter 'vyos' password to confirm)
@@ -439,13 +404,13 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-#    - name: Wait 5 seconds
-#      pause: 
-#        seconds: 5
-#      when: 
-#        - Deploy.Router == true
-#        - status is failed
-#        - Deploy.Software.Router.Version == "Latest"
+    - name: Wait 5 seconds
+      pause: 
+        seconds: 5
+      when: 
+        - Deploy.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
 
 
     - name: Walk through the setup dialog 8 (Configure GRUB on boot partition)
@@ -571,7 +536,7 @@
 ## Below tasks are for both the VyOS legacy and rolling release
 ##
 
-    - name: Delete the temporary template file for VyOS router (Both Legacy and Latest)
+    - name: Delete the temporary template file for VyOS router
       file: 
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
         state: absent
@@ -581,7 +546,7 @@
         - DEBUG.KeepConfigFiles != true
 
 
-    - name: Delete the temporary installer file for VyOS router (Both Legacy and Latest)
+    - name: Delete the temporary installer file for VyOS router
       file: 
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         state: absent
@@ -621,4 +586,3 @@
       when: 
         - Deploy.Router == true
         - status is failed
-
