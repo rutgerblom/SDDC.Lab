@@ -51,7 +51,7 @@
         validate_certs: no
         src: "{{ Target.TempFolder }}/customesxv.iso" 
         datastore: "{{ physicalESX.datastore }}" 
-        path: /Lab-ISO-Folder/customesxv.iso
+        path: "{{ Target.ISOFolder }}/customesxv.iso"
       tags: upload
       
     - name: Delete temporary directory
