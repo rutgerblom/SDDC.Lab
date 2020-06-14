@@ -45,12 +45,12 @@
 
     - name: Upload the ESXi ISO to the datastore
       vsphere_copy: 
-        hostname: "{{ physicalESX.fqdn }}" 
-        username: "{{ physicalESX.user}}" 
-        password: "{{ physicalESX.password }}" 
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: no
         src: "{{ Target.TempFolder }}/customesxv.iso" 
-        datastore: "{{ physicalESX.datastore }}" 
+        datastore: "{{ Target.Datastore }}" 
         path: "{{ Target.ISOFolder }}/customesxv.iso"
       tags: upload
       
