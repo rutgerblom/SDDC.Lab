@@ -7,7 +7,8 @@
 - hosts: localhost
   gather_facts: false
   vars_files:
-    - ../answerfile.yml
+    - ../config.yml  
+    - ../software.yml
   tasks:
     - name: Mount ESXi ISO
       action: mount name='/mnt/ESX' src="{{ esxIso }}" opts=loop fstype=iso9660 state=mounted
