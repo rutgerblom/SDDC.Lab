@@ -259,9 +259,9 @@
         - Target.Deployment == "Host"
 
 
-    - name: Wait 45 seconds for the VyOS router to boot
+    - name: Wait 1 minute for the VyOS router to boot
       pause:
-        seconds: 45
+        minutes: 1
       when: 
         - Deploy.Router == true
         - status is failed
@@ -282,13 +282,13 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-#    - name: Wait 5 seconds
-#      pause:
-#        seconds: 5
-#      when: 
-#        - Deploy.Router == true
-#        - status is failed
-#        - Deploy.Software.Router.Version == "Latest"
+    - name: Wait 5 seconds
+      pause:
+        seconds: 5
+      when: 
+        - Deploy.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
 
 
     - name: Walk through the setup dialog 2 (Press 'ENTER' after username and enter password)
@@ -307,17 +307,17 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-#    - name: Wait 5 seconds
-#      pause:
-#        seconds: 5
-#      when: 
-#        - Deploy.Router == true
-#        - status is failed
-#        - Deploy.Software.Router.Version == "Latest"
+    - name: Wait 5 seconds
+      pause:
+        seconds: 5
+      when: 
+        - Deploy.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
 
 
 ##
-#### This may be an extra 'vyos' send, changed to just sending ENTER
+#### This may be an extra 'vyos' send
 ##
     - name: Walk through the setup dialog 3 (Press 'vyos' password)
       vmware_guest_sendkey:
@@ -333,13 +333,13 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-#    - name: Wait 5 seconds
-#      pause:
-#        seconds: 5
-#      when: 
-#        - Deploy.Router == true
-#        - status is failed
-#        - Deploy.Software.Router.Version == "Latest"
+    - name: Wait 5 seconds
+      pause:
+        seconds: 5
+      when: 
+        - Deploy.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
 
 
     - name: Walk through the setup dialog 4
@@ -358,13 +358,13 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-#    - name: Wait 5 seconds
-#      pause:
-#        seconds: 5
-#      when: 
-#        - Deploy.Router == true
-#        - status is failed
-#        - Deploy.Software.Router.Version == "Latest"
+    - name: Wait 5 seconds
+      pause:
+        seconds: 5
+      when: 
+        - Deploy.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
 
 
     - name: Walk through the setup dialog 5 (Destroy data on /dev/sda)
@@ -386,13 +386,13 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-#    - name: Wait 5 seconds
-#      pause:
-#        seconds: 5
-#      when: 
-#        - Deploy.Router == true
-#        - status is failed
-#        - Deploy.Software.Router.Version == "Latest"
+    - name: Wait 5 seconds
+      pause:
+        seconds: 5
+      when: 
+        - Deploy.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
 
 
     - name: Walk through the setup dialog 6 (Create root partition and confirm with 'vyos' password)
@@ -414,13 +414,13 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-#    - name: Wait 5 seconds
-#      pause: 
-#        seconds: 5
-#      when: 
-#        - Deploy.Router == true
-#        - status is failed
-#        - Deploy.Software.Router.Version == "Latest"
+    - name: Wait 5 seconds
+      pause: 
+        seconds: 5
+      when: 
+        - Deploy.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
 
 
     - name: Walk through the setup dialog 7 (Re-enter 'vyos' password to confirm)
@@ -439,13 +439,13 @@
         - Deploy.Software.Router.Version == "Latest"
 
 
-#    - name: Wait 5 seconds
-#      pause: 
-#        seconds: 5
-#      when: 
-#        - Deploy.Router == true
-#        - status is failed
-#        - Deploy.Software.Router.Version == "Latest"
+    - name: Wait 5 seconds
+      pause: 
+        seconds: 5
+      when: 
+        - Deploy.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
 
 
     - name: Walk through the setup dialog 8 (Configure GRUB on boot partition)
@@ -621,4 +621,3 @@
       when: 
         - Deploy.Router == true
         - status is failed
-
