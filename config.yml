@@ -226,6 +226,15 @@ Net:
     IPv6:
       Prefix: 64
       Network: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+7|int) }}"
+  RTEP:
+    Offset: 8
+    VLAN: "{{ Pod.Number + 8 }}"
+    IPv4:
+      Prefix: 24
+      Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 8 }}"
+    IPv6:
+      Prefix: 64
+      Network: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+8|int) }}"
   VMNetwork:
     Offset: 9
     VLAN: "{{ Pod.Number + 9 }}"
