@@ -56,19 +56,50 @@
       when: 
         - Deploy.Router == true
 
+    - name: Check if VyOS installation file exists locally in the software repository (Legacy and Latest)
+      stat:
+        path: "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version]['Location'].Local }}/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
+      register: InstallerFileCheck
+      when:
+        - Deploy.Router == true
+        - status is failed
+
+    - name: Copy VyOS installation file to /tmp if it exists locally rather than downloading (overwrite if exists)
+      copy:
+        src:  "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version]['Location'].Local }}/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
+        force: yes
+      when:
+        - InstallerFileCheck.stat.exists == true
+        - Deploy.Software.Options.UseLocalInstaller == true
+        - Deploy.Router == true
+        - status is failed
+
+    - name: Download VyOS installation media (overwrite if exists)
+      get_url:
+        url: "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version]['Location'].URL }}/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
+        force: yes
+      when: 
+        - (InstallerFileCheck.stat.exists != true) or (Deploy.Software.Options.UseLocalInstaller != true)
+        - Deploy.Router == true
+        - status is failed
+
+    - name: Update VyOS installation file in software repository if instructed to do so (overwrite if exists)
+      copy:
+        src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
+        dest:  "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version]['Location'].Local }}/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
+        force: yes
+      when:
+        - InstallerFileCheck.stat.exists != true
+        - Deploy.Software.Options.KeepNewInstallers == true
+        - Deploy.Router == true
+        - status is failed
+
     - name: Create configuration template file for VyOS router
       template: 
         src: "../templates/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Template }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
-      when: 
-        - Deploy.Router == true
-        - status is failed
-
-    - name: Download VyOS installation media
-      get_url:
-        url: "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Location }}/{{Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
-        force: "{{ 'yes' if Deploy.Software.Router.Version == 'Latest' else 'no' }}"
       when: 
         - Deploy.Router == true
         - status is failed
