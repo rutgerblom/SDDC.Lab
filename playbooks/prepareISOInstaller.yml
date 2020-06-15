@@ -36,12 +36,12 @@
     - name: copy customks.tgz
       copy: 
         src: "../files/customks.tgz"
-        dest: "{{ Target.TempFolder }}/ESX/"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
 
     - name: Create custom ESXi ISO
-      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }} -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/ESX/"
+      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }} -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
       args:
-        chdir: "{{ Target.TempFolder }}/ESX/"
+        chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
 
     - name: Upload the ESXi ISO to the datastore
       vsphere_copy: 
@@ -56,7 +56,7 @@
       
     - name: Delete temporary directory
       file:
-        path: "{{ Target.TempFolder }}/ESX/"
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
         state: absent
 
     - name: Delete custom ESXi ISO on local filesystem
