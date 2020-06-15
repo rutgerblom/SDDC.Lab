@@ -23,7 +23,7 @@
 
     - name: Edit boot.cfg
       replace:
-        dest: "{{ Target.TempFolder }}/ESX/boot.cfg"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/boot.cfg"
         regexp: 'kernelopt=cdromBoot runweasel'
         replace: 'kernelopt=ks=file://etc/vmware/weasel/KS.CFG'
 
