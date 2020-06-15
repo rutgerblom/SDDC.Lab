@@ -16,7 +16,7 @@
     - name: Copy ISO contents
       copy: 
         src: "/mnt/ESX"
-        dest: "{{ Target.TempFolder }}"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
 
     - name: Unmount ESXi ISO
       action: mount name='/mnt/ESX' src="{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].Location }}/{{Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].File }}" fstype=iso9660 state=absent
@@ -29,7 +29,7 @@
 
     - name: insert customks.tgz in boot.cfg modules section
       replace:
-        dest: "{{ Target.TempFolder }}/ESX/boot.cfg"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/boot.cfg"
         regexp: 'imgpayld.tgz$'
         replace: 'imgpayld.tgz --- /customks.tgz'
 
