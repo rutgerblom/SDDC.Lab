@@ -39,7 +39,7 @@
         dest: "{{ Target.TempFolder }}/ESX/"
 
     - name: Create custom ESXi ISO
-      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/customesxv.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/ESX/"
+      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }} -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/ESX/"
       args:
         chdir: "{{ Target.TempFolder }}/ESX/"
 
@@ -49,9 +49,9 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        src: "{{ Target.TempFolder }}/customesxv.iso" 
+        src: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}" 
         datastore: "{{ Target.Datastore }}" 
-        path: "{{ Target.ISOFolder }}/customesxv.iso"
+        path: "{{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}"
       tags: upload
       
     - name: Delete temporary directory
@@ -61,5 +61,5 @@
 
     - name: Delete custom ESXi ISO on local filesystem
       file:
-        path: "{{ Target.TempFolder }}/customesxv.iso"
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}"
         state: absent
