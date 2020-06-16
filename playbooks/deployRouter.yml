@@ -14,27 +14,30 @@
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ========================= DEBUG: Display Variables ==========================
+          =================================== DEBUG: Display Variables ====================================
 
-                          Target.Deployment: {{ Target.Deployment }}
+                                    Target.Deployment: {{ Target.Deployment }}
 
-                                Target.FQDN: {{ Target.FQDN }}
-                                Target.User: {{ Target.User }}
-                            Target.Password: {{ Target.Password }}
-                             Target.vSwitch: {{ Target.vSwitch }}
-                             Target.Cluster: {{ Target.Cluster }}
-                          Target.DataCenter: {{ Target.DataCenter }}
-                           Target.Datastore: {{ Target.Datastore }}
-                            Target.VMFolder: {{ Target.VMFolder }}
-                           Target.ISOFolder: {{ Target.ISOFolder }}
-                          Target.TempFolder: {{ Target.TempFolder }}
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.vSwitch: {{ Target.vSwitch }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+                                     Target.ISOFolder: {{ Target.ISOFolder }}
+                                    Target.TempFolder: {{ Target.TempFolder }}
 
-                     Target.PortGroup.VLAN : {{ Target.PortGroup.VLAN }}
-                     Target.PortGroup.Trunk: {{ Target.PortGroup.Trunk }}
+                               Target.PortGroup.VLAN : {{ Target.PortGroup.VLAN }}
+                               Target.PortGroup.Trunk: {{ Target.PortGroup.Trunk }}
 
-             Deploy.Software.Router.Version: {{ Deploy.Software.Router.Version }}
+                       Deploy.Software.Router.Version: {{ Deploy.Software.Router.Version }}
 
-          =============================================================================
+            Deploy.Software.Options.UseLocalInstaller: {{ Deploy.Software.Options.UseLocalInstaller }}
+            Deploy.Software.Options.KeepNewInstallers: {{ Deploy.Software.Options.KeepNewInstallers }}
+
+          =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
 
@@ -85,7 +88,7 @@
         - Deploy.Router == true
         - status is failed
 
-    - name: Update VyOS installation file in software repository if instructed to do so (overwrite if exists)
+    - name: Update VyOS installation file in the local software repository (overwrite if exists)
       copy:
         src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         dest:  "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version]['Location'].Local }}/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
@@ -186,7 +189,6 @@
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
-
     - name: Create VyOS router VM on vCenter (Latest)
       vmware_guest:
         hostname: "{{ Target.FQDN }}"
@@ -222,7 +224,6 @@
         - Deploy.Software.Router.Version == "Latest"
         - Target.Deployment == "vCenter"
 
-
     - name: Create VyOS router VM directly onto the ESXi Host (Latest)
       vmware_guest:
         hostname: "{{ Target.FQDN }}"
@@ -257,7 +258,6 @@
         - Deploy.Software.Router.Version == "Latest"
         - Target.Deployment == "Host"
 
-
     - name: Wait 1 minute for the VyOS router to boot
       pause:
         minutes: 1
@@ -265,7 +265,6 @@
         - Deploy.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
-
 
     - name: Walk through the setup dialog 1 (Enter 'vyos' username)
       vmware_guest_sendkey:
@@ -280,7 +279,6 @@
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
-
     - name: Wait 5 seconds
       pause:
         seconds: 5
@@ -288,7 +286,6 @@
         - Deploy.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
-
 
     - name: Walk through the setup dialog 2 (Press 'ENTER' after username)
       vmware_guest_sendkey:
@@ -304,7 +301,6 @@
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
-
     - name: Wait 5 seconds
       pause:
         seconds: 5
@@ -312,7 +308,6 @@
         - Deploy.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
-
 
     - name: Walk through the setup dialog 3 (Send 'vyos' password)
       vmware_guest_sendkey:
@@ -327,7 +322,6 @@
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
-
     - name: Wait 5 seconds
       pause:
         seconds: 5
@@ -335,7 +329,6 @@
         - Deploy.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
-
 
     - name: Walk through the setup dialog 4
       vmware_guest_sendkey:
@@ -353,7 +346,6 @@
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
-
     - name: Wait 5 seconds
       pause:
         seconds: 5
@@ -361,7 +353,6 @@
         - Deploy.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
-
 
     - name: Walk through the setup dialog 5 (Destroy data on /dev/sda)
       vmware_guest_sendkey:
@@ -381,7 +372,6 @@
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
-
     - name: Wait 5 seconds
       pause:
         seconds: 5
@@ -389,7 +379,6 @@
         - Deploy.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
-
 
     - name: Walk through the setup dialog 6 (Create root partition and confirm with 'vyos' password)
       vmware_guest_sendkey:
@@ -409,7 +398,6 @@
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
-
     - name: Wait 5 seconds
       pause: 
         seconds: 5
@@ -417,7 +405,6 @@
         - Deploy.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
-
 
     - name: Walk through the setup dialog 7 (Re-enter 'vyos' password to confirm)
       vmware_guest_sendkey:
@@ -434,7 +421,6 @@
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
-
     - name: Wait 5 seconds
       pause: 
         seconds: 5
@@ -442,7 +428,6 @@
         - Deploy.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
-
 
     - name: Walk through the setup dialog 8 (Configure GRUB on boot partition)
       vmware_guest_sendkey:
@@ -459,7 +444,6 @@
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
-
     - name: Wait 30 seconds before rebooting the VyOS router
       pause: 
         seconds: 30
@@ -467,7 +451,6 @@
         - Deploy.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
-
 
     - name: Reboot VyOS VM
       vmware_guest_powerstate:
@@ -482,7 +465,6 @@
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
-
     - name: Wait 1 minute for the VyOS router to boot
       pause: 
         minutes: 1
@@ -490,7 +472,6 @@
         - Deploy.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
-
 
     - name: Copy configuration to VyOS router (Latest)
       vmware_guest_file_operation:
@@ -510,7 +491,6 @@
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
-
     - name: Shutdown VyOS VM
       vmware_guest_powerstate:
         hostname: "{{ Target.FQDN }}"
@@ -524,7 +504,6 @@
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
-
     - name: Wait 10 seconds for the VyOS VM to shut down.
       pause: 
         seconds: 10
@@ -532,7 +511,6 @@
         - Deploy.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
-
 
     - name: Disconnect CDROM on VyOS router VM
       vmware_guest:
@@ -548,7 +526,6 @@
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
-
     - name: Start the VyOS VM
       vmware_guest_powerstate:
         hostname: "{{ Target.FQDN }}"
@@ -561,6 +538,24 @@
         - Deploy.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
+
+    - name: Delete VyOS installer from vSphere datastore
+      vsphere_file:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        datastore: "{{ Target.Datastore }}"
+        datacenter: "{{ Target.DataCenter }}"
+        host: "{{ Target.FQDN }}"
+        path: "{{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
+        state: absent
+      tags: upload
+      when:
+        - Deploy.Router  == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+        - DEBUG.KeepInstallerFiles != true
 
 
 ##
@@ -576,7 +571,6 @@
         - status is failed
         - DEBUG.KeepConfigFiles != true
 
-
     - name: Delete the temporary installer file for VyOS router
       file: 
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
@@ -585,7 +579,6 @@
         - Deploy.Router == true
         - status is failed
         - DEBUG.KeepInstallerFiles != true
-
 
     - name: Write annotation on the VyOS VM
       vmware_guest:
@@ -599,7 +592,6 @@
         - Deploy.Router == true
         - status is failed
 
-
     - name: Add static route on the Ansible control node
       command: ./ip route add "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}" via "{{ Nested_Router.Uplink.IPv4.Address }}"
       args:
@@ -610,7 +602,6 @@
         - Deploy.Router == true
         - Nested_Router.Protocol == "Static"
         - status is failed
-
 
     - name: Wait 10 seconds
       pause: seconds=10
