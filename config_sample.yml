@@ -108,8 +108,9 @@ TargetConfig:
     DataCenter: "ha-datacenter"
     Cluster: ""
     Datastore: "Local_VMs"
-    VMFolder: "ha-datacenter/vm"
+    VMFolder:  "ha-datacenter/vm"
     ISOFolder: "/Lab-ISO-Folder"
+    ISOMount:  "/mnt/Pod-{{ Pod.Number }}-ESX"
     TempFolder: "/tmp"
     PortGroup:
       VLANID: "{{ Net.Management.VLAN }}"
@@ -126,6 +127,7 @@ TargetConfig:
     Datastore: "vsanDatastore"
     VMFolder: "Nested Labs/Pod-{{ '%03d'|format(Pod.Number|int) }}"
     ISOFolder: "/Lab-ISO-Folder"
+    ISOMount:  "/mnt/Pod-{{ Pod.Number }}-ESX"
     TempFolder: "/tmp"
     PortGroup:
       VLANID: "{{ Net.Management.VLAN }}"
@@ -148,6 +150,7 @@ Target-Placeholder:
   Datastore:  "{{ TargetConfig[TargetConfig.Deployment].Datastore }}"
   VMFolder:   "{{ TargetConfig[TargetConfig.Deployment].VMFolder }}"
   ISOFolder:  "{{ TargetConfig[TargetConfig.Deployment].ISOFolder }}"
+  ISOMount:   "{{ TargetConfig[TargetConfig.Deployment].ISOMount }}"
   TempFolder: "{{ TargetConfig[TargetConfig.Deployment].TempFolder }}"
   PortGroup:
     VLANID:   "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].VLANID }}"
@@ -171,6 +174,7 @@ Target:
   Datastore: "Local_VMs"
   VMFolder: "ha-datacenter/vm"
   ISOFolder: "/Lab-ISO-Folder"
+  ISOMount:  "/mnt/Pod-{{ Pod.Number }}-ESX"
   TempFolder: "/tmp"
   PortGroup:
     VLANID: "{{ Net.Management.VLAN }}"
