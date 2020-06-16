@@ -1,0 +1,116 @@
+## Luis has ownership of this file for the v2 migration ##
+---
+- hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ../software.yml
+    - ../config.yml
+  tasks:
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================== DEBUG: Display Variables ====================================
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.vSwitch: {{ Target.vSwitch }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+
+                               Software RootDirectory: {{ RootDirectory }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - false
+
+
+##
+## vMware
+##
+    - name: Create VMware vCenter directories
+      file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0775"
+      with_dict: "{{ Software.VMware.vCenter.Installers }}"
+
+    - name: Create VMware ESXi directories
+      file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0775"
+      with_dict: "{{ Software.VMware.ESXi.Installers }}"
+
+    - name: Create VMware NSXv directories
+      file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0775"
+      with_dict: "{{ Software.VMware.NSXv.Installers }}"
+
+    - name: Create VMware NSXT directories
+      file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0775"
+      with_dict: "{{ Software.VMware.NSXT.Installers }}"
+
+    - name: Create VMware NSX Intelligence directories
+      file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0775"
+      with_dict: "{{ Software.VMware.NSXIntelligence.Installers }}"
+
+    - name: Create VMware vRNI
+      file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0775"
+      with_dict: "{{ Software.VMware.vRNI.Installers }}"
+
+
+##
+## VyOS
+##
+    - name: Create VyOS directories
+      file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0775"
+      with_dict: "{{ Software.VyOS.Router.Installers }}"
+
+
+
+
+
+
+##
+## Work in progress --  Loops produces a string, not a list of directories
+##
+#
+#    - name: Get list of dict
+#      set_fact:
+#        Software_List: |
+#          {% set TempList = [] %}
+#          {% for Company in Software.keys() %}
+#            {% for Product in Software[Company].keys() %}
+#              {% for Version in Software[Company][Product]['Installers'].keys() %}
+#                {% set ignored = TempList.extend([Software[Company][Product]['Installers'][Version]['Location'].Local]) %}
+#              {% endfor %}
+#            {% endfor %}
+#          {% endfor %}
+#          {{ TempList }}
+#
+#    - name: List type
+#      debug: var=dataval
+#
+#    - name: List objects
+#      debug:
+#        msg: "{{ item }}"
+#      loop: "{{ Software_List }}"
