@@ -1,8 +1,4 @@
-###     Module Owner: Rutger
-### Conversion to V2: Ongoing
-##
-##  ToDo:
-##
+## Rutger has ownership of this file for the v2 migration ##
 ---
 - hosts: localhost
   gather_facts: false
@@ -10,6 +6,29 @@
     - ../config.yml  
     - ../software.yml
   tasks:
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================== DEBUG: Display Variables ====================================
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                     Target.ISOFolder: {{ Target.ISOFolder }}
+                                      Target.ISOMount: {{ Target.ISOMount }}
+                                    Target.TempFolder: {{ Target.TempFolder }}
+
+                         Deploy.Software.ESXi.Version: {{ Deploy.Software.ESXi.Version }}
+                       Deploy.Software.ESXi.Installer: {{ Deploy.Software.ESXi.Installer }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        
     - name: Mount ESXi ISO
       action: mount name="{{ Target.ISOMount }}" src="{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].Location }}/{{Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].File }}" opts=loop fstype=iso9660 state=mounted
 
