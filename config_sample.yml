@@ -1,6 +1,6 @@
 ---
 DEBUG:
-  KeepConfigFiles: false
+  KeepConfigFiles: true
   KeepInstallerFiles: false
   DisplayVariables: true
   DisplayDelayInSeconds: 15
@@ -53,7 +53,7 @@ Deploy:
     Router:
       Vendor:  VyOS
       Product: Router
-      Version: Latest                                                              # VyOS version Options: Legacy or Latest
+      Version: Latest
       Patch:   false
       Config:  "Pod-{{ '%03d'|format(Pod.Number|int) }}-Router.conf"
       Installer: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Installer-Router"
@@ -104,59 +104,68 @@ TargetConfig:
     User: "root"
     Password: "{{ Common.Password.Physical }}"
     vSwitch: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"
-    VLAN: "{{ Net.Management.VLAN }}"
+    vSwitchVersion: ""
+    VLAN: "{{ Net.Management.VLAN }}"                     ## *TBD* - Investigate why this is not in vCenter or PlaceHolder, and if it is being used anywyere
     DataCenter: "ha-datacenter"
     Cluster: ""
     Datastore: "Local_VMs"
-    VMFolder:  "ha-datacenter/vm"
+    VMFolder: "ha-datacenter/vm"
     ISOFolder: "/Lab-ISO-Folder"
-    ISOMount:  "/mnt/Pod-{{ Pod.Number }}-ESX"
     TempFolder: "/tmp"
     PortGroup:
-      VLANID: "{{ Net.Management.VLAN }}"
-      VLAN:  "Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt"
-      Trunk: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Trunk"
       RouterUplink: "Lab-Routers"
+      Management:
+        Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt"
+        VLAN: "{{ Net.Management.VLAN }}"
+      Trunk:
+        Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Trunk"
+        VLAN: 4095
   vCenter:
     FQDN: "NetLab-vCenter.NetLab.Home"
     User: "administrator@vsphere.local"
     Password: "{{ Common.Password.Physical }}"
     vSwitch: "Lab-vDS"
+    vSwitchVersion: 6.6.0
     DataCenter: "NetLab"
     Cluster: "Pod-Cluster"
     Datastore: "vsanDatastore"
     VMFolder: "Nested Labs/Pod-{{ '%03d'|format(Pod.Number|int) }}"
     ISOFolder: "/Lab-ISO-Folder"
-    ISOMount:  "/mnt/Pod-{{ Pod.Number }}-ESX"
     TempFolder: "/tmp"
     PortGroup:
-      VLANID: "{{ Net.Management.VLAN }}"
-      VLAN:  "Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt"
-      Trunk: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Trunk"
       RouterUplink: "Lab-Routers"
+      Management:
+        Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt"
+        VLAN: "{{ Net.Management.VLAN }}"
+      Trunk:
+        Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Trunk"
+        VLAN: "{{ Net.Management.VLAN }}-{{ Net.VMNetwork.VLAN }}"
 
 
 ##
 ## Determine effective Target settings to use throughout deployment script
 ##
 Target-Placeholder:
-  Deployment: "{{ TargetConfig.Deployment }}"
-  FQDN:       "{{ TargetConfig[TargetConfig.Deployment].FQDN }}"
-  User:       "{{ TargetConfig[TargetConfig.Deployment].User }}"
-  Password:   "{{ TargetConfig[TargetConfig.Deployment].Password }}"
-  vSwitch:    "{{ TargetConfig[TargetConfig.Deployment].vSwitch }}"
-  DataCenter: "{{ TargetConfig[TargetConfig.Deployment].DataCenter }}"
-  Cluster:    "{{ TargetConfig[TargetConfig.Deployment].Cluster }}"
-  Datastore:  "{{ TargetConfig[TargetConfig.Deployment].Datastore }}"
-  VMFolder:   "{{ TargetConfig[TargetConfig.Deployment].VMFolder }}"
-  ISOFolder:  "{{ TargetConfig[TargetConfig.Deployment].ISOFolder }}"
-  ISOMount:   "{{ TargetConfig[TargetConfig.Deployment].ISOMount }}"
-  TempFolder: "{{ TargetConfig[TargetConfig.Deployment].TempFolder }}"
+  Deployment:     "{{ TargetConfig.Deployment }}"
+  FQDN:           "{{ TargetConfig[TargetConfig.Deployment].FQDN }}"
+  User:           "{{ TargetConfig[TargetConfig.Deployment].User }}"
+  Password:       "{{ TargetConfig[TargetConfig.Deployment].Password }}"
+  vSwitch:        "{{ TargetConfig[TargetConfig.Deployment].vSwitch }}"
+  vSwitchVersion: "{{ TargetConfig[TargetConfig.Deployment].vSwitchVersion }}"
+  DataCenter:     "{{ TargetConfig[TargetConfig.Deployment].DataCenter }}"
+  Cluster:        "{{ TargetConfig[TargetConfig.Deployment].Cluster }}"
+  Datastore:      "{{ TargetConfig[TargetConfig.Deployment].Datastore }}"
+  VMFolder:       "{{ TargetConfig[TargetConfig.Deployment].VMFolder }}"
+  ISOFolder:      "{{ TargetConfig[TargetConfig.Deployment].ISOFolder }}"
+  TempFolder:     "{{ TargetConfig[TargetConfig.Deployment].TempFolder }}"
   PortGroup:
-    VLANID:   "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].VLANID }}"
-    VLAN:     "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].VLAN }}"
-    Trunk:    "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].Trunk }}"
     RouterUplink: "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].RouterUplink }}"
+    Management:
+      Name:       "{{ TargetConfig[TargetConfig.Deployment]['PortGroup']['Management'].Name }}"
+      VLAN:       "{{ TargetConfig[TargetConfig.Deployment]['PortGroup']['Management'].VLAN }}"
+    Trunk:
+      Name:       "{{ TargetConfig[TargetConfig.Deployment]['PortGroup']['Trunk'].Name }}"
+      VLAN:       "{{ TargetConfig[TargetConfig.Deployment]['PortGroup']['Trunk'].VLAN }}"
 
 
 ##
@@ -168,19 +177,22 @@ Target:
   User: "root"
   Password: "{{ Common.Password.Physical }}"
   vSwitch: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"
+  vSwitchVersion: ""
   VLAN: "{{ Net.Management.VLAN }}"
   DataCenter: "ha-datacenter"
   Cluster: ""
   Datastore: "Local_VMs"
   VMFolder: "ha-datacenter/vm"
   ISOFolder: "/Lab-ISO-Folder"
-  ISOMount:  "/mnt/Pod-{{ Pod.Number }}-ESX"
   TempFolder: "/tmp"
   PortGroup:
-    VLANID: "{{ Net.Management.VLAN }}"
-    VLAN:  "Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt"
-    Trunk: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Trunk"
     RouterUplink: "Lab-Routers"
+    Management:
+      Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt"
+      VLAN: "{{ Net.Management.VLAN }}"
+    Trunk:
+      Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Trunk"
+      VLAN: 4095
 
 
 
