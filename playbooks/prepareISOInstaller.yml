@@ -1,6 +1,7 @@
 ## Rutger has ownership of this file for the v2 migration ##
 ---
 - hosts: localhost
+  name: prepareISOInstaller.yml
   gather_facts: false
   vars_files:
     - ../config.yml  
@@ -12,7 +13,7 @@
         prompt: |
           =================================== DEBUG: Display Variables ====================================
 
-                                     Ansible Playbook: prepareISOInstaller.yml
+                                     Ansible Playbook: {{ ansible_play_name }}
 
                                     Target.Deployment: {{ Target.Deployment }}
 
