@@ -64,9 +64,6 @@
       stat:
         path: "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version]['Location'].Local }}/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
       register: InstallerFileCheck
-      when:
-        - Deploy.Router == true
-        - status is failed
 
     - name: Copy VyOS installation file to /tmp if it exists locally rather than downloading (overwrite if exists)
       copy:
