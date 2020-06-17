@@ -14,27 +14,34 @@
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ========================= DEBUG: Display Variables ==========================
+          =================================== DEBUG: Display Variables ====================================
 
-                          Target.Deployment: {{ Target.Deployment }}
+                                     Ansible Playbook: deployRouter.yml
 
-                                Target.FQDN: {{ Target.FQDN }}
-                                Target.User: {{ Target.User }}
-                            Target.Password: {{ Target.Password }}
-                             Target.vSwitch: {{ Target.vSwitch }}
-                             Target.Cluster: {{ Target.Cluster }}
-                          Target.DataCenter: {{ Target.DataCenter }}
-                           Target.Datastore: {{ Target.Datastore }}
-                            Target.VMFolder: {{ Target.VMFolder }}
-                           Target.ISOFolder: {{ Target.ISOFolder }}
-                          Target.TempFolder: {{ Target.TempFolder }}
+                                    Target.Deployment: {{ Target.Deployment }}
 
-                     Target.PortGroup.VLAN : {{ Target.PortGroup.VLAN }}
-                     Target.PortGroup.Trunk: {{ Target.PortGroup.Trunk }}
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.vSwitch: {{ Target.vSwitch }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+                                     Target.ISOFolder: {{ Target.ISOFolder }}
+                                    Target.TempFolder: {{ Target.TempFolder }}
 
-             Deploy.Software.Router.Version: {{ Deploy.Software.Router.Version }}
+                          Target.PortGroup.Trunk.Name: {{ Target.PortGroup.Trunk.Name }}
+                          Target.PortGroup.Trunk.VLAN: {{ Target.PortGroup.Trunk.VLAN }}
+                    Target.PortGroup.Management.Name : {{ Target.PortGroup.Management.Name }}
+                    Target.PortGroup.Management.VLAN : {{ Target.PortGroup.Management.VLAN }}
 
-          =============================================================================
+                       Deploy.Software.Router.Version: {{ Deploy.Software.Router.Version }}
+
+            Deploy.Software.Options.UseLocalInstaller: {{ Deploy.Software.Options.UseLocalInstaller }}
+            Deploy.Software.Options.KeepNewInstallers: {{ Deploy.Software.Options.KeepNewInstallers }}
+
+          =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
 
