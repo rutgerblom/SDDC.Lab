@@ -111,7 +111,7 @@ TargetConfig:
     Datastore: "Local_VMs"
     VMFolder: "ha-datacenter/vm"
     ISOFolder: "/Lab-ISO-Folder"
-    ISOMount:  "/tmp/Pod-{{ Pod.Number }}-ESX"
+    ISOMount:  "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}-ESX"
     TempFolder: "/tmp"
     PortGroup:
       RouterUplink: "Lab-Routers"
@@ -132,7 +132,7 @@ TargetConfig:
     Datastore: "vsanDatastore"
     VMFolder: "Nested Labs/Pod-{{ '%03d'|format(Pod.Number|int) }}"
     ISOFolder: "/Lab-ISO-Folder"
-    ISOMount:  "/tmp/Pod-{{ Pod.Number }}-ESX"
+    ISOMount:  "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}-ESX"
     TempFolder: "/tmp"
     PortGroup:
       RouterUplink: "Lab-Routers"
@@ -187,7 +187,7 @@ Target:
   Datastore: "Local_VMs"
   VMFolder: "ha-datacenter/vm"
   ISOFolder: "/Lab-ISO-Folder"
-  ISOMount:  "/tmp/Pod-{{ Pod.Number }}-ESX"
+  ISOMount:  "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}-ESX"
   TempFolder: "/tmp"
   PortGroup:
     RouterUplink: "Lab-Routers"
