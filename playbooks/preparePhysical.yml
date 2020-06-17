@@ -7,6 +7,7 @@
 ##
 ---
 - hosts: localhost
+  name: preparePhysical.yml
   gather_facts: false
   vars_files:
     - ../config.yml
@@ -18,7 +19,7 @@
         prompt: |
           =================================== DEBUG: Display Variables ====================================
 
-                                     Ansible Playbook: preparePhysical.yml
+                                     Ansible Playbook: {{ ansible_play_name }}
 
                                     Target.Deployment: {{ Target.Deployment }}
 
