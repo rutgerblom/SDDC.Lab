@@ -12,6 +12,8 @@
         prompt: |
           =================================== DEBUG: Display Variables ====================================
 
+                                     Ansible Playbook: prepareISOInstaller.yml
+
                                     Target.Deployment: {{ Target.Deployment }}
 
                                           Target.FQDN: {{ Target.FQDN }}
@@ -30,7 +32,7 @@
         - DEBUG.DisplayVariables == true
         
     - name: Mount ESXi ISO
-      action: mount name="{{ Target.ISOMount }}" src="{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].Location }}/{{Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].File }}" opts=loop fstype=iso9660 state=mounted
+      action: mount name="{{ Target.ISOMount }}" src="{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version]['Location'].Local }}/{{Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].File }}" opts=loop fstype=iso9660 state=mounted
 
     - name: Copy ISO contents
       copy: 
@@ -38,7 +40,7 @@
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
 
     - name: Unmount ESXi ISO
-      action: mount name="{{ Target.ISOMount }}" src="{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].Location }}/{{Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].File }}" fstype=iso9660 state=absent
+      action: mount name="{{ Target.ISOMount }}" src="{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version]['Location'].Local}}/{{Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].File }}" fstype=iso9660 state=absent
 
     - name: Edit boot.cfg
       replace:
