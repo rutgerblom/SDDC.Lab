@@ -6,9 +6,7 @@
     NewLine: "\n"
   vars_files:
     - ../software.yml
-#    - ../licenses.yml
     - ../config.yml
-#    - ../answerfile.yml
   tasks:
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -31,8 +29,10 @@
                                      Target.ISOFolder: {{ Target.ISOFolder }}
                                     Target.TempFolder: {{ Target.TempFolder }}
 
-                               Target.PortGroup.VLAN : {{ Target.PortGroup.VLAN }}
-                               Target.PortGroup.Trunk: {{ Target.PortGroup.Trunk }}
+                          Target.PortGroup.Trunk.Name: {{ Target.PortGroup.Trunk.Name }}
+                          Target.PortGroup.Trunk.VLAN: {{ Target.PortGroup.Trunk.VLAN }}
+                    Target.PortGroup.Management.Name : {{ Target.PortGroup.Management.Name }}
+                    Target.PortGroup.Management.VLAN : {{ Target.PortGroup.Management.VLAN }}
 
                        Deploy.Software.Router.Version: {{ Deploy.Software.Router.Version }}
 
@@ -129,7 +129,7 @@
         ovf: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         networks:
           "public": "{{ Nested_Router.Interface.Uplink.PortGroup }}"
-          "internal": "{{ Target.PortGroup.Trunk }}"
+          "internal": "{{ Target.PortGroup.Trunk.Name }}"
         disk_provisioning: "{{ Common.DiskProvisioning }}"
         power_on: true
         wait: true
@@ -215,7 +215,7 @@
         networks:
           - name: "{{ Nested_Router.Interface.Uplink.PortGroup }}"
             device_type: vmxnet3
-          - name: "{{ Target.PortGroup.Trunk }}"
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
             device_type: vmxnet3
         cdrom:
           type: "iso"
@@ -249,7 +249,7 @@
         networks:
           - name: "{{ Nested_Router.Interface.Uplink.PortGroup }}"
             device_type: vmxnet3
-          - name: "{{ Target.PortGroup.Trunk }}"
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
             device_type: vmxnet3
         cdrom:
           type: "iso"
