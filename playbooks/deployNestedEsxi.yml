@@ -43,7 +43,7 @@
       when:
         - DEBUG.DisplayVariables == true
         
-    - name: Deploy ESXi VMs
+    - name: Deploy ESXi VMs directly onto the ESXi Host
       vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -52,18 +52,18 @@
         name: "{{ item.value.vmname }}"
         state: poweredon
         guest_id: vmkernel65Guest
-        esxi_hostname: "{{ physicalESX.fqdn }}"
+        esxi_hostname: "{{ Target.FQDN }}"
         folder: /ha-datacenter/vm
         disk:
         - size_gb: "{{ item.value.boot_disk_size }}"
           type: thin
-          datastore: "{{ physicalESX.datastore }}"
+          datastore: "{{ Target.Datastore }}"
         - size_gb: "{{ item.value.vsan_cache_size }}"
           type: thin
-          datastore: "{{ physicalESX.datastore }}"
+          datastore: "{{ Target.Datastore }}"
         - size_gb: "{{ item.value.vsan_capacity_size }}"
           type: thin
-          datastore: "{{ physicalESX.datastore }}"
+          datastore: "{{ Target.Datastore }}"
         hardware:
           nested_virt: true
           memory_mb: "{{ item.value.ram }}"
@@ -71,15 +71,15 @@
           num_cpu_cores_per_socket: "{{ item.value.cores }}"
           scsi: paravirtual
         networks:
-          - name: "{{ physicalESX.trunkpg }}"
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
             device_type: vmxnet3
-          - name: "{{ physicalESX.trunkpg }}"
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
             device_type: vmxnet3
-          - name: "{{ physicalESX.trunkpg }}"
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
             device_type: vmxnet3
-          - name: "{{ physicalESX.trunkpg }}"
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
             device_type: vmxnet3
-          - name: "{{ physicalESX.trunkpg }}"
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
             device_type: vmxnet3
         cdrom:
           type: "iso"
@@ -116,11 +116,11 @@
 
     - name: Check if the ESXi hosts are ready (wait max 15 minutes)
       vmware_guest_info:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: no
-        datacenter: "ha-datacenter"
+        datacenter: "{{ Target.DataCenter }}"
         name: "{{ item.value.vmname }}"
         schema: "vsphere"
       register: vm_facts
@@ -144,9 +144,9 @@
 
     - name: Disconnect CD-ROM from Nested ESXi VMs
       vmware_guest:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: no
         name: "{{ item.value.vmname }}"
         cdrom:
@@ -157,9 +157,9 @@
 
     - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the datastore
       vsphere_file:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user}}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: no
         datacenter: /ha-datacenter
         datastore: "{{ Target.Datastore }}"
