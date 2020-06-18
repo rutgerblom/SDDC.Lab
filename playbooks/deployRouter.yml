@@ -1,9 +1,8 @@
 ## Luis has ownership of this file for the v2 migration ##
 ---
 - hosts: localhost
+  name: deployRouter.yml
   gather_facts: false
-  vars:
-    NewLine: "\n"
   vars_files:
     - ../software.yml
     - ../config.yml
@@ -14,7 +13,7 @@
         prompt: |
           =================================== DEBUG: Display Variables ====================================
 
-                                     Ansible Playbook: deployRouter.yml
+                                     Ansible Playbook: {{ ansible_play_name }}
 
                                     Target.Deployment: {{ Target.Deployment }}
 
