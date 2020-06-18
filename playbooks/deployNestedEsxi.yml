@@ -3,6 +3,8 @@
 - hosts: localhost
   gather_facts: false
   vars_files:
+    - ../config.yml
+    - ../software.yml
     - ../answerfile.yml
   tasks:
     - name: Deploy ESXi VMs
@@ -45,7 +47,7 @@
             device_type: vmxnet3
         cdrom:
           type: "iso"
-          iso_path: "[{{ physicalESX.datastore }}] Lab-ISO-Folder/customesxv.iso"
+          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
       with_dict: "{{ vESX }}"
       async: 7200
       poll: 0
@@ -124,8 +126,8 @@
         password: "{{ physicalESX.password }}"
         validate_certs: no
         datacenter: /ha-datacenter
-        datastore: "{{ physicalESX.datastore }}"
-        path: "/Lab-ISO-Folder/customesxv.iso"
+        datastore: "{{ Target.Datastore }}"
+        path: "{{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
         state: absent
 
     - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the local filesystem
@@ -134,5 +136,6 @@
         state: absent
       when: 
         - DEBUG_keep_config_files != true
+        - false                                  ### Added FALSE here becuase we clean up during the prepareISOInstaller.yml playbook
 
   tags: nestedESX
