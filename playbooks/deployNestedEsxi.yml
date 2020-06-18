@@ -166,12 +166,4 @@
         path: "{{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
         state: absent
 
-    - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the local filesystem
-      file: 
-        path: "/tmp/customesxv.iso"
-        state: absent
-      when: 
-        - DEBUG_keep_config_files != true
-        - false                                  ### Added FALSE here becuase we clean up during the prepareISOInstaller.yml playbook
-
   tags: nestedESX
