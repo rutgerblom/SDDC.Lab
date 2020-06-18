@@ -1,17 +1,53 @@
 ## Rutger has ownership of this file for the v2 migration ##
 ---
 - hosts: localhost
+  name: deployNestedEsxi.yml
   gather_facts: false
   vars_files:
     - ../config.yml
     - ../software.yml
     - ../answerfile.yml
   tasks:
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================== DEBUG: Display Variables ====================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.vSwitch: {{ Target.vSwitch }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+                                     Target.ISOFolder: {{ Target.ISOFolder }}
+                                    Target.TempFolder: {{ Target.TempFolder }}
+
+                          Target.PortGroup.Trunk.Name: {{ Target.PortGroup.Trunk.Name }}
+                          Target.PortGroup.Trunk.VLAN: {{ Target.PortGroup.Trunk.VLAN }}
+                    Target.PortGroup.Management.Name : {{ Target.PortGroup.Management.Name }}
+                    Target.PortGroup.Management.VLAN : {{ Target.PortGroup.Management.VLAN }}
+
+                       Deploy.Software.Router.Version: {{ Deploy.Software.Router.Version }}
+
+            Deploy.Software.Options.UseLocalInstaller: {{ Deploy.Software.Options.UseLocalInstaller }}
+            Deploy.Software.Options.KeepNewInstallers: {{ Deploy.Software.Options.KeepNewInstallers }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        
     - name: Deploy ESXi VMs
       vmware_guest:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: no
         name: "{{ item.value.vmname }}"
         state: poweredon
