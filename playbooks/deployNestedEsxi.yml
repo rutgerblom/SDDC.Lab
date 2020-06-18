@@ -31,8 +31,6 @@
 
                           Target.PortGroup.Trunk.Name: {{ Target.PortGroup.Trunk.Name }}
                           Target.PortGroup.Trunk.VLAN: {{ Target.PortGroup.Trunk.VLAN }}
-                    Target.PortGroup.Management.Name : {{ Target.PortGroup.Management.Name }}
-                    Target.PortGroup.Management.VLAN : {{ Target.PortGroup.Management.VLAN }}
 
                        Deploy.Software.Router.Version: {{ Deploy.Software.Router.Version }}
 
@@ -88,6 +86,8 @@
       async: 7200
       poll: 0
       register: deployment
+      when:
+        - Target.Deployment == "Host"
 
     - name: Wait 3 seconds before we start checking whether the ESXi hosts are ready
       pause: 
