@@ -79,36 +79,10 @@
           type: "iso"
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      async: 7200
+      async: 1800
       poll: 0
-      register: deployment
       when:
         - Target.Deployment == "Host"
-
-    - name: Wait 3 seconds before we start checking whether the ESXi hosts are ready
-      pause: 
-        seconds: 3
-
-    - name: Result check for deployment
-      async_status:
-        jid: "{{ item.ansible_job_id }}"
-      register: job_result
-      with_items: "{{ deployment.results }}"
-
-    - name: Create a mark if there is a new vESX to deploy
-      file: 
-        path: "{{ Target.TempFolder }}/newESXi"
-        state: "touch"
-        owner: "root"
-        group: "root" 
-        mode: "0555"
-      when: item.stat is not defined
-      with_items: "{{ job_result.results }}"
-
-    - name: Check that markfile exists  
-      stat: 
-        path: "{{ Target.TempFolder }}/newESXi"
-      register: newESXi
 
     - name: Check if the ESXi hosts are ready (wait max 15 minutes)
       vmware_guest_info:
@@ -123,20 +97,7 @@
       until: vm_facts is search("1.1.1.1")
       retries: 30
       delay: 30
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-
-    - name: Delete the temporary mark
-      file: 
-        path: "{{ Target.TempFolder }}/newESXi"
-        state: absent
-      
-    - name: Check result for deployment
-      async_status:
-        jid: "{{ item.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      with_items: "{{ deployment.results }}"
-      retries: 20         
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"       
 
     - name: Disconnect CD-ROM from Nested ESXi VMs
       vmware_guest:
@@ -148,7 +109,7 @@
         cdrom:
           type: "none"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      async: 7200
+      async: 1800
       poll: 0
 
     - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the datastore
