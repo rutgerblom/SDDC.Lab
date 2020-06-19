@@ -1,6 +1,6 @@
 ## Rutger has ownership of this file for the v2 migration ##
 ##
-## ToDo: - Replace variables within the loop
+## ToDo: - Create block for vCenter as deployment target
 ##       - Add the relevant variables to "DEBUG" 
 ##
 ---
@@ -58,13 +58,13 @@
         folder: "{{ Target.VMFolder }}"
         disk:
         - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['BootDiskSize'] }}"
-          type: thin
+          type: "{{ Common.DiskProvisioning }}"
           datastore: "{{ Target.Datastore }}"
         - size_gb: {{ Nested_ESXi.HardwareSettings[item.value.Cluster]['vSAN']['CapacitySize'] }}"
-          type: thin
+          type: "{{ Common.DiskProvisioning }}"
           datastore: "{{ Target.Datastore }}"
         - size_gb: {{ Nested_ESXi.HardwareSettings[item.value.Cluster]['vSAN']['CacheSize'] }}"
-          type: thin
+          type: "{{ Common.DiskProvisioning }}"
           datastore: "{{ Target.Datastore }}"
         hardware:
           nested_virt: true
@@ -125,13 +125,13 @@
         password: "{{ Target.Password }}"
         validate_certs: no
         datacenter: "{{ Target.DataCenter }}"
-        name: "{{ item.value.vmname }}"
+        name: "{{ item.value.VMName }}"
         schema: "vsphere"
       register: vm_facts
       until: vm_facts is search("1.1.1.1")
       retries: 30
       delay: 30
-      with_dict: "{{ vESX }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
 
     - name: Delete the temporary mark
       file: 
@@ -152,10 +152,10 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ item.value.vmname }}"
+        name: "{{ item.value.VMName }}"
         cdrom:
           type: "none"
-      with_dict: "{{ vESX }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 7200
       poll: 0
 
