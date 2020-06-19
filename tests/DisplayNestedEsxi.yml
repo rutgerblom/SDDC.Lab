@@ -1,0 +1,13 @@
+---
+- hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ../config.yml
+    - ../answerfile.yml
+    - ../software.yml
+  tasks:
+    - name: Display Nested ESXi
+      debug:
+        msg: "CPU qty={{ Nested_ESXi.HardwareSettings[item.value.Cluster]['CPU'] }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+
