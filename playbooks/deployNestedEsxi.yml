@@ -9,14 +9,12 @@
   gather_facts: false
   vars_files:
     - ../config.yml
-    - ../software.yml
-    - ../answerfile.yml
   tasks:
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          =================================== DEBUG: Display Variables ==================================== ## Not ready yet
+          =================================== DEBUG: Display Variables ====================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
@@ -34,12 +32,6 @@
                                     Target.TempFolder: {{ Target.TempFolder }}
 
                           Target.PortGroup.Trunk.Name: {{ Target.PortGroup.Trunk.Name }}
-                          Target.PortGroup.Trunk.VLAN: {{ Target.PortGroup.Trunk.VLAN }}
-
-                       Deploy.Software.Router.Version: {{ Deploy.Software.Router.Version }}
-
-            Deploy.Software.Options.UseLocalInstaller: {{ Deploy.Software.Options.UseLocalInstaller }}
-            Deploy.Software.Options.KeepNewInstallers: {{ Deploy.Software.Options.KeepNewInstallers }}
 
           =================================================================================================
       when:
@@ -105,7 +97,7 @@
 
     - name: Create a mark if there is a new vESX to deploy
       file: 
-        path: "/tmp/newESXi"
+        path: "{{ Target.TempFolder }}/newESXi"
         state: "touch"
         owner: "root"
         group: "root" 
@@ -115,7 +107,7 @@
 
     - name: Check that markfile exists  
       stat: 
-        path: "/tmp/newESXi"
+        path: "{{ Target.TempFolder }}/newESXi"
       register: newESXi
 
     - name: Check if the ESXi hosts are ready (wait max 15 minutes)
@@ -135,7 +127,7 @@
 
     - name: Delete the temporary mark
       file: 
-        path: "/tmp/newESXi"
+        path: "{{ Target.TempFolder }}/newESXi"
         state: absent
       
     - name: Check result for deployment
@@ -165,7 +157,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        datacenter: /ha-datacenter
+        datacenter: "{{ Target.DataCenter }}"
         datastore: "{{ Target.Datastore }}"
         path: "{{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
         state: absent
