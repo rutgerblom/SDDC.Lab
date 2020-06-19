@@ -51,26 +51,26 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ item.value.vmname }}"
+        name: "{{ item.value.VMName }}"
         state: poweredon
         guest_id: vmkernel65Guest
         esxi_hostname: "{{ Target.FQDN }}"
-        folder: /ha-datacenter/vm
+        folder: "{{ Target.VMFolder }}"
         disk:
-        - size_gb: "{{ item.value.boot_disk_size }}"
+        - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['BootDiskSize'] }}"
           type: thin
           datastore: "{{ Target.Datastore }}"
-        - size_gb: "{{ item.value.vsan_cache_size }}"
+        - size_gb: {{ Nested_ESXi.HardwareSettings[item.value.Cluster]['vSAN']['CapacitySize'] }}"
           type: thin
           datastore: "{{ Target.Datastore }}"
-        - size_gb: "{{ item.value.vsan_capacity_size }}"
+        - size_gb: {{ Nested_ESXi.HardwareSettings[item.value.Cluster]['vSAN']['CacheSize'] }}"
           type: thin
           datastore: "{{ Target.Datastore }}"
         hardware:
           nested_virt: true
-          memory_mb: "{{ item.value.ram }}"
-          num_cpus: "{{ item.value.cpu }}"
-          num_cpu_cores_per_socket: "{{ item.value.cores }}"
+          memory_mb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['Memory'] }}"
+          num_cpus: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['CPU'] }}"
+          num_cpu_cores_per_socket: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['CoresPerSocket'] }}"
           scsi: paravirtual
         networks:
           - name: "{{ Target.PortGroup.Trunk.Name }}"
@@ -86,7 +86,7 @@
         cdrom:
           type: "iso"
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
-      with_dict: "{{ vESX }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 7200
       poll: 0
       register: deployment
