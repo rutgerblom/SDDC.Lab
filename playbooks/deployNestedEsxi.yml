@@ -144,7 +144,8 @@
       until: vm_facts is search("1.1.1.1")
       retries: 30
       delay: 30
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"       
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Disconnect CD-ROM from Nested ESXi VMs
       vmware_guest:
@@ -158,6 +159,7 @@
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
       poll: 0
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the datastore
       vsphere_file:
