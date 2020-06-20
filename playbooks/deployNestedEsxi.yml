@@ -1,141 +1,173 @@
 ## Rutger has ownership of this file for the v2 migration ##
+##
+## ToDo:
+##        - Investigate performance 
+##
 ---
 - hosts: localhost
+  name: deployNestedEsxi.yml
   gather_facts: false
   vars_files:
     - ../config.yml
-    - ../software.yml
-    - ../answerfile.yml
   tasks:
-    - name: Deploy ESXi VMs
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================== DEBUG: Display Variables ====================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+                                     Target.ISOFolder: {{ Target.ISOFolder }}
+
+                          Target.PortGroup.Trunk.Name: {{ Target.PortGroup.Trunk.Name }}
+                       Deploy.Software.ESXi.Installer: {{ Deploy.Software.ESXi.Installer }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Deploy ESXi VMs on vCenter
       vmware_guest:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ item.value.vmname }}"
+        name: "{{ item.value.VMName }}"
         state: poweredon
         guest_id: vmkernel65Guest
-        esxi_hostname: "{{ physicalESX.fqdn }}"
-        folder: /ha-datacenter/vm
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
         disk:
-        - size_gb: "{{ item.value.boot_disk_size }}"
-          type: thin
-          datastore: "{{ physicalESX.datastore }}"
-        - size_gb: "{{ item.value.vsan_cache_size }}"
-          type: thin
-          datastore: "{{ physicalESX.datastore }}"
-        - size_gb: "{{ item.value.vsan_capacity_size }}"
-          type: thin
-          datastore: "{{ physicalESX.datastore }}"
+        - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['BootDiskSize'] }}"
+          type: "{{ Common.DiskProvisioning }}"
+          datastore: "{{ Target.Datastore }}"
+        - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['vSAN']['CapacitySize'] }}"
+          type: "{{ Common.DiskProvisioning }}"
+          datastore: "{{ Target.Datastore }}"
+        - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['vSAN']['CacheSize'] }}"
+          type: "{{ Common.DiskProvisioning }}"
+          datastore: "{{ Target.Datastore }}"
         hardware:
           nested_virt: true
-          memory_mb: "{{ item.value.ram }}"
-          num_cpus: "{{ item.value.cpu }}"
-          num_cpu_cores_per_socket: "{{ item.value.cores }}"
+          memory_mb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['Memory'] }}"
+          num_cpus: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['CPU'] }}"
+          num_cpu_cores_per_socket: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['CoresPerSocket'] }}"
           scsi: paravirtual
         networks:
-          - name: "{{ physicalESX.trunkpg }}"
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
             device_type: vmxnet3
-          - name: "{{ physicalESX.trunkpg }}"
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
             device_type: vmxnet3
-          - name: "{{ physicalESX.trunkpg }}"
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
             device_type: vmxnet3
-          - name: "{{ physicalESX.trunkpg }}"
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
             device_type: vmxnet3
-          - name: "{{ physicalESX.trunkpg }}"
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
             device_type: vmxnet3
         cdrom:
           type: "iso"
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
-      with_dict: "{{ vESX }}"
-      async: 7200
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      async: 1800
       poll: 0
-      register: deployment
+      when:
+        - Target.Deployment == "vCenter"
 
-    - name: Wait 3 seconds before we start checking whether the ESXi hosts are ready
-      pause: 
-        seconds: 3
-
-    - name: Result check for deployment
-      async_status:
-        jid: "{{ item.ansible_job_id }}"
-      register: job_result
-      with_items: "{{ deployment.results }}"
-
-    - name: Create a mark if there is a new vESX to deploy
-      file: 
-        path: "/tmp/newESXi"
-        state: "touch"
-        owner: "root"
-        group: "root" 
-        mode: "0555"
-      when: item.stat is not defined
-      with_items: "{{ job_result.results }}"
-
-    - name: Check that markfile exists  
-      stat: 
-        path: "/tmp/newESXi"
-      register: newESXi
+    - name: Deploy ESXi VMs directly onto the ESXi Host
+      vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ item.value.VMName }}"
+        state: poweredon
+        guest_id: vmkernel65Guest
+        esxi_hostname: "{{ Target.FQDN }}"
+        folder: "{{ Target.VMFolder }}"
+        disk:
+        - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['BootDiskSize'] }}"
+          type: "{{ Common.DiskProvisioning }}"
+          datastore: "{{ Target.Datastore }}"
+        - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['vSAN']['CapacitySize'] }}"
+          type: "{{ Common.DiskProvisioning }}"
+          datastore: "{{ Target.Datastore }}"
+        - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['vSAN']['CacheSize'] }}"
+          type: "{{ Common.DiskProvisioning }}"
+          datastore: "{{ Target.Datastore }}"
+        hardware:
+          nested_virt: true
+          memory_mb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['Memory'] }}"
+          num_cpus: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['CPU'] }}"
+          num_cpu_cores_per_socket: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['CoresPerSocket'] }}"
+          scsi: paravirtual
+        networks:
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
+            device_type: vmxnet3
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
+            device_type: vmxnet3
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
+            device_type: vmxnet3
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
+            device_type: vmxnet3
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
+            device_type: vmxnet3
+        cdrom:
+          type: "iso"
+          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      async: 1800
+      poll: 0
+      when:
+        - Target.Deployment == "Host"
 
     - name: Check if the ESXi hosts are ready (wait max 15 minutes)
       vmware_guest_info:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: no
-        datacenter: "ha-datacenter"
-        name: "{{ item.value.vmname }}"
+        datacenter: "{{ Target.DataCenter }}"
+        name: "{{ item.value.VMName }}"
         schema: "vsphere"
       register: vm_facts
       until: vm_facts is search("1.1.1.1")
       retries: 30
       delay: 30
-      with_dict: "{{ vESX }}"
-
-    - name: Delete the temporary mark
-      file: 
-        path: "/tmp/newESXi"
-        state: absent
-      
-    - name: Check result for deployment
-      async_status:
-        jid: "{{ item.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      with_items: "{{ deployment.results }}"
-      retries: 20         
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"       
 
     - name: Disconnect CD-ROM from Nested ESXi VMs
       vmware_guest:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ item.value.vmname }}"
+        name: "{{ item.value.VMName }}"
         cdrom:
           type: "none"
-      with_dict: "{{ vESX }}"
-      async: 7200
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      async: 1800
       poll: 0
 
     - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the datastore
       vsphere_file:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user}}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: no
-        datacenter: /ha-datacenter
+        datacenter: "{{ Target.DataCenter }}"
         datastore: "{{ Target.Datastore }}"
         path: "{{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
         state: absent
-
-    - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the local filesystem
-      file: 
-        path: "/tmp/customesxv.iso"
-        state: absent
-      when: 
-        - DEBUG_keep_config_files != true
-        - false                                  ### Added FALSE here becuase we clean up during the prepareISOInstaller.yml playbook
 
   tags: nestedESX
