@@ -1,0 +1,307 @@
+# Debugging Options
+DEBUG_keep_config_files:     true       # If "true", configuration files will not be deleted from /tmp so that they can be reviewed
+
+# Deployment decisions
+deploy_router:               true        # Deploy a VyOS router for the nested environment?
+router_version:              latest      # Choose between "latest" (vyos-rolling-latest) and "legacy" (vyos-1.1.8)
+deploy_nsxt:                 true        # Deploy NSX-T? (+20 minutes)
+deploy_nsxt_edge:            true        # Deploy NSX-T Edge nodes? (+15 minutes)
+nsxt_major_version:          3           # Version 2 and 3 are supported
+use_nfs:                     false       # Mount an existing NFS datastore to the nested ESXi hosts? Configure details under "Your NFS storage"
+
+pod:                         230         # The pod ID should be between 10-240
+
+# Pod Network prefix (First 2 octets of Pod Networks)
+pod_network:                 "10.203"    # First 2 octets only
+
+# Networks/VLAN offsets for various services (Offset from Pod)
+management:                  0
+vmotion:                     1
+vsan:                        2
+ipstorage:                   3           # Not used by the lab, but included should the lab user want to test/lab IP Storage solutions
+transport:                   4           # Geneve Overlay Transport
+svmmanagement:               5           # Not used by the lab, but included should an 3rd party solution want to be tested
+nsx_edge_uplink_1:           6           # 1st VLAN for BGP peerig between Tier-0 and the router.  (*** NOT YET IMPLEMENTED ***)
+nsx_edge_uplink_2:           7           # 2nd VLAN for BGP peerig between Tier-0 and the router.  (*** NOT YET IMPLEMENTED ***)
+vmnetwork:                   9
+
+# Paths to ISO and OVA files
+esxIso:                      "/iso/VMware-VMvisor-Installer-7.0.0-15843807.x86_64.iso"     # ESXi 7.0
+#esxIso:                     "/iso/VMware-VMvisor-Installer-201912001-15160138.x86_64.iso" # ESXi 6.7
+vcIso:                       "/iso/VMware-VCSA-all-7.0.0-15952498.iso"                     # vCenter 7.0
+#vcIso:                      "/iso/VMware-VCSA-all-6.7.0-14367737.iso"                     # vCenter 6.7
+NsxManOva:                   "/iso/nsx-unified-appliance-3.0.0.0.0.15946739.ova"           # NSX-T 3.0
+#NsxManOva:                  "/iso/nsx-unified-appliance-2.5.1.0.0.15314292.ova"           # NSX-T 2.5.1
+VyosOva:                     "/iso/vyos-1.1.8-amd64.ova"                                   # Will be downloaded if deploy_router == true and router_version == legacy
+VyosIso:                     "/iso/vyos-rolling-latest.iso"                                # Will be downloaded if deploy_router == true and router_version == latest
+
+
+# Your physical ESXi host properties
+physicalESX:
+  fqdn:                      "Host32.NetLab.Home"       # Must be resolvable by DNS and must match the actual ESXi hostname (run "hostname" command on your physical ESXi host)
+  user:                      "root"
+  password:                  "VMware1!"
+  vswitch:                   "Pod-{{ '%03d'|format(pod) }}-vSwitch"   # vSwitch for nested environment. Will be created if missing.
+  vlan:                      "{{ pod + management }}"  # VLAN for the management network in the nested environment.
+  vlanpg:                    "Pod-{{ '%03d'|format(pod) }}-Mgmt"      # Port group for vCenter appliance and NSX-T Manager node(s). Will be created if missing.
+  trunkpg:                   "Pod-{{ '%03d'|format(pod) }}-Trunk"     # Port group for the ESXi VMs and the VyOS router. Will be created if missing.
+  datastore:                 "Local_VMs"               # The datastore where all the deployed VMs are stored.
+
+# Your NFS storage
+nfs_server:                  "10.2.129.90"             # Change this to the FQDN or IP address of your NAS
+nfs_datastore:               "vsanDatastoreEdge"                   # NFS export name
+#nfs_datastore:               "nfs01"                   # NFS export name
+nfs_path:                    "/nested_nfs01"           # NFS path
+nfs_type:                    "nfs"                     # NFS version 3
+
+# VyOS router configuration
+router_hostname:             "Router"
+router_public_ip:            "10.203.0.{{ pod }}/24"          # CIDR notation. Should be an IP address in the same subnet as your Ansible control node. 
+router_default_gw:           "10.203.0.1"             # IP address of the next-hop on your physical network (upstream router)
+router_public_pg:            "Lab-Routers"             # Change this to an existing port group for the router's public interface.
+router_as:                   "65000"                   # BGP AS number on your router (VyOS if deploy_router == true)
+router_vmname:               "Pod-{{ '%03d'|format(pod) }}-{{ router_hostname }}"
+
+router:
+  protocol: ospf                                       # Either "static" or "ospf" are supported
+  ospf:
+    area: 666                                          # specify OSPF peering area
+
+
+# Some global network properties for the nested environment
+dns1:                        "10.200.64.254"                                # Your primary DNS server available to the nested environment.
+dns2:                        "10.100.64.254"                                # Your secondary DNS server available to the nested environment.
+ntp1:                        "10.200.0.10"                                  # Your NTP server available to the nested environment's management network
+domain:                      "lab.local"                                    # The DNS domain name for the nested environment.
+mgmt_network_mask:           "255.255.255.0"
+mgmt_network_mask_cidr:      "24"
+vmotion_network_mask:        "255.255.255.0"
+vmotion_network_mask_cidr:   "24"
+vsan_network_mask:           "255.255.255.0"
+vsan_network_mask_cidr:      "24"
+ipstorage_network_mask:      "255.255.255.0"
+ipstorage_network_mask_cidr: "24"
+transport_network_mask:      "255.255.255.0"
+transport_network_mask_cidr: "24"
+svmmanagement_network_mask:  "255.255.255.0"
+svmmanagement_network_mask_cidr:      "24"
+nsx_edge_uplink_1_network_mask:       "255.255.255.0"
+nsx_edge_uplink_1_network_mask_cidr:  "24"
+nsx_edge_uplink_2_network_mask:       "255.255.255.0"
+nsx_edge_uplink_2_network_mask_cidr:  "24"
+vmnetwork_network_mask:      "255.255.255.0"
+vmnetwork_network_mask_cidr: "24"
+
+transport_gw:                "{{ pod_network }}.{{ pod + transport }}.1"
+router_peer_ip1:             "{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.1"       # IP address of the router on the 1st BGP peering VLAN
+router_peer_ip2:             "{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.1"       # IP address of the router on the 2nd BGP peering VLAN
+uplink_1_ip1:                "{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.2"       # IP address of Tier-0 external interface 1 on the 1st BGP peering VLAN
+uplink_1_ip2:                "{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.3"       # IP address of Tier-0 external interface 2 on the 1st BGP peering VLAN
+uplink_2_ip1:                "{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.2"       # IP address of Tier-0 external interface 3 on the 2nd BGP peering VLAN
+uplink_2_ip2:                "{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.3"       # IP address of Tier-0 external interface 4 on the 2nd BGP peering VLAN
+nsx_as:                      "65{{ '%03d'|format(pod) }}"                              # BGP AS number on the NSX-T side
+
+
+# New vCenter appliance configuration
+vcenter:
+  ip:                        "{{ pod_network }}.{{ pod + management }}.5"   # vCenter IP address 
+  mask:                      "24"  
+  gw:                        "{{ pod_network }}.{{ pod + management }}.1"  
+  fqdn:                      "{{ pod_network }}.{{ pod + management }}.5"   # vCenter FQDN if there is a working DNS server, otherwise specify the vCenter IP address here.
+  vmname:                    "Pod-{{ '%03d'|format(pod) }}-VCSA"  
+  user:                      "administrator@vsphere.local"  
+  password:                  "VMware1!"  
+  datacenter:                "DC01"  
+  domain:                    "vsphere.local"                                # SSO domain
+
+# vSphere clusters in the nested environment. You can add, remove or rename nested vSphere clusters below. 
+clusters:
+  Compute-A:
+    drs:                     true
+    vsan:                    true  # vSAN requires at least three ESXi hosts in the cluster.
+    prep_nsx:                true   # Attach NSX-T transport node profile to this cluster? Only relevant when deploy_nsxt == true
+  Edge:           
+    drs:                     false
+    vsan:                    true  # vSAN requires at least three ESXi hosts in the cluster.
+    prep_nsx:                false  # Attach NSX-T transport node profile to this cluster? Only relevant when deploy_nsxt == true
+
+# Configuration for the VDS within the nested vSphere environment.
+vds:
+  name:                      "vds"
+  mtu:                       "9000"
+  uplinks:                   "2"
+  discovery_proto:           "lldp"
+  discovery_operation:       "both"
+  management_pg:             "pg-management"
+  vmotion_pg:                "pg-vmotion"
+  vsan_pg:                   "pg-vsan"
+  ipstorage_pg:              "pg-ipstorage"
+  svmmanagement_pg:          "pg-svm-management"
+  uplink1_pg:                "pg-uplink1"
+  uplink2_pg:                "pg-uplink2"
+  vmnetwork_pg:              "pg-vmnetwork"
+
+# NSX-T configuration 
+nsxmanager_name:             "NSXT-LM"
+nsxmanpassword:              "VMware1!VMware1!"
+nsxmanaudituser:             "audit"
+nsxmanadminuser:             "admin"
+nsxmansize:                  "small"
+nsxmanrole:                  "NSX Manager"
+nsxlicense:                  "/tmp/nsxlicense.txt"   # Path to the NSX-T license key file (text file should contain just the key).
+nvds_name:                   "n-vds01"              
+tz_vlan_name:                "tz-vlan"              
+tz_overlay_name:             "tz-overlay"              
+tz_edge_name:                "tz-edge"              
+ip_pool_name:                "tep-pool"              
+tn_profile_name:             "esxi-tnp"              
+edge_node1:                  "en01"              
+edge_node2:                  "en02"              
+edge_node_vsphere_cluster:   "Edge"                  # The vSphere cluster in the nested environment where the Edge VMs should be deployed.
+edge_node1_vesxi:            "{{ pod_network }}.{{ pod + management }}.91"   # The nested ESXi host where Edge VM 1 should be placed. Specify IP address if there's no working DNS. 
+edge_node2_vesxi:            "{{ pod_network }}.{{ pod + management }}.92"   # The nested ESXi host where Edge VM 2 should be placed. Specify IP address if there's no working DNS.
+edge_cluster_name:           "edge-cluster-01"       # The NSX-T Edge Cluster
+edgepassword:                "VMware1!VMware1!"
+tier0_name:                  "tier-0"
+
+# The NSX-T Manager nodes. You can add, remove or rename NSX-T Manager nodes below.
+nsxman:
+  nsxman01:
+    ip:                      "{{ pod_network }}.{{ pod + management }}.8"
+    hostname:                "Pod-{{ '%03d'|format(pod) }}-{{ nsxmanager_name }}.{{ domain }}"
+    vmname:                  "Pod-{{ '%03d'|format(pod) }}-{{ nsxmanager_name }}"
+
+# The ESXi hosts. You can add, remove or rename ESXi hosts below.
+vESX:
+  ESXi-11:
+    ip:                      "{{ pod_network }}.{{ pod + management }}.11"
+    mask:                    "{{ mgmt_network_mask }}"
+    gw:                      "{{ pod_network }}.{{ pod + management }}.1"
+    fqdn:                    "{{ pod_network }}.{{ pod + management }}.11"
+    vmname:                  "Pod-{{ '%03d'|format(pod) }}-ESXi-11"
+    cluster:                 "Compute-A"                                  # The cluster in the nested vSphere environment this ESXi will be added to.
+    vlan:                    "{{ physicalESX.vlan }}"
+    vmotion_ip:              "{{ pod_network }}.{{ pod + vmotion }}.11"
+    vmotion_mask:            "{{ vmotion_network_mask }}"
+    vsan_ip:                 "{{ pod_network }}.{{ pod + vsan }}.11"
+    vsan_mask:               "{{ vsan_network_mask }}"
+    ipstorage_ip:            "{{ pod_network }}.{{ pod + ipstorage }}.11"
+    ipstorage_mask:          "{{ ipstorage_network_mask }}"
+    username:                "root"
+    password:                "VMware1!"
+    cpu:                     "8"                                          # Total Number of CPUs (Must be multiple of cores)
+    cores:                   "8"                                          # Number of Cores Per Socket.
+    ram:                     "65536"
+    boot_disk_size:          "8"
+    vsan_cache_size:         "90"
+    vsan_capacity_size:      "180"
+  ESXi-12:
+    ip:                      "{{ pod_network }}.{{ pod + management }}.12"
+    mask:                    "{{ mgmt_network_mask }}"
+    gw:                      "{{ pod_network }}.{{ pod + management }}.1"
+    fqdn:                    "{{ pod_network }}.{{ pod + management }}.12"
+    vmname:                  "Pod-{{ '%03d'|format(pod) }}-ESXi-12"
+    cluster:                 "Compute-A"                            # The cluster in the nested vSphere environment this ESXi will be added to.
+    vlan:                    "{{ physicalESX.vlan }}"
+    vmotion_ip:              "{{ pod_network }}.{{ pod + vmotion }}.12"
+    vmotion_mask:            "{{ vmotion_network_mask }}"
+    vsan_ip:                 "{{ pod_network }}.{{ pod + vsan }}.12"
+    vsan_mask:               "{{ vsan_network_mask }}"
+    ipstorage_ip:            "{{ pod_network }}.{{ pod + ipstorage }}.12"
+    ipstorage_mask:          "{{ ipstorage_network_mask }}"
+    username:                "root"
+    password:                "VMware1!"
+    cpu:                     "8"
+    cores:                   "8"
+    ram:                     "65536"
+    boot_disk_size:          "8"
+    vsan_cache_size:         "90"
+    vsan_capacity_size:      "180"
+  ESXi-13:
+    ip:                      "{{ pod_network }}.{{ pod + management }}.13"
+    mask:                    "{{ mgmt_network_mask }}"
+    gw:                      "{{ pod_network }}.{{ pod + management }}.1"
+    fqdn:                    "{{ pod_network }}.{{ pod + management }}.13"
+    vmname:                  "Pod-{{ '%03d'|format(pod) }}-ESXi-13"
+    cluster:                 "Compute-A"                                  # The cluster in the nested vSphere environment this ESXi will be added to.
+    vlan:                    "{{ physicalESX.vlan }}"
+    vmotion_ip:              "{{ pod_network }}.{{ pod + vmotion }}.13"
+    vmotion_mask:            "{{ vmotion_network_mask }}"
+    vsan_ip:                 "{{ pod_network }}.{{ pod + vsan }}.13"
+    vsan_mask:               "{{ vsan_network_mask }}"
+    ipstorage_ip:            "{{ pod_network }}.{{ pod + ipstorage }}.13"
+    ipstorage_mask:          "{{ ipstorage_network_mask }}"
+    username:                "root"
+    password:                "VMware1!"
+    cpu:                     "8"                                          # Total Number of CPUs (Must be multiple of cores)
+    cores:                   "8"                                          # Number of Cores Per Socket.
+    ram:                     "65536"
+    boot_disk_size:          "8"
+    vsan_cache_size:         "90"
+    vsan_capacity_size:      "180"
+  ESXi-91:
+    ip:                      "{{ pod_network }}.{{ pod + management }}.91"
+    mask:                    "{{ mgmt_network_mask }}"
+    gw:                      "{{ pod_network }}.{{ pod + management }}.1"
+    fqdn:                    "{{ pod_network }}.{{ pod + management }}.91"
+    vmname:                  "Pod-{{ '%03d'|format(pod) }}-ESXi-91"
+    cluster:                 "Edge"                               # The cluster in the nested vSphere environment this ESXi will be added to.
+    vlan:                    "{{ physicalESX.vlan }}"
+    vmotion_ip:              "{{ pod_network }}.{{ pod + vmotion }}.91"
+    vmotion_mask:            "{{ vmotion_network_mask }}"
+    vsan_ip:                 "{{ pod_network }}.{{ pod + vsan }}.91"
+    vsan_mask:               "{{ vsan_network_mask }}"
+    ipstorage_ip:            "{{ pod_network }}.{{ pod + ipstorage }}.91"
+    ipstorage_mask:          "{{ ipstorage_network_mask }}"
+    username:                "root"
+    password:                "VMware1!"
+    cpu:                     "8"
+    cores:                   "8"
+    ram:                     "65536"
+    boot_disk_size:          "8"
+    vsan_cache_size:         "150"
+    vsan_capacity_size:      "300"
+  ESXi-92:
+    ip:                      "{{ pod_network }}.{{ pod + management }}.92"
+    mask:                    "{{ mgmt_network_mask }}"
+    gw:                      "{{ pod_network }}.{{ pod + management }}.1"
+    fqdn:                    "{{ pod_network }}.{{ pod + management }}.92"
+    vmname:                  "Pod-{{ '%03d'|format(pod) }}-ESXi-92"
+    cluster:                 "Edge"                               # The cluster in the nested vSphere environment this ESXi will be added to.
+    vlan:                    "{{ physicalESX.vlan }}"
+    vmotion_ip:              "{{ pod_network }}.{{ pod + vmotion }}.92"
+    vmotion_mask:            "{{ vmotion_network_mask }}"
+    vsan_ip:                 "{{ pod_network }}.{{ pod + vsan }}.92"
+    vsan_mask:               "{{ vsan_network_mask }}"
+    ipstorage_ip:            "{{ pod_network }}.{{ pod + ipstorage }}.92"
+    ipstorage_mask:          "{{ ipstorage_network_mask }}"
+    username:                "root"
+    password:                "VMware1!"
+    cpu:                     "8"                                          # Total Number of CPUs (Must be multiple of cores)
+    cores:                   "8"                                          # Number of Cores Per Socket.
+    ram:                     "65536"
+    boot_disk_size:          "8"
+    vsan_cache_size:         "150"
+    vsan_capacity_size:      "300"
+  ESXi-93:
+    ip:                      "{{ pod_network }}.{{ pod + management }}.93"
+    mask:                    "{{ mgmt_network_mask }}"
+    gw:                      "{{ pod_network }}.{{ pod + management }}.1"
+    fqdn:                    "{{ pod_network }}.{{ pod + management }}.93"
+    vmname:                  "Pod-{{ '%03d'|format(pod) }}-ESXi-93"
+    cluster:                 "Edge"                               # The cluster in the nested vSphere environment this ESXi will be added to.
+    vlan:                    "{{ physicalESX.vlan }}"
+    vmotion_ip:              "{{ pod_network }}.{{ pod + vmotion }}.93"
+    vmotion_mask:            "{{ vmotion_network_mask }}"
+    vsan_ip:                 "{{ pod_network }}.{{ pod + vsan }}.93"
+    vsan_mask:               "{{ vsan_network_mask }}"
+    ipstorage_ip:            "{{ pod_network }}.{{ pod + ipstorage }}.93"
+    ipstorage_mask:          "{{ ipstorage_network_mask }}"
+    username:                "root"
+    password:                "VMware1!"
+    cpu:                     "8"                                          # Total Number of CPUs (Must be multiple of cores)
+    cores:                   "8"                                          # Number of Cores Per Socket.
+    ram:                     "65536"
+    boot_disk_size:          "8"
+    vsan_cache_size:         "150"
+    vsan_capacity_size:      "300"
