@@ -116,6 +116,10 @@ vcenter:
 
 # vSphere clusters in the nested environment. You can add, remove or rename nested vSphere clusters below. 
 clusters:
+  Management:
+    drs:                     true
+    vsan:                    true  # vSAN requires at least three ESXi hosts in the cluster.
+    prep_nsx:                false # Attach NSX-T transport node profile to this cluster? Only relevant when deploy_nsxt == true
   Compute-A:
     drs:                     true
     vsan:                    true  # vSAN requires at least three ESXi hosts in the cluster.
@@ -179,7 +183,7 @@ vESX:
     gw:                      "{{ pod_network }}.{{ pod + management }}.1"
     fqdn:                    "{{ pod_network }}.{{ pod + management }}.11"
     vmname:                  "Pod-{{ '%03d'|format(pod) }}-ESXi-11"
-    cluster:                 "Compute-A"                                  # The cluster in the nested vSphere environment this ESXi will be added to.
+    cluster:                 "Management"                                  # The cluster in the nested vSphere environment this ESXi will be added to.
     vlan:                    "{{ physicalESX.vlan }}"
     vmotion_ip:              "{{ pod_network }}.{{ pod + vmotion }}.11"
     vmotion_mask:            "{{ vmotion_network_mask }}"
@@ -189,11 +193,11 @@ vESX:
     ipstorage_mask:          "{{ ipstorage_network_mask }}"
     username:                "root"
     password:                "VMware1!"
-    cpu:                     "8"                                          # Total Number of CPUs (Must be multiple of cores)
-    cores:                   "8"                                          # Number of Cores Per Socket.
-    ram:                     "65536"
+    cpu:                     "5"                                          # Total Number of CPUs (Must be multiple of cores)
+    cores:                   "5"                                          # Number of Cores Per Socket.
+    ram:                     "16384"
     boot_disk_size:          "8"
-    vsan_cache_size:         "90"
+    vsan_cache_size:         "20"
     vsan_capacity_size:      "180"
   ESXi-12:
     ip:                      "{{ pod_network }}.{{ pod + management }}.12"
@@ -201,7 +205,7 @@ vESX:
     gw:                      "{{ pod_network }}.{{ pod + management }}.1"
     fqdn:                    "{{ pod_network }}.{{ pod + management }}.12"
     vmname:                  "Pod-{{ '%03d'|format(pod) }}-ESXi-12"
-    cluster:                 "Compute-A"                            # The cluster in the nested vSphere environment this ESXi will be added to.
+    cluster:                 "Management"                            # The cluster in the nested vSphere environment this ESXi will be added to.
     vlan:                    "{{ physicalESX.vlan }}"
     vmotion_ip:              "{{ pod_network }}.{{ pod + vmotion }}.12"
     vmotion_mask:            "{{ vmotion_network_mask }}"
@@ -211,11 +215,11 @@ vESX:
     ipstorage_mask:          "{{ ipstorage_network_mask }}"
     username:                "root"
     password:                "VMware1!"
-    cpu:                     "8"
-    cores:                   "8"
-    ram:                     "65536"
+    cpu:                     "5"
+    cores:                   "5"
+    ram:                     "16384"
     boot_disk_size:          "8"
-    vsan_cache_size:         "90"
+    vsan_cache_size:         "20"
     vsan_capacity_size:      "180"
   ESXi-13:
     ip:                      "{{ pod_network }}.{{ pod + management }}.13"
@@ -223,7 +227,7 @@ vESX:
     gw:                      "{{ pod_network }}.{{ pod + management }}.1"
     fqdn:                    "{{ pod_network }}.{{ pod + management }}.13"
     vmname:                  "Pod-{{ '%03d'|format(pod) }}-ESXi-13"
-    cluster:                 "Compute-A"                                  # The cluster in the nested vSphere environment this ESXi will be added to.
+    cluster:                 "Management"                                  # The cluster in the nested vSphere environment this ESXi will be added to.
     vlan:                    "{{ physicalESX.vlan }}"
     vmotion_ip:              "{{ pod_network }}.{{ pod + vmotion }}.13"
     vmotion_mask:            "{{ vmotion_network_mask }}"
@@ -233,12 +237,80 @@ vESX:
     ipstorage_mask:          "{{ ipstorage_network_mask }}"
     username:                "root"
     password:                "VMware1!"
+    cpu:                     "5"                                          # Total Number of CPUs (Must be multiple of cores)
+    cores:                   "5"                                          # Number of Cores Per Socket.
+    ram:                     "16384"
+    boot_disk_size:          "8"
+    vsan_cache_size:         "20"
+    vsan_capacity_size:      "180"
+
+  ESXi-21:
+    ip:                      "{{ pod_network }}.{{ pod + management }}.21"
+    mask:                    "{{ mgmt_network_mask }}"
+    gw:                      "{{ pod_network }}.{{ pod + management }}.2"
+    fqdn:                    "{{ pod_network }}.{{ pod + management }}.21"
+    vmname:                  "Pod-{{ '%03d'|format(pod) }}-ESXi-21"
+    cluster:                 "Compute-A"                                  # The cluster in the nested vSphere environment this ESXi will be added to.
+    vlan:                    "{{ physicalESX.vlan }}"
+    vmotion_ip:              "{{ pod_network }}.{{ pod + vmotion }}.21"
+    vmotion_mask:            "{{ vmotion_network_mask }}"
+    vsan_ip:                 "{{ pod_network }}.{{ pod + vsan }}.21"
+    vsan_mask:               "{{ vsan_network_mask }}"
+    ipstorage_ip:            "{{ pod_network }}.{{ pod + ipstorage }}.21"
+    ipstorage_mask:          "{{ ipstorage_network_mask }}"
+    username:                "root"
+    password:                "VMware1!"
     cpu:                     "8"                                          # Total Number of CPUs (Must be multiple of cores)
     cores:                   "8"                                          # Number of Cores Per Socket.
-    ram:                     "65536"
+    ram:                     "32768"
     boot_disk_size:          "8"
-    vsan_cache_size:         "90"
+    vsan_cache_size:         "50"
     vsan_capacity_size:      "180"
+  ESXi-22:
+    ip:                      "{{ pod_network }}.{{ pod + management }}.22"
+    mask:                    "{{ mgmt_network_mask }}"
+    gw:                      "{{ pod_network }}.{{ pod + management }}.2"
+    fqdn:                    "{{ pod_network }}.{{ pod + management }}.22"
+    vmname:                  "Pod-{{ '%03d'|format(pod) }}-ESXi-22"
+    cluster:                 "Compute-A"                            # The cluster in the nested vSphere environment this ESXi will be added to.
+    vlan:                    "{{ physicalESX.vlan }}"
+    vmotion_ip:              "{{ pod_network }}.{{ pod + vmotion }}.22"
+    vmotion_mask:            "{{ vmotion_network_mask }}"
+    vsan_ip:                 "{{ pod_network }}.{{ pod + vsan }}.22"
+    vsan_mask:               "{{ vsan_network_mask }}"
+    ipstorage_ip:            "{{ pod_network }}.{{ pod + ipstorage }}.22"
+    ipstorage_mask:          "{{ ipstorage_network_mask }}"
+    username:                "root"
+    password:                "VMware1!"
+    cpu:                     "8"
+    cores:                   "8"
+    ram:                     "32768"
+    boot_disk_size:          "8"
+    vsan_cache_size:         "50"
+    vsan_capacity_size:      "180"
+  ESXi-23:
+    ip:                      "{{ pod_network }}.{{ pod + management }}.23"
+    mask:                    "{{ mgmt_network_mask }}"
+    gw:                      "{{ pod_network }}.{{ pod + management }}.2"
+    fqdn:                    "{{ pod_network }}.{{ pod + management }}.23"
+    vmname:                  "Pod-{{ '%03d'|format(pod) }}-ESXi-23"
+    cluster:                 "Compute-A"                                  # The cluster in the nested vSphere environment this ESXi will be added to.
+    vlan:                    "{{ physicalESX.vlan }}"
+    vmotion_ip:              "{{ pod_network }}.{{ pod + vmotion }}.23"
+    vmotion_mask:            "{{ vmotion_network_mask }}"
+    vsan_ip:                 "{{ pod_network }}.{{ pod + vsan }}.23"
+    vsan_mask:               "{{ vsan_network_mask }}"
+    ipstorage_ip:            "{{ pod_network }}.{{ pod + ipstorage }}.23"
+    ipstorage_mask:          "{{ ipstorage_network_mask }}"
+    username:                "root"
+    password:                "VMware1!"
+    cpu:                     "8"                                          # Total Number of CPUs (Must be multiple of cores)
+    cores:                   "8"                                          # Number of Cores Per Socket.
+    ram:                     "32768"
+    boot_disk_size:          "8"
+    vsan_cache_size:         "50"
+    vsan_capacity_size:      "180"
+
   ESXi-91:
     ip:                      "{{ pod_network }}.{{ pod + management }}.91"
     mask:                    "{{ mgmt_network_mask }}"
@@ -259,7 +331,7 @@ vESX:
     cores:                   "8"
     ram:                     "65536"
     boot_disk_size:          "8"
-    vsan_cache_size:         "150"
+    vsan_cache_size:         "100"
     vsan_capacity_size:      "300"
   ESXi-92:
     ip:                      "{{ pod_network }}.{{ pod + management }}.92"
@@ -281,7 +353,7 @@ vESX:
     cores:                   "8"                                          # Number of Cores Per Socket.
     ram:                     "65536"
     boot_disk_size:          "8"
-    vsan_cache_size:         "150"
+    vsan_cache_size:         "100"
     vsan_capacity_size:      "300"
   ESXi-93:
     ip:                      "{{ pod_network }}.{{ pod + management }}.93"
@@ -303,5 +375,49 @@ vESX:
     cores:                   "8"                                          # Number of Cores Per Socket.
     ram:                     "65536"
     boot_disk_size:          "8"
-    vsan_cache_size:         "150"
+    vsan_cache_size:         "100"
+    vsan_capacity_size:      "300"
+  ESXi-94:
+    ip:                      "{{ pod_network }}.{{ pod + management }}.94"
+    mask:                    "{{ mgmt_network_mask }}"
+    gw:                      "{{ pod_network }}.{{ pod + management }}.1"
+    fqdn:                    "{{ pod_network }}.{{ pod + management }}.94"
+    vmname:                  "Pod-{{ '%03d'|format(pod) }}-ESXi-94"
+    cluster:                 "Edge"                               # The cluster in the nested vSphere environment this ESXi will be added to.
+    vlan:                    "{{ physicalESX.vlan }}"
+    vmotion_ip:              "{{ pod_network }}.{{ pod + vmotion }}.94"
+    vmotion_mask:            "{{ vmotion_network_mask }}"
+    vsan_ip:                 "{{ pod_network }}.{{ pod + vsan }}.94"
+    vsan_mask:               "{{ vsan_network_mask }}"
+    ipstorage_ip:            "{{ pod_network }}.{{ pod + ipstorage }}.94"
+    ipstorage_mask:          "{{ ipstorage_network_mask }}"
+    username:                "root"
+    password:                "VMware1!"
+    cpu:                     "8"                                          # Total Number of CPUs (Must be multiple of cores)
+    cores:                   "8"                                          # Number of Cores Per Socket.
+    ram:                     "65536"
+    boot_disk_size:          "8"
+    vsan_cache_size:         "100"
+    vsan_capacity_size:      "300"
+  ESXi-95:
+    ip:                      "{{ pod_network }}.{{ pod + management }}.95"
+    mask:                    "{{ mgmt_network_mask }}"
+    gw:                      "{{ pod_network }}.{{ pod + management }}.1"
+    fqdn:                    "{{ pod_network }}.{{ pod + management }}.95"
+    vmname:                  "Pod-{{ '%03d'|format(pod) }}-ESXi-95"
+    cluster:                 "Edge"                               # The cluster in the nested vSphere environment this ESXi will be added to.
+    vlan:                    "{{ physicalESX.vlan }}"
+    vmotion_ip:              "{{ pod_network }}.{{ pod + vmotion }}.95"
+    vmotion_mask:            "{{ vmotion_network_mask }}"
+    vsan_ip:                 "{{ pod_network }}.{{ pod + vsan }}.95"
+    vsan_mask:               "{{ vsan_network_mask }}"
+    ipstorage_ip:            "{{ pod_network }}.{{ pod + ipstorage }}.95"
+    ipstorage_mask:          "{{ ipstorage_network_mask }}"
+    username:                "root"
+    password:                "VMware1!"
+    cpu:                     "8"                                          # Total Number of CPUs (Must be multiple of cores)
+    cores:                   "8"                                          # Number of Cores Per Socket.
+    ram:                     "65536"
+    boot_disk_size:          "8"
+    vsan_cache_size:         "100"
     vsan_capacity_size:      "300"

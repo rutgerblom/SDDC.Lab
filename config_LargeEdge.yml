@@ -434,7 +434,7 @@ Nested_Clusters:
     vSAN: true
     vsanDatastore: Management_vSAN
     Prep_NSX: false
-    DeployHosts: false
+    DeployHosts: true
   Compute-A:
     DRS: true
     HA: false
@@ -456,7 +456,7 @@ Nested_ESXi:
     Management:
       CPU: 5
       CoresPerSocket: 5
-      Memory: 16348
+      Memory: 16384
       BootDiskSize: 8
       CreateVMFS: false
       vSAN:
@@ -1262,9 +1262,6 @@ Nested_ESXi:
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::95"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
-
-
-
 
 
 Nested_vCenter:
