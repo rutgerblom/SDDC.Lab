@@ -48,13 +48,11 @@
         vm_password: "{{ item.value.Password }}"
         vm_shell: /bin/esxcli
         vm_shell_args: "system hostname set --fqdn={{ item.value.FQDN }}"
-        vm_shell_env:
-        - "PATH=/bin"
+        vm_shell_env: "PATH=/bin"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
       poll: 0
-      when:
-        - Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Set VLAN on the management portgroup
       vmware_vm_shell:
@@ -67,13 +65,11 @@
         vm_password: "{{ item.value.Password }}"
         vm_shell: /bin/esxcli
         vm_shell_args: "network vswitch standard portgroup set --portgroup-name='Management Network' --vlan-id={{ item.value.vmk.vmk0.VLAN }}"
-        vm_shell_env: 
-        - "PATH=/bin"
+        vm_shell_env: "PATH=/bin"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
       poll: 0
-      when:
-        - Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Set IP address on vmk0
       vmware_vm_shell:
@@ -86,13 +82,11 @@
         vm_password: "{{ item.value.Password }}"
         vm_shell: /bin/esxcli
         vm_shell_args: "network ip interface ipv4 set --interface-name=vmk0 --ipv4={{ item.value.vmk.vmk0.Address.IPv4.Address }} --netmask={{ item.value.vmk.vmk0.Address.IPv4.Prefix | ipaddr('netmask') }} --type=static"
-        vm_shell_env: 
-        - "PATH=/bin"
+        vm_shell_env: "PATH=/bin"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
       poll: 0
-      when:
-        - Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Set default gateway on the ESXi hosts
       vmware_vm_shell:
@@ -110,8 +104,7 @@
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
       poll: 0
-      when:
-        - Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Set search domain on the ESXi hosts
       vmware_vm_shell:
@@ -124,13 +117,11 @@
         vm_password: "{{ item.value.Password }}"
         vm_shell: /bin/esxcli
         vm_shell_args: "network ip dns search add --domain={{ Common.DNS.Domain }}"
-        vm_shell_env: 
-        - "PATH=/bin"
+        vm_shell_env: "PATH=/bin"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
       poll: 0
-      when:
-        - Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Configure primary DNS on the ESXi hosts
       vmware_vm_shell:
@@ -143,13 +134,11 @@
         vm_password: "{{ item.value.Password }}"
         vm_shell: /bin/esxcli
         vm_shell_args: "network ip dns server add --server={{ Common.DNS.Server1.IPv4 }}"
-        vm_shell_env: 
-        - "PATH=/bin"
+        vm_shell_env: "PATH=/bin"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
       poll: 0
-      when:
-        - Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Configure secondary DNS on the ESXi hosts
       vmware_vm_shell:
@@ -162,13 +151,11 @@
         vm_password: "{{ item.value.Password }}"
         vm_shell: /bin/esxcli
         vm_shell_args: "network ip dns server add --server={{ Common.DNS.Server2.IPv4 }}"
-        vm_shell_env: 
-        - "PATH=/bin"
+        vm_shell_env: "PATH=/bin"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
       poll: 0
-      when:
-        - Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Mark vSAN cache disk as Flash disk
       vmware_vm_shell:
@@ -181,13 +168,11 @@
         vm_password: "{{ item.value.Password }}"
         vm_shell: /bin/esxcli
         vm_shell_args: "storage nmp satp rule add -s VMW_SATP_LOCAL -d mpx.vmhba0:C0:T2:L0 -o enable_ssd"
-        vm_shell_env: 
-        - "PATH=/bin"
+        vm_shell_env: "PATH=/bin"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
       poll: 0
-      when:
-        - Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Reclaim vSAN Flash disk
       vmware_vm_shell:
@@ -200,13 +185,11 @@
         vm_password: "{{ item.value.Password }}"
         vm_shell: /bin/esxcli
         vm_shell_args: "storage core claiming reclaim -d mpx.vmhba0:C0:T2:L0"
-        vm_shell_env: 
-        - "PATH=/bin"
+        vm_shell_env: "PATH=/bin"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
       poll: 0
-      when:
-        - Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
 
     - name: Remove local datastore from the ESXi hosts
       vmware_host_datastore:
