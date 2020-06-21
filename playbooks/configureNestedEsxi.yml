@@ -49,7 +49,6 @@
         vm_shell_args: "system hostname set --fqdn={{ item.value.FQDN }}"
         vm_shell_env:
         - "PATH=/bin"
-        - "VAR=test"
         vm_shell_cwd: "/tmp"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
