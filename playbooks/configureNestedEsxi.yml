@@ -113,41 +113,24 @@
       when:
         - Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
-    - name: Result check for setting default gateway on the ESXi hosts
-      async_status:
-        jid: "{{ item.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      with_items: "{{ hgw.results }}"
-      retries: 10
-
     - name: Set search domain on the ESXi hosts
       vmware_vm_shell:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: false
-        vm_id: "{{ item.value.vmname }}"
-        vm_username: "{{ item.value.username }}"
-        vm_password: "{{ item.value.password }}"
+        vm_id: "{{ item.value.VMName }}"
+        vm_username: "{{ item.value.User }}"
+        vm_password: "{{ item.value.Password }}"
         vm_shell: /bin/esxcli
-        vm_shell_args: "network ip dns search add --domain={{ domain }}"
+        vm_shell_args: "network ip dns search add --domain={{ Common.DNS.Domain }}"
         vm_shell_env: 
         - "PATH=/bin"
-        - "VAR=test"
-        vm_shell_cwd: "/tmp"
-      with_dict: "{{ vESX }}"
-      async: 7200
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      async: 1800
       poll: 0
-      register: hsd
-
-    - name: Result check for setting search domain on the ESXi hosts
-      async_status:
-        jid: "{{ item.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      with_items: "{{ hsd.results }}"
-      retries: 10
+      when:
+        - Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Configure primary DNS on the ESXi hosts
       vmware_vm_shell:
