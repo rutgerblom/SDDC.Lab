@@ -215,6 +215,7 @@
         esxi_username: "{{ item.value.User }}"
         esxi_password: "{{ item.value.Password }}"
         state: present
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Configure NTP on the ESXi hosts
@@ -223,23 +224,14 @@
         username: "{{ vcenter.user }}"
         password: "{{ vcenter.password }}"
         validate_certs: false        
-        esxi_hostname: "{{ item.value.fqdn }}"
+        esxi_hostname: "{{ item.value.FQDN }}"
         ntp_servers:
-          - "{{ ntp1 }}"
-      with_dict: "{{ vESX }}"
-      async: 7200
+          - "{{ Common.NTP.Server1.IPv4 }}"
+          - "{{ Common.NTP.Server2.IPv4 }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      async: 1800
       poll: 0
-      register: confntp
-      when: ntp1 is defined
-
-    - name: Result check for configuring NTP
-      async_status:
-        jid: "{{ item.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      with_items: "{{ confntp.results }}"
-      retries: 10
-      when: ntp1 is defined
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Start ntpd on the ESXi hosts and change the service policy
       vmware_host_service_manager:
