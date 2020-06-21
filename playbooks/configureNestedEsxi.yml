@@ -254,24 +254,14 @@
         username: "{{ vcenter.user }}"
         password: "{{ vcenter.password }}"
         validate_certs: false
-        esxi_hostname: "{{ item.value.fqdn }}"      
+        esxi_hostname: "{{ item.value.FQDN }}"      
         datastore_name: '{{ nfs_datastore }}'
         datastore_type: '{{ nfs_type }}'
         nfs_server: '{{ nfs_server }}'
         nfs_path: '{{ nfs_path }}'
         nfs_ro: no
         state: present
-      with_dict: "{{ vESX }}"
-      async: 7200
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      async: 1800
       poll: 0
-      register: mountnfs
-      when: use_nfs|bool
-      
-    - name: Result check for mounting NFS
-      async_status:
-        jid: "{{ item.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      with_items: "{{ mountnfs.results }}"
-      retries: 10
-      when: use_nfs|bool
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool and Deploy.UseNFS|bool
