@@ -96,23 +96,22 @@
 
     - name: Set default gateway on the ESXi hosts
       vmware_vm_shell:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: false
-        vm_id: "{{ item.value.vmname }}"
-        vm_username: "{{ item.value.username }}"
-        vm_password: "{{ item.value.password }}"
+        vm_id: "{{ item.value.VMName }}"
+        vm_username: "{{ item.value.User }}"
+        vm_password: "{{ item.value.Password }}"
         vm_shell: /bin/esxcfg-route
-        vm_shell_args: " -a default {{ item.value.gw }}"
+        vm_shell_args: " -a default {{ item.value.vmk.vmk0.Address.IPv4.Gateway }}"
         vm_shell_env: 
         - "PATH=/bin"
-        - "VAR=test"
-        vm_shell_cwd: "/tmp"
-      with_dict: "{{ vESX }}"
-      async: 7200
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      async: 1800
       poll: 0
-      register: hgw
+      when:
+        - Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Result check for setting default gateway on the ESXi hosts
       async_status:
