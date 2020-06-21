@@ -255,10 +255,10 @@
         password: "{{ vcenter.password }}"
         validate_certs: false
         esxi_hostname: "{{ item.value.FQDN }}"      
-        datastore_name: '{{ nfs_datastore }}'
-        datastore_type: '{{ nfs_type }}'
-        nfs_server: '{{ nfs_server }}'
-        nfs_path: '{{ nfs_path }}'
+        datastore_name: '{{ Common.NFS.Datastore }}'
+        datastore_type: '{{ Common.NFS.Type }}'
+        nfs_server: '{{ Common.NFS.Server.IPv4 }}'
+        nfs_path: '{{ Common.NFS.Path }}'
         nfs_ro: no
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
