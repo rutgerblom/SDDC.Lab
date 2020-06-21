@@ -55,14 +55,6 @@
       when:
         - Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
-    - name: Result check for configuring hostname on the ESXi hosts
-      async_status:
-        jid: "{{ item.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      with_items: "{{ hname.results }}"
-      retries: 10
-
     - name: Set VLAN on the management portgroup
       vmware_vm_shell:
         hostname: "{{ physicalESX.fqdn }}"
