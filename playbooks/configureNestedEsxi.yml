@@ -77,31 +77,22 @@
 
     - name: Set IP address on vmk0
       vmware_vm_shell:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: false
-        vm_id: "{{ item.value.vmname }}"
-        vm_username: "{{ item.value.username }}"
-        vm_password: "{{ item.value.password }}"
+        vm_id: "{{ item.value.VMName }}"
+        vm_username: "{{ item.value.User }}"
+        vm_password: "{{ item.value.Password }}"
         vm_shell: /bin/esxcli
-        vm_shell_args: "network ip interface ipv4 set --interface-name=vmk0 --ipv4={{ item.value.ip }} --netmask={{ item.value.mask }} --type=static"
+        vm_shell_args: "network ip interface ipv4 set --interface-name=vmk0 --ipv4={{ item.value.vmk.vmk0.Address.IPv4.Address }} --netmask={{ item.value.vmk.vmk0.Address.IPv4.Prefix | ipaddr('netmask') }} --type=static"
         vm_shell_env: 
         - "PATH=/bin"
-        - "VAR=test"
-        vm_shell_cwd: "/tmp"
-      with_dict: "{{ vESX }}"
-      async: 7200
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      async: 1800
       poll: 0
-      register: hip
-
-    - name: Result check for setting ip address on vmk0
-      async_status:
-        jid: "{{ item.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      with_items: "{{ hip.results }}"
-      retries: 10
+      when:
+        - Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Set default gateway on the ESXi hosts
       vmware_vm_shell:
