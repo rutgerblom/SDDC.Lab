@@ -193,24 +193,15 @@
 
     - name: Remove local datastore from the ESXi hosts
       vmware_host_datastore:
-        hostname: "{{ item.value.fqdn }}" 
+        hostname: "{{ item.value.FQDN }}" 
         username: "{{ item.value.username }}"
         password: "{{ item.value.password }}"
         validate_certs: false
         datastore_name: datastore1
-        state: absent
-      with_dict: "{{ vESX }}"
-      async: 7200
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      async: 1800
       poll: 0
-      register: removeds
-
-    - name: Result check for removing datastore
-      async_status:
-        jid: "{{ item.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      with_items: "{{ removeds.results }}"
-      retries: 10
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Add the ESXi hosts to vCenter
       vmware_host:
