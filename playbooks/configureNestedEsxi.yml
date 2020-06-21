@@ -35,26 +35,28 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        
+
     - name: Configure hostname on the ESXi hosts
       vmware_vm_shell:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: false
-        vm_id: "{{ item.value.vmname }}"
-        vm_username: "{{ item.value.username }}"
-        vm_password: "{{ item.value.password }}"
+        vm_id: "{{ item.value.VMName }}"
+        vm_username: "{{ item.value.User }}"
+        vm_password: "{{ item.value.Password }}"
         vm_shell: /bin/esxcli
-        vm_shell_args: "system hostname set --fqdn={{ item.value.fqdn }}"
+        vm_shell_args: "system hostname set --fqdn={{ item.value.FQDN }}"
         vm_shell_env:
         - "PATH=/bin"
         - "VAR=test"
         vm_shell_cwd: "/tmp"
-      with_dict: "{{ vESX }}"
-      async: 7200
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      async: 1800
       poll: 0
       register: hname
+      when:
+        - Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Result check for configuring hostname on the ESXi hosts
       async_status:
