@@ -5,10 +5,37 @@
 ##
 ---
 - hosts: localhost
+  name: configureNestedEsxi.yml
   gather_facts: false
   vars_files:
     - ../answerfile.yml
   tasks:
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+                                     Target.ISOFolder: {{ Target.ISOFolder }}
+
+                          Target.PortGroup.Trunk.Name: {{ Target.PortGroup.Trunk.Name }}
+                       Deploy.Software.ESXi.Installer: {{ Deploy.Software.ESXi.Installer }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        
     - name: Configure hostname on the ESXi hosts
       vmware_vm_shell:
         hostname: "{{ physicalESX.fqdn }}"
