@@ -1,0 +1,215 @@
+Useful Blog:
+     https://www.linuxbabe.com/ubuntu/set-up-local-dns-resolver-ubuntu-20-04-bind9
+
+
+Install Ubuntu Server 20.04 with static IP address
+
+Install BIND using this command:
+     sudo apt update
+     sudo apt install bind9 bind9utils bind9-doc host9-host
+
+Other miscellaneous useful tools to install:
+     sudo apt install net-tools
+
+NOTE: By design, the local DNS server is NOT updated to point to itself for DNS when done.
+      This is just to ensure it can still resolve names should a repair be required.
+
+================================= NEXT FILE ============================================
+
+
+//
+// File: /etc/bind/named.conf.options
+//
+
+// caching only DNS server config
+//
+acl lab-networks {
+  10.203.0.0/16;
+  10.0.0.0/8;
+  localhost;
+  localnets;
+};
+
+options {
+  directory "/var/cache/bind";
+  recursion yes;
+  allow-query { any; };
+  allow-query-cache { any; };
+  allow-recursion { lab-networks; };
+  forwarders { 
+    10.200.64.254;         // Update to 4.2.2.2
+    10.100.64.254;         // Update to 8.8.8.8
+  }; 
+  dnssec-validation no;
+  auth-nxdomain no; # conform to RFC1035
+  listen-on { localhost; any; };
+  listen-on-v6 { localhost; any; };
+  allow-transfer { none; };
+};
+
+
+================================= NEXT FILE ============================================
+
+//
+// File: /etc/bind/named.conf.local
+//
+
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+
+zone "lab.local" {
+  type master;
+  allow-update {10.203.0.0/16;};
+  file "/etc/bind/db.lab.local";
+};
+
+zone "203.10.in-addr.arpa." {
+  type master;
+  allow-update {10.203.0.0/16;};
+  file "/etc/bind/db.10.203";
+};
+
+
+================================= NEXT FILE ============================================
+
+
+;;
+;; File: /etc/bind/db.lab.local
+;;
+
+$TTL 604800
+@ IN SOA dns.lab.local. admin.lab.local. (
+          10   ; Serial
+      604800   ; Refresh
+       86400   ; Retry
+     2419200   ; Expire
+      604800 ) ; Negative Cache TTL
+;
+
+; Name servers
+lab.local.    IN   NS   dns.lab.local.
+
+; Define Origin
+$ORIGIN lab.local.
+
+; A records for name servers
+dns            IN   A    10.203.0.5
+
+; Other A records
+
+
+
+
+
+
+================================= NEXT FILE ============================================
+
+
+
+;;
+;; File: /etc/bind/db.10.203
+;;
+
+$TTL 604800
+@ IN SOA dns.lab.local. admin.lab.local. (
+          10   ; Serial
+      604800   ; Refresh
+       86400   ; Retry
+     2419200   ; Expire
+      604800 ) ; Negative Cache TTL
+;
+
+; Name servers
+203.10.in-addr.arpa.    IN   NS   dns.lab.local.
+
+; A records for name servers
+dns            IN   A    10.203.0.5
+
+;Define origin
+$ORIGIN 203.10.in-addr.arpa.
+
+; PTR records
+5.0    IN   PTR  dns.lab.local.
+
+
+================================= NEXT FILE ============================================
+
+
+Useful Commands:
+================
+
+     Start BIND:
+          sudo systemctl start named
+
+     Restart BIND:
+          sudo systemctl restart named
+
+     BIND Status (Useful to show errors in configuraton)
+          sudo systemctl status named
+
+     Enable auto-start at enable BIND:
+          sudo systemctl enable named
+
+     Verify all listeners are operational:
+          sudo netstat -lnptu | grep named
+
+     Check status of BIND server:
+          sudo rndc status
+
+     Verify zone files via:
+          named-checkconf /etc/bind/named.conf
+          echo $?
+
+     Verify BIND is working (from DNS server)
+          From BIND Server:  dig @127.0.0.1 dns.lab.local
+          From other systems: dig @<IP-OF-BIND-SeRVER> dns.lab.local
+
+
+
+
+
+Expected Output From Working System
+====================================
+adminuser@lab-dns:/etc/bind$ 
+adminuser@lab-dns:/etc/bind$ 
+adminuser@lab-dns:/etc/bind$ sudo netstat -lnptu | grep named
+tcp        0      0 10.203.0.5:53           0.0.0.0:*               LISTEN      7994/named          
+tcp        0      0 127.0.0.1:53            0.0.0.0:*               LISTEN      7994/named          
+tcp        0      0 127.0.0.1:953           0.0.0.0:*               LISTEN      7994/named          
+tcp6       0      0 fe80::20c:29ff:fe17::53 :::*                    LISTEN      7994/named          
+tcp6       0      0 ::1:53                  :::*                    LISTEN      7994/named          
+tcp6       0      0 ::1:953                 :::*                    LISTEN      7994/named          
+udp        0      0 10.203.0.5:53           0.0.0.0:*                           7994/named          
+udp        0      0 127.0.0.1:53            0.0.0.0:*                           7994/named          
+udp6       0      0 ::1:53                  :::*                                7994/named          
+udp6       0      0 fe80::20c:29ff:fe17::53 :::*                                7994/named          
+adminuser@lab-dns:/etc/bind$ 
+adminuser@lab-dns:/etc/bind$ 
+adminuser@lab-dns:/etc/bind$ 
+adminuser@lab-dns:/etc/bind$ sudo systemctl restart named
+adminuser@lab-dns:/etc/bind$ sudo systemctl status named 
+● named.service - BIND Domain Name Server
+     Loaded: loaded (/lib/systemd/system/named.service; enabled; vendor preset: enabled)
+     Active: active (running) since Sun 2020-06-21 23:30:19 UTC; 1s ago
+       Docs: man:named(8)
+   Main PID: 7994 (named)
+      Tasks: 5 (limit: 1075)
+     Memory: 11.6M
+     CGroup: /system.slice/named.service
+             └─7994 /usr/sbin/named -f -u bind
+
+Jun 21 23:30:19 lab-dns named[7994]: command channel listening on ::1#953
+Jun 21 23:30:19 lab-dns named[7994]: managed-keys-zone: loaded serial 3
+Jun 21 23:30:19 lab-dns named[7994]: zone 0.in-addr.arpa/IN: loaded serial 1
+Jun 21 23:30:19 lab-dns named[7994]: zone 203.10.in-addr.arpa/IN: loaded serial 10
+Jun 21 23:30:19 lab-dns named[7994]: zone 127.in-addr.arpa/IN: loaded serial 1
+Jun 21 23:30:19 lab-dns named[7994]: zone lab.local/IN: loaded serial 10
+Jun 21 23:30:19 lab-dns named[7994]: zone 255.in-addr.arpa/IN: loaded serial 1
+Jun 21 23:30:19 lab-dns named[7994]: zone localhost/IN: loaded serial 2
+Jun 21 23:30:19 lab-dns named[7994]: all zones loaded
+Jun 21 23:30:19 lab-dns named[7994]: running
