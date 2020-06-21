@@ -194,8 +194,8 @@
     - name: Remove local datastore from the ESXi hosts
       vmware_host_datastore:
         hostname: "{{ item.value.FQDN }}" 
-        username: "{{ item.value.username }}"
-        password: "{{ item.value.password }}"
+        username: "{{ item.value.User }}"
+        password: "{{ item.value.Password }}"
         validate_certs: false
         datastore_name: datastore1
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
@@ -210,12 +210,12 @@
         password: "{{ vcenter.password }}"
         datacenter_name: "{{ vcenter.datacenter }}"
         validate_certs: false
-        cluster_name: "{{ item.value.cluster }}"
-        esxi_hostname: "{{ item.value.fqdn }}"
-        esxi_username: "{{ item.value.username }}"
-        esxi_password: "{{ item.value.password }}"
+        cluster_name: "{{ item.value.Cluster }}"
+        esxi_hostname: "{{ item.value.FQDN }}"
+        esxi_username: "{{ item.value.User }}"
+        esxi_password: "{{ item.value.Password }}"
         state: present
-      with_dict: "{{ vESX }}"
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Configure NTP on the ESXi hosts
       vmware_host_ntp:
