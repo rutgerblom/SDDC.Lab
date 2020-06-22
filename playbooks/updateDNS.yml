@@ -46,7 +46,7 @@
         server: "10.203.0.5"
         type:   "PTR"
         protocol: "udp"
-        zone:   "203.10.in-addr.arpa"
+        zone:   "203.10.in-addr.arpa"     ## Can we construct this using variables? //RB
         record: "{{ item.value.vmk.vmk0.Address.IPv4.Address | ipaddr('revdns') }}"
         value:  "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
