@@ -41,6 +41,20 @@
 #        - Deploy.UseDNS == true
         - Deploy.IPv4 == true
 
+    - name: Create IPv4 'PTR' records for Nested ESXi hosts
+      nsupdate:
+        server: "10.203.0.5"
+        type:   "PTR"
+        protocol: "udp"
+        zone:   "203.10.in-addr.arpa"
+        record: "{{ item.value.vmk.vmk0.Address.IPv4.Address | ipaddr('revdns') }}"
+        value:  "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      when: 
+        - Deploy.UseDNS == false    ## *TBD* --  change to True later.. Disabled for testing
+#        - Deploy.UseDNS == true
+        - Deploy.IPv4 == true
+
     - name: Create IPv6 'AAAA' records for Nested ESXi hosts
       nsupdate:
         server: "10.203.0.5"
