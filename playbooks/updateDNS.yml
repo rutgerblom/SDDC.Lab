@@ -1,0 +1,57 @@
+## Luis has ownership of this file for the v2 migration ##
+---
+- hosts: localhost
+  name: updateDNS.yml
+  gather_facts: false
+  vars_files:
+    - ../software.yml
+    - ../config.yml
+  tasks:
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                    Server IP Address: **TBD**
+                                        Deploy.UseDNS: {{ Deploy.UseDNS }}
+                                    Common.DNS.Domain: {{ Common.DNS.Domain }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+
+    - name: Create IPv4 'A' records for Nested ESXi hosts
+      nsupdate:
+        server: "10.203.0.5"
+        type:   "A"
+        protocol: "udp"
+        zone:   "{{ Common.DNS.Domain }}"
+        record: "{{ item.value.VMName }}"
+        value:  "{{ item.value.vmk.vmk0.Address.IPv4.Address }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      when: 
+        - Deploy.UseDNS == false    ## *TBD* --  change to True later.. Disabled for testing
+#        - Deploy.UseDNS == true
+        - Deploy.IPv4 == true
+
+    - name: Create IPv6 'AAAA' records for Nested ESXi hosts
+      nsupdate:
+        server: "10.203.0.5"
+        type:   "AAAA"
+        protocol: "udp"
+        zone:   "{{ Common.DNS.Domain }}"
+        record: "{{ item.value.VMName }}"
+        value:  "{{ item.value.vmk.vmk0.Address.IPv6.Address }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      when: 
+        - Deploy.UseDNS == false    ## *TBD* --  change to True later.. Disabled for testing
+#        - Deploy.UseDNS == true
+        - Deploy.IPv6 == true
+
