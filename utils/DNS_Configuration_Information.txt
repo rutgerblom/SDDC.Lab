@@ -68,13 +68,13 @@ options {
 zone "lab.local" {
   type master;
   allow-update {10.0.0.0/8;};      // Needs to be the IP address of the Ansible control station
-  file "/etc/bind/db.lab.local";
+  file "/var/lib/bind/db.lab.local";
 };
 
 zone "203.10.in-addr.arpa." {
   type master;
   allow-update {10.0.0.0/8;};      // Needs to be the IP address of the Ansible control station
-  file "/etc/bind/db.10.203";
+  file "/var/lib/bind/db.10.203";
 };
 
 
@@ -82,7 +82,7 @@ zone "203.10.in-addr.arpa." {
 
 
 ;;
-;; File: /etc/bind/db.lab.local
+;; File: /var/lib/bind/db.lab.local
 ;;
 
 $TTL 604800
@@ -115,7 +115,7 @@ dns            IN   A    10.203.0.5
 
 
 ;;
-;; File: /etc/bind/db.10.203
+;; File: /var/lib/bind/db.10.203
 ;;
 
 $TTL 604800
