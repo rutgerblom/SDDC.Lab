@@ -1,0 +1,149 @@
+###     Module Owner: Luis
+##
+##  Desired Enhancements:
+## 
+##
+---
+- hosts: localhost
+  name: updateDNS.yml
+  gather_facts: false
+  vars_files:
+    - ../config.yml
+    - ../software.yml
+  tasks:
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                        Deploy.UseDNS: {{ Deploy.UseDNS }}
+
+                                     DNSServer.Domain: {{ DNSServer.Domain }}
+                                    DNSServer.UseDDNS: {{ DNSServer.UseDDNS }}
+                               DNSServer.IPv4.Address: {{ DNSServer.IPv4.Address }}
+                               DNSServer.IPv6.Address: {{ DNSServer.IPv6.Address }}
+
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+
+##
+## Begin adding records to DNS Server
+##
+    - name: Create a VMware vSphere Standard Switch (vSS) on the ESXi host
+      vmware_vswitch:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: false
+        esxi_hostname: "{{ Target.FQDN }}"
+        switch_name: "{{ Target.vSwitch }}"
+        mtu: 9000
+      when:
+        - Target.Deployment == "Host"
+
+    - name: Create a management port group for the lab environment
+      vmware_portgroup:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: false        
+        esxi_hostname: "{{ Target.FQDN }}"
+        switch_name: "{{ Target.vSwitch }}"
+        portgroup_name: "{{ Target.PortGroup.Management.Name }}"
+        vlan_id: "{{ Target.PortGroup.Management.VLAN }}"
+        security:
+          promiscuous_mode: True
+      when:
+        - Target.Deployment == "Host"
+
+    - name: Create trunk port group for the lab environment
+      vmware_portgroup:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: false
+        esxi_hostname: "{{ Target.FQDN }}"
+        switch_name: "{{ Target.vSwitch }}"
+        portgroup_name: "{{ Target.PortGroup.Trunk.Name }}"
+        vlan_id: "{{ Target.PortGroup.Trunk.VLAN }}"
+        security:
+          promiscuous_mode: True
+          forged_transmits: True
+          mac_changes: True
+      when:
+        - Target.Deployment == "Host"
+          
+
+##
+## Create vSphere Disributed Switch
+##
+    - name: Create a VMware vSphere Distributed Switch (vDS) in vCenter
+      vmware_dvswitch:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        datacenter_name: "{{ Target.DataCenter }}"
+        validate_certs: false
+        description: "Pod-{{ Pod.Number }} vDS"
+        switch_name: "{{ Target.vSwitch }}"
+        discovery_operation: both
+        discovery_proto: lldp
+        switch_version: "{{ Target.vSwitchVersion }}"
+        uplink_prefix: "Pod-{{ Pod.Number }}-Uplink"
+        uplink_quantity: 1
+        state: present
+        mtu: 9000
+      when:
+        - Target.Deployment == "vCenter"
+
+    - name: Create a Management Distributed Port-Group in vCenter
+      vmware_dvs_portgroup:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: false
+        switch_name: "{{ Target.vSwitch }}"
+        portgroup_type: lateBinding                                  # *TBD*-Need to verify lateBinding is appropriate
+        portgroup_name: "{{ Target.PortGroup.Management.Name }}"
+        vlan_id: "{{ Target.PortGroup.Management.VLAN }}"
+        vlan_trunk: false
+        num_ports: 32
+        state: present
+        network_policy:
+          promiscuous: True
+      when:
+        - Target.Deployment == "vCenter"
+
+    - name: Create a Trunk Distributed Port-Group in vCenter
+      vmware_dvs_portgroup:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: false
+        switch_name: "{{ Target.vSwitch }}"
+        portgroup_type: lateBinding                                  # *TBD*-Need to verify lateBinding is appropriate
+        portgroup_name: "{{ Target.PortGroup.Trunk.Name }}"
+        vlan_id: "{{ Target.PortGroup.Trunk.VLAN }}"
+        vlan_trunk: true
+        num_ports: 32
+        state: present
+        network_policy:
+          promiscuous: True
+          forged_transmits: True
+          mac_changes: True
+      when:
+        - Target.Deployment == "vCenter"
+
+
+
+    - name: Wait 5 seconds for the port groups to become available
+      pause: seconds=5
+

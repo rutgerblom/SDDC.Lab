@@ -23,8 +23,10 @@ Deploy:
   IPv4: true
   IPv6: false
   UseNFS: false
-  UseDNS: false
+  UseDNS: false                              # Determines weather deployed components should use DNS to resolve names.  If set to false, then IP is used.
   EnableSSH: true
+  DNSServer:
+    UseDDNS: true                            # Use Dynamic DNS (DDNS) to update DNS Server A and PTR records on DNS server
   Software:
     Options:
       UseLocalInstaller: true
@@ -69,10 +71,10 @@ Common:
   DNS:
     Domain: "lab.local"
     Server1:
-      IPv4: "10.203.100.254"
-      IPv6: 
+      IPv4: "{{ DNSServer.IPv4.Address }}"
+      IPv6: "{{ DNSServer.IPv6.Address }}"
     Server2:
-      IPv4: "10.203.100.253"
+      IPv4: 
       IPv6: 
   NTP:
     Server1:
@@ -291,6 +293,22 @@ Net:
     IPv6:
       Prefix: 64
       Network: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+9|int) }}"
+
+
+##
+## Dedicated Lab DNS Server
+##
+DNSServer:
+  Domain:    "{{ Common.DNS.Domain }}"
+  UseDDNS:   true
+  PortGroup: "{{ Nested_Router.Interface.Uplink.PortGroup }}"
+  IPv4:
+    Address: "{{ (Nested_Router.Interface.Uplink.IPv4.Address + '/' + Nested_Router.Interface.Uplink.IPv4.Prefix) | ipaddr('network/prefix') | ipmath(5) }}"
+    Prefix:  "{{ Nested_Router.Interface.Uplink.IPv4.Prefix }}"
+    Gateway: "{{ Nested_Router.Interface.Uplink.IPv4.Gateway }}"
+  IPv6:
+    Address: "{{ (Nested_Router.Interface.Uplink.IPv6.Address + '/' + Nested_Router.Interface.Uplink.IPv6.Prefix) | ipaddr('network/prefix') | ipmath(5) }}"
+    Prefix:  "{{ Nested_Router.Interface.Uplink.IPv6.Prefix }}"
 
 
 Nested_Router:
