@@ -71,8 +71,8 @@ Common:
   DNS:
     Domain: "lab.local"
     Server1:
-      IPv4: "{{ DNSServer.IPv4.Address }}"
-      IPv6: "{{ DNSServer.IPv6.Address }}"
+      IPv4: "{{ LabDNSServer.IPv4.Address }}"                     # If not using dedicated Lab DNS Server, change to DNS server you are using
+      IPv6: "{{ LabDNSServer.IPv6.Address }}"                     # If not using dedicated Lab DNS Server, change to DNS server you are using
     Server2:
       IPv4: 
       IPv6: 
@@ -298,7 +298,7 @@ Net:
 ##
 ## Dedicated Lab DNS Server
 ##
-DNSServer:
+LabDNSServer:
   Domain:    "{{ Common.DNS.Domain }}"
   UseDDNS:   true
   PortGroup: "{{ Nested_Router.Interface.Uplink.PortGroup }}"
