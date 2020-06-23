@@ -203,7 +203,7 @@
         network:
           type: 'static'
           ip_address: "{{ item.value.vmk.vmk1.Address.IPv4.Address }}"
-          subnet_mask: {{ (item.value.vmk.vmk1.Address.IPv4.Address + '/' + item.value.vmk.vmk1.Address.IPv4.Prefix) | ipaddr('netmask') }}
+          subnet_mask: "{{ (item.value.vmk.vmk1.Address.IPv4.Address + '/' + item.value.vmk.vmk1.Address.IPv4.Prefix) | ipaddr('netmask') }}"
           tcpip_stack: vmotion
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
@@ -224,7 +224,7 @@
         network:
           type: 'static'
           ip_address: "{{ item.value.vmk.vmk2.Address.IPv4.Address }}"
-          subnet_mask: {{ (item.value.vmk.vmk2.Address.IPv4.Address + '/' + item.value.vmk.vmk2.Address.IPv4.Prefix) | ipaddr('netmask') }}
+          subnet_mask: "{{ (item.value.vmk.vmk2.Address.IPv4.Address + '/' + item.value.vmk.vmk2.Address.IPv4.Prefix) | ipaddr('netmask') }}"
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
@@ -244,7 +244,7 @@
         network:
           type: 'static'
           ip_address: "{{ item.value.vmk.vmk3.Address.IPv4.Address }}"
-          subnet_mask: {{ (item.value.vmk.vmk3.Address.IPv4.Address + '/' + item.value.vmk.vmk3.Address.IPv4.Prefix) | ipaddr('netmask') }}
+          subnet_mask: "{{ (item.value.vmk.vmk3.Address.IPv4.Address + '/' + item.value.vmk.vmk3.Address.IPv4.Prefix) | ipaddr('netmask') }}"
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
