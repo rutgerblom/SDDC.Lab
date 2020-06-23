@@ -1134,7 +1134,7 @@ Nested_vCenter:
   Password: "{{ Common.Password.Nested }}"
   DeploymentSize: small
   VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vCenter"
-  FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-vCenter.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.10{% endif %}"
+  FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-vCenter.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.5{% endif %}"
   Address:
     IPv4:
       Address: "{{ Net.Management.IPv4.Network }}.5"
