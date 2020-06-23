@@ -1,15 +1,35 @@
 ## Rutger has ownership of this file for the v2 migration ##
 ##
-## ToDo:  - Not started
+## ToDo:     - Replace {{ vcenter.datacenter }} variable as soon as deployVc.yml has been migrated 
 ##
 ##
 ---
 - hosts: localhost
+  name: createVDS.yml
   gather_facts: false
   vars_files:
     - ../config.yml
     - ../answerfile.yml
   tasks:
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                  Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN }}
+                                  Nested_vCenter.User: {{ Nested_vCenter.User }}
+                              Nested_vCenter.Password: {{ Nested_vCenter.Password }}
+                                   vcenter.datacenter: {{ vcenter.datacenter }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
     - name: Create distributed switch in vCenter
       vmware_dvswitch:
         hostname: "{{ Nested_vCenter.FQDN }}"
