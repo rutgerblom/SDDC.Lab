@@ -1,14 +1,12 @@
 ## Rutger has ownership of this file for the v2 migration ##
 ##
-## ToDo:
+## ToDo:     - Replace {{ vcenter.datacenter }} variable as soon as deployVc.yml has been migrated 
 ##
 ##
 ---
 - hosts: localhost
   name: configureNestedEsxi.yml
   gather_facts: false
-  vars:
-    
   vars_files:
     - ../config.yml
     - ../answerfile.yml
@@ -43,9 +41,9 @@
                                  Common.NFS.Datastore: {{ Common.NFS.Datastore }}
                                  Common.NFS.Datastore: {{ Common.NFS.Type }}
 
-                                           vcenter.ip: {{ vcenter.ip }}
-                                           vcenter.ip: {{ vcenter.user }}
-                                           vcenter.ip: {{ vcenter.password }}
+                                  Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN }}
+                                  Nested_vCenter.User: {{ Nested_vCenter.User }}
+                              Nested_vCenter.Password: {{ Nested_vCenter.Password }}
                                    vcenter.datacenter: {{ vcenter.datacenter }}
 
           =================================================================================================
@@ -416,9 +414,9 @@
 
     - name: Add nested ESXi to vCenter
       vmware_host:
-        hostname: "{{ vcenter.ip }}"
-        username: "{{ vcenter.user }}"
-        password: "{{ vcenter.password }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
         datacenter_name: "{{ vcenter.datacenter }}"
         validate_certs: false
         cluster_name: "{{ item.value.Cluster }}"
@@ -431,9 +429,9 @@
 
     - name: Configure NTP on nested ESXi
       vmware_host_ntp:
-        hostname: "{{ vcenter.ip }}"
-        username: "{{ vcenter.user }}"
-        password: "{{ vcenter.password }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
         validate_certs: false        
         esxi_hostname: "{{ item.value.FQDN }}"
         ntp_servers:
@@ -446,9 +444,9 @@
 
     - name: Start ntpd on nested ESXi and change the service policy
       vmware_host_service_manager:
-        hostname: "{{ vcenter.ip }}"
-        username: "{{ vcenter.user }}"
-        password: "{{ vcenter.password }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
         validate_certs: false        
         esxi_hostname: "{{ item.value.FQDN }}"
         service_name: ntpd
@@ -461,9 +459,9 @@
 
     - name: Mount NFS datastore on nested ESXi
       vmware_host_datastore:
-        hostname: "{{ vcenter.ip }}"
-        username: "{{ vcenter.user }}"
-        password: "{{ vcenter.password }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
         esxi_hostname: "{{ item.value.FQDN }}"      
         datastore_name: "{{ Common.NFS.Datastore }}"
