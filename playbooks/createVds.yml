@@ -30,18 +30,18 @@
       when:
         - DEBUG.DisplayVariables == true
 
-    - name: Create distributed switch in vCenter
+    - name: Create distributed switch in the nested vCenter
       vmware_dvswitch:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         datacenter_name: "{{ vcenter.datacenter }}"
         validate_certs: false
-        switch_name: "{{ vds.name }}"
-        mtu: "{{ vds.mtu }}"
-        uplink_quantity: "{{ vds.uplinks }}"
-        discovery_proto: "{{ vds.discovery_proto }}"
-        discovery_operation: "{{ vds.discovery_operation }}"
+        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
+        mtu: "{{ Nested_vCenter.Networking.vSwitch.Config.MTU }}"
+        uplink_quantity: "{{ Nested_vCenter.Networking.vSwitch.Config.NumberOfUplinks }}"
+        discovery_proto: "{{ Nested_vCenter.Networking.vSwitch.Config.LinkDiscoveryProtocol.Type }}"
+        discovery_operation: "{{ Nested_vCenter.Networking.vSwitch.Config.LinkDiscoveryProtocol.Operation }}"
         state: present
 
     - name: Create Management port group
