@@ -489,7 +489,7 @@ Nested_ESXi:
       Password: "{{ Common.Password.Nested }}"
       vmk:
         vmk0:
-          PortGroup: Management
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}
           VLAN: "{{ Net.Management.VLAN }}"
           MTU: 1500
           IPSettings: ipv4
@@ -505,7 +505,7 @@ Nested_ESXi:
               Address: "{{ Net.Management.IPv6.Network }}::11"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
-          PortGroup: vMotion
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}
           VLAN: "{{ Net.vMotion.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
@@ -522,7 +522,7 @@ Nested_ESXi:
               Address: "{{ Net.vMotion.IPv6.Network }}::11"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
-          PortGroup: vSAN
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}
           VLAN: "{{ Net.vSAN.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
@@ -560,7 +560,7 @@ Nested_ESXi:
       Password: "{{ Common.Password.Nested }}"
       vmk:
         vmk0:
-          PortGroup: Management
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}
           VLAN: "{{ Net.Management.VLAN }}"
           MTU: 1500
           IPSettings: ipv4
@@ -576,7 +576,7 @@ Nested_ESXi:
               Address: "{{ Net.Management.IPv6.Network }}::12"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
-          PortGroup: vMotion
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}
           VLAN: "{{ Net.vMotion.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
@@ -593,7 +593,7 @@ Nested_ESXi:
               Address: "{{ Net.vMotion.IPv6.Network }}::12"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
-          PortGroup: vSAN
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}
           VLAN: "{{ Net.vSAN.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
@@ -631,7 +631,7 @@ Nested_ESXi:
       Password: "{{ Common.Password.Nested }}"
       vmk:
         vmk0:
-          PortGroup: Management
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}
           VLAN: "{{ Net.Management.VLAN }}"
           MTU: 1500
           IPSettings: ipv4
@@ -647,7 +647,7 @@ Nested_ESXi:
               Address: "{{ Net.Management.IPv6.Network }}::13"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
-          PortGroup: vMotion
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}
           VLAN: "{{ Net.vMotion.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
@@ -664,7 +664,7 @@ Nested_ESXi:
               Address: "{{ Net.vMotion.IPv6.Network }}::13"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
-          PortGroup: vSAN
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}
           VLAN: "{{ Net.vSAN.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
@@ -702,7 +702,7 @@ Nested_ESXi:
       Password: "{{ Common.Password.Nested }}"
       vmk:
         vmk0:
-          PortGroup: Management
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}
           VLAN: "{{ Net.Management.VLAN }}"
           MTU: 1500
           IPSettings: ipv4
@@ -718,7 +718,7 @@ Nested_ESXi:
               Address: "{{ Net.Management.IPv6.Network }}::21"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
-          PortGroup: vMotion
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}
           VLAN: "{{ Net.vMotion.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
@@ -735,7 +735,7 @@ Nested_ESXi:
               Address: "{{ Net.vMotion.IPv6.Network }}::21"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
-          PortGroup: vSAN
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}
           VLAN: "{{ Net.vSAN.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
@@ -773,7 +773,7 @@ Nested_ESXi:
       Password: "{{ Common.Password.Nested }}"
       vmk:
         vmk0:
-          PortGroup: Management
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}
           VLAN: "{{ Net.Management.VLAN }}"
           MTU: 1500
           IPSettings: ipv4
@@ -789,7 +789,7 @@ Nested_ESXi:
               Address: "{{ Net.Management.IPv6.Network }}::22"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
-          PortGroup: vMotion
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}
           VLAN: "{{ Net.vMotion.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
@@ -806,7 +806,7 @@ Nested_ESXi:
               Address: "{{ Net.vMotion.IPv6.Network }}::22"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
-          PortGroup: vSAN
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}
           VLAN: "{{ Net.vSAN.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
@@ -844,7 +844,7 @@ Nested_ESXi:
       Password: "{{ Common.Password.Nested }}"
       vmk:
         vmk0:
-          PortGroup: Management
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}
           VLAN: "{{ Net.Management.VLAN }}"
           MTU: 1500
           IPSettings: ipv4
@@ -860,7 +860,7 @@ Nested_ESXi:
               Address: "{{ Net.Management.IPv6.Network }}::23"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
-          PortGroup: vMotion
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}
           VLAN: "{{ Net.vMotion.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
@@ -877,7 +877,7 @@ Nested_ESXi:
               Address: "{{ Net.vMotion.IPv6.Network }}::23"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
-          PortGroup: vSAN
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}
           VLAN: "{{ Net.vSAN.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
@@ -915,7 +915,7 @@ Nested_ESXi:
       Password: "{{ Common.Password.Nested }}"
       vmk:
         vmk0:
-          PortGroup: Management
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}
           VLAN: "{{ Net.Management.VLAN }}"
           MTU: 1500
           IPSettings: ipv4
@@ -931,7 +931,7 @@ Nested_ESXi:
               Address: "{{ Net.Management.IPv6.Network }}::91"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
-          PortGroup: vMotion
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}
           VLAN: "{{ Net.vMotion.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
@@ -948,7 +948,7 @@ Nested_ESXi:
               Address: "{{ Net.vMotion.IPv6.Network }}::91"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
-          PortGroup: vSAN
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}
           VLAN: "{{ Net.vSAN.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
@@ -986,7 +986,7 @@ Nested_ESXi:
       Password: "{{ Common.Password.Nested }}"
       vmk:
         vmk0:
-          PortGroup: Management
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}
           VLAN: "{{ Net.Management.VLAN }}"
           MTU: 1500
           IPSettings: ipv4
@@ -1002,7 +1002,7 @@ Nested_ESXi:
               Address: "{{ Net.Management.IPv6.Network }}::92"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
-          PortGroup: vMotion
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}
           VLAN: "{{ Net.vMotion.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
@@ -1019,7 +1019,7 @@ Nested_ESXi:
               Address: "{{ Net.vMotion.IPv6.Network }}::92"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
-          PortGroup: vSAN
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}
           VLAN: "{{ Net.vSAN.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
@@ -1057,7 +1057,7 @@ Nested_ESXi:
       Password: "{{ Common.Password.Nested }}"
       vmk:
         vmk0:
-          PortGroup: Management
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}
           VLAN: "{{ Net.Management.VLAN }}"
           MTU: 1500
           IPSettings: ipv4
@@ -1073,7 +1073,7 @@ Nested_ESXi:
               Address: "{{ Net.Management.IPv6.Network }}::93"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
-          PortGroup: vMotion
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}
           VLAN: "{{ Net.vMotion.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
@@ -1090,7 +1090,7 @@ Nested_ESXi:
               Address: "{{ Net.vMotion.IPv6.Network }}::93"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
-          PortGroup: vSAN
+          PortGroup: {{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}
           VLAN: "{{ Net.vSAN.VLAN }}"
           MTU: 9000
           IPSettings: ipv4
