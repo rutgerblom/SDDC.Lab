@@ -115,19 +115,6 @@
         portgroup_type: earlyBinding
         state: present
 
-    - name: Create vmnetwork port group
-      vmware_dvs_portgroup:
-        hostname: "{{ Nested_vCenter.FQDN }}"
-        username: "{{ Nested_vCenter.User }}"
-        password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
-        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.Name }}"
-        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
-        vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.VLAN.ID }}"
-        num_ports: 8
-        portgroup_type: earlyBinding
-        state: present
-
     - name: Create Uplink1 port group
       vmware_dvs_portgroup:
         hostname: "{{ Nested_vCenter.FQDN }}"
@@ -152,6 +139,19 @@
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vlan_trunk: true
         vlan_id: "0-4094"
+        num_ports: 8
+        portgroup_type: earlyBinding
+        state: present
+
+    - name: Create vmnetwork port group
+      vmware_dvs_portgroup:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: false
+        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.Name }}"
+        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
+        vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.VLAN.ID }}"
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
