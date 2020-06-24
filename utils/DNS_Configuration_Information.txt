@@ -53,6 +53,7 @@ options {
 
 ================================= NEXT FILE ============================================
 
+
 //
 // File: /etc/bind/named.conf.local
 //
@@ -67,13 +68,15 @@ options {
 
 zone "lab.local" {
   type master;
-  allow-update {10.0.0.0/8;};      // Needs to be the IP address of the Ansible control station
+  allow-update {10.0.0.0/8;};           // Needs to be the IP address of the Ansible control station
+  allow-transfer {10.0.0.0/8;};         // Should be the address of the Ansible control station -- Used just for testing
   file "/var/lib/bind/db.lab.local";
 };
 
 zone "203.10.in-addr.arpa." {
   type master;
-  allow-update {10.0.0.0/8;};      // Needs to be the IP address of the Ansible control station
+  allow-update {10.0.0.0/8;};           // Needs to be the IP address of the Ansible control station
+  allow-transfer {10.0.0.0/8;};         // Should be the address of the Ansible control station -- Used just for testing
   file "/var/lib/bind/db.10.203";
 };
 
