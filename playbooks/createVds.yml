@@ -17,14 +17,20 @@
         prompt: |
           ============================ Display Variables For Pod {{Pod.Number}} ===========================
 
-                                     Ansible Playbook: {{ ansible_play_name }}
+                                      Ansible Playbook: {{ ansible_play_name }}
 
-                                    Target.Deployment: {{ Target.Deployment }}
+                                     Target.Deployment: {{ Target.Deployment }}
 
-                                  Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN }}
-                                  Nested_vCenter.User: {{ Nested_vCenter.User }}
-                              Nested_vCenter.Password: {{ Nested_vCenter.Password }}
-                                   vcenter.datacenter: {{ vcenter.datacenter }}
+                                   Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN }}
+                                   Nested_vCenter.User: {{ Nested_vCenter.User }}
+                               Nested_vCenter.Password: {{ Nested_vCenter.Password }}
+                                    vcenter.datacenter: {{ vcenter.datacenter }}
+
+                                            Nested_vCenter.Networking.vSwitch.Name: {{ Nested_vCenter.Networking.vSwitch.Name }}
+                                      Nested_vCenter.Networking.vSwitch.Config.MTU: {{ Nested_vCenter.Networking.vSwitch.Config.MTU }}
+                          Nested_vCenter.Networking.vSwitch.Config.NumberOfUplinks: {{ Nested_vCenter.Networking.vSwitch.Config.NumberOfUplinks }}
+               Nested_vCenter.Networking.vSwitch.Config.LinkDiscoveryProtocol.Type: {{ Nested_vCenter.Networking.vSwitch.Config.LinkDiscoveryProtocol.Type }}
+          Nested_vCenter.Networking.vSwitch.Config.LinkDiscoveryProtocol.Operation: {{ Nested_vCenter.Networking.vSwitch.Config.LinkDiscoveryProtocol.Operation }}
 
           =================================================================================================
       when:
@@ -50,9 +56,9 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        portgroup_name: "{{ vds.management_pg }}"
-        switch_name: "{{ vds.name }}"
-        vlan_id: "{{ physicalESX.vlan }}"
+        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
+        vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.VLAN.ID }}"
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
@@ -63,9 +69,9 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        portgroup_name: "{{ vds.vmotion_pg }}"
-        switch_name: "{{ vds.name }}"
-        vlan_id: "{{ pod + vmotion }}"
+        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
+        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
+        vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.VLAN.ID }}"
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
@@ -76,9 +82,9 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        portgroup_name: "{{ vds.vsan_pg }}"
-        switch_name: "{{ vds.name }}"
-        vlan_id: "{{ pod + vsan }}"
+        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
+        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
+        vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.VLAN.ID }}"
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
@@ -89,9 +95,9 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        portgroup_name: "{{ vds.ipstorage_pg }}"
-        switch_name: "{{ vds.name }}"
-        vlan_id: "{{ pod + ipstorage }}"
+        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
+        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
+        vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.VLAN.ID }}"
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
@@ -102,22 +108,9 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        portgroup_name: "{{ vds.svmmanagement_pg }}"
-        switch_name: "{{ vds.name }}"
-        vlan_id: "{{ pod + ipstorage }}"
-        num_ports: 8
-        portgroup_type: earlyBinding
-        state: present
-
-    - name: Create vmnetwork port group
-      vmware_dvs_portgroup:
-        hostname: "{{ Nested_vCenter.FQDN }}"
-        username: "{{ Nested_vCenter.User }}"
-        password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
-        portgroup_name: "{{ vds.vmnetwork_pg }}"
-        switch_name: "{{ vds.name }}"
-        vlan_id: "{{ pod + vmnetwork }}"
+        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.Name }}"
+        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
+        vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.VLAN.ID }}"
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
@@ -128,8 +121,8 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        portgroup_name: "{{ vds.uplink1_pg }}"
-        switch_name: "{{ vds.name }}"
+        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Name }}"
+        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vlan_trunk: true
         vlan_id: "0-4094"
         num_ports: 8
@@ -142,10 +135,23 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        portgroup_name: "{{ vds.uplink2_pg }}"
-        switch_name: "{{ vds.name }}"
+        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Name }}"
+        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vlan_trunk: true
         vlan_id: "0-4094"
+        num_ports: 8
+        portgroup_type: earlyBinding
+        state: present
+
+    - name: Create vmnetwork port group
+      vmware_dvs_portgroup:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: false
+        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.Name }}"
+        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
+        vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.VLAN.ID }}"
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
@@ -156,13 +162,16 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        esxi_hostname: "{{ item.value.fqdn }}"
-        switch_name: "{{ vds.name }}"
+        esxi_hostname: "{{ item.value.FQDN }}"
+        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vmnics:
           - vmnic1
           - vmnic2
         state: present
-      with_dict: "{{ vESX }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      async: 1800
+      poll: 0
+      when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Migrate vmk0 to the VDS
       vmware_migrate_vmk:
@@ -170,14 +179,16 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        esxi_hostname: "{{ item.value.fqdn }}"
+        esxi_hostname: "{{ item.value.FQDN }}"
         device: 'vmk0'
         current_switch_name: 'vSwitch0'
         current_portgroup_name: 'Management Network'
-        migrate_switch_name: "{{ vds.name }}"
-
-        migrate_portgroup_name: "{{ vds.management_pg }}"
-      with_dict: "{{ vESX }}"
+        migrate_switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
+        migrate_portgroup_name: "{{ item.value.vmk.vmk0.PortGroup }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      async: 1800
+      poll: 0
+      when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
 
     - name: Create vmk1 for vMotion
       vmware_vmkernel:
@@ -185,17 +196,20 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        esxi_hostname: "{{ item.value.fqdn }}"
-        portgroup_name: "{{ vds.vmotion_pg }}"
-        dvswitch_name: "{{ vds.name }}"
+        esxi_hostname: "{{ item.value.FQDN }}"
+        portgroup_name: "{{ item.value.vmk.vmk1.PortGroup }}"
+        dvswitch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         enable_vmotion: true
         network:
           type: 'static'
-          ip_address: "{{ item.value.vmotion_ip }}"
-          subnet_mask: "{{ item.value.vmotion_mask }}"
+          ip_address: "{{ item.value.vmk.vmk1.Address.IPv4.Address }}"
+          subnet_mask: "{{ (item.value.vmk.vmk1.Address.IPv4.Address + '/' + item.value.vmk.vmk1.Address.IPv4.Prefix) | ipaddr('netmask') }}"
           tcpip_stack: vmotion
         state: present
-      with_dict: "{{ vESX }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      async: 1800
+      poll: 0
+      when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
 
     - name: Create vmk2 for vSAN
       vmware_vmkernel:
@@ -203,16 +217,19 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        esxi_hostname: "{{ item.value.fqdn }}"
-        portgroup_name: "{{ vds.vsan_pg }}"
-        dvswitch_name: "{{ vds.name }}"
+        esxi_hostname: "{{ item.value.FQDN }}"
+        portgroup_name: "{{ item.value.vmk.vmk2.PortGroup }}"
+        dvswitch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         enable_vsan: true
         network:
           type: 'static'
-          ip_address: "{{ item.value.vsan_ip }}"
-          subnet_mask: "{{ item.value.vsan_mask }}"
+          ip_address: "{{ item.value.vmk.vmk2.Address.IPv4.Address }}"
+          subnet_mask: "{{ (item.value.vmk.vmk2.Address.IPv4.Address + '/' + item.value.vmk.vmk2.Address.IPv4.Prefix) | ipaddr('netmask') }}"
         state: present
-      with_dict: "{{ vESX }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      async: 1800
+      poll: 0
+      when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
       
     - name: Create vmk3 for IP Storage
       vmware_vmkernel:
@@ -220,15 +237,19 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        esxi_hostname: "{{ item.value.fqdn }}"
-        portgroup_name: "{{ vds.ipstorage_pg }}"
-        dvswitch_name: "{{ vds.name }}"
+        esxi_hostname: "{{ item.value.FQDN }}"
+        portgroup_name: "{{ item.value.vmk.vmk3.PortGroup }}"
+        dvswitch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
+        enable_vsan: true
         network:
           type: 'static'
-          ip_address: "{{ item.value.ipstorage_ip }}"
-          subnet_mask: "{{ item.value.ipstorage_mask }}"
+          ip_address: "{{ item.value.vmk.vmk3.Address.IPv4.Address }}"
+          subnet_mask: "{{ (item.value.vmk.vmk3.Address.IPv4.Address + '/' + item.value.vmk.vmk3.Address.IPv4.Prefix) | ipaddr('netmask') }}"
         state: present
-      with_dict: "{{ vESX }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      async: 1800
+      poll: 0
+      when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
       
     - name: Remove the standard switch from the ESXi hosts
       vmware_vswitch:
@@ -238,4 +259,7 @@
         validate_certs: false
         switch: 'vSwitch0'
         state: absent
-      with_dict: "{{ vESX }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      async: 1800
+      poll: 0
+      when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
