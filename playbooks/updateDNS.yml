@@ -46,14 +46,14 @@
         - Deploy.UseDNS == true
         - Deploy.IPv4 == true
 
-    - name: Create IPv4 'PTR' records for Nested_ESXi hosts
+    - name: Create IPv4 'PTR' records for Nested_Router
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     "PTR"
         protocol: "udp"
         record:   "{{ item.value.IPv4.Address | ipaddr('revdns') }}."
         value:    "{{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}."
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ Nested_Router.Interface | dict2items }}"
       when:
         - Deploy.UseDNS == true
         - Deploy.IPv4 == true
