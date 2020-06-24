@@ -14,25 +14,25 @@
     - name: Create Ruby script for silencing vSAN warnings
       template: 
         src=../templates/vsan_silence.rb.j2
-        dest=/tmp/vsan_silence_{{ item.key }}
+        dest={{ Target.TempFolder }}/{{ item.key }}
       loop: "{{ Nested_Clusters | dict2items }}"
       when: item.value.vSAN|bool
 
-    - name: Copy Ruby script to vCenter
+    - name: Copy Ruby script to the nested vCenter deployed on the ESXi host
       vmware_guest_file_operation:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ vcenter.vmname }}"
+        vm_id: "{{ Nested_vCenter.VMName }}"
         vm_username: "root"
-        vm_password: "{{ vcenter.password }}"
+        vm_password: "{{ Nested_vCenter.Password }}"
         copy:
-            src: "/tmp/vsan_silence_{{ item.key }}"
-            dest: "/tmp/vsan_silence_{{ item.key }}"
+            src: "{{ Target.TempFolder }}/{{ item.key }}"
+            dest: "{{ Target.TempFolder }}/{{ item.key }}"
             overwrite: true
-      when: item.value.vsan == true
-      with_dict: "{{ clusters }}"
+      loop: "{{ Nested_Clusters | dict2items }}"
+      when: item.value.vSAN|bool
         
     - name: Run Ruby script
       vmware_vm_shell:
