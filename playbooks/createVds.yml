@@ -170,8 +170,6 @@
           - vmnic2
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      async: 1800
-      poll: 0
       when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Migrate vmk0 to the VDS
@@ -187,8 +185,6 @@
         migrate_switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         migrate_portgroup_name: "{{ item.value.vmk.vmk0.PortGroup }}"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      async: 1800
-      poll: 0
       when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
 
     - name: Create vmk1 for vMotion
@@ -208,8 +204,6 @@
           tcpip_stack: vmotion
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      async: 1800
-      poll: 0
       when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
 
     - name: Create vmk2 for vSAN
@@ -228,8 +222,6 @@
           subnet_mask: "{{ (item.value.vmk.vmk2.Address.IPv4.Address + '/' + item.value.vmk.vmk2.Address.IPv4.Prefix) | ipaddr('netmask') }}"
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      async: 1800
-      poll: 0
       when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
       
     - name: Create vmk3 for IP Storage
@@ -248,8 +240,6 @@
           subnet_mask: "{{ (item.value.vmk.vmk3.Address.IPv4.Address + '/' + item.value.vmk.vmk3.Address.IPv4.Prefix) | ipaddr('netmask') }}"
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      async: 1800
-      poll: 0
       when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
       
     - name: Remove the standard switch from the ESXi hosts
@@ -261,6 +251,4 @@
         switch: 'vSwitch0'
         state: absent
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      async: 1800
-      poll: 0
       when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
