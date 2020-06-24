@@ -48,28 +48,30 @@
       loop: "{{ Nested_Clusters | dict2items }}"
       when: Target.Deployment == "Host" and item.value.vSAN|bool
 
-    - name: Delete the temporary Ruby script
-      file: path=/tmp/vsan_silence.rb state=absent
+    - name: Delete the Ruby script from the Ansible controller
+      file: 
+        path: "{{ Target.TempFolder }}/{{ item.key }}"
+        state: absent
+      loop: "{{ Nested_Clusters | dict2items }}"
       when: 
-        - item.value.vsan == true
+        - item.value.vSAN == true
         - DEBUG_keep_config_files != true
-      with_dict: "{{ clusters }}"
 
     - name: Enable vSAN
       enable_vsan:
-        vcenter: "{{ vcenter.ip }}"
-        user: "{{ vcenter.user }}"
-        passwd: "{{ vcenter.password }}"
+        vcenter: "{{ Nested_vCenter.FQDN }}"
+        user: "{{ Nested_vCenter.User }}"
+        passwd: "{{ Nested_vCenter.Password }}"
         cluster: "{{ item.key }}"
-      when: item.value.vsan == True
-      with_dict: "{{ clusters }}"
+      loop: "{{ Nested_Clusters | dict2items }}"
+      when: item.value.vSAN|bool
 
     - name: Claim disks for vSAN
       claim_vsan_disks:
-        vcenter: "{{ vcenter.ip }}"
-        user: "{{ vcenter.user }}"
-        passwd: "{{ vcenter.password }}"
+        vcenter: "{{ Nested_vCenter.FQDN }}"
+        user: "{{ Nested_vCenter.User }}"
+        passwd: "{{ Nested_vCenter.Password }}"
         cluster: "{{ item.key }}"
-      when: item.value.vsan == True
       ignore_errors: true
-      with_dict: "{{ clusters }}"
+      loop: "{{ Nested_Clusters | dict2items }}"
+      when: item.value.vSAN|bool
