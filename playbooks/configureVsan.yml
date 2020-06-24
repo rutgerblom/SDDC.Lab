@@ -23,7 +23,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: false
         vm_id: "{{ Nested_vCenter.VMName }}"
         vm_username: "root"
         vm_password: "{{ Nested_vCenter.Password }}"
@@ -32,21 +32,21 @@
             dest: "{{ Target.TempFolder }}/{{ item.key }}"
             overwrite: true
       loop: "{{ Nested_Clusters | dict2items }}"
-      when: item.value.vSAN|bool
+      when: Target.Deployment == "Host" and item.value.vSAN|bool
         
-    - name: Run Ruby script
+    - name: Run Ruby script on the nested vCenter deployed on the ESXi host
       vmware_vm_shell:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: false
-        vm_id: "{{ vcenter.vmname }}"
+        vm_id: "{{ Nested_vCenter.VMName }}"
         vm_username: "root"
-        vm_password: "{{ vcenter.password }}"
+        vm_password: "{{ Nested_vCenter.Password }}"
         vm_shell: /usr/bin/rvc
-        vm_shell_args: '{{ vcenter.user }}:VMware1\!@{{ vcenter.fqdn }} -s /tmp/vsan_silence_{{ item.key }}'
-      when: item.value.vsan == true
-      with_dict: "{{ clusters }}"
+        vm_shell_args: '{{ vcenter.user }}:VMware1\!@{{ vcenter.fqdn }} -s "{{ Target.TempFolder }}/{{ item.key }}"'
+      loop: "{{ Nested_Clusters | dict2items }}"
+      when: Target.Deployment == "Host" and item.value.vSAN|bool
 
     - name: Delete the temporary Ruby script
       file: path=/tmp/vsan_silence.rb state=absent
