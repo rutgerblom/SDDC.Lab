@@ -5,11 +5,39 @@
 ##
 ---
 - hosts: localhost
+  name: configureVsan.yml
   gather_facts: false
   vars_files:
     - ../config.yml
     - ../answerfile.yml
   tasks:
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+                                    Target.TempFolder: {{ Target.TempFolder }}
+                          Target.PortGroup.Trunk.Name: {{ Target.PortGroup.Trunk.Name }}
+                       Deploy.Software.ESXi.Installer: {{ Deploy.Software.ESXi.Installer }}
+
+                                Nested_vCenter.VMName: {{ Nested_vCenter.VMName }}
+                              Nested_vCenter.Password: {{ Nested_vCenter.Password }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
 
     - name: Create Ruby script for silencing vSAN warnings
       template: 
