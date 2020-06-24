@@ -480,6 +480,7 @@ Nested_ESXi:
       vSAN:
         CacheSize: 20
         CapacitySize: 180
+
   Hosts:
     ESXi-11:
       Cluster: Management
@@ -552,6 +553,7 @@ Nested_ESXi:
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::11"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
     ESXi-12:
       Cluster: Management
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-12.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.12{% endif %}"
@@ -623,6 +625,7 @@ Nested_ESXi:
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::12"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
     ESXi-13:
       Cluster: Management
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-13.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.13{% endif %}"
@@ -694,6 +697,7 @@ Nested_ESXi:
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::13"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
     ESXi-21:
       Cluster: Compute-A
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-21.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.21{% endif %}"
@@ -765,6 +769,7 @@ Nested_ESXi:
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::21"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
     ESXi-22:
       Cluster: Compute-A
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-22.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.22{% endif %}"
@@ -836,6 +841,7 @@ Nested_ESXi:
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::22"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
     ESXi-23:
       Cluster: Compute-A
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-23.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.23{% endif %}"
@@ -907,6 +913,7 @@ Nested_ESXi:
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::23"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
     ESXi-91:
       Cluster: Edge
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-91.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.91{% endif %}"
@@ -978,6 +985,7 @@ Nested_ESXi:
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::91"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
     ESXi-92:
       Cluster: Edge
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-92.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.92{% endif %}"
@@ -1049,6 +1057,7 @@ Nested_ESXi:
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::92"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
     ESXi-93:
       Cluster: Edge
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-93.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.93{% endif %}"
