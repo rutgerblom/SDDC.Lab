@@ -1287,9 +1287,9 @@ Nested_vCenter:
       Prefix:  "{{ Net.Management.IPv6.Prefix }}"
   SSO:
     Domain: vsphere.local
-    Site: "Pod{{ '%03d'|format(Pod.Number|int) }}-Site"
+    Site: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Site"
     ReplicationPartner: ''
-  Datacenter: "Pod{{ '%03d'|format(Pod.Number|int) }}-DataCenter"
+  Datacenter: "Pod-{{ '%03d'|format(Pod.Number|int) }}-DataCenter"
   Networking:
     vSwitch:
       Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"
