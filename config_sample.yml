@@ -23,7 +23,7 @@ Deploy:
   IPv4: true
   IPv6: false
   UseNFS: false
-  UseDNS: false
+  UseDNS: true
   EnableSSH: true
   Software:
     Options:
@@ -69,18 +69,18 @@ Common:
   DNS:
     Domain: "lab.local"
     Server1:
-      IPv4: "10.203.100.254"
-      IPv6: 
+      IPv4: "{{ Pod.BaseNetwork.IPv4 }}.0.5"                          # Replace this IP if using a different DNS server than the suggested .5  server in the Router Uplink segment (MUST support Dynamic DNS Updates)
+      IPv6: "{{ Pod.BaseNetwork.IPv6 }}:0::{{ '%04d'|format(5) }}"    # Replace this IP if using a different DNS server than the suggested ::5 server in the Router Uplink segment (MUST support Dynamic DNS Updates)
     Server2:
-      IPv4: "10.203.100.253"
+      IPv4: 
       IPv6: 
   NTP:
     Server1:
-      IPv4: "{{ Net.Management.IPv4.Network }}.1"           # Replace with your IP address if Nested_Router.Version == "Legacy"
-      IPv6: "{{ Net.Management.IPv6.Network }}::1"          # Replace with your IP address if Nested_Router.Version == "Legacy"
+      IPv4: "{{ Net.Management.IPv4.Network }}.1"                     # Replace with your IP address if Nested_Router.Version == "Legacy"
+      IPv6: "{{ Net.Management.IPv6.Network }}::1"                    # Replace with your IP address if Nested_Router.Version == "Legacy"
     Server2:
-      IPv4: "{{ Net.Management.IPv4.Network }}.1"           # Replace with your IP address if Nested_Router.Version == "Legacy"
-      IPv6: "{{ Net.Management.IPv6.Network }}::1"          # Replace with your IP address if Nested_Router.Version == "Legacy"
+      IPv4: "{{ Net.Management.IPv4.Network }}.1"                     # Replace with your IP address if Nested_Router.Version == "Legacy"
+      IPv6: "{{ Net.Management.IPv6.Network }}::1"                    # Replace with your IP address if Nested_Router.Version == "Legacy"
   Syslog:
     IPv4: "10.203.100.26"
     IPv6: 
@@ -105,7 +105,7 @@ TargetConfig:
     Password: "{{ Common.Password.Physical }}"
     vSwitch: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"
     vSwitchVersion: ""
-    VLAN: "{{ Net.Management.VLAN }}"                     ## *TBD* - Investigate why this is not in vCenter or PlaceHolder, and if it is being used anywyere
+    VLAN: "{{ Net.Management.VLAN }}"                                   ## *TBD* - Investigate why this is not in vCenter or PlaceHolder, and if it is being used anywyere
     DataCenter: "ha-datacenter"
     Cluster: ""
     Datastore: "Local_VMs"
@@ -399,7 +399,7 @@ Nested_Router:
         Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
       IPv6:
-        Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::2"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
+        Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::2"       # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
     - Name: "T0-EdgeNode-1-2"
       ASN: "{{ 65000 + Pod.Number }}"
@@ -407,7 +407,7 @@ Nested_Router:
         Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
       IPv6:
-        Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::2"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
+        Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::2"       # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
     - Name: "T0-EdgeNode-2-1"
       ASN: "{{ 65000 + Pod.Number }}"
@@ -415,7 +415,7 @@ Nested_Router:
         Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
       IPv6:
-        Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::3"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
+        Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::3"       # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
     - Name: "T0-EdgeNode-2-2"
       ASN: "{{ 65000 + Pod.Number }}"
@@ -423,7 +423,7 @@ Nested_Router:
         Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.3"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
       IPv6:
-        Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::3"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
+        Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::3"       # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
 
 
@@ -480,6 +480,7 @@ Nested_ESXi:
       vSAN:
         CacheSize: 20
         CapacitySize: 180
+
   Hosts:
     ESXi-11:
       Cluster: Management
@@ -552,6 +553,7 @@ Nested_ESXi:
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::11"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
     ESXi-12:
       Cluster: Management
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-12.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.12{% endif %}"
@@ -623,6 +625,7 @@ Nested_ESXi:
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::12"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
     ESXi-13:
       Cluster: Management
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-13.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.13{% endif %}"
@@ -694,6 +697,7 @@ Nested_ESXi:
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::13"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
     ESXi-21:
       Cluster: Compute-A
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-21.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.21{% endif %}"
@@ -765,6 +769,7 @@ Nested_ESXi:
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::21"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
     ESXi-22:
       Cluster: Compute-A
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-22.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.22{% endif %}"
@@ -836,6 +841,7 @@ Nested_ESXi:
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::22"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
     ESXi-23:
       Cluster: Compute-A
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-23.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.23{% endif %}"
@@ -907,6 +913,7 @@ Nested_ESXi:
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::23"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
     ESXi-91:
       Cluster: Edge
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-91.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.91{% endif %}"
@@ -978,6 +985,7 @@ Nested_ESXi:
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::91"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
     ESXi-92:
       Cluster: Edge
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-92.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.92{% endif %}"
@@ -1049,6 +1057,7 @@ Nested_ESXi:
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::92"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
     ESXi-93:
       Cluster: Edge
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-93.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.93{% endif %}"
@@ -1263,82 +1272,83 @@ Nested_NSXT:
     CEIP:
       Answer: true
       Enabled: false
-  GlobalManager:
-    VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-GM"
-    FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-GM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.7{% endif %}"
-    Deployment:
-      Size: small
-      role: NSX Global Manager
-      EnableSSH: "{{ Deploy.EnableSSH }}"
-      AllowRootSSH: "{{ Deploy.EnableSSH }}"
-    User:
-      root:
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-      admin:
-        User: admin
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-      audit:
-        User: audit
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-    Address:
-      IPv4:
-        Address: "{{ Net.Management.IPv4.Network }}.7"
-        Prefix:  "{{ Net.Management.IPv4.Prefix }}"
-        Gateway: "{{ Net.Management.IPv4.Network }}.1"
-      IPv6:
-        Address: "{{ Net.Management.IPv6.Network }}::7"
-        Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-  LocalManager:
-    VMName: Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-LM
-    FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-LM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.8{% endif %}"
-    Deployment:
-      Size: small
-      Role: NSX Manager
-      SiteName: "NSX-Site-{{ '%03d'|format(Pod.Number|int) }}"
-      EnableSSH: "{{ Deploy.EnableSSH }}"
-      AllowRootSSH: "{{ Deploy.EnableSSH }}"
-    User:
-      root:
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-      admin:
-        User: admin
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-      audit:
-        User: audit
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-    Address:
-      IPv4:
-        Address: "{{ Net.Management.IPv4.Network }}.8"
-        Prefix:  "{{ Net.Management.IPv4.Prefix }}"
-        Gateway: "{{ Net.Management.IPv4.Network }}.1"
-      IPv6:
-        Address: "{{ Net.Management.IPv6.Network }}::8"
-        Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-  CloudServicesManager:
-    VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-CSM"
-    FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-CSM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.9{% endif %}"
-    Deployment:
-      Size: small
-      role: "nsx-cloud-service-manager"
-      EnableSSH: "{{ Deploy.EnableSSH }}"
-      AllowRootSSH: "{{ Deploy.EnableSSH }}"
-    User:
-      root:
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-      admin:
-        User: admin
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-      audit:
-        User: audit
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-    Address:
-      IPv4:
-        Address: "{{ Net.Management.IPv4.Network }}.9"
-        Prefix:  "{{ Net.Management.IPv4.Prefix }}"
-        Gateway: "{{ Net.Management.IPv4.Network }}.1"
-      IPv6:
-        Address: "{{ Net.Management.IPv6.Network }}::9"
-        Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+  Components:
+    GlobalManager:
+      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-GM"
+      FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-GM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.7{% endif %}"
+      Deployment:
+        Size: small
+        role: NSX Global Manager
+        EnableSSH: "{{ Deploy.EnableSSH }}"
+        AllowRootSSH: "{{ Deploy.EnableSSH }}"
+      User:
+        root:
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        admin:
+          User: admin
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        audit:
+          User: audit
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+      Address:
+        IPv4:
+          Address: "{{ Net.Management.IPv4.Network }}.7"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+          Gateway: "{{ Net.Management.IPv4.Network }}.1"
+        IPv6:
+          Address: "{{ Net.Management.IPv6.Network }}::7"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+    LocalManager:
+      VMName: Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-LM
+      FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-LM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.8{% endif %}"
+      Deployment:
+        Size: small
+        Role: NSX Manager
+        SiteName: "NSX-Site-{{ '%03d'|format(Pod.Number|int) }}"
+        EnableSSH: "{{ Deploy.EnableSSH }}"
+        AllowRootSSH: "{{ Deploy.EnableSSH }}"
+      User:
+        root:
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        admin:
+          User: admin
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        audit:
+          User: audit
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+      Address:
+        IPv4:
+          Address: "{{ Net.Management.IPv4.Network }}.8"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+          Gateway: "{{ Net.Management.IPv4.Network }}.1"
+        IPv6:
+          Address: "{{ Net.Management.IPv6.Network }}::8"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+    CloudServicesManager:
+      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-CSM"
+      FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-CSM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.9{% endif %}"
+      Deployment:
+        Size: small
+        role: "nsx-cloud-service-manager"
+        EnableSSH: "{{ Deploy.EnableSSH }}"
+        AllowRootSSH: "{{ Deploy.EnableSSH }}"
+      User:
+        root:
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        admin:
+          User: admin
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        audit:
+          User: audit
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+      Address:
+        IPv4:
+          Address: "{{ Net.Management.IPv4.Network }}.9"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+          Gateway: "{{ Net.Management.IPv4.Network }}.1"
+        IPv6:
+          Address: "{{ Net.Management.IPv6.Network }}::9"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
   NVDS:
     Name: "NVDS-1"
   TransportZone:
