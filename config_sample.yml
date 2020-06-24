@@ -1272,82 +1272,83 @@ Nested_NSXT:
     CEIP:
       Answer: true
       Enabled: false
-  GlobalManager:
-    VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-GM"
-    FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-GM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.7{% endif %}"
-    Deployment:
-      Size: small
-      role: NSX Global Manager
-      EnableSSH: "{{ Deploy.EnableSSH }}"
-      AllowRootSSH: "{{ Deploy.EnableSSH }}"
-    User:
-      root:
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-      admin:
-        User: admin
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-      audit:
-        User: audit
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-    Address:
-      IPv4:
-        Address: "{{ Net.Management.IPv4.Network }}.7"
-        Prefix:  "{{ Net.Management.IPv4.Prefix }}"
-        Gateway: "{{ Net.Management.IPv4.Network }}.1"
-      IPv6:
-        Address: "{{ Net.Management.IPv6.Network }}::7"
-        Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-  LocalManager:
-    VMName: Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-LM
-    FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-LM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.8{% endif %}"
-    Deployment:
-      Size: small
-      Role: NSX Manager
-      SiteName: "NSX-Site-{{ '%03d'|format(Pod.Number|int) }}"
-      EnableSSH: "{{ Deploy.EnableSSH }}"
-      AllowRootSSH: "{{ Deploy.EnableSSH }}"
-    User:
-      root:
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-      admin:
-        User: admin
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-      audit:
-        User: audit
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-    Address:
-      IPv4:
-        Address: "{{ Net.Management.IPv4.Network }}.8"
-        Prefix:  "{{ Net.Management.IPv4.Prefix }}"
-        Gateway: "{{ Net.Management.IPv4.Network }}.1"
-      IPv6:
-        Address: "{{ Net.Management.IPv6.Network }}::8"
-        Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-  CloudServicesManager:
-    VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-CSM"
-    FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-CSM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.9{% endif %}"
-    Deployment:
-      Size: small
-      role: "nsx-cloud-service-manager"
-      EnableSSH: "{{ Deploy.EnableSSH }}"
-      AllowRootSSH: "{{ Deploy.EnableSSH }}"
-    User:
-      root:
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-      admin:
-        User: admin
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-      audit:
-        User: audit
-        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-    Address:
-      IPv4:
-        Address: "{{ Net.Management.IPv4.Network }}.9"
-        Prefix:  "{{ Net.Management.IPv4.Prefix }}"
-        Gateway: "{{ Net.Management.IPv4.Network }}.1"
-      IPv6:
-        Address: "{{ Net.Management.IPv6.Network }}::9"
-        Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+  Components:
+    GlobalManager:
+      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-GM"
+      FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-GM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.7{% endif %}"
+      Deployment:
+        Size: small
+        role: NSX Global Manager
+        EnableSSH: "{{ Deploy.EnableSSH }}"
+        AllowRootSSH: "{{ Deploy.EnableSSH }}"
+      User:
+        root:
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        admin:
+          User: admin
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        audit:
+          User: audit
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+      Address:
+        IPv4:
+          Address: "{{ Net.Management.IPv4.Network }}.7"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+          Gateway: "{{ Net.Management.IPv4.Network }}.1"
+        IPv6:
+          Address: "{{ Net.Management.IPv6.Network }}::7"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+    LocalManager:
+      VMName: Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-LM
+      FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-LM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.8{% endif %}"
+      Deployment:
+        Size: small
+        Role: NSX Manager
+        SiteName: "NSX-Site-{{ '%03d'|format(Pod.Number|int) }}"
+        EnableSSH: "{{ Deploy.EnableSSH }}"
+        AllowRootSSH: "{{ Deploy.EnableSSH }}"
+      User:
+        root:
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        admin:
+          User: admin
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        audit:
+          User: audit
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+      Address:
+        IPv4:
+          Address: "{{ Net.Management.IPv4.Network }}.8"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+          Gateway: "{{ Net.Management.IPv4.Network }}.1"
+        IPv6:
+          Address: "{{ Net.Management.IPv6.Network }}::8"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+    CloudServicesManager:
+      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-CSM"
+      FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-CSM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.9{% endif %}"
+      Deployment:
+        Size: small
+        role: "nsx-cloud-service-manager"
+        EnableSSH: "{{ Deploy.EnableSSH }}"
+        AllowRootSSH: "{{ Deploy.EnableSSH }}"
+      User:
+        root:
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        admin:
+          User: admin
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        audit:
+          User: audit
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+      Address:
+        IPv4:
+          Address: "{{ Net.Management.IPv4.Network }}.9"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+          Gateway: "{{ Net.Management.IPv4.Network }}.1"
+        IPv6:
+          Address: "{{ Net.Management.IPv6.Network }}::9"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
   NVDS:
     Name: "NVDS-1"
   TransportZone:
