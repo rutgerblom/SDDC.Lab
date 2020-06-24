@@ -69,18 +69,18 @@ Common:
   DNS:
     Domain: "lab.local"
     Server1:
-      IPv4: "10.203.100.254"
-      IPv6: 
+      IPv4: "{{ Pod.BaseNetwork.IPv4 }}.0.5"                          # Replace this IP if using a different DNS server than the suggested .5  server in the Router Uplink segment (MUST support Dynamic DNS Updates)
+      IPv6: "{{ Pod.BaseNetwork.IPv6 }}:0::{{ '%04d'|format(5) }}"    # Replace this IP if using a different DNS server than the suggested ::5 server in the Router Uplink segment (MUST support Dynamic DNS Updates)
     Server2:
-      IPv4: "10.203.100.253"
-      IPv6: 
+      IPv4: "8.8.8.8"
+      IPv6: "2001:4860:4860::8888"
   NTP:
     Server1:
-      IPv4: "{{ Net.Management.IPv4.Network }}.1"           # Replace with your IP address if Nested_Router.Version == "Legacy"
-      IPv6: "{{ Net.Management.IPv6.Network }}::1"          # Replace with your IP address if Nested_Router.Version == "Legacy"
+      IPv4: "{{ Net.Management.IPv4.Network }}.1"                     # Replace with your IP address if Nested_Router.Version == "Legacy"
+      IPv6: "{{ Net.Management.IPv6.Network }}::1"                    # Replace with your IP address if Nested_Router.Version == "Legacy"
     Server2:
-      IPv4: "{{ Net.Management.IPv4.Network }}.1"           # Replace with your IP address if Nested_Router.Version == "Legacy"
-      IPv6: "{{ Net.Management.IPv6.Network }}::1"          # Replace with your IP address if Nested_Router.Version == "Legacy"
+      IPv4: "{{ Net.Management.IPv4.Network }}.1"                     # Replace with your IP address if Nested_Router.Version == "Legacy"
+      IPv6: "{{ Net.Management.IPv6.Network }}::1"                    # Replace with your IP address if Nested_Router.Version == "Legacy"
   Syslog:
     IPv4: "10.203.100.26"
     IPv6: 
@@ -105,7 +105,7 @@ TargetConfig:
     Password: "{{ Common.Password.Physical }}"
     vSwitch: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"
     vSwitchVersion: ""
-    VLAN: "{{ Net.Management.VLAN }}"                     ## *TBD* - Investigate why this is not in vCenter or PlaceHolder, and if it is being used anywyere
+    VLAN: "{{ Net.Management.VLAN }}"                                   ## *TBD* - Investigate why this is not in vCenter or PlaceHolder, and if it is being used anywyere
     DataCenter: "ha-datacenter"
     Cluster: ""
     Datastore: "Local_VMs"
@@ -399,7 +399,7 @@ Nested_Router:
         Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
       IPv6:
-        Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::2"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
+        Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::2"       # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
     - Name: "T0-EdgeNode-1-2"
       ASN: "{{ 65000 + Pod.Number }}"
@@ -407,7 +407,7 @@ Nested_Router:
         Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
       IPv6:
-        Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::2"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
+        Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::2"       # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
     - Name: "T0-EdgeNode-2-1"
       ASN: "{{ 65000 + Pod.Number }}"
@@ -415,7 +415,7 @@ Nested_Router:
         Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
       IPv6:
-        Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::3"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
+        Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::3"       # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
     - Name: "T0-EdgeNode-2-2"
       ASN: "{{ 65000 + Pod.Number }}"
@@ -423,7 +423,7 @@ Nested_Router:
         Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.3"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
       IPv6:
-        Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::3"    # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
+        Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::3"       # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
 
 
