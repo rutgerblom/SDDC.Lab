@@ -44,7 +44,7 @@
         vm_username: "root"
         vm_password: "{{ Nested_vCenter.Password }}"
         vm_shell: /usr/bin/rvc
-        vm_shell_args: '{{ vcenter.user }}:VMware1\!@{{ vcenter.fqdn }} -s "{{ Target.TempFolder }}/{{ item.key }}"'
+        vm_shell_args: '{{ vcenter.user }}:VMware1\!@{{ vcenter.fqdn }} -s {{ Target.TempFolder }}/{{ item.key }}'
       loop: "{{ Nested_Clusters | dict2items }}"
       when: Target.Deployment == "Host" and item.value.vSAN|bool
 
