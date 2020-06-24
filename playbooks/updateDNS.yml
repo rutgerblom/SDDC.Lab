@@ -13,23 +13,26 @@
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
 
-
                                      Ansible Playbook: {{ ansible_play_name }}
 
                                     Target.Deployment: {{ Target.Deployment }}
 
-                                    Server IP Address: **TBD**
                                         Deploy.UseDNS: {{ Deploy.UseDNS }}
                                     Common.DNS.Domain: {{ Common.DNS.Domain }}
+                              Common.DNS.Server1.IPv4: {{ Common.DNS.Server1.IPv4 }}
+                              Common.DNS.Server1.IPv6: {{ Common.DNS.Server1.IPv6 }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
 
 
+##
+## Nested_ESXi Hosts
+##
     - name: Create IPv4 'A' records for Nested ESXi hosts
       nsupdate:
-        server: "10.203.0.5"
+        server: "{{ Common.DNS.Server1.IPv4 }}"
         type:   "A"
         protocol: "udp"
         zone:   "{{ Common.DNS.Domain }}"
@@ -37,27 +40,25 @@
         value:  "{{ item.value.vmk.vmk0.Address.IPv4.Address }}"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
-        - Deploy.UseDNS == false    ## *TBD* --  change to True later.. Disabled for testing
-#        - Deploy.UseDNS == true
+        - Deploy.UseDNS == true
         - Deploy.IPv4 == true
 
     - name: Create IPv4 'PTR' records for Nested ESXi hosts
       nsupdate:
-        server: "10.203.0.5"
+        server: "{{ Common.DNS.Server1.IPv4 }}"
         type:   "PTR"
         protocol: "udp"
-        zone:   "203.10.in-addr.arpa"     ## Can we construct this using variables? //RB
-        record: "{{ item.value.vmk.vmk0.Address.IPv4.Address | ipaddr('revdns') }}"
+#        zone:   "203.10.in-addr.arpa"     ## Can we construct this using variables? //RB
+        record: "{{ item.value.vmk.vmk0.Address.IPv4.Address | ipaddr('revdns') }}."
         value:  "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
-        - Deploy.UseDNS == false    ## *TBD* --  change to True later.. Disabled for testing
-#        - Deploy.UseDNS == true
+        - Deploy.UseDNS == true
         - Deploy.IPv4 == true
 
     - name: Create IPv6 'AAAA' records for Nested ESXi hosts
       nsupdate:
-        server: "10.203.0.5"
+        server: "{{ Common.DNS.Server1.IPv6 }}"
         type:   "AAAA"
         protocol: "udp"
         zone:   "{{ Common.DNS.Domain }}"
@@ -65,7 +66,19 @@
         value:  "{{ item.value.vmk.vmk0.Address.IPv6.Address }}"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
-        - Deploy.UseDNS == false    ## *TBD* --  change to True later.. Disabled for testing
-#        - Deploy.UseDNS == true
+        - Deploy.UseDNS == true
+        - Deploy.IPv6 == true
+
+    - name: Create IPv6 'PTR' records for Nested ESXi hosts
+      nsupdate:
+        server: "{{ Common.DNS.Server1.IPv6 }}"
+        type:   "PTR"
+        protocol: "udp"
+#        zone:   "203.10.in-addr.arpa"     ## Can we construct this using variables? //RB
+        record: "{{ item.value.vmk.vmk0.Address.IPv6.Address | ipaddr('revdns') }}."
+        value:  "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      when: 
+        - Deploy.UseDNS == true
         - Deploy.IPv6 == true
 
