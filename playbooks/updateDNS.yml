@@ -39,7 +39,7 @@
         type:     "A"
         protocol: "udp"
         zone:     "{{ Common.DNS.Domain }}"
-        record:   "{{ Nested_Router.Name }}-{{ item.value }}"
+        record:   "{{ Nested_Router.Name }}-{{ item.key }}"
         value:    "{{ item.value.IPv4.Address }}"
       loop: "{{ Nested_Router.Interface | dict2items }}"
       when:
@@ -52,7 +52,7 @@
         type:     "PTR"
         protocol: "udp"
         record:   "{{ item.value.IPv4.Address | ipaddr('revdns') }}."
-        value:    "{{ Nested_Router.Name }}-{{ item.value }}.{{ Common.DNS.Domain }}."
+        value:    "{{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}."
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when:
         - Deploy.UseDNS == true
@@ -65,21 +65,21 @@
         type:     "AAAA"
         protocol: "udp"
         zone:     "{{ Common.DNS.Domain }}"
-        record:   "{{ Nested_Router.Name }}-{{ item.value }}"
+        record:   "{{ Nested_Router.Name }}-{{ item.key }}"
         value:    "{{ item.value.IPv6.Address }}"
       loop: "{{ Nested_Router.Interface | dict2items }}"
       when:
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
 
-    - name: Create IPv6 'PTR' records for Nested_ESXi hosts
+    - name: Create IPv6 'PTR' records for Nested_Router
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     "PTR"
         protocol: "udp"
         record:   "{{ item.value.IPv6.Address | ipaddr('revdns') }}."
-        value:    "{{ Nested_Router.Name }}-{{ item.value }}.{{ Common.DNS.Domain }}."
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+        value:    "{{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}."
+      loop: "{{ Nested_Router.Interface | dict2items }}"
       when:
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
