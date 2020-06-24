@@ -41,8 +41,8 @@
 
     - name: Create Ruby script for silencing vSAN warnings
       template: 
-        src=../templates/vsan_silence.rb.j2
-        dest={{ Target.TempFolder }}/{{ item.key }}
+        src: "../templates/vsan_silence.rb.j2"
+        dest: "{{ Target.TempFolder }}/{{ item.key }}"
       loop: "{{ Nested_Clusters | dict2items }}"
       when: item.value.vSAN|bool
 
