@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  vars_files:
+    - ../software.yml
+    - ../config.yml
+  tasks:
+    - debug: var=ansible_python_interpreter
+    - debug: var=ansible_python_version
