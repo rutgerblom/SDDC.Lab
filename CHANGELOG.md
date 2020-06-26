@@ -1,5 +1,12 @@
 # Changelog
 
+## TBD 26-JUNE-2020 by Rutger Blom
+
+### Changed
+
+- Added Python 'interpreter_python = /usr/bin/python3' to ansible.cfg (Thanks Luis).
+- Changes to 'hosts/hosts' so warnings about inventory are suppressed.
+
 ## TBD 9-JUNE-2020 by Rutger Blom
 
 ### Changed
