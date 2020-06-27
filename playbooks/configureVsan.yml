@@ -31,6 +31,7 @@
                                       Target.VMFolder: {{ Target.VMFolder }}
                                     Target.TempFolder: {{ Target.TempFolder }}
 
+                                  Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN | lower }}
                                 Nested_vCenter.VMName: {{ Nested_vCenter.VMName }}
                               Nested_vCenter.Password: {{ Nested_vCenter.Password }}
 
@@ -93,7 +94,7 @@
         vm_username: "root"
         vm_password: "{{ Nested_vCenter.Password }}"
         vm_shell: /usr/bin/rvc
-        vm_shell_args: '{{ vcenter.user }}:VMware1\!@{{ vcenter.fqdn }} -s {{ Target.TempFolder }}/{{ item.key }}'
+        vm_shell_args: '{{ Nested_vCenter.User }}:VMware1\!@{{ Nested_vCenter.FQDN | lower }} -s {{ Target.TempFolder }}/{{ item.key }}'
       loop: "{{ Nested_Clusters | dict2items }}"
       when: Target.Deployment == "vCenter" and item.value.vSAN|bool
         
@@ -107,7 +108,7 @@
         vm_username: "root"
         vm_password: "{{ Nested_vCenter.Password }}"
         vm_shell: /usr/bin/rvc
-        vm_shell_args: '{{ vcenter.user }}:VMware1\!@{{ vcenter.fqdn }} -s {{ Target.TempFolder }}/{{ item.key }}'
+        vm_shell_args: '{{ Nested_vCenter.User }}:VMware1\!@{{ Nested_vCenter.FQDN | lower }} -s {{ Target.TempFolder }}/{{ item.key }}'
       loop: "{{ Nested_Clusters | dict2items }}"
       when: Target.Deployment == "Host" and item.value.vSAN|bool
 
