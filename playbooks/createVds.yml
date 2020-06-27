@@ -163,7 +163,7 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        esxi_hostname: "{{ item.value.FQDN }}"
+        esxi_hostname: "{{ item.value.FQDN | lower  }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vmnics:
           - vmnic1
@@ -178,7 +178,7 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        esxi_hostname: "{{ item.value.FQDN }}"
+        esxi_hostname: "{{ item.value.FQDN | lower }}"
         device: 'vmk0'
         current_switch_name: 'vSwitch0'
         current_portgroup_name: 'Management Network'
@@ -193,7 +193,7 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        esxi_hostname: "{{ item.value.FQDN }}"
+        esxi_hostname: "{{ item.value.FQDN | lower }}"
         portgroup_name: "{{ item.value.vmk.vmk1.PortGroup }}"
         dvswitch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         enable_vmotion: true
@@ -212,7 +212,7 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        esxi_hostname: "{{ item.value.FQDN }}"
+        esxi_hostname: "{{ item.value.FQDN | lower }}"
         portgroup_name: "{{ item.value.vmk.vmk2.PortGroup }}"
         dvswitch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         enable_vsan: true
@@ -230,7 +230,7 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        esxi_hostname: "{{ item.value.FQDN }}"
+        esxi_hostname: "{{ item.value.FQDN | lower }}"
         portgroup_name: "{{ item.value.vmk.vmk3.PortGroup }}"
         dvswitch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         enable_vsan: true
