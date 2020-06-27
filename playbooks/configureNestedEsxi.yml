@@ -1,7 +1,5 @@
 ## Rutger has ownership of this file for the v2 migration ##
 ##
-## ToDo:     - Replace {{ vcenter.datacenter }} variable as soon as deployVc.yml has been migrated 
-##
 ##
 ---
 - hosts: localhost
@@ -10,7 +8,6 @@
   vars_files:
     - ../config.yml
     - ../software.yml
-    - ../answerfile.yml
   tasks:
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -45,7 +42,7 @@
                                   Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN }}
                                   Nested_vCenter.User: {{ Nested_vCenter.User }}
                               Nested_vCenter.Password: {{ Nested_vCenter.Password }}
-                                   vcenter.datacenter: {{ vcenter.datacenter }}
+                            Nested_vCenter.DataCenter: {{ Nested_vCenter.DataCenter }}
 
           =================================================================================================
       when:
@@ -418,7 +415,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        datacenter_name: "{{ vcenter.datacenter }}"
+        datacenter_name: "{{ Nested_vCenter.DataCenter }}"
         validate_certs: false
         cluster_name: "{{ item.value.Cluster }}"
         esxi_hostname: "{{ item.value.FQDN }}"
