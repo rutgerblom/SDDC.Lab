@@ -66,11 +66,11 @@ options {
 // organization
 //include "/etc/bind/zones.rfc1918";
 
-zone "lab.local" {
+zone "sddc.lab" {
   type master;
   allow-update {10.0.0.0/8;};           // Needs to be the IP address of the Ansible control station
   allow-transfer {10.0.0.0/8;};         // Should be the address of the Ansible control station -- Used just for testing
-  file "/var/lib/bind/db.lab.local";
+  file "/var/lib/bind/db.sddc.lab";
 };
 
 zone "203.10.in-addr.arpa" {
@@ -85,11 +85,11 @@ zone "203.10.in-addr.arpa" {
 
 
 ;;
-;; File: /var/lib/bind/db.lab.local
+;; File: /var/lib/bind/db.sddc.lab
 ;;
 
 $TTL 604800
-@ IN SOA dns.lab.local. admin.lab.local. (
+@ IN SOA dns.sddc.lab. admin.sddc.lab. (
           10   ; Serial
       604800   ; Refresh
        86400   ; Retry
@@ -98,10 +98,10 @@ $TTL 604800
 ;
 
 ; Name servers
-lab.local.    IN   NS   dns.lab.local.
+sddc.lab.    IN   NS   dns.sddc.lab.
 
 ; Define Origin
-$ORIGIN lab.local.
+$ORIGIN  sddc.lab.
 
 ; A records for name servers
 dns            IN   A    10.203.0.5
@@ -122,7 +122,7 @@ dns            IN   A    10.203.0.5
 ;;
 
 $TTL 604800
-@ IN SOA dns.lab.local. admin.lab.local. (
+@ IN SOA dns.sddc.lab. admin.sddc.lab. (
           10   ; Serial
       604800   ; Refresh
        86400   ; Retry
@@ -131,7 +131,7 @@ $TTL 604800
 ;
 
 ; Name servers
-203.10.in-addr.arpa.    IN   NS   dns.lab.local.
+203.10.in-addr.arpa.    IN   NS   dns.sddc.lab.
 
 ; A records for name servers
 dns            IN   A    10.203.0.5
@@ -140,7 +140,7 @@ dns            IN   A    10.203.0.5
 $ORIGIN 203.10.in-addr.arpa.
 
 ; PTR records
-5.0    IN   PTR  dns.lab.local.
+5.0    IN   PTR  dns.sddc.lab.
 
 
 ================================= NEXT FILE ============================================
@@ -172,8 +172,8 @@ Useful Commands:
           echo $?
 
      Verify BIND is working (from DNS server)
-          From BIND Server:  dig @127.0.0.1 dns.lab.local
-          From other systems: dig @<IP-OF-BIND-SeRVER> dns.lab.local
+          From BIND Server:  dig @127.0.0.1 dns.sddc.lab
+          From other systems: dig @<IP-OF-BIND-SeRVER> dns.sddc.lab
 
 
 
@@ -214,7 +214,7 @@ Jun 21 23:30:19 lab-dns named[7994]: managed-keys-zone: loaded serial 3
 Jun 21 23:30:19 lab-dns named[7994]: zone 0.in-addr.arpa/IN: loaded serial 1
 Jun 21 23:30:19 lab-dns named[7994]: zone 203.10.in-addr.arpa/IN: loaded serial 10
 Jun 21 23:30:19 lab-dns named[7994]: zone 127.in-addr.arpa/IN: loaded serial 1
-Jun 21 23:30:19 lab-dns named[7994]: zone lab.local/IN: loaded serial 10
+Jun 21 23:30:19 lab-dns named[7994]: zone sddc.lab/IN: loaded serial 10
 Jun 21 23:30:19 lab-dns named[7994]: zone 255.in-addr.arpa/IN: loaded serial 1
 Jun 21 23:30:19 lab-dns named[7994]: zone localhost/IN: loaded serial 2
 Jun 21 23:30:19 lab-dns named[7994]: all zones loaded
