@@ -35,11 +35,11 @@
 
     - name: Remove vCenter VM
       vmware_guest:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ vcenter.vmname }}"
+        name: "{{ Nested_vCenter.VMName }}"
         force: true
         state: absent
       ignore_errors: true
