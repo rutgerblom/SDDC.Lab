@@ -1,13 +1,27 @@
 {
     "__version": "2.13.0",
-    "__comments": "Sample template to deploy a vCenter Server Appliance with an embedded Platform Services Controller on an ESXi host.",
+    "__comments": "Sample template to deploy a vCenter Server Appliance with an embedded Platform Services Controller on a vCenter Server instance.",
     "new_vcsa": {
-        "esxi": {
+        "vc": {
+            "__comments": [
+                "'datacenter' must end with a datacenter name, and only with a datacenter name. ",
+                "'target' must end with an ESXi hostname, a cluster name, or a resource pool name. ",
+                "The item 'Resources' must precede the resource pool name. ",
+                "All names are case-sensitive. ",
+                "For details and examples, refer to template help, i.e. vcsa-deploy {install|upgrade|migrate} --template-help"
+            ],
             "hostname": "{{ Target.FQDN }}",
             "username": "{{ Target.User }}",
             "password": "{{ Target.Password }}",
             "deployment_network": "{{ Target.PortGroup.Management.Name }}",
-            "datastore": "{{ Target.Datastore }}"
+            "datacenter": [
+                "{{ Target.DataCenter }}"
+            ],
+            "datastore": "{{ Target.Datastore }}",
+            "target": [
+                "{{ Target.Cluster }}"
+            ],
+            "vm_folder": "{{ Target.VMFolder }}"
         },
         "appliance": {
             "__comments": [
@@ -20,23 +34,23 @@
         "network": {
             "ip_family": "ipv4",
             "mode": "static",
+            "system_name": "{{ Nested_vCenter.FQDN }}",
             "ip": "{{ Nested_vCenter.Address.IPv4.Address }}",
             "prefix": "{{ Nested_vCenter.Address.IPv4.Prefix }}",
             "gateway": "{{ Nested_vCenter.Address.IPv4.Gateway }}",
             "dns_servers": [
                 "{{ Common.DNS.Server1.IPv4 }}"
-            ],
-            "system_name": "{{ Nested_vCenter.FQDN }}"
+            ]
         },
         "os": {
-            "password": "{{ Nested_vCenter.Password }}",
+            "password": "{{ Nested_vCenter.Pasword }}",
             "ntp_servers":  [
                 "{{ Common.NTP.Server1.IPv4 }}"
             ],
             "ssh_enable": true
         },
         "sso": {
-            "password": "{{ Nested_vCenter.Password }}",
+            "password": "{{ Nested_vCenter.Pasword }}",
             "domain_name": "{{ Nested_vCenter.SSO.Domain }}"
         }
     },
