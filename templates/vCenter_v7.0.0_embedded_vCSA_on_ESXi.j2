@@ -13,7 +13,7 @@
             "__comments": [
                 "You must provide the 'deployment_option' key with a value, which will affect the VCSA's configuration parameters, such as the VCSA's number of vCPUs, the memory size, the storage size, and the maximum numbers of ESXi hosts and VMs which can be managed. For a list of acceptable values, run the supported deployment sizes help, i.e. vcsa-deploy --supported-deployment-sizes"
             ],
-            "thin_disk_mode": "{{ true if Common.DiskProvisioning == 'thin' else false }}",
+            "thin_disk_mode": true,
             "deployment_option": "{{ Nested_vCenter.DeploymentSize }}",
             "name": "{{ Nested_vCenter.VMName }}"
         },
@@ -24,18 +24,16 @@
             "prefix": "{{ Nested_vCenter.Address.IPv4.Prefix }}",
             "gateway": "{{ Nested_vCenter.Address.IPv4.Gateway }}",
             "dns_servers": [
-                "{{ Common.DNS.Server1.IPv4 }}",
-		        "{{ Common.DNS.Server2.IPv4 }}"
+                "{{ Common.DNS.Server1.IPv4 }}"
             ],
             "system_name": "{{ Nested_vCenter.FQDN }}"
         },
         "os": {
             "password": "{{ Nested_vCenter.Password }}",
             "ntp_servers":  [
-                "{{ Common.NTP.Server1.IPv4 }}",
-                "{{ Common.NTP.Server2.IPv4 }}"
+                "{{ Common.NTP.Server1.IPv4 }}"
             ],
-            "ssh_enable": "{{ Deploy.EnableSSH }}"
+            "ssh_enable": true
         },
         "sso": {
             "password": "{{ Nested_vCenter.Password }}",
@@ -70,7 +68,7 @@
             ]
         },
         "settings": {
-            "ceip_enabled": "{{ Nested_vCenter.Question.CEIP.Enabled }}"
+            "ceip_enabled": false
         }
     }
 }

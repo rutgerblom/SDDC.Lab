@@ -1,12 +1,47 @@
 ## Luis has ownership of converting this file to v2
 ---
 - hosts: localhost
+  name: deployVc.yml
   gather_facts: false
   vars_files:
     - ../config.yml
     - ../software.yml
-    - ../answerfile.yml
   tasks:
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+                                      Target.ISOMount: {{ Target.ISOMount }}
+
+                                 Full ISO Mount Point: {{ Target.ISOMount }}/VCSA
+
+                                               Vendor: {{ Deploy.Software.vCenter.Vendor }}
+                                              Product: {{ Deploy.Software.vCenter.Product }}
+                                              Version: {{ Deploy.Software.vCenter.Version }}
+                                       Location.Local: {{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Location'].Local }}
+                                                 File: {{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].File }}
+
+                                        Host Template: {{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Template'].ESXi }}
+                                     vCenter Template: {{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Template'].vCenter }}
+                                Installation Template: {{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
     - name: Check if vCenter is already installed
       uri:
         url: https://{{ Nested_vCenter.Address.IPv4.Address }}
@@ -34,7 +69,7 @@
         - Target.Deployment == "vCenter"
 
     - name: Mount vCenter ISO
-      action: mount name='{{ Target.TempFolder }}/VCSA' src="{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Location'].Local }}/{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].File }}" opts=loop fstype=iso9660 state=mounted
+      action: mount name='{{ Target.ISOMount }}/VCSA' src="{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Location'].Local }}/{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].File }}" opts=loop fstype=iso9660 state=mounted
       when: vcenter_check.status != 200
 
     - debug:
@@ -44,13 +79,13 @@
     - name: Perform vCenter CLI-based installation
       command: "./vcsa-deploy install --accept-eula --no-ssl-certificate-verification --acknowledge-ceip {{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
       args:
-        chdir: "{{ Target.TempFolder }}/VCSA/vcsa-cli-installer/lin64/"
+        chdir: "{{ Target.ISOMount }}/VCSA/vcsa-cli-installer/lin64/"
       register: vcdeploy
       ignore_errors: True
       when: vcenter_check.status != 200
 
     - name: Unmount vCenter ISO
-      action: mount name='{{ Target.TempFolder }}/VCSA' src="{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Location'].Local }}/{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].File }}" opts=loop fstype=iso9660 state=absent
+      action: mount name='{{ Target.ISOMount }}/VCSA' src="{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Location'].Local }}/{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].File }}" opts=loop fstype=iso9660 state=absent
       when: vcenter_check.status != 200
 
     - name: Delete the temporary vCenter with embedded PSC installation template
