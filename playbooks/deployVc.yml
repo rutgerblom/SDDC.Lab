@@ -99,7 +99,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        datacenter_name: "{{ Nested_vCenter.Datacenter }}"
+        datacenter_name: "{{ Nested_vCenter.DataCenter }}"
         state: present
         validate_certs: False
       when: vcenter_check.status != 200
@@ -109,7 +109,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        datacenter_name: "{{ Nested_vCenter.Datacenter }}"
+        datacenter_name: "{{ Nested_vCenter.DataCenter }}"
         cluster_name: "{{ item.key }}"
         validate_certs: False
       with_dict: "{{ Nested_Clusters }}"
@@ -120,9 +120,9 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        datacenter_name: "{{ Nested_vCenter.Datacenter }}"
+        datacenter_name: "{{ Nested_vCenter.DataCenter }}"
         cluster_name: "{{ item.key }}"
         validate_certs: False
-        enable_drs: "{{ item.value.DRS }}"   # *TBD* Should this be item.key
+        enable_drs: "{{ item.value.DRS }}"
       with_dict: "{{ Nested_Clusters }}"
       when: vcenter_check.status != 200
