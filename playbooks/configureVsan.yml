@@ -44,7 +44,9 @@
         src: "../templates/vsan_silence.rb.j2"
         dest: "{{ Target.TempFolder }}/{{ item.key }}"
       loop: "{{ Nested_Clusters | dict2items }}"
-      when: item.value.vSAN|bool
+      when: 
+        - item.value.vSAN == true
+        - item.value.DeployHosts == true
 
     - name: Copy Ruby script to the nested vCenter deployed on vCenter
       vmware_guest_file_operation:
@@ -63,7 +65,10 @@
             dest: "{{ Target.TempFolder }}/{{ item.key }}"
             overwrite: true
       loop: "{{ Nested_Clusters | dict2items }}"
-      when: Target.Deployment == "vCenter" and item.value.vSAN|bool
+      when: 
+        - Target.Deployment == "vCenter"
+        - item.value.vSAN == true
+        - item.value.DeployHosts == true
 
     - name: Copy Ruby script to the nested vCenter deployed on the ESXi host
       vmware_guest_file_operation:
@@ -79,7 +84,10 @@
             dest: "{{ Target.TempFolder }}/{{ item.key }}"
             overwrite: true
       loop: "{{ Nested_Clusters | dict2items }}"
-      when: Target.Deployment == "Host" and item.value.vSAN|bool
+      when: 
+        - Target.Deployment == "Host"
+        - item.value.vSAN == true
+        - item.value.DeployHosts == true
 
     - name: Run Ruby script on the nested vCenter deployed on vCenter
       vmware_vm_shell:
@@ -96,7 +104,10 @@
         vm_shell: /usr/bin/rvc
         vm_shell_args: '{{ Nested_vCenter.User }}:VMware1\!@{{ Nested_vCenter.FQDN | lower }} -s {{ Target.TempFolder }}/{{ item.key }}'
       loop: "{{ Nested_Clusters | dict2items }}"
-      when: Target.Deployment == "vCenter" and item.value.vSAN|bool
+      when: 
+        - Target.Deployment == "vCenter"
+        - item.value.vSAN|bool
+        - item.value.DeployHosts == true
         
     - name: Run Ruby script on the nested vCenter deployed on the ESXi host
       vmware_vm_shell:
@@ -110,7 +121,10 @@
         vm_shell: /usr/bin/rvc
         vm_shell_args: '{{ Nested_vCenter.User }}:VMware1\!@{{ Nested_vCenter.FQDN | lower }} -s {{ Target.TempFolder }}/{{ item.key }}'
       loop: "{{ Nested_Clusters | dict2items }}"
-      when: Target.Deployment == "Host" and item.value.vSAN|bool
+      when:
+        - Target.Deployment == "Host"
+        - item.value.vSAN == true
+        - item.value.DeployHosts == true
 
     - name: Delete the Ruby script from the Ansible controller
       file: 
@@ -119,6 +133,7 @@
       loop: "{{ Nested_Clusters | dict2items }}"
       when: 
         - item.value.vSAN == true
+        - item.value.DeployHosts == true
         - DEBUG_keep_config_files != true
 
     - name: Enable vSAN
@@ -129,7 +144,9 @@
         cluster: "{{ item.key }}"
       ignore_errors: true
       loop: "{{ Nested_Clusters | dict2items }}"
-      when: item.value.vSAN|bool
+      when:
+        - item.value.vSAN == true
+        - item.value.DeployHosts == true
 
     - name: Claim disks for vSAN
       claim_vsan_disks:
@@ -139,4 +156,6 @@
         cluster: "{{ item.key }}"
       ignore_errors: true
       loop: "{{ Nested_Clusters | dict2items }}"
-      when: item.value.vSAN|bool
+      when:
+        - item.value.vSAN == true
+        - item.value.DeployHosts == true
