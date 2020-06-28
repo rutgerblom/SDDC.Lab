@@ -123,42 +123,42 @@ clusters:
 
 # Configuration for the VDS within the nested vSphere environment.
 vds:
-  name:                      "vds"
+  name:                      "Pod-{{ pod }}-vSwitch"
   mtu:                       "9000"
   uplinks:                   "2"
   discovery_proto:           "lldp"
   discovery_operation:       "both"
-  management_pg:             "pg-management"
-  vmotion_pg:                "pg-vmotion"
-  vsan_pg:                   "pg-vsan"
-  ipstorage_pg:              "pg-ipstorage"
-  svmmanagement_pg:          "pg-svm-management"
-  uplink1_pg:                "pg-uplink1"
-  uplink2_pg:                "pg-uplink2"
-  vmnetwork_pg:              "pg-vmnetwork"
+  management_pg:             "Management"
+  vmotion_pg:                "vMotion"
+  vsan_pg:                   "vSAN"
+  ipstorage_pg:              "IPStorage"
+  svmmanagement_pg:          "ServiceVMs"
+  uplink1_pg:                "NSXEdgeUplink1"
+  uplink2_pg:                "NSXEdgeUplink2"
+  vmnetwork_pg:              "VMNetwork"
 
 # NSX-T configuration 
-nsxmanager_name:             "nsxt-lm"
+nsxmanager_name:             "NSXT-LM"
 nsxmanpassword:              "VMware1!VMware1!"
 nsxmanaudituser:             "audit"
 nsxmanadminuser:             "admin"
 nsxmansize:                  "small"
 nsxmanrole:                  "NSX Manager"
 nsxlicense:                  "/tmp/nsxlicense.txt"                  # Path to the NSX-T license key file (text file should contain just the key).
-nvds_name:                   "n-vds01"              
-tz_vlan_name:                "tz-vlan"              
-tz_overlay_name:             "tz-overlay"              
-tz_edge_name:                "tz-edge"              
-ip_pool_name:                "tep-pool"              
-tn_profile_name:             "esxi-tnp"              
-edge_node1:                  "pod-{{ '%03d'|format(pod) }}-en01"              
-edge_node2:                  "pod-{{ '%03d'|format(pod) }}-en02"              
+nvds_name:                   "NVDS-1"              
+tz_vlan_name:                "TZ-VLAN"              
+tz_overlay_name:             "TZ-Overlay"              
+tz_edge_name:                "TZ-Edge"              
+ip_pool_name:                "TEP-Pool"
+tn_profile_name:             "TNP-ESXi-Hosts"              
+edge_node1:                  "T0-EdgeVM-01"              
+edge_node2:                  "T0-EdgeVM-02"              
 edge_node_vsphere_cluster:   "Edge"                                 # The vSphere cluster in the nested environment where the Edge VMs should be deployed.
 edge_node1_vesxi:            "pod-{{ '%03d'|format(pod) }}-esxi-91.{{ domain }}"   # The nested ESXi host where Edge VM 1 should be placed. Specify IP address if there's no working DNS. 
 edge_node2_vesxi:            "pod-{{ '%03d'|format(pod) }}-esxi-92.{{ domain }}"   # The nested ESXi host where Edge VM 2 should be placed. Specify IP address if there's no working DNS.
-edge_cluster_name:           "edge-cluster-01"                      # The NSX-T Edge Cluster
+edge_cluster_name:           "T0-Edge-Cluster-01"                      # The NSX-T Edge Cluster
 edgepassword:                "VMware1!VMware1!"
-tier0_name:                  "tier-0"
+tier0_name:                  "T0-Gateway-1"
 
 # The NSX-T Manager nodes. You can add, remove or rename NSX-T Manager nodes below.
 nsxman:

@@ -403,7 +403,7 @@ Nested_Router:
     ASN: 65000
     RouterID: "{{ Net.Management.IPv4.Network }}.1"
     Neighbors:
-    - Name: "T0-EdgeNode-1-1"
+    - Name: "T0-EdgeVM-1-1"
       ASN: "{{ 65000 + Pod.Number }}"
       IPv4:
         Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
@@ -411,7 +411,7 @@ Nested_Router:
       IPv6:
         Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::2"       # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
-    - Name: "T0-EdgeNode-1-2"
+    - Name: "T0-EdgeVM-1-2"
       ASN: "{{ 65000 + Pod.Number }}"
       IPv4:
         Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
@@ -419,7 +419,7 @@ Nested_Router:
       IPv6:
         Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::2"       # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
-    - Name: "T0-EdgeNode-2-1"
+    - Name: "T0-EdgeVM-2-1"
       ASN: "{{ 65000 + Pod.Number }}"
       IPv4:
         Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
@@ -427,7 +427,7 @@ Nested_Router:
       IPv6:
         Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::3"       # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
-    - Name: "T0-EdgeNode-2-2"
+    - Name: "T0-EdgeVM-2-2"
       ASN: "{{ 65000 + Pod.Number }}"
       IPv4:
         Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.3"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
@@ -1412,12 +1412,12 @@ Nested_NSXT:
       Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
       DeployToCluster: Edge
       Clusters:
-        T0-Edge-Cluster:
+        T0-Edge-Cluster-01:
           Members:
-          - "T0-EdgeNode-01"
-          - "T0-EdgeNode-02"
+          - "T0-EdgeVM-01"
+          - "T0-EdgeVM-02"
       Nodes:
-        T0-EdgeNode-01:
+        T0-EdgeVM-01:
           DeployToHost: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-91.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.91{% endif %}"
           Address:
             IPv4:
@@ -1427,7 +1427,7 @@ Nested_NSXT:
             IPv6:
               Address: "{{ Net.Management.IPv6.Network }}::101"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-        T0-EdgeNode-02:
+        T0-EdgeVM-02:
           DeployToHost: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-92.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.92{% endif %}"
           Address:
             IPv4:
@@ -1440,7 +1440,7 @@ Nested_NSXT:
   Gateway:
     T0:
       T0-Gateway-1:
-        EdgeCluster: "T0-Edge-Cluster"
+        EdgeCluster: "T0-Edge-Cluster-01"
         BGP:
           Self:
             Enabled: true
@@ -1490,7 +1490,7 @@ Nested_NSXT:
                 Interval: 1000
                 Multiplier: 3
         EdgeNodes:
-          T0-EdgeNode-01:
+          T0-EdgeVM-01:
             Interface:
               Uplink1:
                 IPv4:
@@ -1508,7 +1508,7 @@ Nested_NSXT:
                 IPv6:
                   Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::2"
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
-          T0-EdgeNode-02:
+          T0-EdgeVM-02:
             Interface:
               Uplink1:
                 IPv4:
