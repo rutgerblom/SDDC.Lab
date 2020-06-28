@@ -156,12 +156,15 @@ system {
             level admin
         }
     }
+    name-server {{ Common.DNS.Server1.IPv4 }}
     ntp {
 {% if Deploy.Software.Router.Version == "Latest" %}
         listen-address {{ Nested_Router.Interface.Management.IPv4.Address }}
 {% endif %}
-        server {{ Common.NTP.Server1.IPv4 }} {
+{% for NTPServer in Nested_Router.NTP.Servers %}
+        server {{ NTPServer.IPv4.Address }} {
         }
+{% endfor %}
     }
 {% if Deploy.Software.Router.Version == "Legacy" %}
     package {
