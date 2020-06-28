@@ -60,7 +60,9 @@ Deploy:
 
 
 ##
-## Users should change entries in the 'Common' section to match their environment
+## The 'Common' section are settings used by the various nested lab components, except for the Nested_Router.
+## The physical real-world NTP time server that is used to obtain time for the lab is defined in the Nested_Router section.
+## The DNS servers listed delow MUST be able to resolve DNS names on the public Internet.
 ##
 Common:
   Password:
@@ -76,11 +78,11 @@ Common:
       IPv6: 
   NTP:
     Server1:
-      IPv4: "10.200.0.10"                                             # Replace with your NTP Server IPv4 address
-      IPv6: "{{ Net.Management.IPv6.Network }}::1"                    # Replace with your NTP Server IPv6 address
+      IPv4: "{{ Net.Management.IPv4.Network }}.1"                     # Replace with your IP address if Nested_Router.Version == "Legacy"
+      IPv6: "{{ Net.Management.IPv6.Network }}::1"                    # Replace with your IP address if Nested_Router.Version == "Legacy"
     Server2:
-      IPv4: "{{ Net.Management.IPv4.Network }}.1"                     # Replace with your NTP Server IPv4 address
-      IPv6: "{{ Net.Management.IPv6.Network }}::1"                    # Replace with your NTP Server IPv6 address
+      IPv4: "{{ Net.Management.IPv4.Network }}.1"                     # Replace with your IP address if Nested_Router.Version == "Legacy"
+      IPv6: "{{ Net.Management.IPv6.Network }}::1"                    # Replace with your IP address if Nested_Router.Version == "Legacy"
   Syslog:
     IPv4: "10.203.100.26"
     IPv6: 
@@ -386,6 +388,13 @@ Nested_Router:
       IPv6:
         Address: "{{ Net.VMNetwork.IPv6.Network }}::1"
         Prefix:  "{{ Net.VMNetwork.IPv6.Prefix }}"
+  NTP:
+    Servers:
+    - Name: Upstream NTP Server
+      IPv4:
+        Address: "pool.ntp.org"                   # If you do not permit NTP out to the Internet, please update this entry to point to your internal NTP server
+      IPv6:
+        Address: "pool.ntp.org"                   # If you do not permit NTP out to the Internet, please update this entry to point to your internal NTP server
   OSPF:
     Area: 666
     RouterID: "{{ Pod.BaseNetwork.IPv4 }}.0.{{ Pod.Number }}"

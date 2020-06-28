@@ -113,7 +113,9 @@
         cluster_name: "{{ item.key }}"
         validate_certs: False
       with_dict: "{{ Nested_Clusters }}"
-      when: vcenter_check.status != 200
+      when: 
+        - vcenter_check.status != 200
+        - item.value.DeployHosts == true
 
     - name: Enable DRS on each Cluster, if applicable
       vmware_cluster_drs:
@@ -125,4 +127,6 @@
         validate_certs: False
         enable_drs: "{{ item.value.DRS }}"
       with_dict: "{{ Nested_Clusters }}"
-      when: vcenter_check.status != 200
+      when: 
+        - vcenter_check.status != 200
+        - item.value.DeployHosts == true

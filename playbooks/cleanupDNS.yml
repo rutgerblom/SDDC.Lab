@@ -1,14 +1,12 @@
 ## Luis has ownership of this file for the v2 migration ##
 #
-# ToDo:
-#   1) Create IPv6 Reverse Zone
 #
 ---
 - hosts: localhost
-  name: updateDNS.yml
+  name: cleanupDNS.yml
   gather_facts: false
   vars:
-    - LOCAL_RecordState: "present"           # LOCAL_RecordState values are either "present" (Records will be added) or "absent" (Records will be deleted)
+    - LOCAL_RecordState: "absent"            # LOCAL_RecordState values are either "present" (Records will be added) or "absent" (Records will be deleted)
   vars_files:
     - ../software.yml
     - ../config.yml
@@ -38,7 +36,7 @@
 
 
 ##
-## Add Nested_Router
+## Remove Nested_Router
 ##
     - name: DEBUG -- Display IPv4 'A' records for Nested_Router
       pause:
@@ -61,7 +59,7 @@
         - Deploy.UseDNS == true
         - Deploy.IPv4 == true
 
-    - name: Create IPv4 'A' records for Nested_Router
+    - name: Delete IPv4 'A' records for Nested_Router
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     "A"
@@ -98,7 +96,7 @@
         - Deploy.UseDNS == true
         - Deploy.IPv4 == true
 
-    - name: Create IPv4 'PTR' records for Nested_Router
+    - name: Delete IPv4 'PTR' records for Nested_Router
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     "PTR"
@@ -134,7 +132,7 @@
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
 
-    - name: Create IPv6 'AAAA' records for Nested_Router
+    - name: Delete IPv6 'AAAA' records for Nested_Router
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     "AAAA"
@@ -172,7 +170,7 @@
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
 
-    - name: Create IPv6 'PTR' records for Nested_Router
+    - name: Delete IPv6 'PTR' records for Nested_Router
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     "PTR"
@@ -192,7 +190,7 @@
 
 
 ##
-## Add Nested_ESXi Hosts
+## Remove Nested_ESXi Hosts
 ##
     - name: DEBUG -- Display IPv4 'A' records for Nested_ESXi hosts
       pause:
@@ -216,7 +214,7 @@
         - Deploy.IPv4 == true
 
 
-    - name: Create IPv4 'A' records for Nested_ESXi hosts
+    - name: Delete IPv4 'A' records for Nested_ESXi hosts
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     "A"
@@ -254,7 +252,7 @@
         - Deploy.IPv4 == true
 
 
-    - name: Create IPv4 'PTR' records for Nested_ESXi hosts
+    - name: Delete IPv4 'PTR' records for Nested_ESXi hosts
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     "PTR"
@@ -290,7 +288,7 @@
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
 
-    - name: Create IPv6 'AAAA' records for Nested_ESXi hosts
+    - name: Delete IPv6 'AAAA' records for Nested_ESXi hosts
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     "AAAA"
@@ -328,7 +326,7 @@
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
 
-    - name: Create IPv6 'PTR' records for Nested_ESXi hosts
+    - name: Delete IPv6 'PTR' records for Nested_ESXi hosts
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     "PTR"
@@ -344,7 +342,7 @@
 
 
 ##
-## Add Nested_vCenter
+## Remove Nested_vCenter
 ##
     - name: DEBUG -- Display IPv4 'A' record for Nested_vCenter
       pause:
@@ -366,7 +364,7 @@
         - Deploy.UseDNS == true
         - Deploy.IPv4 == true
 
-    - name: Create IPv4 'A' records for Nested_vCenter
+    - name: Delete IPv4 'A' records for Nested_vCenter
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     "A"
@@ -401,7 +399,7 @@
         - Deploy.UseDNS == true
         - Deploy.IPv4 == true
 
-    - name: Create IPv4 'PTR' records for Nested_vCenter
+    - name: Delete IPv4 'PTR' records for Nested_vCenter
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     "PTR"
@@ -436,7 +434,7 @@
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
 
-    - name: Create IPv6 'AAAA' records for Nested_vCenter
+    - name: Delete IPv6 'AAAA' records for Nested_vCenter
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     "AAAA"
@@ -473,7 +471,7 @@
         - Deploy.IPv6 == true
 
 
-    - name: Create IPv6 'PTR' records for Nested_vCenter
+    - name: Delete IPv6 'PTR' records for Nested_vCenter
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     "PTR"
@@ -487,7 +485,7 @@
 
 
 ##
-## Add Nested_NSXT Components
+## Remove Nested_NSXT Components
 ##
     - name: DEBUG -- Display IPv4 'A' records for Nested_NSXT
       pause:
@@ -510,7 +508,7 @@
         - Deploy.UseDNS == true
         - Deploy.IPv4 == true
 
-    - name: Create IPv4 'A' records for Nested_NSXT Components
+    - name: Delete IPv4 'A' records for Nested_NSXT Components
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     "A"
@@ -546,7 +544,7 @@
         - Deploy.UseDNS == true
         - Deploy.IPv4 == true
 
-    - name: Create IPv4 'PTR' records for Nested_NSXT Components
+    - name: Delete IPv4 'PTR' records for Nested_NSXT Components
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     "PTR"
@@ -582,7 +580,7 @@
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
 
-    - name: Create IPv6 'AAAA' records for Nested_NSXT Components
+    - name: Delete IPv6 'AAAA' records for Nested_NSXT Components
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     "AAAA"
@@ -618,7 +616,7 @@
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
 
-    - name: Create IPv6 'PTR' records for Nested_NSXT Components
+    - name: Delete IPv6 'PTR' records for Nested_NSXT Components
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     "PTR"
