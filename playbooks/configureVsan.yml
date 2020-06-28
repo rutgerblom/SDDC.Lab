@@ -123,7 +123,7 @@
 
     - name: Enable vSAN
       enable_vsan:
-        vcenter: "{{ Nested_vCenter.FQDN }}"
+        vcenter: "{{ Nested_vCenter.FQDN | lower }}"
         user: "{{ Nested_vCenter.User }}"
         passwd: "{{ Nested_vCenter.Password }}"
         cluster: "{{ item.key }}"
@@ -133,7 +133,7 @@
 
     - name: Claim disks for vSAN
       claim_vsan_disks:
-        vcenter: "{{ Nested_vCenter.FQDN }}"
+        vcenter: "{{ Nested_vCenter.FQDN | lower }}"
         user: "{{ Nested_vCenter.User }}"
         passwd: "{{ Nested_vCenter.Password }}"
         cluster: "{{ item.key }}"

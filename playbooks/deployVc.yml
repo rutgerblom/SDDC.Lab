@@ -96,7 +96,7 @@
 
     - name: Create Datacenter
       vmware_datacenter:
-        hostname: "{{ Nested_vCenter.FQDN }}"
+        hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         datacenter_name: "{{ Nested_vCenter.DataCenter }}"
@@ -106,7 +106,7 @@
 
     - name: Create Clusters
       vmware_cluster:
-        hostname: "{{ Nested_vCenter.FQDN }}"
+        hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         datacenter_name: "{{ Nested_vCenter.DataCenter }}"
@@ -119,7 +119,7 @@
 
     - name: Enable DRS on each Cluster, if applicable
       vmware_cluster_drs:
-        hostname: "{{ Nested_vCenter.FQDN }}"
+        hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         datacenter_name: "{{ Nested_vCenter.DataCenter }}"
