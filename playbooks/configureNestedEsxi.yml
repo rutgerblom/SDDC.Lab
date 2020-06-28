@@ -39,7 +39,7 @@
                                  Common.NFS.Datastore: {{ Common.NFS.Datastore }}
                                  Common.NFS.Datastore: {{ Common.NFS.Type }}
 
-                                  Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN }}
+                                  Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN | lower }}
                                   Nested_vCenter.User: {{ Nested_vCenter.User }}
                               Nested_vCenter.Password: {{ Nested_vCenter.Password }}
                             Nested_vCenter.DataCenter: {{ Nested_vCenter.DataCenter }}
@@ -61,7 +61,7 @@
         vm_username: "{{ item.value.User }}"
         vm_password: "{{ item.value.Password }}"
         vm_shell: /bin/esxcli
-        vm_shell_args: "system hostname set --fqdn={{ item.value.FQDN }}"
+        vm_shell_args: "system hostname set --fqdn={{ item.value.FQDN | lower }}"
         vm_shell_env: "PATH=/bin"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
@@ -78,7 +78,7 @@
         vm_username: "{{ item.value.User }}"
         vm_password: "{{ item.value.Password }}"
         vm_shell: /bin/esxcli
-        vm_shell_args: "system hostname set --fqdn={{ item.value.FQDN }}"
+        vm_shell_args: "system hostname set --fqdn={{ item.value.FQDN | lower }}"
         vm_shell_env: "PATH=/bin"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
@@ -390,7 +390,7 @@
         password: "{{ Target.Password }}"
         validate_certs: false
         datastore_name: datastore1
-        esxi_hostname: "{{ item.value.FQDN }}"
+        esxi_hostname: "{{ item.value.FQDN | lower }}"
         state: absent
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
@@ -399,7 +399,7 @@
 
     - name: Remove local datastore within nested ESXi deployed on the ESXi host
       vmware_host_datastore:
-        hostname: "{{ item.value.FQDN }}" 
+        hostname: "{{ item.value.FQDN | lower }}" 
         username: "{{ item.value.User }}"
         password: "{{ item.value.Password }}"
         validate_certs: false
@@ -412,13 +412,13 @@
 
     - name: Add nested ESXi to vCenter
       vmware_host:
-        hostname: "{{ Nested_vCenter.FQDN }}"
+        hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         datacenter_name: "{{ Nested_vCenter.DataCenter }}"
         validate_certs: false
         cluster_name: "{{ item.value.Cluster }}"
-        esxi_hostname: "{{ item.value.FQDN }}"
+        esxi_hostname: "{{ item.value.FQDN | lower }}"
         esxi_username: "{{ item.value.User }}"
         esxi_password: "{{ item.value.Password }}"
         state: present
@@ -427,11 +427,11 @@
 
     - name: Configure NTP on nested ESXi
       vmware_host_ntp:
-        hostname: "{{ Nested_vCenter.FQDN }}"
+        hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false        
-        esxi_hostname: "{{ item.value.FQDN }}"
+        esxi_hostname: "{{ item.value.FQDN | lower }}"
         ntp_servers:
           - "{{ Common.NTP.Server1.IPv4 }}"
           - "{{ Common.NTP.Server2.IPv4 }}"
@@ -442,11 +442,11 @@
 
     - name: Start ntpd on nested ESXi and change the service policy
       vmware_host_service_manager:
-        hostname: "{{ Nested_vCenter.FQDN }}"
+        hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false        
-        esxi_hostname: "{{ item.value.FQDN }}"
+        esxi_hostname: "{{ item.value.FQDN | lower }}"
         service_name: ntpd
         service_policy: on
         state: present
@@ -457,11 +457,11 @@
 
     - name: Mount NFS datastore on nested ESXi
       vmware_host_datastore:
-        hostname: "{{ Nested_vCenter.FQDN }}"
-        username: "{{ Nested_vCenter.User }}"
+        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        username: "{{ Nested_vCenter.User | lower }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        esxi_hostname: "{{ item.value.FQDN }}"      
+        esxi_hostname: "{{ item.value.FQDN | lower }}"      
         datastore_name: "{{ Common.NFS.Datastore }}"
         datastore_type: "{{ Common.NFS.Type }}"
         nfs_server: "{{ Common.NFS.Server.IPv4 }}"
