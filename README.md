@@ -39,12 +39,12 @@ See [CHANGELOG.md](CHANGELOG.md)
   * lab.local (forward lookup zone)
   * 230.203.10.in-addr.arpa (reverse lookup zone)
   * pod-230-vcenter.lab.local - 10.203.230.5
-  * pod-230-esxi11.lab.local  - 10.203.230.11
-  * pod-230-esxi12.lab.local  - 10.203.230.12
-  * pod-230-esxi13.lab.local  - 10.203.230.13
-  * pod-230-esxi91.lab.local  - 10.203.230.91
-  * pod-230-esxi92.lab.local  - 10.203.230.92
-  * pod-230-esxi93.lab.local  - 10.203.230.93
+  * pod-230-esxi-11.lab.local  - 10.203.230.11
+  * pod-230-esxi-12.lab.local  - 10.203.230.12
+  * pod-230-esxi-13.lab.local  - 10.203.230.13
+  * pod-230-esxi-91.lab.local  - 10.203.230.91
+  * pod-230-esxi-92.lab.local  - 10.203.230.92
+  * pod-230-esxi-93.lab.local  - 10.203.230.93
 
 ## Usage
 
