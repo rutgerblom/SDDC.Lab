@@ -1,4 +1,8 @@
 ## Luis has ownership of this file for the v2 migration ##
+#
+# ToDo:
+#  1) Use API to disable password expiration for admin.  Documented here: https://docs.vmware.com/en/VMware-NSX-T-Data-Center/3.0/installation/GUID-89E9BD91-6FD4-481A-A76F-7A20DB5B916C.html
+#
 ---
 - hosts: localhost
   gather_facts: false
@@ -6,58 +10,89 @@
     - ../software.yml
     - ../licenses.yml
     - ../config.yml
-    - ../answerfile.yml
+#    - ../answerfile.yml
   tasks:
-    - name: Check if NSX-T manager is already installed
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+
+                                           NSX-T Role: {{ Nested_NSXT.Components.LocalManager.Deployment.Role }}
+                                        NSX-T Version: {{ Deploy.Software.NSXT.Version }}
+                                   NSX-T Manager FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Check if NSX-T Local Manager is already installed
       uri:
-        url: https://{{ item.value.ip }}
+        url: https://{{ item.value.FQDN }}
         validate_certs: False
         timeout: 5
-      with_dict: "{{ nsxman }}"
+      with_dict: "{{ Nested_NSXT.Components.LocalManager }}"
       register: nsxman_check
       ignore_errors: true
       failed_when: false
       no_log: true
-      when: deploy_nsxt == true
+      when: Deploy.NSXT.LocalManager == true
 
-    - name: Deploy NSX-T Manager node from OVA
+    - name: Deploy NSX-T Local Manager from OVA
       vmware_deploy_ovf:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: no
-        datastore: "{{ physicalESX.datastore }}"
-        name: "{{ item.item.value.vmname }}"
-        ovf: "{{ NsxManOva }}"
-        deployment_option: "{{ nsxmansize }}"
+        allow_duplicates: no
+        datastore: "{{ Target.Datastore }}"
+        folder: "{{ Target.VMFolder }}"
+        datacenter: "{{ Target.DataCenter }}"
+        cluster: "{{ Target.Cluster }}"
+        name: "{{ item.value.VMName }}"
+        ovf:  "{{ Software[Deploy.Software.NSXT.Vendor][Deploy.Software.NSXT.Product]['Installers'][Deploy.Software.NSXT.Version]['Location'].Local }}/{{ Software[Deploy.Software.NSXT.Vendor][Deploy.Software.NSXT.Product]['Installers'][Deploy.Software.NSXT.Version].File }}"
+        deployment_option: "{{ item.value.Deployment.Size }}"
         networks:
-          "Network 1": "{{ physicalESX.vlanpg }}"
-        disk_provisioning: thin
+          "Network 1": "{{ Target.PortGroup.Management.Name }}"
+        disk_provisioning: "{{ Common.DiskProvisioning }}"
         power_on: yes
         fail_on_spec_warnings: yes
         wait: yes
         wait_for_ip_address: yes
         inject_ovf_env: yes
         properties:
-          nsx_allowSSHRootLogin: yes
-          nsx_cli_audit_passwd_0: "{{ nsxmanpassword }}"
-          nsx_cli_audit_username: "{{ nsxmanaudituser }}"
-          nsx_cli_passwd_0: "{{ nsxmanpassword }}"
-          nsx_cli_username: "{{ nsxmanadminuser }}"
-          nsx_dns1_0: "{{ dns1 }}"
-          nsx_domain_0: "{{ domain }}"
-          nsx_gateway_0: "{{ pod_network }}.{{ pod + management }}.1"
-          nsx_hostname: "{{ item.item.value.hostname }}"
-          nsx_ip_0: "{{ item.item.value.ip }}"
-          nsx_isSSHEnabled: True
-          nsx_netmask_0: "{{ mgmt_network_mask }}"
-          nsx_ntp_0: "{{ ntp1 }}"
-          nsx_passwd_0: "{{ nsxmanpassword }}"
-          nsx_role: "{{ nsxmanrole }}"
+          nsx_cli_audit_passwd_0: "{{ item.value.User.audit.Password }}"
+          nsx_cli_audit_username: "{{ item.value.User.audit.User }}"
+          nsx_cli_passwd_0: "{{ item.value.User.root.User }}"
+          nsx_cli_username: "{{ item.value.User.root.Password }}"
+          nsx_allowSSHRootLogin: "{{ item.value.Deployment.EnableSSH }}"
+          nsx_isSSHEnabled: "{{ item.value.Deployment.EnableSSH }}"
+          nsx_dns1_0: "{{ Common.DNS.Server1.IPv4 }}"
+          nsx_domain_0: "{{ Common.DNS.Domain }}"
+          nsx_gateway_0: "{{ item.value.Address.IPv4.Gateway }}"
+          nsx_hostname: "{{ item.value.FQDN }}"
+          nsx_ip_0: "{{ item.value.Address.IPv4.Address }}"
+          nsx_netmask_0: "{{ item.value.Address.IPv4.Prefix }}"
+          nsx_ntp_0: "{{ Common.NTP.Server1.IPv4 }}"
+          nsx_passwd_0: "{{ item.value.User.admin.Password }}"
+          nsx_role: "{{ item.value.Deployment.Role }}"
       delegate_to: localhost
-      with_items: "{{ nsxman_check.results }}"
+      with_items: "{{ Nested_NSXT.Components.LocalManager }}"
       when:
-        - deploy_nsxt == true
+        - Deploy.NSXT.LocalManager == true
         - item.status != 200
       async: 7200
       poll: 0
@@ -66,7 +101,7 @@
     - name: Wait 3 seconds before start checking whether the NSX-T Manager node is ready
       pause: seconds=3
       when: 
-        - deploy_nsxt == true
+        - Deploy.NSXT.LocalManager == true
         - deployment.changed == true
 
     - name: Result check for NSX-T Manager node deployment
@@ -75,26 +110,26 @@
       register: job_result
       with_items: "{{ deployment.results }}"
       when:
-        - deploy_nsxt == true
+        - Deploy.NSXT.LocalManager == true
         - deployment.changed == true
         - item.started is defined
 
     - name: Wait until the NSX-T API reports that the manager cluster is "STABLE" (wait max 60 minutes)
       uri:
-        url: https://{{ item.value.ip }}/api/v1/cluster/status
+        url: https://{{ item.value.FQDN }}/api/v1/cluster/status
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
-        url_username: "{{ nsxmanadminuser }}"
-        url_password: "{{ nsxmanpassword }}"
+        url_username: "{{ item.value.User.admin.User }}"
+        url_password: "{{ item.value.User.admin.Password }}"
         method: GET
         body_format: json
         return_content: yes
         status_code: 200
-      with_dict: "{{ nsxman }}"
+      with_dict: "{{ Nested_NSXT.Components.LocalManager }}"
       register: result
       until: result.status == 200 and result.json.detailed_cluster_status.overall_status == "STABLE"
       retries: 120
       delay: 30
       when: 
-        - deploy_nsxt == true
+        - Deploy.NSXT.LocalManager == true
