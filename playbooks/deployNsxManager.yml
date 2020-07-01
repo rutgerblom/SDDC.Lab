@@ -8,9 +8,8 @@
   gather_facts: false
   vars_files:
     - ../software.yml
-    - ../licenses.yml
     - ../config.yml
-#    - ../answerfile.yml
+    - ../answerfile.yml
   tasks:
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -34,6 +33,32 @@
                                            NSX-T Role: {{ Nested_NSXT.Components.LocalManager.Deployment.Role }}
                                         NSX-T Version: {{ Deploy.Software.NSXT.Version }}
                                    NSX-T Manager FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
+                                         NSX-T VMName: {{ Nested_NSXT.Components.LocalManager.VMName }}
+
+
+                                                OVF Variables
+                                                =============
+
+                                         NSX-T VMName: {{ Nested_NSXT.Components.LocalManager.VMName }}
+                                           NSX-T Size: {{ Nested_NSXT.Components.LocalManager.Deployment.Size  }}
+                                    Network PortGroup: {{ Target.PortGroup.Management.Name }}
+
+                                           Audit User: {{ Nested_NSXT.Components.LocalManager.User.audit.Name }}
+                                       Audit Password: {{ Nested_NSXT.Components.LocalManager.User.audit.Password }}
+
+                                             CLI User: {{ Nested_NSXT.Components.LocalManager.User.admin.Name }}
+                                         CLI Password: {{ Nested_NSXT.Components.LocalManager.User.root.Password }}
+
+                                 Network IPv4 Address: {{ Nested_NSXT.Components.LocalManager.Address.IPv4.Address }}
+                                      Network Netmask: {{ (Nested_NSXT.Components.LocalManager.Address.IPv4.Address + '/' + Nested_NSXT.Components.LocalManager.Address.IPv4.Prefix) | ipaddr('netmask') }}
+                                      Network Gateway: {{ Nested_NSXT.Components.LocalManager.Address.IPv4.Gateway }}
+
+                                   Network NTP Server: {{ Common.NTP.Server1.IPv4 }}
+                                   Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                   Network DNS Domain: {{ Common.DNS.Domain }}
+
+                                     NSX-T Media Path: {{ Software[Deploy.Software.NSXT.Vendor][Deploy.Software.NSXT.Product]['Installers'][Deploy.Software.NSXT.Version]['Location'].Local }}
+                                     NSX-T Media File: {{ Software[Deploy.Software.NSXT.Vendor][Deploy.Software.NSXT.Product]['Installers'][Deploy.Software.NSXT.Version].File }}
 
           =================================================================================================
       when:
@@ -41,10 +66,9 @@
 
     - name: Check if NSX-T Local Manager is already installed
       uri:
-        url: https://{{ item.value.FQDN }}
+        url: https://{{ Nested_NSXT.Components.LocalManager.FQDN }}
         validate_certs: False
         timeout: 5
-      with_dict: "{{ Nested_NSXT.Components.LocalManager }}"
       register: nsxman_check
       ignore_errors: true
       failed_when: false
@@ -57,14 +81,14 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        allow_duplicates: no
         datastore: "{{ Target.Datastore }}"
+        allow_duplicates: no
         folder: "{{ Target.VMFolder }}"
         datacenter: "{{ Target.DataCenter }}"
         cluster: "{{ Target.Cluster }}"
-        name: "{{ item.value.VMName }}"
+        name: "{{ Nested_NSXT.Components.LocalManager.VMName }}"
         ovf:  "{{ Software[Deploy.Software.NSXT.Vendor][Deploy.Software.NSXT.Product]['Installers'][Deploy.Software.NSXT.Version]['Location'].Local }}/{{ Software[Deploy.Software.NSXT.Vendor][Deploy.Software.NSXT.Product]['Installers'][Deploy.Software.NSXT.Version].File }}"
-        deployment_option: "{{ item.value.Deployment.Size }}"
+        deployment_option: "{{ Nested_NSXT.Components.LocalManager.Deployment.Size }}"
         networks:
           "Network 1": "{{ Target.PortGroup.Management.Name }}"
         disk_provisioning: "{{ Common.DiskProvisioning }}"
@@ -74,26 +98,25 @@
         wait_for_ip_address: yes
         inject_ovf_env: yes
         properties:
-          nsx_cli_audit_passwd_0: "{{ item.value.User.audit.Password }}"
-          nsx_cli_audit_username: "{{ item.value.User.audit.User }}"
-          nsx_cli_passwd_0: "{{ item.value.User.root.User }}"
-          nsx_cli_username: "{{ item.value.User.root.Password }}"
-          nsx_allowSSHRootLogin: "{{ item.value.Deployment.EnableSSH }}"
-          nsx_isSSHEnabled: "{{ item.value.Deployment.EnableSSH }}"
+          nsx_cli_audit_username: "{{ Nested_NSXT.Components.LocalManager.User.audit.Name }}"
+          nsx_cli_audit_passwd_0: "{{ Nested_NSXT.Components.LocalManager.User.audit.Password }}"
+          nsx_cli_username: "{{ Nested_NSXT.Components.LocalManager.User.admin.Name }}"
+          nsx_cli_passwd_0: "{{ Nested_NSXT.Components.LocalManager.User.admin.Password }}"
+          nsx_allowSSHRootLogin: "{{ Nested_NSXT.Components.LocalManager.Deployment.EnableSSH }}"
+          nsx_isSSHEnabled: "{{ Nested_NSXT.Components.LocalManager.Deployment.EnableSSH }}"
           nsx_dns1_0: "{{ Common.DNS.Server1.IPv4 }}"
           nsx_domain_0: "{{ Common.DNS.Domain }}"
-          nsx_gateway_0: "{{ item.value.Address.IPv4.Gateway }}"
-          nsx_hostname: "{{ item.value.FQDN }}"
-          nsx_ip_0: "{{ item.value.Address.IPv4.Address }}"
-          nsx_netmask_0: "{{ item.value.Address.IPv4.Prefix }}"
-          nsx_ntp_0: "{{ Common.NTP.Server1.IPv4 }}"
-          nsx_passwd_0: "{{ item.value.User.admin.Password }}"
-          nsx_role: "{{ item.value.Deployment.Role }}"
+          nsx_gateway_0: "{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Gateway }}"
+          nsx_hostname:  "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
+          nsx_ip_0:      "{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Address }}"
+          nsx_netmask_0: "{{ (Nested_NSXT.Components.LocalManager.Address.IPv4.Address + '/' + Nested_NSXT.Components.LocalManager.Address.IPv4.Prefix) | ipaddr('netmask') }}"
+          nsx_ntp_0:     "{{ Common.NTP.Server1.IPv4 }}"
+          nsx_passwd_0:  "{{ Nested_NSXT.Components.LocalManager.User.admin.Password }}"
+          nsx_role:      "{{ Nested_NSXT.Components.LocalManager.Deployment.Role }}"
       delegate_to: localhost
-      with_items: "{{ Nested_NSXT.Components.LocalManager }}"
       when:
         - Deploy.NSXT.LocalManager == true
-        - item.status != 200
+        - nsxman_check.status != 200
       async: 7200
       poll: 0
       register: deployment
@@ -116,17 +139,16 @@
 
     - name: Wait until the NSX-T API reports that the manager cluster is "STABLE" (wait max 60 minutes)
       uri:
-        url: https://{{ item.value.FQDN }}/api/v1/cluster/status
+        url: https://{{ Nested_NSXT.Components.LocalManager.FQDN | lower }}/api/v1/cluster/status
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
-        url_username: "{{ item.value.User.admin.User }}"
-        url_password: "{{ item.value.User.admin.Password }}"
+        url_username: "{{ Nested_NSXT.Components.LocalManager.User.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Components.LocalManager.User.admin.Password }}"
         method: GET
         body_format: json
         return_content: yes
         status_code: 200
-      with_dict: "{{ Nested_NSXT.Components.LocalManager }}"
       register: result
       until: result.status == 200 and result.json.detailed_cluster_status.overall_status == "STABLE"
       retries: 120
