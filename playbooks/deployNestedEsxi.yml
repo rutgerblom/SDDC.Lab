@@ -1,8 +1,4 @@
 ## Rutger has ownership of this file for the v2 migration ##
-##
-## ToDo:
-##        - Investigate performance 
-##
 ---
 - hosts: localhost
   name: deployNestedEsxi.yml
@@ -164,7 +160,7 @@
 
     - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the datastore
       vsphere_file:
-        hostname: "{{ Target.FQDN }}"
+        host: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: false
