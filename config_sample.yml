@@ -3,6 +3,7 @@ DEBUG:
   KeepConfigFiles: true
   KeepInstallerFiles: false
   DisplayVariables: true
+  DisplayVariables_DNS: false
   DisplayDelayInSeconds: 10
 
 
@@ -46,7 +47,7 @@ Deploy:
     NSXT:
       Vendor:  VMware
       Product: NSXT
-      Version: 3.0.0
+      Version: '3.0.1'
       Patch:   false
       Config:  "Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT.conf"
       Installer: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Installer-NSXT"
@@ -1293,12 +1294,13 @@ Nested_NSXT:
         AllowRootSSH: "{{ Deploy.EnableSSH }}"
       User:
         root:
+          Name: root
           Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
         admin:
-          User: admin
+          Name: admin
           Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
         audit:
-          User: audit
+          Name: audit
           Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
       Address:
         IPv4:
@@ -1309,7 +1311,7 @@ Nested_NSXT:
           Address: "{{ Net.Management.IPv6.Network }}::7"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     LocalManager:
-      VMName: Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-LM
+      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-LM"
       FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-LM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.8{% endif %}"
       Deployment:
         Size: small
@@ -1319,12 +1321,13 @@ Nested_NSXT:
         AllowRootSSH: "{{ Deploy.EnableSSH }}"
       User:
         root:
+          Name: root
           Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
         admin:
-          User: admin
+          Name: admin
           Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
         audit:
-          User: audit
+          Name: audit
           Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
       Address:
         IPv4:
@@ -1344,12 +1347,13 @@ Nested_NSXT:
         AllowRootSSH: "{{ Deploy.EnableSSH }}"
       User:
         root:
+          Name: root
           Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
         admin:
-          User: admin
+          Name: admin
           Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
         audit:
-          User: audit
+          Name: audit
           Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
       Address:
         IPv4:
