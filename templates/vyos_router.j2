@@ -86,8 +86,19 @@ protocols {
     bgp {{ Nested_Router.BGP.ASN }} {
 {% for Neighbor in Nested_Router.BGP.Neighbors %}
         neighbor {{ Neighbor.IPv4.Address }} {
+{% if Deploy.Software.Router.Version == "Legacy" %}
             default-originate {
             }
+{% endif %}
+{% if Deploy.Software.Router.Version == "Latest" %}
+            address-family {
+                ipv4-unicast {
+                    default-originate {
+                    }
+                }
+            }
+{% endif %}
+            description {{ Neighbor.Name }}
             remote-as {{ Neighbor.ASN }}
         }
 {% endfor %}
