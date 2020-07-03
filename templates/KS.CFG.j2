@@ -1,0 +1,13 @@
+vmaccepteula
+rootpw VMware1!
+install --firstdisk --overwritevmfs
+network --bootproto=dhcp --device=vmnic0 --addvmportgroup=0
+reboot
+
+%firstboot --interpreter=busybox
+vim-cmd hostsvc/enable_ssh
+vim-cmd hostsvc/start_ssh
+vim-cmd hostsvc/enable_esx_shell
+vim-cmd hostsvc/start_esx_shell
+esxcli system settings advanced set -o /UserVars/SuppressShellWarning -i 1
+esxcli network ip interface ipv4 set --interface-name=vmk0 --ipv4=1.1.1.1 --netmask=255.255.255.0 --type=static
