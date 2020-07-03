@@ -42,11 +42,11 @@
                                            NSX-T Size: {{ Nested_NSXT.Components.LocalManager.Deployment.Size  }}
                                     Network PortGroup: {{ Target.PortGroup.Management.Name }}
 
-                                           Audit User: {{ Nested_NSXT.Components.LocalManager.User.audit.Name }}
-                                       Audit Password: {{ Nested_NSXT.Components.LocalManager.User.audit.Password }}
+                                           Audit User: {{ Nested_NSXT.Credentials.audit.Name }}
+                                       Audit Password: {{ Nested_NSXT.Credentials.audit.Password }}
 
-                                             CLI User: {{ Nested_NSXT.Components.LocalManager.User.admin.Name }}
-                                         CLI Password: {{ Nested_NSXT.Components.LocalManager.User.root.Password }}
+                                             CLI User: {{ Nested_NSXT.Credentials.admin.Name }}
+                                         CLI Password: {{ Nested_NSXT.Credentials.admin.Password }}
 
                                  Network IPv4 Address: {{ Nested_NSXT.Components.LocalManager.Address.IPv4.Address }}
                                       Network Netmask: {{ (Nested_NSXT.Components.LocalManager.Address.IPv4.Address + '/' + Nested_NSXT.Components.LocalManager.Address.IPv4.Prefix) | ipaddr('netmask') }}
@@ -97,10 +97,10 @@
         wait_for_ip_address: yes
         inject_ovf_env: yes
         properties:
-          nsx_cli_audit_username: "{{ Nested_NSXT.Components.LocalManager.User.audit.Name }}"
-          nsx_cli_audit_passwd_0: "{{ Nested_NSXT.Components.LocalManager.User.audit.Password }}"
-          nsx_cli_username: "{{ Nested_NSXT.Components.LocalManager.User.admin.Name }}"
-          nsx_cli_passwd_0: "{{ Nested_NSXT.Components.LocalManager.User.admin.Password }}"
+          nsx_cli_audit_username: "{{ Nested_NSXT.Credentials.audit.Name }}"
+          nsx_cli_audit_passwd_0: "{{ Nested_NSXT.Credentials.audit.Password }}"
+          nsx_cli_username: "{{ Nested_NSXT.Credentials.admin.Name }}"
+          nsx_cli_passwd_0: "{{ Nested_NSXT.Credentials.admin.Password }}"
           nsx_allowSSHRootLogin: "{{ Nested_NSXT.Components.LocalManager.Deployment.EnableSSH }}"
           nsx_isSSHEnabled: "{{ Nested_NSXT.Components.LocalManager.Deployment.EnableSSH }}"
           nsx_dns1_0: "{{ Common.DNS.Server1.IPv4 }}"
@@ -110,7 +110,7 @@
           nsx_ip_0:      "{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Address }}"
           nsx_netmask_0: "{{ (Nested_NSXT.Components.LocalManager.Address.IPv4.Address + '/' + Nested_NSXT.Components.LocalManager.Address.IPv4.Prefix) | ipaddr('netmask') }}"
           nsx_ntp_0:     "{{ Common.NTP.Server1.IPv4 }}"
-          nsx_passwd_0:  "{{ Nested_NSXT.Components.LocalManager.User.admin.Password }}"
+          nsx_passwd_0:  "{{ Nested_NSXT.Credentials.admin.Password }}"
           nsx_role:      "{{ Nested_NSXT.Components.LocalManager.Deployment.Role }}"
       delegate_to: localhost
       when:
@@ -142,8 +142,8 @@
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
-        url_username: "{{ Nested_NSXT.Components.LocalManager.User.admin.Name }}"
-        url_password: "{{ Nested_NSXT.Components.LocalManager.User.admin.Password }}"
+        url_username: "{{ Nested_NSXT.Credentials.audit.Name }}"
+        url_password: "{{ Nested_NSXT.Credentials.audit.Password }}"
         method: GET
         body_format: json
         return_content: yes
