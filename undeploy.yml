@@ -46,16 +46,15 @@
 
     - name: Remove NSX Manager VM(s)
       vmware_guest:
-        hostname: "{{ physicalESX.fqdn }}"
-        username: "{{ physicalESX.user }}"
-        password: "{{ physicalESX.password }}"
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ item.value.vmname }}"
+        name: "{{ Nested_NSXT.Components.LocalManager.VMName }}"
         force: true
         state: absent
       async: 7200
       poll: 0        
-      with_dict: "{{ nsxman }}"
       ignore_errors: true
 
     - name: Remove trunk port group for the nested environment
