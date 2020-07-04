@@ -1,5 +1,5 @@
 vmaccepteula
-rootpw VMware1!
+rootpw {{ Common.Password.Nested }}
 install --firstdisk --overwritevmfs
 network --bootproto=dhcp --device=vmnic0 --addvmportgroup=0
 reboot
@@ -10,4 +10,4 @@ vim-cmd hostsvc/start_ssh
 vim-cmd hostsvc/enable_esx_shell
 vim-cmd hostsvc/start_esx_shell
 esxcli system settings advanced set -o /UserVars/SuppressShellWarning -i 1
-esxcli network ip interface ipv4 set --interface-name=vmk0 --ipv4=1.1.1.1 --netmask=255.255.255.0 --type=static
+esxcli network ip interface ipv4 set --interface-name=vmk0 --ipv4={{ item.value.vmk.vmk0.Address.IPv4.Address }} --netmask={{ item.value.vmk.vmk0.Address.IPv4.Prefix) | ipaddr('netmask') }} --type=static
