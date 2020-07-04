@@ -27,50 +27,19 @@
                                       Target.VMFolder: {{ Target.VMFolder }}
                                      Target.Datastore: {{ Target.Datastore }}
 
-                               Common.NFS.Server.IPv4: {{ Common.NFS.Server.IPv4 }}
-                                      Common.NFS.Path: {{ Common.NFS.Path  }} 
-                                 Common.NFS.Datastore: {{ Common.NFS.Datastore }}
-                                 Common.NFS.Datastore: {{ Common.NFS.Type }}
-
                                   Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN | lower }}
                                   Nested_vCenter.User: {{ Nested_vCenter.User }}
                               Nested_vCenter.Password: {{ Nested_vCenter.Password }}
                             Nested_vCenter.DataCenter: {{ Nested_vCenter.DataCenter }}
 
+                               Common.NFS.Server.IPv4: {{ Common.NFS.Server.IPv4 }}
+                                      Common.NFS.Path: {{ Common.NFS.Path  }} 
+                                 Common.NFS.Datastore: {{ Common.NFS.Datastore }}
+                                 Common.NFS.Datastore: {{ Common.NFS.Type }}
+
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-
-    - name: Remove local datastore within nested ESXi deployed on vCenter
-      vmware_host_datastore:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: false
-        datastore_name: datastore1
-        esxi_hostname: "{{ item.value.FQDN | lower }}"
-        state: absent
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      async: 1800
-      poll: 0
-      when: 
-        - Target.Deployment == "vCenter"
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
-
-    - name: Remove local datastore within nested ESXi deployed on the ESXi host
-      vmware_host_datastore:
-        hostname: "{{ item.value.FQDN | lower }}" 
-        username: "{{ item.value.User }}"
-        password: "{{ item.value.Password }}"
-        validate_certs: false
-        datastore_name: datastore1
-        state: absent
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      async: 1800
-      poll: 0
-      when: 
-        - Target.Deployment == "Host"
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
     - name: Add nested ESXi to vCenter
       vmware_host:
