@@ -33,10 +33,6 @@
       when:
         - DEBUG.DisplayVariables == true
 
-    - name: Generate local variables to speed up iteration
-      set_fact:
-        LOCAL_Nested_ESXiHosts: "{{ Nested_ESXi.Hosts }}"
-
     - name: Deploy ESXi VMs on vCenter
       vmware_guest:
         hostname: "{{ Target.FQDN }}"
@@ -79,7 +75,7 @@
         cdrom:
           type: "iso"
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso"
-      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
       poll: 0
       when:
@@ -127,7 +123,7 @@
         cdrom:
           type: "iso"
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso"
-      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
       poll: 0
       when:
@@ -147,7 +143,7 @@
       until: vm_facts is search("item.value.vmk.vmk0.Address.IPv4.Address")
       retries: 30
       delay: 30
-      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
@@ -160,7 +156,7 @@
         name: "{{ item.value.VMName }}"
         cdrom:
           type: "none"
-      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
       poll: 0
       when: 
@@ -176,7 +172,7 @@
         datastore: "{{ Target.Datastore }}"
         path: "{{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso"
         state: absent
-      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
