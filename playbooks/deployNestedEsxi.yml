@@ -33,6 +33,10 @@
       when:
         - DEBUG.DisplayVariables == true
 
+    - name: Generate local variables to speed up iteration
+      set_fact:
+        LOCAL_Nested_ESXiHosts: "{{ Nested_ESXi.Hosts }}"
+
     - name: Deploy ESXi VMs on vCenter
       vmware_guest:
         hostname: "{{ Target.FQDN }}"
@@ -75,7 +79,7 @@
         cdrom:
           type: "iso"
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
       async: 1800
       poll: 0
       when:
@@ -122,7 +126,7 @@
         cdrom:
           type: "iso"
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
       async: 1800
       poll: 0
       when:
@@ -141,7 +145,7 @@
       until: vm_facts is search("1.1.1.1")
       retries: 30
       delay: 30
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Disconnect CD-ROM from Nested ESXi VMs
@@ -153,7 +157,7 @@
         name: "{{ item.value.VMName }}"
         cdrom:
           type: "none"
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
       async: 1800
       poll: 0
       when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
