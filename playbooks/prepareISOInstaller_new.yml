@@ -111,14 +111,23 @@
         src: "{{ Target.ISOMount }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso" 
         datastore: "{{ Target.Datastore }}" 
         path: "{{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso"
+      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
       tags: upload
- #     
- #   - name: Delete temporary directory
- #     file:
- #       path: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
- #       state: absent
-#
- #   - name: Delete custom ESXi ISO on local filesystem
- #     file:
- #       path: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
- #       state: absent
+      
+    - name: Delete local ISO content directory
+      file:
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}"
+        state: absent
+
+    - name: Delete local ISO mount directory
+      file:
+        path: "{{ Target.ISOMount }}"
+        state: absent
+
+    - name: Delete duplicated ISO content directories
+      file:
+        path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
+        state: absent
+      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
