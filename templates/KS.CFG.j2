@@ -1,13 +1,69 @@
+### Accept the VMware End User License Agreement
 vmaccepteula
+
+### Set the root password
 rootpw {{ Common.Password.Nested }}
+
+### Install ESXi to the local disk
 install --firstdisk --overwritevmfs
+
+### Set the network to DHCP on the first network adapter
 network --bootproto=dhcp --device=vmnic0 --addvmportgroup=0
+
+### Reboot ESXi Host
 reboot
 
+### Open busybox and launch commands
 %firstboot --interpreter=busybox
+
+### Set VLAN on the management portgroup
+esxcli network vswitch standard portgroup set --portgroup-name='Management Network' --vlan-id={{ item.value.vmk.vmk0.VLAN }}"
+
+### Configure static IPv4 address on vmk0
+esxcli network ip interface ipv4 set --interface-name=vmk0 --ipv4={{ item.value.vmk.vmk0.Address.IPv4.Address }} --netmask={{ (item.value.vmk.vmk0.Address.IPv4.Address + '/' + item.value.vmk.vmk0.Address.IPv4.Prefix) | ipaddr('netmask') }} --type=static
+
+### Configure default gateway on vmk0
+esxcfg-route -a default {{ item.value.vmk.vmk0.Address.IPv4.Gateway }}
+
+### Configure ESXi hostname
+esxcli system hostname set --fqdn={{ item.value.FQDN | lower }}
+
+### Configure DNS server addresses
+esxcli network ip dns server add --server={{ Common.DNS.Server1.IPv4 }}
+esxcli network ip dns server add --server={{ Common.DNS.Server2.IPv4 }}
+
+### Configure search domain
+esxcli network ip dns search add --domain={{ Common.DNS.Domain }}
+
+### Enable & start remote ESXi Shell (SSH)
 vim-cmd hostsvc/enable_ssh
 vim-cmd hostsvc/start_ssh
+
+### Enable & start ESXi Shell (TSM)
 vim-cmd hostsvc/enable_esx_shell
 vim-cmd hostsvc/start_esx_shell
+
+### Supress ESXi Shell shell warning
 esxcli system settings advanced set -o /UserVars/SuppressShellWarning -i 1
-esxcli network ip interface ipv4 set --interface-name=vmk0 --ipv4={{ item.value.vmk.vmk0.Address.IPv4.Address }} --netmask={{ (item.value.vmk.vmk0.Address.IPv4.Address + '/' + item.value.vmk.vmk0.Address.IPv4.Prefix) | ipaddr('netmask') }} --type=static
+
+### Configure NTP Server addresses
+echo "server {{ Common.NTP.Server1.IPv4 }}" >> /etc/ntp.conf;
+echo "server {{ Common.NTP.Server2.IPv4 }}" >> /etc/ntp.conf;
+
+### Allow NTP through firewall
+esxcfg-firewall -e ntpClient
+     
+### Enable NTP autostartup
+/sbin/chkconfig ntpd on;
+
+### Mark vSAN cache disk as Flash disk
+esxcli storage nmp satp rule add -s VMW_SATP_LOCAL -d mpx.vmhba0:C0:T2:L0 -o enable_ssd"
+
+### Reclaim vSAN Flash disk
+esxcli storage core claiming reclaim -d mpx.vmhba0:C0:T2:L0
+
+### Disable CEIP
+esxcli system settings advanced set -o /UserVars/HostClientCEIPOptIn -i 2
+
+### Reboot ESXi Host
+esxcli system shutdown reboot -d 15 -r "rebooting after ESXi host configuration"
