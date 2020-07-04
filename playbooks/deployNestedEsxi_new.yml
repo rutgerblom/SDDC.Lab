@@ -140,7 +140,7 @@
         name: "{{ item.value.VMName }}"
         schema: "vsphere"
       register: vm_facts
-      until: vm_facts is search("item.value.vmk.vmk0.Address.IPv4.Address")
+      until: vm_facts is search("10.203")
       retries: 30
       delay: 30
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
