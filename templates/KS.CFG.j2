@@ -38,7 +38,7 @@ esxcfg-firewall -e ntpClient
 /sbin/chkconfig ntpd on;
 
 # Mark vSAN cache disk as Flash disk
-esxcli storage nmp satp rule add -s VMW_SATP_LOCAL -d mpx.vmhba0:C0:T2:L0 -o enable_ssd"
+esxcli storage nmp satp rule add -s VMW_SATP_LOCAL -d mpx.vmhba0:C0:T2:L0 -o enable_ssd
 
 # Reclaim vSAN Flash disk
 esxcli storage core claiming reclaim -d mpx.vmhba0:C0:T2:L0
@@ -52,3 +52,6 @@ esxcli system syslog config set --loghost=udp://{{ Common.Syslog.IPv4 }}:514
 # Configure DNS servers
 esxcli network ip dns server add --server={{ Common.DNS.Server1.IPv4 }}
 esxcli network ip dns server add --server={{ Common.DNS.Server2.IPv4 }}
+
+# Reboot ESXi host
+reboot
