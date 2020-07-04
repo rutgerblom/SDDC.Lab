@@ -1283,6 +1283,16 @@ Nested_NSXT:
     CEIP:
       Answer: true
       Enabled: false
+  Credentials:
+    root:
+      Name: root
+      Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+    admin:
+      Name: admin
+      Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+    audit:
+      Name: audit
+      Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
   Components:
     GlobalManager:
       VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-GM"
@@ -1292,16 +1302,6 @@ Nested_NSXT:
         role: NSX Global Manager
         EnableSSH: "{{ Deploy.EnableSSH }}"
         AllowRootSSH: "{{ Deploy.EnableSSH }}"
-      User:
-        root:
-          Name: root
-          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-        admin:
-          Name: admin
-          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-        audit:
-          Name: audit
-          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
       Address:
         IPv4:
           Address: "{{ Net.Management.IPv4.Network }}.7"
@@ -1319,16 +1319,6 @@ Nested_NSXT:
         SiteName: "NSX-Site-{{ '%03d'|format(Pod.Number|int) }}"
         EnableSSH: "{{ Deploy.EnableSSH }}"
         AllowRootSSH: "{{ Deploy.EnableSSH }}"
-      User:
-        root:
-          Name: root
-          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-        admin:
-          Name: admin
-          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-        audit:
-          Name: audit
-          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
       Address:
         IPv4:
           Address: "{{ Net.Management.IPv4.Network }}.8"
@@ -1345,16 +1335,6 @@ Nested_NSXT:
         role: "nsx-cloud-service-manager"
         EnableSSH: "{{ Deploy.EnableSSH }}"
         AllowRootSSH: "{{ Deploy.EnableSSH }}"
-      User:
-        root:
-          Name: root
-          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-        admin:
-          Name: admin
-          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-        audit:
-          Name: audit
-          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
       Address:
         IPv4:
           Address: "{{ Net.Management.IPv4.Network }}.9"
@@ -1369,16 +1349,16 @@ Nested_NSXT:
     TZ-LAN:
       Type: vlan
       Description: ''
-      Switch: ''
+      Switch: "NVDS-1"
       TeamingPolicies: []
     TZ-Edge:
       Type: vlan
       Description: ''
-      Switch: ''
+      Switch: "NVDS-1"
       TeamingPolicies: []
     TZ-Overlay:
       Description: GEVEVE Overlay Transport Zone
-      Switch: ''
+      Switch: "NVDS-1"
       TeamingPolicies: []
   Pool:
     IP:
