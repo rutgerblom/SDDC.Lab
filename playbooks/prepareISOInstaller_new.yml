@@ -47,7 +47,6 @@
       copy: 
         src: "{{ Target.ISOMount }}/ESXi/"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
-        force: false
 
     - name: Unmount ESXi ISO
       action: mount name='{{ Target.ISOMount }}/ESXi' src="{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version]['Location'].Local}}/{{Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].File }}" fstype=iso9660 state=absent
@@ -70,7 +69,6 @@
       copy:
         src: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
         dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
-        force: false
       loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
