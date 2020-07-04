@@ -33,10 +33,6 @@
       when:
         - DEBUG.DisplayVariables == true
 
-    - name: Generate local variables to speed up iteration
-      set_fact:
-        LOCAL_Nested_ESXiHosts: "{{ Nested_ESXi.Hosts }}"
-
     - name: Deploy ESXi VMs on vCenter
       vmware_guest:
         hostname: "{{ Target.FQDN }}"

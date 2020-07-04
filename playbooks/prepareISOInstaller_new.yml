@@ -1,7 +1,4 @@
 ## Rutger has ownership of this file for the v2 migration ##
-##
-## Work in progress. Only partially functional.
-##
 ---
 - hosts: localhost
   name: prepareISOInstaller.yml
@@ -62,8 +59,6 @@
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/boot.cfg"
         regexp: 'imgpayld.tgz$'
         replace: 'imgpayld.tgz --- /customks.tgz'
-
-## New and modified tasks ###
 
     - name: Duplicate directory with modified ISO contents
       copy:
