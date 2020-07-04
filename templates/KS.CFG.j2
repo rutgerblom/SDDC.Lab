@@ -8,7 +8,7 @@ rootpw {{ Common.Password.Nested }}
 install --firstdisk --overwritevmfs
 
 # Host Network Settings
-network --bootproto=static --addvmportgroup=0 --ip={{ item.value.vmk.vmk0.Address.IPv4.Address }} --netmask={{ (item.value.vmk.vmk0.Address.IPv4.Address + '/' + item.value.vmk.vmk0.Address.IPv4.Prefix) | ipaddr('netmask') }} --gateway={{ item.value.vmk.vmk0.Address.IPv4.Gateway }} --hostname={{ item.value.FQDN | lower }}
+network --bootproto=static --addvmportgroup=0 --ip={{ item.value.vmk.vmk0.Address.IPv4.Address }} --netmask={{ (item.value.vmk.vmk0.Address.IPv4.Address + '/' + item.value.vmk.vmk0.Address.IPv4.Prefix) | ipaddr('netmask') }} --gateway={{ item.value.vmk.vmk0.Address.IPv4.Gateway }} --nameserver={{ Common.DNS.Server1.IPv4 }} --hostname={{ item.value.FQDN | lower }}
 
 # Reboot ESXi Host
 reboot
