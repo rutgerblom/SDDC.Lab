@@ -49,7 +49,7 @@
         regexp: 'kernelopt=cdromBoot runweasel'
         replace: 'kernelopt=ks=cdrom:/KS.CFG'
 
-    - name: Duplicate directory with modified ISO contents
+    - name: Create directory with modified ISO contents for each nested ESXi
       copy:
         src: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
         dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
