@@ -8,7 +8,7 @@ rootpw {{ Common.Password.Nested }}
 install --firstdisk --overwritevmfs
 
 # Host Network Settings
-network --bootproto=static --addvmportgroup=0 --ip={{ item.value.vmk.vmk0.Address.IPv4.Address }} --netmask={{ (item.value.vmk.vmk0.Address.IPv4.Address + '/' + item.value.vmk.vmk0.Address.IPv4.Prefix) | ipaddr('netmask') }} --gateway={{ item.value.vmk.vmk0.Address.IPv4.Gateway }} --vlanid={{ item.value.vmk.vmk0.VLAN }} --nameserver={{ Common.DNS.Server1.IPv4 }} --hostname={{ item.value.FQDN | lower }}
+network --bootproto=static --addvmportgroup=0 --ip={{ item.value.vmk.vmk0.Address.IPv4.Address }} --netmask={{ (item.value.vmk.vmk0.Address.IPv4.Address + '/' + item.value.vmk.vmk0.Address.IPv4.Prefix) | ipaddr('netmask') }} --gateway={{ item.value.vmk.vmk0.Address.IPv4.Gateway }} --vlanid={{ item.value.vmk.vmk0.VLAN }} --nameserver={{ Common.DNS.Server1.IPv4 }} --hostname={{ item.value.FQDN }}
 
 # Reboot ESXi host
 reboot
@@ -47,7 +47,7 @@ esxcli storage core claiming reclaim -d mpx.vmhba0:C0:T2:L0
 esxcli system settings advanced set -o /UserVars/HostClientCEIPOptIn -i 2
 
 # Configure Syslog servers
-esxcli system syslog config set --loghost=udp://{{ Common.Syslog.IPv4 }}:514
+esxcli system syslog config set --loghost={{ Common.Syslog.Protocol }}://{{ Common.Syslog.IPv4 }}:{{ Common.Syslog.Port }}
 
 # Configure DNS servers
 esxcli network ip dns server add --server={{ Common.DNS.Server1.IPv4 }}
