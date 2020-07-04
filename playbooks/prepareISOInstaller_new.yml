@@ -95,11 +95,13 @@
       loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
- #   - name: Create custom ESXi ISO
- #     command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
- #     args:
- #       chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
-#
+    - name: Create custom ESXi ISO
+      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.ISOMount }}/{{ item.key }}/{{ Deploy.Software.ESXi.Installer }}.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ item.value.VMName }}/"
+      args:
+        chdir: "{{ Target.TempFolder }}/{{ item.value.VMName }}/"
+      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+
  #   - name: Upload the ESXi ISO to the datastore
  #     vsphere_copy: 
  #       hostname: "{{ Target.FQDN }}"
