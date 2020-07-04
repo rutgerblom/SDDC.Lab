@@ -8,7 +8,7 @@ rootpw {{ Common.Password.Nested }}
 install --firstdisk --overwritevmfs
 
 # Host Network Settings
-network --bootproto=static --addvmportgroup=0 --ip={{ item.value.vmk.vmk0.Address.IPv4.Address }} --netmask={{ (item.value.vmk.vmk0.Address.IPv4.Address + '/' + item.value.vmk.vmk0.Address.IPv4.Prefix) | ipaddr('netmask') }} --gateway={{ item.value.vmk.vmk0.Address.IPv4.Gateway }} --nameserver={{ Common.DNS.Server1.IPv4 }} --hostname={{ item.value.FQDN | lower }}
+network --bootproto=static --addvmportgroup=0 --ip={{ item.value.vmk.vmk0.Address.IPv4.Address }} --netmask={{ (item.value.vmk.vmk0.Address.IPv4.Address + '/' + item.value.vmk.vmk0.Address.IPv4.Prefix) | ipaddr('netmask') }} --gateway={{ item.value.vmk.vmk0.Address.IPv4.Gateway }} --vlanid={{ item.value.vmk.vmk0.VLAN }} --nameserver={{ Common.DNS.Server1.IPv4 }}[,{{ Common.DNS.Server2.IPv4 }}] --hostname={{ item.value.FQDN | lower }}
 
 # Reboot ESXi host
 reboot
@@ -18,13 +18,6 @@ reboot
 
 # Wait 30 seconds
 sleep 30
-
-# Set VLAN on the management portgroup
-esxcli network vswitch standard portgroup set --portgroup-name='Management Network' --vlan-id={{ item.value.vmk.vmk0.VLAN }}"
-
-# Configure DNS server addresses
-esxcli network ip dns server add --server={{ Common.DNS.Server1.IPv4 }}
-esxcli network ip dns server add --server={{ Common.DNS.Server2.IPv4 }}
 
 # Configure search domain
 esxcli network ip dns search add --domain={{ Common.DNS.Domain }}
