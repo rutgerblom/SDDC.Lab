@@ -88,14 +88,14 @@
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}"
         state: absent
 
-    - name: Delete local ISO mount directory
-      file:
-        path: "{{ Target.ISOMount }}"
-        state: absent
-
-    - name: Delete duplicated ISO content directories
+    - name: Delete copies of ISO content directory
       file:
         path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
         state: absent
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+
+    - name: Delete local ISO mount directory
+      file:
+        path: "{{ Target.ISOMount }}"
+        state: absent
