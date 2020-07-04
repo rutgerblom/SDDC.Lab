@@ -8,19 +8,18 @@ rootpw {{ Common.Password.Nested }}
 install --firstdisk --overwritevmfs
 
 # Host Network Settings
+{% if Common.DNS.Server2.IPv4 != '' %}
 network --bootproto=static --addvmportgroup=0 --ip={{ item.value.vmk.vmk0.Address.IPv4.Address }} --netmask={{ (item.value.vmk.vmk0.Address.IPv4.Address + '/' + item.value.vmk.vmk0.Address.IPv4.Prefix) | ipaddr('netmask') }} --gateway={{ item.value.vmk.vmk0.Address.IPv4.Gateway }} --vlanid={{ item.value.vmk.vmk0.VLAN }} --nameserver={{ Common.DNS.Server1.IPv4 }},{{ Common.DNS.Server2.IPv4 }} --hostname={{ item.value.FQDN | lower }}
+{% endif %}
+{% if Common.DNS.Server2.IPv4 == '' %}
+network --bootproto=static --addvmportgroup=0 --ip={{ item.value.vmk.vmk0.Address.IPv4.Address }} --netmask={{ (item.value.vmk.vmk0.Address.IPv4.Address + '/' + item.value.vmk.vmk0.Address.IPv4.Prefix) | ipaddr('netmask') }} --gateway={{ item.value.vmk.vmk0.Address.IPv4.Gateway }} --vlanid={{ item.value.vmk.vmk0.VLAN }} --nameserver={{ Common.DNS.Server1.IPv4 }} --hostname={{ item.value.FQDN | lower }}
+{% endif %}
 
 # Reboot ESXi host
 reboot
 
 # Open busybox and launch commands
 %firstboot --interpreter=busybox
-
-# Wait 30 seconds
-sleep 30
-
-# Configure search domain
-esxcli network ip dns search add --domain={{ Common.DNS.Domain }}
 
 # Enable & start remote ESXi Shell (SSH)
 vim-cmd hostsvc/enable_ssh
@@ -51,6 +50,3 @@ esxcli storage core claiming reclaim -d mpx.vmhba0:C0:T2:L0
 
 # Disable CEIP
 esxcli system settings advanced set -o /UserVars/HostClientCEIPOptIn -i 2
-
-# Reboot ESXi host
-reboot
