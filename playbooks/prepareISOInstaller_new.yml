@@ -31,11 +31,6 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-
-    - name: Generate local variables to speed up iteration
-      set_fact:
-        LOCAL_Nested_ESXiHosts: "{{ Nested_ESXi.Hosts }}"
-        LOCAL_Nested_Clusters: "{{ Nested_Clusters }}"
         
     - name: Mount ESXi ISO
       action: mount name='{{ Target.ISOMount }}/ESXi' src="{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version]['Location'].Local }}/{{Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].File }}" opts=loop fstype=iso9660 state=mounted
@@ -52,47 +47,27 @@
       replace:
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/boot.cfg"
         regexp: 'kernelopt=cdromBoot runweasel'
-        replace: 'kernelopt=ks=file://etc/vmware/weasel/KS.CFG'
-
-    - name: Insert customks.tgz in boot.cfg modules section
-      replace:
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/boot.cfg"
-        regexp: 'imgpayld.tgz$'
-        replace: 'imgpayld.tgz --- /customks.tgz'
+        replace: 'kernelopt=ks=cdrom:/KS.CFG'
 
     - name: Duplicate directory with modified ISO contents
       copy:
         src: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
         dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
-      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
-      when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
-
-    - name: Create required directory structure for KS.CFG files
-      file:
-        path: "{{ Target.ISOMount }}/{{ item.key }}/etc/vmware/weasel"
-        state: directory
-      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
     - name: Create KS.CFG for each nested ESXi
       template: 
         src: "../templates/KS.CFG.j2"
-        dest: "{{ Target.ISOMount }}/{{ item.key }}/etc/vmware/weasel/KS.CFG"
-      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
-      when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
-
-    - name: Compress KS.CFG with directory structure to customks.tgz
-      command: "tar -cvzf {{ Target.TempFolder }}/{{ item.value.VMName }}/customks.tgz etc"
-      args:
-        chdir: "{{ Target.ISOMount }}/{{ item.key }}"
-      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
+        dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}/KS.CFG"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
     - name: Create custom ESXi ISO for each nested ESXi
       command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.ISOMount }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ item.value.VMName }}/"
       args:
         chdir: "{{ Target.TempFolder }}/{{ item.value.VMName }}/"
-      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
     - name: Upload the ESXi ISO to the datastore
@@ -104,7 +79,7 @@
         src: "{{ Target.ISOMount }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso" 
         datastore: "{{ Target.Datastore }}" 
         path: "{{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso"
-      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
       tags: upload
       
@@ -122,5 +97,5 @@
       file:
         path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
         state: absent
-      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
