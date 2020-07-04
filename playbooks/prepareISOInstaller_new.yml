@@ -102,16 +102,16 @@
       loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
- #   - name: Upload the ESXi ISO to the datastore
- #     vsphere_copy: 
- #       hostname: "{{ Target.FQDN }}"
- #       username: "{{ Target.User }}"
- #       password: "{{ Target.Password }}"
- #       validate_certs: no
- #       src: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso" 
- #       datastore: "{{ Target.Datastore }}" 
- #       path: "{{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
- #     tags: upload
+    - name: Upload the ESXi ISO to the datastore
+      vsphere_copy: 
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        src: "{{ Target.ISOMount }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso" 
+        datastore: "{{ Target.Datastore }}" 
+        path: "{{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso"
+      tags: upload
  #     
  #   - name: Delete temporary directory
  #     file:
