@@ -64,7 +64,7 @@
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
     - name: Create custom ESXi ISO for each nested ESXi host
-      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.ISOMount }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ item.value.VMName }}/"
+      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}-{{ item.key }}.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ item.value.VMName }}/"
       args:
         chdir: "{{ Target.TempFolder }}/{{ item.value.VMName }}/"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
@@ -76,9 +76,9 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        src: "{{ Target.ISOMount }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso" 
+        src: "{{ Target.TempFolder }}/{{ Pod.Number }}-{{ item.key }}.iso" 
         datastore: "{{ Target.Datastore }}" 
-        path: "{{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso"
+        path: "{{ Target.ISOFolder }}/{{ Pod.Number }}-{{ item.key }}.iso"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
       tags: upload
