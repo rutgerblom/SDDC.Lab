@@ -31,7 +31,7 @@
       when:
         - DEBUG.DisplayVariables == true
 
-    - name: Add nested ESXi to vCenter
+    - name: Add nested ESXi host to vCenter
       vmware_host:
         hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User }}"
@@ -47,7 +47,7 @@
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
-    - name: Mount NFS datastore on nested ESXi
+    - name: Mount NFS datastore on nested ESXi host
       vmware_host_datastore:
         hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User | lower }}"
