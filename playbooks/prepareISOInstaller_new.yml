@@ -87,15 +87,19 @@
       file:
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}"
         state: absent
+      when: DEBUG.KeepInstallerFiles != true
 
     - name: Delete copies of ISO content directory
       file:
         path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
         state: absent
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+      when: 
+        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - DEBUG.KeepInstallerFiles != true
 
     - name: Delete local ISO mount directory
       file:
         path: "{{ Target.ISOMount }}"
         state: absent
+      when: DEBUG.KeepInstallerFiles != true
