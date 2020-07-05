@@ -147,21 +147,6 @@
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
-    - name: Disconnect CD-ROM from nested ESXi hosts
-      vmware_guest:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: false
-        name: "{{ item.value.VMName }}"
-        cdrom:
-          type: "none"
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      async: 1800
-      poll: 0
-      when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
-
     - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the datastore
       vsphere_file:
         host: "{{ Target.FQDN }}"
@@ -170,7 +155,7 @@
         validate_certs: false
         datacenter: "{{ Target.DataCenter }}"
         datastore: "{{ Target.Datastore }}"
-        path: "{{ Target.ISOFolder }}/{{ Pod.Nmber }}-{{ item.key }}.iso"
+        path: "{{ Target.ISOFolder }}/{{ Pod.Number }}-{{ item.key }}.iso"
         state: absent
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
