@@ -139,7 +139,7 @@ TargetConfig:
     Datastore: "vsanDatastore"
     VMFolder: "Nested Labs/Pod-{{ '%03d'|format(Pod.Number|int) }}"
     ISOFolder: "/Lab-ISO-Folder"
-    ISOMount:  "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"
+    ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"
     TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"
     VarsFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/vars"
     PortGroup:
@@ -1378,7 +1378,7 @@ Nested_NSXT:
       Description: IP Pool for TEPs
       DNS:
         Server:   "{{ Common.DNS.Server1.IPv4 }}"
-        Suffix:   "{{ Common.DNS.Domain }}"
+        Domain:   "{{ Common.DNS.Domain }}"
       Tags:
         Tag:
         Scope:
@@ -1395,7 +1395,7 @@ Nested_NSXT:
       Description: IP Pool for Remote TEPs
       DNS:
         Server:   "{{ Common.DNS.Server1.IPv4 }}"
-        Suffix:   "{{ Common.DNS.Domain }}"
+        Domain:   "{{ Common.DNS.Domain }}"
       Tags:
         Tag:
         Scope:
