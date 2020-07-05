@@ -1,0 +1,87 @@
+## Rutger has ownership of this file for the v2 migration ##
+---
+- hosts: localhost
+  name: prepareISOInstaller.yml
+  gather_facts: false
+  vars_files:
+    - ../config.yml  
+    - ../software.yml
+  tasks:
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                     Target.ISOFolder: {{ Target.ISOFolder }}
+                                      Target.ISOMount: {{ Target.ISOMount }}
+                                    Target.TempFolder: {{ Target.TempFolder }}
+
+                         Deploy.Software.ESXi.Version: {{ Deploy.Software.ESXi.Version }}
+                       Deploy.Software.ESXi.Installer: {{ Deploy.Software.ESXi.Installer }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        
+    - name: Mount ESXi ISO
+      action: mount name='{{ Target.ISOMount }}/ESXi' src="{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version]['Location'].Local }}/{{Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].File }}" opts=loop fstype=iso9660 state=mounted
+
+    - name: Copy ISO contents
+      copy: 
+        src: "{{ Target.ISOMount }}/ESXi/"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
+
+    - name: Unmount ESXi ISO
+      action: mount name='{{ Target.ISOMount }}/ESXi' src="{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version]['Location'].Local}}/{{Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].File }}" fstype=iso9660 state=absent
+
+    - name: Edit boot.cfg
+      replace:
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/boot.cfg"
+        regexp: 'kernelopt=cdromBoot runweasel'
+        replace: 'kernelopt=ks=file://etc/vmware/weasel/KS.CFG'
+
+    - name: insert customks.tgz in boot.cfg modules section
+      replace:
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/boot.cfg"
+        regexp: 'imgpayld.tgz$'
+        replace: 'imgpayld.tgz --- /customks.tgz'
+
+    - name: copy customks.tgz
+      copy: 
+        src: "../files/customks.tgz"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
+
+    - name: Create custom ESXi ISO
+      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
+      args:
+        chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
+
+    - name: Upload the ESXi ISO to the datastore
+      vsphere_copy: 
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        src: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso" 
+        datastore: "{{ Target.Datastore }}" 
+        path: "{{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
+      tags: upload
+      
+    - name: Delete temporary directory
+      file:
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
+        state: absent
+
+    - name: Delete custom ESXi ISO on local filesystem
+      file:
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
+        state: absent
