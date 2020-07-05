@@ -33,7 +33,7 @@
       when:
         - DEBUG.DisplayVariables == true
 
-    - name: Deploy ESXi VMs on vCenter
+    - name: Deploy nested ESXi hosts on vCenter
       vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -82,7 +82,7 @@
         - Target.Deployment == "vCenter"
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
-    - name: Deploy ESXi VMs directly onto the ESXi Host
+    - name: Deploy nested ESXi hosts directly onto the ESXi Host
       vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -130,7 +130,7 @@
         - Target.Deployment == "Host"
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
-    - name: Check if the ESXi hosts are ready (wait max 15 minutes)
+    - name: Check if the nested ESXi hosts are ready (wait max 15 minutes)
       vmware_guest_info:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -147,7 +147,7 @@
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
-    - name: Disconnect CD-ROM from Nested ESXi VMs
+    - name: Disconnect CD-ROM from nested ESXi hosts
       vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
