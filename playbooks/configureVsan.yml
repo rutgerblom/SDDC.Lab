@@ -106,7 +106,7 @@
       loop: "{{ Nested_Clusters | dict2items }}"
       when: 
         - Target.Deployment == "vCenter"
-        - item.value.vSAN|bool
+        - item.value.vSAN == true
         - item.value.DeployHosts == true
         
     - name: Run Ruby script on the nested vCenter deployed on the ESXi host
