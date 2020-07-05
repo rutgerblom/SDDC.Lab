@@ -77,7 +77,7 @@
             device_type: vmxnet3
         cdrom:
           type: "iso"
-          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Pod.Number }}-{{ item.key }}"
+          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
       poll: 0
@@ -125,7 +125,7 @@
             device_type: vmxnet3
         cdrom:
           type: "iso"
-          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Pod.Number }}-{{ item.key }}"
+          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
       poll: 0
@@ -158,10 +158,11 @@
         validate_certs: false
         datacenter: "{{ Target.DataCenter }}"
         datastore: "{{ Target.Datastore }}"
-        path: "{{ Target.ISOFolder }}/{{ Pod.Number }}-{{ item.key }}"
+        path: "{{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
         state: absent
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - DEBUG.KeepInstallerFiles != true
 
   tags: nestedESX
