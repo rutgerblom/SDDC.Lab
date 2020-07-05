@@ -49,21 +49,21 @@
         regexp: 'kernelopt=cdromBoot runweasel'
         replace: 'kernelopt=ks=cdrom:/KS.CFG'
 
-    - name: Create directory with modified ISO contents for each nested ESXi
+    - name: Create directory with modified ISO contents for each nested ESXi host
       copy:
         src: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
         dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
-    - name: Create KS.CFG for each nested ESXi
+    - name: Create KS.CFG for each nested ESXi host
       template: 
         src: "../templates/KS.CFG.j2"
         dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}/KS.CFG"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
-    - name: Create custom ESXi ISO for each nested ESXi
+    - name: Create custom ESXi ISO for each nested ESXi host
       command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.ISOMount }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ item.value.VMName }}/"
       args:
         chdir: "{{ Target.TempFolder }}/{{ item.value.VMName }}/"
