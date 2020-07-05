@@ -64,7 +64,7 @@
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
     - name: Create custom ESXi ISO for each nested ESXi host
-      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}-{{ item.key }}.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ item.value.VMName }}/"
+      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}-{{ item.key }} -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ item.value.VMName }}/"
       args:
         chdir: "{{ Target.TempFolder }}/{{ item.value.VMName }}/"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
@@ -76,9 +76,9 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        src: "{{ Target.TempFolder }}/{{ Pod.Number }}-{{ item.key }}.iso" 
+        src: "{{ Target.TempFolder }}/{{ Pod.Number }}-{{ item.key }}" 
         datastore: "{{ Target.Datastore }}" 
-        path: "{{ Target.ISOFolder }}/{{ Pod.Number }}-{{ item.key }}.iso"
+        path: "{{ Target.ISOFolder }}/{{ Pod.Number }}-{{ item.key }}"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
       tags: upload
@@ -92,6 +92,15 @@
     - name: Delete copies of ISO content directory
       file:
         path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
+        state: absent
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      when: 
+        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - DEBUG.KeepInstallerFiles != true
+
+    - name: Delete the ESXi ISO files
+      file:
+        path: "{{ Target.TempFolder }}/{{ Pod.Number }}-{{ item.key }}" 
         state: absent
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
