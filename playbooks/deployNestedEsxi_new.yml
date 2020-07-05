@@ -175,5 +175,6 @@
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - DEBUG.KeepInstallerFiles != true
 
   tags: nestedESX
