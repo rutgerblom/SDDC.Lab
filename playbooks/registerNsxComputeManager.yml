@@ -1,9 +1,42 @@
 ---
 - hosts: localhost
+  name: registerNsxComputeManager.yml
   gather_facts: false
   vars_files:
     - ../config.yml
+    - ../software.yml
   tasks:
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+
+             Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
+           Nested_NSXT.Components.LocalManager.VMName: {{ Nested_NSXT.Components.LocalManager.VMName }}
+
+                                  Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN }}
+                                Nested_vCenter.VMName: {{ Nested_vCenter.VMName }}
+                                  Nested_vCenter.User: {{ Nested_vCenter.User }}
+                              Nested_vCenter.Password: {{ Nested_vCenter.Password }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
     - name: Register NSX-T Compute Manager
       nsxt_fabric_compute_managers:
           hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
@@ -19,24 +52,3 @@
             password: "{{ Nested_vCenter.Password }}"
           state: present
       when: Deploy.NSXT.LocalManager == true
-
-
-###
-### Original Task (Keep until updated on is working)
-###
-#
-#    - name: Register NSX-T Compute Manager
-#      nsxt_fabric_compute_managers:
-#          hostname: "{{ nsxman.nsxman01.ip }}"
-#          username: "{{ nsxmanadminuser }}"
-#          password: "{{ nsxmanpassword }}"
-#          validate_certs: False
-#          display_name: "{{ vcenter.fqdn }}"
-#          server: "{{ vcenter.fqdn }}"
-#          origin_type: vCenter
-#          credential:
-#            credential_type: UsernamePasswordLoginCredential
-#            username: "{{ vcenter.user }}"
-#            password: "{{ vcenter.password }}"
-#          state: present
-#      when: deploy_nsxt == true
