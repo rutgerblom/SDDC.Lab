@@ -74,7 +74,7 @@
             device_type: vmxnet3
         cdrom:
           type: "iso"
-          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Pod.Nmber }}-{{ item.key }}.iso"
+          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Pod.Number }}-{{ item.key }}.iso"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       async: 1800
       poll: 0
