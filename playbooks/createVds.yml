@@ -170,7 +170,8 @@
           - vmnic2
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
+      when: 
+       - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
     - name: Migrate vmk0 to the VDS
       vmware_migrate_vmk:
@@ -185,7 +186,8 @@
         migrate_switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         migrate_portgroup_name: "{{ item.value.vmk.vmk0.PortGroup }}"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
+      when: 
+       - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
     - name: Create vmk1 for vMotion
       vmware_vmkernel:
@@ -204,7 +206,8 @@
           tcpip_stack: "{{ item.value.vmk.vmk1.Stack }}"
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
+      when: 
+       - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
     - name: Create vmk2 for vSAN
       vmware_vmkernel:
@@ -223,7 +226,8 @@
           tcpip_stack: "{{ item.value.vmk.vmk2.Stack }}"
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
+      when: 
+       - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
       
     - name: Create vmk3 for IP Storage
       vmware_vmkernel:
@@ -241,7 +245,8 @@
           tcpip_stack: "{{ item.value.vmk.vmk3.Stack }}"
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
+      when: 
+       - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
       
     - name: Remove the standard switch from the ESXi hosts
       vmware_vswitch:
@@ -252,4 +257,5 @@
         switch: 'vSwitch0'
         state: absent
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
+      when: 
+       - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
