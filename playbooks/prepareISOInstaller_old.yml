@@ -47,28 +47,23 @@
       replace:
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/boot.cfg"
         regexp: 'kernelopt=cdromBoot runweasel'
-        replace: 'kernelopt=ks=cdrom:/KS.CFG'
+        replace: 'kernelopt=ks=file://etc/vmware/weasel/KS.CFG'
 
-    - name: Create directory with modified ISO contents for each nested ESXi
-      copy:
-        src: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
-        dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+    - name: insert customks.tgz in boot.cfg modules section
+      replace:
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/boot.cfg"
+        regexp: 'imgpayld.tgz$'
+        replace: 'imgpayld.tgz --- /customks.tgz'
 
-    - name: Create KS.CFG for each nested ESXi
-      template: 
-        src: "../templates/KS.CFG.j2"
-        dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}/KS.CFG"
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+    - name: copy customks.tgz
+      copy: 
+        src: "../files/customks.tgz"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
 
-    - name: Create custom ESXi ISO for each nested ESXi
-      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.ISOMount }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ item.value.VMName }}/"
+    - name: Create custom ESXi ISO
+      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
       args:
-        chdir: "{{ Target.TempFolder }}/{{ item.value.VMName }}/"
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
 
     - name: Upload the ESXi ISO to the datastore
       vsphere_copy: 
@@ -76,26 +71,17 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        src: "{{ Target.ISOMount }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso" 
+        src: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso" 
         datastore: "{{ Target.Datastore }}" 
-        path: "{{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso"
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        path: "{{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
       tags: upload
       
-    - name: Delete local ISO content directory
+    - name: Delete temporary directory
       file:
-        path: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}"
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
         state: absent
 
-    - name: Delete copies of ISO content directory
+    - name: Delete custom ESXi ISO on local filesystem
       file:
-        path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
-        state: absent
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
-
-    - name: Delete local ISO mount directory
-      file:
-        path: "{{ Target.ISOMount }}"
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
         state: absent

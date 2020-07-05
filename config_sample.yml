@@ -117,8 +117,9 @@ TargetConfig:
     Datastore: "Local_VMs"
     VMFolder: "ha-datacenter/vm"
     ISOFolder: "/Lab-ISO-Folder"
-    ISOMount:  "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"
-    TempFolder: "/tmp"
+    ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"
+    TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"
+    VarsFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/vars"
     PortGroup:
       RouterUplink: "Lab-Routers"
       Management:
@@ -138,8 +139,9 @@ TargetConfig:
     Datastore: "vsanDatastore"
     VMFolder: "Nested Labs/Pod-{{ '%03d'|format(Pod.Number|int) }}"
     ISOFolder: "/Lab-ISO-Folder"
-    ISOMount:  "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"
-    TempFolder: "/tmp"
+    ISOMount:  "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"
+    TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"
+    VarsFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/vars"
     PortGroup:
       RouterUplink: "Lab-Routers"
       Management:
@@ -167,6 +169,7 @@ Target-Placeholder:
   ISOFolder:      "{{ TargetConfig[TargetConfig.Deployment].ISOFolder }}"
   ISOMount:       "{{ TargetConfig[TargetConfig.Deployment].ISOMount }}"
   TempFolder:     "{{ TargetConfig[TargetConfig.Deployment].TempFolder }}"
+  VarsFolder:     "{{ TargetConfig[TargetConfig.Deployment].VarsFolder }}"
   PortGroup:
     RouterUplink: "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].RouterUplink }}"
     Management:
@@ -193,8 +196,9 @@ Target:
   Datastore: "Local_VMs"
   VMFolder: "ha-datacenter/vm"
   ISOFolder: "/Lab-ISO-Folder"
-  ISOMount:  "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"
-  TempFolder: "/tmp"
+  ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"
+  TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"
+  VarsFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/vars"
   PortGroup:
     RouterUplink: "Lab-Routers"
     Management:
@@ -1350,13 +1354,13 @@ Nested_NSXT:
 ## Changes to some of the 'Vars' variables below may require changes to Nested_NSXT below
 ##
   Vars:
-    NVDSName:          "NVDS-1"              
+    NVDSName:          "NVDS-1"
     Tier0_Name:        "T0-Gateway-01"
-    TZ_VLAN_Name:      "TZ-VLAN"              
-    TZ_Overlay_Name:   "TZ-Overlay"              
-    TZ_Edge_Name:      "TZ-Edge"              
+    TZ_VLAN_Name:      "TZ-VLAN"
+    TZ_Overlay_Name:   "TZ-Overlay"
+    TZ_Edge_Name:      "TZ-Edge"
     TEP_Pool_Name:     "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
-    TN_Profile_Name:   "TNP-ESXi-Hosts"              
+    TN_Profile_Name:   "TNP-ESXi-Hosts"
     EdgeNodes:
       Password:        "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
       vSphereCluster:  "Edge"
@@ -1441,7 +1445,7 @@ Nested_NSXT:
           TeamingPolicies: []
         TZ-Edge:
           Type: VLAN
-          Description:
+          Description: Edge Cluster Peering Segments
           Switch: "NVDS-1"
           TeamingPolicies: []
         TZ-Overlay:
@@ -1449,296 +1453,3 @@ Nested_NSXT:
           Description: GEVEVE Overlay Transport Zone
           Switch: "NVDS-1"
           TeamingPolicies: []
-
-
-
-###
-##########################################################################################################
-###     Nothing below this line is currently being used in the script --  This is left in as reference
-##########################################################################################################
-###
-__NOT_USED_IN_SCRIPT:
-    Networking:
-      Gateway:
-        Tier0:
-        - Name: "T0-Gateway-01"
-          HA_Mode: "ACTIVE_ACTIVE"
-          EdgeCluster: "T0-Edge-Cluster-01"
-          Interfaces:
-          - Name: 
-            Type: EXTERNAL
-            IPAddress_CIDR: 
-            ConnectedToSegment: 
-            EdgeNode: 
-            MTU:
-            URPF_Mode: Strict
-            Tags:
-            - Tag: 
-              Scope: 
-          Routing:
-            StaticRoutes:
-            - Name:
-              Network:
-              NextHop:
-              - IPAddress:
-                AdminDistance:
-                Scope:
-          Multicast:
-            Enabled: false
-          BGP:
-            Self:
-              Enabled: true
-              ASN: 65001
-              InterSR: true
-              MultipathRelax: true
-              ECMP: true
-              GracefulRestart:
-                Mode: HelperOnly
-                Timer: 180
-                StaleTimer: 600
-            Neighbors:
-            - IPAddress: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.1"
-              Description: EdgeNodes on Uplink 1
-              RemoteASN: "{{ Nested_Router.BGP.ASN }}"
-              BFD: true
-              AllowAS_In: false
-              SourceAddresses:
-              - "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"
-              - "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"
-              GracefulRestart: HelperOnly
-              Timer:
-                BGP:
-                  HoldDown: 180
-                  KeepAlive: 60
-                BFD:
-                  Interval: 1000
-                  Multiplier: 3
-            - IPAddress: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.1"
-              Description: EdgeNodes on Uplink 2
-              RemoteASN: "{{ Nested_Router.BGP.ASN }}"
-              BFD: true
-              AllowAS_In: false
-              SourceAddresses:
-              - "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"
-              - "{{ Net.NSXEdgeUplink2.IPv4.Network }}.3"
-              GracefulRestart: HelperOnly
-              Timer:
-                BGP:
-                  HoldDown: 180
-                  KeepAlive: 60
-                BFD:
-                  Interval: 1000
-                  Multiplier: 3
-          Redistribution:
-            Enabled: true
-            - Name: Redistribute Connected
-              Tier0:
-                StaticRoutes:   false
-                IPSecLocalIP:   false
-                EVPN_TEP_IP:    false
-                NAT_IP:         false
-                DNSForwarderIP: false
-                ConnectedInterfaces: true
-              Tier1:
-                StaticRoutes:   false
-                DNSForwarderIP: false
-                LB_VIP:         false
-                LB_SNAP_IP:     false
-                NAT_IP:         false
-                IPSecLocalEndpoint:  false
-                ConnectedInterfaces: true
-        Tier1:
-        - Name: "T1-Gateway-01"
-          LinkedTier0: "T0-Gateway-01"
-          EdgeCluster: 
-          RouteAdvertisement:
-            StaticRoutes: false
-            LB_VIP:       false
-            LB_SNAP_IP:   false
-            NAT_IP:       false
-            DNSForwarderRoutes:  false
-            IPSecLocalEndpoint:  false
-            ConnectedInterfaces: true
-
-      Segments:
-      - Name: "SEG-T0-Edge-Uplink1"
-        ConnectedGateway: "T0-Gateway-01"
-        AdminStateEnabled: true
-        Connectivity: 
-        Description: "NSX T0-Edge Uplink 1"
-        TransportZone: "TZ-Edge"
-        ReplicationMode: 
-        Subnet:
-          IPv4:
-            Address: 
-            Prefix: 24
-          IPv6:
-            Address: 
-            Prefix: 64
-        VLANS:
-        - "{{ Net.NSXEdgeUplink1.VLAN }}"
-        SEG-T0-Edge-Uplink2:
-          AdminStateEnabled: true
-          Connectivity: 
-          Description: "NSX T0-Edge Uplink 2"
-          TransportZone: "TZ-Edge"
-          ReplicationMode: 
-          Subnet:
-            IPv4:
-              Address: 
-              Prefix: 24
-            IPv6:
-              Address: 
-              Prefix: 64
-          VLANS:
-          - "{{ Net.NSXEdgeUplink2.VLAN }}"
-        SEG-Web:
-          AdminStateEnabled: true
-          Connectivity: 
-          Description: Web Segment
-          TransportZone: "TZ-Overlay"
-          ReplicationMode: 
-          Subnet:
-            IPv4:
-              Address: "172.16.{{ Pod.Number }}.1"
-              Prefix: 28
-            IPv6:
-              Address: 
-              Prefix: 64
-          VLANS: []
-        SEG-App:
-          AdminStateEnabled: true
-          Connectivity: 
-          Description: App Segment
-          TransportZone: "TZ-Overlay"
-          ReplicationMode: ''
-          Subnet:
-            IPv4:
-              Address: "172.16.{{ Pod.Number + 1 }}.17"
-              Prefix: 28
-            IPv6:
-              Address: 
-              Prefix: 64
-          VLANS: []
-        SEG-DB:
-          AdminStateEnabled: true
-          Connectivity: 
-          Description: DB Segment
-          TransportZone: "TZ-Overlay"
-          ReplicationMode: ''
-          Subnet:
-            IPv4:
-              Address: "172.16.{{ Pod.Number + 2 }}.33"
-              Prefix: 28
-            IPv6:
-              Address: 
-              Prefix: 64
-          VLANS: []
-
-
-  Security:
-
-
-  Inventory:
-
-  
-  System:
-    Fabric:
-
-
-
-
-
-  NVDS:
-    Name: "NVDS-1"
-
-
-    VNI:
-      Range:
-        Start: "{{ Pod.Number * 1000 }}"
-        End: "{{ (Pod.Number * 1000) + 999 }}"
-  Profile:
-    UplinkProfile: {}
-    NIOCProfile: {}
-    EdgeClusterProfile: {}
-    TransportNodeProfile:
-      TNP-ESXi-Hosts:
-        Description: TNP for ESXi Hosts
-        Switches:
-        - Type: nvds
-          Mode: standard
-          Name: "NVDS-1"
-          TransportZones:
-          - TZ-Overlay
-          - TZ-VLAN
-  TransportNode:
-    Edge:
-      Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-      DeployToCluster: Edge
-      Clusters:
-        T0-Edge-Cluster-01:
-          Members:
-          - "T0-EdgeVM-01"
-          - "T0-EdgeVM-02"
-      Nodes:
-        T0-EdgeVM-01:
-          DeployToHost: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-91.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.91{% endif %}"
-          Address:
-            IPv4:
-              Address: "{{ Net.Management.IPv4.Network }}.101"
-              Prefix:  "{{ Net.Management.IPv4.Prefix }}"
-              Gateway: "{{ Net.Management.IPv4.Network }}.1"
-            IPv6:
-              Address: "{{ Net.Management.IPv6.Network }}::101"
-              Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-        T0-EdgeVM-02:
-          DeployToHost: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-92.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.92{% endif %}"
-          Address:
-            IPv4:
-              Address: "{{ Net.Management.IPv4.Network }}.102"
-              Prefix:  "{{ Net.Management.IPv4.Prefix }}"
-              Gateway: "{{ Net.Management.IPv4.Network }}.1"
-            IPv6:
-              Address: "{{ Net.Management.IPv6.Network }}::102"
-              Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-  Gateway:
-    T0:
-      T0-Gateway-1:
-        EdgeCluster: "T0-Edge-Cluster-01"
-        EdgeNodes:
-          T0-EdgeVM-01:
-            Interface:
-              Uplink1:
-                IPv4:
-                  Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"
-                  Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
-                  Gateway: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.1"
-                IPv6:
-                  Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::2"
-                  Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
-              Uplink2:
-                IPv4:
-                  Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"
-                  Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
-                  Gateway: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.1"
-                IPv6:
-                  Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::2"
-                  Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
-          T0-EdgeVM-02:
-            Interface:
-              Uplink1:
-                IPv4:
-                  Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"
-                  Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
-                  Gateway: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.1"
-                IPv6:
-                  Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::3"
-                  Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
-              Uplink2:
-                IPv4:
-                  Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.3"
-                  Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
-                  Gateway: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.1"
-                IPv6:
-                  Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::3"
-                  Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
