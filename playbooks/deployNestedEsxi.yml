@@ -1,7 +1,4 @@
 ## Rutger has ownership of this file for the v2 migration ##
-##
-## ToDo: Replace hardcoded '10.203' with item IP and test this
-##
 ---
 - hosts: localhost
   name: deployNestedEsxi.yml
@@ -143,7 +140,7 @@
         name: "{{ item.value.VMName }}"
         schema: "vsphere"
       register: vm_facts
-      until: vm_facts is search("10.203")
+      until: vm_facts is search(item.value.vmk.vmk0.Address.IPv4.Address)
       retries: 30
       delay: 30
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
