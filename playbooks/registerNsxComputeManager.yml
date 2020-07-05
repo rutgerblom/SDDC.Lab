@@ -1,21 +1,56 @@
+## Luis taking ownership of this module to convert to v2
+# conversion done
 ---
 - hosts: localhost
+  name: registerNsxComputeManager.yml
   gather_facts: false
   vars_files:
-    - ../answerfile.yml
+    - ../config.yml
+    - ../software.yml
   tasks:
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+
+             Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
+           Nested_NSXT.Components.LocalManager.VMName: {{ Nested_NSXT.Components.LocalManager.VMName }}
+
+                                  Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN }}
+                                Nested_vCenter.VMName: {{ Nested_vCenter.VMName }}
+                                  Nested_vCenter.User: {{ Nested_vCenter.User }}
+                              Nested_vCenter.Password: {{ Nested_vCenter.Password }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
     - name: Register NSX-T Compute Manager
       nsxt_fabric_compute_managers:
-          hostname: "{{ nsxman.nsxman01.ip }}"
-          username: "{{ nsxmanadminuser }}"
-          password: "{{ nsxmanpassword }}"
+          hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
+          username: "{{ Nested_NSXT.Credentials.admin.Name }}"
+          password: "{{ Nested_NSXT.Credentials.admin.Password }}"
           validate_certs: False
-          display_name: "{{ vcenter.fqdn }}"
-          server: "{{ vcenter.fqdn }}"
+          display_name: "{{ Nested_vCenter.VMName }}"                 # Using VMName as no need for full domain
+          server: "{{ Nested_vCenter.FQDN }}"
           origin_type: vCenter
           credential:
             credential_type: UsernamePasswordLoginCredential
-            username: "{{ vcenter.user }}"
-            password: "{{ vcenter.password }}"
+            username: "{{ Nested_vCenter.User }}"
+            password: "{{ Nested_vCenter.Password }}"
           state: present
-      when: deploy_nsxt == true
+      when: Deploy.NSXT.LocalManager == true
