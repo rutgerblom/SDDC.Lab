@@ -10,7 +10,6 @@
   vars_files:
     - ../config.yml
     - ../software.yml
-    - ../answerfile.yml
   tasks:
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -62,7 +61,7 @@
         vm_password: "{{ Nested_vCenter.Password }}"
         copy:
             src: "{{ Target.TempFolder }}/{{ item.key }}"
-            dest: "{{ Target.TempFolder }}/{{ item.key }}"
+            dest: "/tmp/{{ item.key }}"
             overwrite: true
       loop: "{{ Nested_Clusters | dict2items }}"
       when: 
@@ -81,7 +80,7 @@
         vm_password: "{{ Nested_vCenter.Password }}"
         copy:
             src: "{{ Target.TempFolder }}/{{ item.key }}"
-            dest: "{{ Target.TempFolder }}/{{ item.key }}"
+            dest: "/tmp/{{ item.key }}"
             overwrite: true
       loop: "{{ Nested_Clusters | dict2items }}"
       when: 
@@ -102,7 +101,7 @@
         vm_username: "root"
         vm_password: "{{ Nested_vCenter.Password }}"
         vm_shell: /usr/bin/rvc
-        vm_shell_args: '{{ Nested_vCenter.User }}:VMware1\!@{{ Nested_vCenter.FQDN | lower }} -s {{ Target.TempFolder }}/{{ item.key }}'
+        vm_shell_args: '{{ Nested_vCenter.User }}:VMware1\!@{{ Nested_vCenter.FQDN | lower }} -s /temp/{{ item.key }}'
       loop: "{{ Nested_Clusters | dict2items }}"
       when: 
         - Target.Deployment == "vCenter"
@@ -119,7 +118,7 @@
         vm_username: "root"
         vm_password: "{{ Nested_vCenter.Password }}"
         vm_shell: /usr/bin/rvc
-        vm_shell_args: '{{ Nested_vCenter.User }}:VMware1\!@{{ Nested_vCenter.FQDN | lower }} -s {{ Target.TempFolder }}/{{ item.key }}'
+        vm_shell_args: '{{ Nested_vCenter.User }}:VMware1\!@{{ Nested_vCenter.FQDN | lower }} -s /tmp/{{ item.key }}'
       loop: "{{ Nested_Clusters | dict2items }}"
       when:
         - Target.Deployment == "Host"
@@ -134,7 +133,7 @@
       when: 
         - item.value.vSAN == true
         - item.value.DeployHosts == true
-        - DEBUG_keep_config_files != true
+        - DEBUG.KeepConfigFiles != true
 
     - name: Enable vSAN
       enable_vsan:
