@@ -97,7 +97,7 @@
         vm_username: "root"
         vm_password: "{{ Nested_vCenter.Password }}"
         vm_shell: /usr/bin/rvc
-        vm_shell_args: '{{ Nested_vCenter.User }}:VMware1\!@{{ Nested_vCenter.FQDN | lower }} -s /temp/{{ item.key }}'
+        vm_shell_args: '{{ Nested_vCenter.User }}:VMware1\!@{{ Nested_vCenter.FQDN | lower }} -s /tmp/{{ item.key }}'
       loop: "{{ Nested_Clusters | dict2items }}"
       when: 
         - Target.Deployment == "vCenter"
