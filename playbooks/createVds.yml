@@ -22,7 +22,7 @@
 
                                      Target.Deployment: {{ Target.Deployment }}
 
-                                   Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN | lower }}
+                                   Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN }}
                                    Nested_vCenter.User: {{ Nested_vCenter.User }}
                                Nested_vCenter.Password: {{ Nested_vCenter.Password }}
                              Nested_vCenter.DataCenter: {{ Nested_vCenter.DataCenter }}
@@ -39,7 +39,7 @@
 
     - name: Create distributed switch in the nested vCenter
       vmware_dvswitch:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         datacenter_name: "{{ Nested_vCenter.DataCenter }}"
@@ -53,7 +53,7 @@
 
     - name: Create Management port group
       vmware_dvs_portgroup:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
@@ -66,7 +66,7 @@
 
     - name: Create vMotion port group
       vmware_dvs_portgroup:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
@@ -79,7 +79,7 @@
 
     - name: Create vSAN port group
       vmware_dvs_portgroup:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
@@ -92,7 +92,7 @@
 
     - name: Create IP Storage port group
       vmware_dvs_portgroup:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
@@ -105,7 +105,7 @@
 
     - name: Create SVM-Management port group
       vmware_dvs_portgroup:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
@@ -118,7 +118,7 @@
 
     - name: Create Uplink1 port group
       vmware_dvs_portgroup:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
@@ -132,7 +132,7 @@
 
     - name: Create Uplink2 port group
       vmware_dvs_portgroup:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
@@ -146,7 +146,7 @@
 
     - name: Create vmnetwork port group
       vmware_dvs_portgroup:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
@@ -159,11 +159,11 @@
 
     - name: Migrate uplinks to the VDS
       vmware_dvs_host:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        esxi_hostname: "{{ item.value.FQDN | lower  }}"
+        esxi_hostname: "{{ item.value.FQDN | lower }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vmnics:
           - vmnic1
@@ -174,7 +174,7 @@
 
     - name: Migrate vmk0 to the VDS
       vmware_migrate_vmk:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
@@ -189,7 +189,7 @@
 
     - name: Create vmk1 for vMotion
       vmware_vmkernel:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
@@ -201,14 +201,14 @@
           type: 'static'
           ip_address: "{{ item.value.vmk.vmk1.Address.IPv4.Address }}"
           subnet_mask: "{{ (item.value.vmk.vmk1.Address.IPv4.Address + '/' + item.value.vmk.vmk1.Address.IPv4.Prefix) | ipaddr('netmask') }}"
-          tcpip_stack: "{{ (item.value.vmk.vmk1.Stack }}"
+          tcpip_stack: "{{ item.value.vmk.vmk1.Stack }}"
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
 
     - name: Create vmk2 for vSAN
       vmware_vmkernel:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
@@ -220,14 +220,14 @@
           type: 'static'
           ip_address: "{{ item.value.vmk.vmk2.Address.IPv4.Address }}"
           subnet_mask: "{{ (item.value.vmk.vmk2.Address.IPv4.Address + '/' + item.value.vmk.vmk2.Address.IPv4.Prefix) | ipaddr('netmask') }}"
-          tcpip_stack: "{{ (item.value.vmk.vmk2.Stack }}"
+          tcpip_stack: "{{ item.value.vmk.vmk2.Stack }}"
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
       
     - name: Create vmk3 for IP Storage
       vmware_vmkernel:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
@@ -238,14 +238,14 @@
           type: 'static'
           ip_address: "{{ item.value.vmk.vmk3.Address.IPv4.Address }}"
           subnet_mask: "{{ (item.value.vmk.vmk3.Address.IPv4.Address + '/' + item.value.vmk.vmk3.Address.IPv4.Prefix) | ipaddr('netmask') }}"
-          tcpip_stack: "{{ (item.value.vmk.vmk3.Stack }}"
+          tcpip_stack: "{{ item.value.vmk.vmk3.Stack }}"
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
       
     - name: Remove the standard switch from the ESXi hosts
       vmware_vswitch:
-        hostname: '{{ item.value.FQDN | lower }}'
+        hostname: '{{ item.value.FQDN }}'
         username: '{{ item.value.User }}'
         password: '{{ item.value.Password }}'
         validate_certs: false
