@@ -201,7 +201,7 @@
           type: 'static'
           ip_address: "{{ item.value.vmk.vmk1.Address.IPv4.Address }}"
           subnet_mask: "{{ (item.value.vmk.vmk1.Address.IPv4.Address + '/' + item.value.vmk.vmk1.Address.IPv4.Prefix) | ipaddr('netmask') }}"
-          tcpip_stack: vmotion
+          tcpip_stack: "{{ (item.value.vmk.vmk1.Stack }}"
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
@@ -220,6 +220,7 @@
           type: 'static'
           ip_address: "{{ item.value.vmk.vmk2.Address.IPv4.Address }}"
           subnet_mask: "{{ (item.value.vmk.vmk2.Address.IPv4.Address + '/' + item.value.vmk.vmk2.Address.IPv4.Prefix) | ipaddr('netmask') }}"
+          tcpip_stack: "{{ (item.value.vmk.vmk2.Stack }}"
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
@@ -233,11 +234,11 @@
         esxi_hostname: "{{ item.value.FQDN | lower }}"
         portgroup_name: "{{ item.value.vmk.vmk3.PortGroup }}"
         dvswitch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
-        enable_vsan: true
         network:
           type: 'static'
           ip_address: "{{ item.value.vmk.vmk3.Address.IPv4.Address }}"
           subnet_mask: "{{ (item.value.vmk.vmk3.Address.IPv4.Address + '/' + item.value.vmk.vmk3.Address.IPv4.Prefix) | ipaddr('netmask') }}"
+          tcpip_stack: "{{ (item.value.vmk.vmk3.Stack }}"
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 
