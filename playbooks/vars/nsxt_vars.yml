@@ -239,26 +239,34 @@ transport_node_profiles3:
     - transport_zone_name: "{{ tz_overlay_name }}"
     - transport_zone_name: "{{ tz_vlan_name }}"
 
-# NSX-T 2.5 Transport Zones
-transportzones2:
-- display_name: "{{ tz_vlan_name }}"
-  transport_type: "VLAN"
-  host_switch_name: "{{ nvds_name }}"
-- display_name: "{{ tz_overlay_name }}"
-  transport_type: "OVERLAY"
-  host_switch_name: "{{ nvds_name }}"
-- display_name: "{{ tz_edge_name }}"
-  transport_type: "VLAN"
-  host_switch_name: "{{ nvds_name }}"
 
-# NSX-T 3.0 Transport Zones
-transportzones3:
-- display_name: "{{ tz_vlan_name }}"
-  transport_type: "VLAN"
-- display_name: "{{ tz_overlay_name }}"
-  transport_type: "OVERLAY"
-- display_name: "{{ tz_edge_name }}"
-  transport_type: "VLAN"
+
+##
+## Ansible Module 'createNsxTz.yml' converted to v2 configuration //LC
+##
+# NSX-T 2.5 Transport Zones
+#transportzones2:
+#- display_name: "{{ tz_vlan_name }}"
+#  transport_type: "VLAN"
+#  host_switch_name: "{{ nvds_name }}"
+#- display_name: "{{ tz_overlay_name }}"
+#  transport_type: "OVERLAY"
+#  host_switch_name: "{{ nvds_name }}"
+#- display_name: "{{ tz_edge_name }}"
+#  transport_type: "VLAN"
+#  host_switch_name: "{{ nvds_name }}"
+#
+## NSX-T 3.0 Transport Zones
+#transportzones3:
+#- display_name: "{{ tz_vlan_name }}"
+#  transport_type: "VLAN"
+#- display_name: "{{ tz_overlay_name }}"
+#  transport_type: "OVERLAY"
+#- display_name: "{{ tz_edge_name }}"
+#  transport_type: "VLAN"
+
+
+
 
 # NSX-T IP Pool (for the TEP interfaces)
 ip_pools:
