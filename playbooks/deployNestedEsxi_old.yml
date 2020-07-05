@@ -33,7 +33,7 @@
       when:
         - DEBUG.DisplayVariables == true
 
-    - name: Deploy ESXi VMs on vCenter
+    - name: Deploy nested ESXi hosts on vCenter
       vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -74,15 +74,14 @@
             device_type: vmxnet3
         cdrom:
           type: "iso"
-          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso"
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
+      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
       async: 1800
       poll: 0
       when:
-        - Target.Deployment == "vCenter"
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Target.Deployment == "vCenter" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
-    - name: Deploy ESXi VMs directly onto the ESXi Host
+    - name: Deploy nested ESXi hosts directly onto the ESXi Host
       vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -122,15 +121,14 @@
             device_type: vmxnet3
         cdrom:
           type: "iso"
-          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso"
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
+      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
       async: 1800
       poll: 0
       when:
-        - Target.Deployment == "Host"
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Target.Deployment == "Host" and Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
-    - name: Check if the ESXi hosts are ready (wait max 15 minutes)
+    - name: Check if the nested ESXi hosts are ready (wait max 15 minutes)
       vmware_guest_info:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -140,14 +138,13 @@
         name: "{{ item.value.VMName }}"
         schema: "vsphere"
       register: vm_facts
-      until: vm_facts is search("10.203")
+      until: vm_facts is search("1.1.1.1")
       retries: 30
       delay: 30
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
-    - name: Disconnect CD-ROM from Nested ESXi VMs
+    - name: Disconnect CD-ROM from the nested ESXi hosts
       vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -156,11 +153,10 @@
         name: "{{ item.value.VMName }}"
         cdrom:
           type: "none"
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ LOCAL_Nested_ESXiHosts | dict2items }}"
       async: 1800
       poll: 0
-      when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+      when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool
 
     - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the datastore
       vsphere_file:
@@ -170,10 +166,7 @@
         validate_certs: false
         datacenter: "{{ Target.DataCenter }}"
         datastore: "{{ Target.Datastore }}"
-        path: "{{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}-{{ item.key }}.iso"
+        path: "{{ Target.ISOFolder }}/{{ Deploy.Software.ESXi.Installer }}.iso"
         state: absent
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
   tags: nestedESX
