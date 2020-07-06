@@ -422,16 +422,16 @@ Nested_ESXi:
           IPSettings: "{{ VMKSetting.IPSettings }}"
           Stack: "{{ VMKSetting.Stack }}"
           Services:
-{% for Service in Setting.vmk[VMKName]Services %}
+{% for Service in Setting['vmk'][VMKName].Services %}
           - "{{ Service }}"
 {% endfor %}
           Address:
             IPv4:
-{% for key, value in Setting.vmk[VMKName]Address.IPv4.items() %}
+{% for key, value in Setting['vmk'][VMKName]Address.IPv4.items() %}
               {{ key }}: "{{ value }}"
 {% endfor %}
             IPv6:
-{% for key, value in Setting.vmk[VMKName]Address.IPv6.items() %}
+{% for key, value in Setting['vmk'][VMKName]Address.IPv6.items() %}
               {{ key }}: "{{ value }}"
 {% endfor %}
 {% endfor %}
