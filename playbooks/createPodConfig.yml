@@ -32,7 +32,7 @@
     - name: Create Pod Configuration File (Used For Pod Deployment)
       template: 
         src: "../templates/{{ PodTemplate }}"
-        dest: "./{{ PodConfigFile }}"
+        dest: "/tmp/{{ PodConfigFile }}"
         force: yes
       when: 
         - Pod.Number is defined
