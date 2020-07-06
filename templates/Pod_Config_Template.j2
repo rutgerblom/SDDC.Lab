@@ -422,6 +422,7 @@ Nested_ESXi:
           IPSettings: "{{ VMKSetting.IPSettings }}"
           Stack: "{{ VMKSetting.Stack }}"
 {# If no services, show empty list, else loop through entries and display #}
+{#}
 {% if Setting['vmk'][VMKName].Services is not defined %}
           Services: []
 {% else %}
@@ -430,6 +431,7 @@ Nested_ESXi:
           - "{{ Service }}"
 {% endfor %}
 {% endif %}
+#}
           Address:
             IPv4:
 {% for key, value in Setting['vmk'][VMKName]Address.IPv4.items() %}
