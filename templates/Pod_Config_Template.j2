@@ -168,7 +168,7 @@ Target:
 Net:
   Management:
     Offset: {{ Net.Management.Offset }}
-    VLAN: "{{ Net.Management.VLAN }}"
+    VLAN: {{ Net.Management.VLAN }}
     IPv4:
       Prefix: {{ Net.Management.IPv4.Prefix }}
       Network: "{{ Net.Management.IPv4.Network }}"
@@ -177,7 +177,7 @@ Net:
       Network: "{{ Net.Management.IPv6.Network }}"
   vMotion:
     Offset: {{ Net.vMotion.Offset }}
-    VLAN: "{{ Net.vMotion.VLAN }}"
+    VLAN: {{ Net.vMotion.VLAN }}
     IPv4:
       Prefix: {{ Net.vMotion.IPv4.Prefix }}
       Network: "{{ Net.vMotion.IPv4.Network }}"
@@ -186,7 +186,7 @@ Net:
       Network: "{{ Net.vMotion.IPv6.Network }}"
   vSAN:
     Offset: {{ Net.vSAN.Offset }}
-    VLAN: "{{ Net.vSAN.VLAN }}"
+    VLAN: {{ Net.vSAN.VLAN }}
     IPv4:
       Prefix: {{ Net.vSAN.IPv4.Prefix }}
       Network: "{{ Net.vSAN.IPv4.Network }}"
@@ -195,7 +195,7 @@ Net:
       Network: "{{ Net.vSAN.IPv6.Network }}"
   IPStorage:
     Offset: {{ Net.IPStorage.Offset }}
-    VLAN: "{{ Net.IPStorage.VLAN }}"
+    VLAN: {{ Net.IPStorage.VLAN }}
     IPv4:
       Prefix: {{ Net.IPStorage.IPv4.Prefix }}
       Network: "{{ Net.IPStorage.IPv4.Network }}"
@@ -204,7 +204,7 @@ Net:
       Network: "{{ Net.IPStorage.IPv6.Network }}"
   Transport:
     Offset: {{ Net.Transport.Offset }}
-    VLAN: "{{ Net.Transport.VLAN }}"
+    VLAN: {{ Net.Transport.VLAN }}
     IPv4:
       Prefix: {{ Net.Transport.IPv4.Prefix }}
       Network: "{{ Net.Transport.IPv4.Network }}"
@@ -213,7 +213,7 @@ Net:
       Network: "{{ Net.Transport.IPv6.Network }}"
   ServiceVM:
     Offset: {{ Net.ServiceVM.Offset }}
-    VLAN: "{{ Net.ServiceVM.VLAN }}"
+    VLAN: {{ Net.ServiceVM.VLAN }}
     IPv4:
       Prefix: {{ Net.ServiceVM.IPv4.Prefix }}
       Network: "{{ Net.ServiceVM.IPv4.Network }}"
@@ -222,7 +222,7 @@ Net:
       Network: "{{ Net.ServiceVM.IPv6.Network }}"
   NSXEdgeUplink1:
     Offset: {{ Net.NSXEdgeUplink1.Offset }}
-    VLAN: "{{ Net.NSXEdgeUplink1.VLAN }}"
+    VLAN: {{ Net.NSXEdgeUplink1.VLAN }}
     IPv4:
       Prefix: {{ Net.NSXEdgeUplink1.IPv4.Prefix }}
       Network: "{{ Net.NSXEdgeUplink1.IPv4.Network }}"
@@ -231,7 +231,7 @@ Net:
       Network: "{{ Net.NSXEdgeUplink1.IPv6.Network }}"
   NSXEdgeUplink2:
     Offset: {{ Net.NSXEdgeUplink2.Offset }}
-    VLAN: "{{ Net.NSXEdgeUplink2.VLAN }}"
+    VLAN: {{ Net.NSXEdgeUplink2.VLAN }}
     IPv4:
       Prefix: {{ Net.NSXEdgeUplink2.IPv4.Prefix }}
       Network: "{{ Net.NSXEdgeUplink2.IPv4.Network }}"
@@ -240,7 +240,7 @@ Net:
       Network: "{{ Net.NSXEdgeUplink2.IPv6.Network }}"
   RTEP:
     Offset: {{ Net.RTEP.Offset }}
-    VLAN: "{{ Net.RTEP.VLAN }}"
+    VLAN: {{ Net.RTEP.VLAN }}
     IPv4:
       Prefix: {{ Net.RTEP.IPv4.Prefix }}
       Network: "{{ Net.RTEP.IPv4.Network }}"
@@ -249,7 +249,7 @@ Net:
       Network: "{{ Net.RTEP.IPv6.Network }}"
   VMNetwork:
     Offset: {{ Net.VMNetwork.Offset }}
-    VLAN: "{{ Net.VMNetwork.VLAN }}"
+    VLAN: {{ Net.VMNetwork.VLAN }}
     IPv4:
       Prefix: {{ Net.VMNetwork.IPv4.Prefix }}
       Network: "{{ Net.VMNetwork.IPv4.Network }}"
@@ -260,7 +260,7 @@ Net:
 
 Nested_Router:
   Name: "{{ Nested_Router.Name }}"
-  Protocol: "{{ Nested_Router | upper }}"
+  Protocol: "{{ Nested_Router.Protocol | upper }}"
   Interface:
     Uplink:
       PortGroup: "{{ Nested_Router.Interface.Uplink.PortGroup }}"
@@ -392,7 +392,18 @@ Nested_Clusters:
 {# Create Nested_ESXi #}
 Nested_ESXi:
   HardwareSettings:
-    Management:
+{% for ClusterName, Hardware in Nested_ESXi.HardwareSettings.items() %}
+    {{ ClusterName }}
+      CPU: {{ Hardware.CPU }}
+      CoresPerSocket: {{ Hardware.CoresPerSocket }}
+      Memory: {{ Hardware.Memory }}
+      BootDiskSize: {{ Hardware.BootDiskSize }}
+      CreateVMFS: {{ Hardware.CreateVMFS }}
+      vSAN:
+        CacheSize: {{ Hardware.vSAN.CacheSize }}
+        CapacitySize: {{ Hardware.vSAN.CapacitySize }}
+{% endfor %}
+{#}    Management:
       CPU: 5
       CoresPerSocket: 5
       Memory: 16384
@@ -419,6 +430,7 @@ Nested_ESXi:
       vSAN:
         CacheSize: 20
         CapacitySize: 180
+#}
 
   Hosts:
     ESXi11:
