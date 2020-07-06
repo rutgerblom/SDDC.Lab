@@ -431,7 +431,7 @@ Nested_ESXi:
           - "{{ Service }}"
 {% endfor %}
 {% endif %}
-#}
+
           Address:
             IPv4:
 {% for key, value in Setting['vmk'][VMKName]Address.IPv4.items() %}
@@ -441,6 +441,7 @@ Nested_ESXi:
 {% for key, value in Setting['vmk'][VMKName]Address.IPv6.items() %}
               {{ key }}: "{{ value }}"
 {% endfor %}
+#}
 {% endfor %}
 {% endfor %}
 
