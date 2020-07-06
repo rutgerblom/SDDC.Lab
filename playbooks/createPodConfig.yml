@@ -1,0 +1,67 @@
+## Luis has ownership of this file for the v2 migration ##
+---
+- hosts: localhost
+  name: createPodConfig.yml
+  gather_facts: false
+  vars_files:
+    - ../software.yml
+    - ../config.yml
+  vars:
+    - PodTemplate: "Pod_Config_Template.j2"
+    - PodConfigFile: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Config.yml"
+  tasks:
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                           Pod.Number: {{ Pod.Number }}
+                            Source Configuration File: templates/{{ PodTemplate }}
+                            Target Configuration File: {{ PodConfigFile }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+
+    - name: Notify user that this will take some time
+      pause:
+        seconds: 2
+        prompt: |
+          ===========================================  NOTICE  ============================================
+          
+          Generating static configuration file for Pod {{ Pod.Number }}.   Please be patient, as this can take
+          some time.  On average, it takes between 4-7 minutes to complete, but this time may vary depending
+          on the size of your lab, and the speed of your Ansible Control Station (a.k.a. Ansible Controller).
+          
+          Once the file has been generated, it will be saved to this file:  Pod-{{ '%03d'|format(Pod.Number|int) }}-Config.yml"
+
+          =================================================================================================
+
+
+    - name: Delete existing configuration file
+      file:
+        path: "/tmp/{{ PodConfigFile }}"
+        state: absent
+      when:
+        - Pod.Number is defined
+        - Pod.Number >= 10
+        - Pod.Number <= 240
+
+ 
+    - name: Create Pod Configuration File (Used For Pod Deployment)
+      template: 
+        src: "../templates/{{ PodTemplate }}"
+        dest: "/tmp/{{ PodConfigFile }}"
+        force: yes
+      when: 
+        - Pod.Number is defined
+        - Pod.Number >= 10
+        - Pod.Number <= 240
+

@@ -120,6 +120,7 @@ TargetConfig:
     ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"
     TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"
     VarsFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/vars"
+    TemplateFolder: "../templates"
     PortGroup:
       RouterUplink: "Lab-Routers"
       Management:
@@ -142,6 +143,7 @@ TargetConfig:
     ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"
     TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"
     VarsFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/vars"
+    TemplateFolder: "../templates"
     PortGroup:
       RouterUplink: "Lab-Routers"
       Management:
@@ -155,7 +157,7 @@ TargetConfig:
 ##
 ## Determine effective Target settings to use throughout deployment script
 ##
-Target-Placeholder:
+Target:
   Deployment:     "{{ TargetConfig.Deployment }}"
   FQDN:           "{{ TargetConfig[TargetConfig.Deployment].FQDN }}"
   User:           "{{ TargetConfig[TargetConfig.Deployment].User }}"
@@ -170,6 +172,7 @@ Target-Placeholder:
   ISOMount:       "{{ TargetConfig[TargetConfig.Deployment].ISOMount }}"
   TempFolder:     "{{ TargetConfig[TargetConfig.Deployment].TempFolder }}"
   VarsFolder:     "{{ TargetConfig[TargetConfig.Deployment].VarsFolder }}"
+  TemplateFolder: "{{ TargetConfig[TargetConfig.Deployment].TemplateFolder }}"
   PortGroup:
     RouterUplink: "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].RouterUplink }}"
     Management:
@@ -183,30 +186,31 @@ Target-Placeholder:
 ##
 ## Putting Host values directly into Target to speed up deployment
 ##
-Target:
-  Deployment: "Host"
-  FQDN: "Host32.NetLab.Home"
-  User: "root"
-  Password: "{{ Common.Password.Physical }}"
-  vSwitch: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"
-  vSwitchVersion: ""
-  VLAN: "{{ Net.Management.VLAN }}"
-  DataCenter: "ha-datacenter"
-  Cluster: ""
-  Datastore: "Local_VMs"
-  VMFolder: "ha-datacenter/vm"
-  ISOFolder: "/Lab-ISO-Folder"
-  ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"
-  TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"
-  VarsFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/vars"
-  PortGroup:
-    RouterUplink: "Lab-Routers"
-    Management:
-      Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt"
-      VLAN: "{{ Net.Management.VLAN }}"
-    Trunk:
-      Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Trunk"
-      VLAN: 4095
+#Target:
+#  Deployment: "Host"
+#  FQDN: "Host32.NetLab.Home"
+#  User: "root"
+#  Password: "{{ Common.Password.Physical }}"
+#  vSwitch: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"
+#  vSwitchVersion: ""
+#  VLAN: "{{ Net.Management.VLAN }}"
+#  DataCenter: "ha-datacenter"
+#  Cluster: ""
+#  Datastore: "Local_VMs"
+#  VMFolder: "ha-datacenter/vm"
+#  ISOFolder: "/Lab-ISO-Folder"
+#  ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"
+#  TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"
+#  VarsFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/vars"
+#  TemplateFolder: "../templates"
+#  PortGroup:
+#    RouterUplink: "Lab-Routers"
+#    Management:
+#      Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt"
+#      VLAN: "{{ Net.Management.VLAN }}"
+#    Trunk:
+#      Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Trunk"
+#      VLAN: 4095
 
 
 
