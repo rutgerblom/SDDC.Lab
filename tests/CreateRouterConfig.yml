@@ -45,6 +45,10 @@
       when:
         - DEBUG.DisplayVariables == true
 
+    - name: Create temp directory
+      file:
+        path: "{{ Target.TempFolder }}"
+        state: directory
 
     - name: Create template file for the VyOS router
       template: 
