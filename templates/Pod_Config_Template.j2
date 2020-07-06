@@ -8,38 +8,32 @@
  #}
 ---
 
-DEBUG
-=====
-{{ DEBUG | to_yaml }}
+DEBUG:
+{{ DEBUG | to_nice_yaml(indent=2, width=99999) | trim }}
 
-Pod
-===
-{{ Pod | to_yaml }}
+Pod:
+{{ Pod | to_nice_yaml(indent=2, width=99999) | trim }}
 
-Deploy
-======
-{{ Deploy | to_yaml }}
+Deploy:
+{{ Deploy | to_nice_yaml(indent=2, width=99999) | trim }}
 
-TargetConfig
-============
-{{ TargetConfig | to_yaml }}
+TargetConfig:
+{{ TargetConfig | to_nice_yaml(indent=2, width=99999) | trim }}
 
-Target
-======
-{{ Target | to_yaml }}
+Target:
+{{ Target | to_nice_yaml(indent=2, width=99999) | trim }}
 
-Nested_ESXi
-===========
-{{ Nested_ESXi | to_yaml }}
+Nested_ESXi:
+{{ Nested_ESXi | to_nice_yaml(indent=2, width=99999) | trim }}
 
+Nested_Clusters:
+{{ Nested_Clusters | to_nice_yaml(indent=2, width=99999) | trim }}
 
+Nested_Router:
+{{ Nested_Router | to_nice_yaml(indent=2, width=99999) | trim }}
 
+Nested_vCenter:
+{{ Nested_vCenter | to_nice_yaml(indent=2, width=99999) | trim }}
 
-
-Nested_Clusters: {{ Nested_Clusters }}
-
-Nested_Router: {{ Nested_Router }}
-
-Nested_vCenter: {{ Nested_vCenter }}
-
-Nested_NSXT: {{ Nested_NSXT }}
+Nested_NSXT:
+{{ Nested_NSXT | to_nice_yaml(indent=2, width=99999) | trim }}
