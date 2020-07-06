@@ -381,11 +381,11 @@ Nested_Router:
 
 {# Create Nested_Clusters #}
 Nested_Clusters:
-{% for ClusterName, ClusterOptions in Nested_Clusters.iteritems() %}
+{% for ClusterName, ClusterOptions in Nested_Clusters.items() %}
   {{ ClusterName }}:
-{% for key, value in ClusterOptions.iteritems() %}
+  {% for key, value in ClusterOptions.items() %}
     {{ key }}: {{ value }}
-{% endfor %}
+  {% endfor %}
 {% endfor %}
 
 
