@@ -66,7 +66,12 @@
         path: "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version]['Location'].Local }}/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
       register: InstallerFileCheck
 
-    - name: Copy VyOS installation file to /tmp if it exists locally rather than downloading (overwrite if exists)
+    - name: Create temp directory for installation file
+      file:
+        path: "{{ Target.TempFolder }}"
+        state: directory
+
+    - name: Copy VyOS installation file to temp folder if it already exists locally rather than downloading (overwrite if exists)
       copy:
         src:  "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version]['Location'].Local }}/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
