@@ -403,9 +403,8 @@ Nested_ESXi:
         CapacitySize: {{ Hardware.vSAN.CapacitySize }}
 {% endfor %}
 
-{#}
   Hosts:
-  {% for Host, Setting in Nested_ESXi.Hosts %}
+  {% for Host, Setting in Nested_ESXi.Hosts.items() %}
     {{ Host }}
       Cluster: "{{ Setting.Cluster }}"
       FQDN: "{{ Setting.FQDN }}"
@@ -437,7 +436,6 @@ Nested_ESXi:
         {% endfor %}
   {% endfor %}
 
-#}
 
 
 ############# Stopped here #################
