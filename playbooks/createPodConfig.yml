@@ -34,15 +34,15 @@
       pause:
         seconds: 2
         prompt: |
-          ===========================================  NOTICE  ============================================
+          =============================================  NOTICE  ==============================================
           
           Generating static configuration file for Pod {{ Pod.Number }}.   Please be patient, as this can take
           some time.  On average, it takes between 4-7 minutes to complete, but this time may vary depending
           on the size of your lab, and the speed of your Ansible Control Station (a.k.a. Ansible Controller).
           
-          Once the file has been generated, it will be saved to this file:  Pod-{{ '%03d'|format(Pod.Number|int) }}-Config.yml"
+          Once the file has been generated, it will be saved to this file:  {{ lookup('env','HOME') }}/{{ PodConfigFile }}
 
-          =================================================================================================
+          =====================================================================================================
 
 
     - name: Delete existing configuration file
@@ -58,7 +58,7 @@
     - name: Create Pod Configuration File (Used For Pod Deployment)
       template: 
         src: "../templates/{{ PodTemplate }}"
-        dest: "/tmp/{{ PodConfigFile }}"
+        dest: "{{ lookup('env','HOME') }}/{{ PodConfigFile }}"
         force: yes
       when: 
         - Pod.Number is defined
