@@ -1,0 +1,41 @@
+## Luis has ownership of this file for the v2 migration ##
+---
+- hosts: localhost
+  name: createPodConfig.yml
+  gather_facts: false
+  vars_files:
+    - ../software.yml
+    - ../config.yml
+  vars:
+    - PodTemplate: "Pod_Config_Template.j2"
+    - PodConfigFile: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Config.yml"
+  tasks:
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                           Pod.Number: {{ Pod.Number }}
+                            Source Configuration File: templates/{{ PodTemplate }}
+                            Target Configuration File: {{ PodConfigFile }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Create Pod Configuration File (Used For Pod Deployment)
+      template: 
+        src: "../templates/{{ PodTemplate }}"
+        dest: "./{{ PodConfigFile }}"
+        force: yes
+      when: 
+        - Pod.Number is defined
+        - Pod.Number >= 10
+        - Pod.Number <= 240
+
