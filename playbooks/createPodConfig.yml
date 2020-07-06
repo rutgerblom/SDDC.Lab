@@ -29,6 +29,13 @@
       when:
         - DEBUG.DisplayVariables == true
 
+   
+    - name: Delete existing configuration file
+      file:
+        path: "/tmp/{{ PodConfigFile }}"
+        state: absent
+
+ 
     - name: Create Pod Configuration File (Used For Pod Deployment)
       template: 
         src: "../templates/{{ PodTemplate }}"
