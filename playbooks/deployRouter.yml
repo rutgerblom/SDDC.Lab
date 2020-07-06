@@ -100,7 +100,7 @@
 
     - name: Create configuration template file for VyOS router
       template: 
-        src: "{{Target.TemplateFolder}}/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Template }}"
+        src: "{{ Target.TemplateFolder }}/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Template }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
       when: 
         - Deploy.Router == true

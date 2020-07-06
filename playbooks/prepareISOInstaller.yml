@@ -58,7 +58,7 @@
 
     - name: Create KS.CFG for each nested ESXi host
       template: 
-        src: "{{Target.TemplateFolder}}/{{Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].Template }}"
+        src: "{{ Target.TemplateFolder }}/{{Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].Template }}"
         dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}/KS.CFG"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
