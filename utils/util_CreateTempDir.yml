@@ -1,0 +1,28 @@
+---
+- hosts: localhost
+  name: util_CreateTempDir.yml
+  gather_facts: false
+  vars_files:
+    - ../config.yml
+  tasks:
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                    Target.TempFolder: {{ Target.TempFolder }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Create temp directory for the Pod deployment
+      file:
+        path: "{{ Target.TempFolder }}"
+        state: directory
