@@ -1,0 +1,57 @@
+# Accept the VMware End User License Agreement
+vmaccepteula
+
+# Set the root password
+rootpw {{ Common.Password.Nested }}
+
+# Install ESXi to the local disk
+install --firstdisk --overwritevmfs
+
+# Host Network Settings
+network --bootproto=static --addvmportgroup=0 --ip={{ item.value.vmk.vmk0.Address.IPv4.Address }} --netmask={{ (item.value.vmk.vmk0.Address.IPv4.Address + '/' + item.value.vmk.vmk0.Address.IPv4.Prefix) | ipaddr('netmask') }} --gateway={{ item.value.vmk.vmk0.Address.IPv4.Gateway }} --vlanid={{ item.value.vmk.vmk0.VLAN }} --nameserver={{ Common.DNS.Server1.IPv4 }} --hostname={{ item.value.FQDN }}
+
+# Reboot ESXi host
+reboot
+
+# Open busybox and launch commands
+%firstboot --interpreter=busybox
+
+# Enable & start remote ESXi Shell (SSH)
+vim-cmd hostsvc/enable_ssh
+vim-cmd hostsvc/start_ssh
+
+# Enable & start ESXi Shell (TSM)
+vim-cmd hostsvc/enable_esx_shell
+vim-cmd hostsvc/start_esx_shell
+
+# Supress ESXi Shell warning
+esxcli system settings advanced set -o /UserVars/SuppressShellWarning -i 1
+
+# Configure NTP Server addresses
+echo "server {{ Common.NTP.Server1.IPv4 }}" >> /etc/ntp.conf;
+echo "server {{ Common.NTP.Server2.IPv4 }}" >> /etc/ntp.conf;
+
+# Allow NTP through firewall
+esxcfg-firewall -e ntpClient
+     
+# Enable NTP autostartup
+/sbin/chkconfig ntpd on;
+
+# Mark vSAN cache disk as Flash disk
+esxcli storage nmp satp rule add -s VMW_SATP_LOCAL -d mpx.vmhba0:C0:T2:L0 -o enable_ssd
+
+# Reclaim vSAN Flash disk
+esxcli storage core claiming reclaim -d mpx.vmhba0:C0:T2:L0
+
+# Disable CEIP
+esxcli system settings advanced set -o /UserVars/HostClientCEIPOptIn -i 2
+
+# Configure Syslog servers
+esxcli system syslog config set --loghost={{ Common.Syslog.Protocol }}://{{ Common.Syslog.IPv4 }}:{{ Common.Syslog.Port }}
+
+# Configure DNS servers
+esxcli network ip dns server add --server={{ Common.DNS.Server1.IPv4 }}
+esxcli network ip dns server add --server={{ Common.DNS.Server2.IPv4 }}
+
+# Reboot ESXi host
+reboot
