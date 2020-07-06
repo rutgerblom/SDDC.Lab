@@ -422,7 +422,7 @@ Nested_ESXi:
           IPSettings: "{{ VMKSetting.IPSettings }}"
           Stack: "{{ VMKSetting.Stack }}"
 {# If no services, show empty list, else loop through entries and display #}
-{% if Setting['vmk'][VMKName].Services is no defined %}
+{% if Setting['vmk'][VMKName].Services is not defined %}
           Services: []
 {% else %}
           Services:
