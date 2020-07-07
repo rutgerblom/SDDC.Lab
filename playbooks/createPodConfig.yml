@@ -5,11 +5,56 @@
   gather_facts: false
   vars_files:
     - ../software.yml
-    - ../config.yml
+
   vars:
     - PodTemplate: "Pod_Config_Template.j2"
     - PodConfigFile: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Config.yml"
+
+  vars_prompt:
+
+    - name: SourceConfigFile
+      prompt: "What Pod-Config file you would like to have prepared for use (Enter full path with file)?"
+      unsafe: yes
+      private: no
+
   tasks:
+    - name: Check to see if the Pod-Config file to be prepared exists
+      stat:
+        path: "{{ SourceConfigFile }}"
+      register: ConfigFileCheck
+
+
+    - name: Display error message if Pod-Config file is not found
+      pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            The provided Pod-Config file could not be found, so this playbook is ending WITHOUT creating any
+            output file.  The following provided Pod-Config file could not be found:
+
+                                                    {{ SourceConfigFile }}
+
+            Please verify the file name provided is correct, and that it is located in the path provided.
+
+          *****************************************************************************************************
+      when:
+        - ConfigFileCheck.stat.exists != true
+
+
+    - name: Exit Ansible playbook if Pod-Config file does not exist
+      meta: end_play
+      when:
+        - ConfigFileCheck.stat.exists != true
+
+
+    - name: Include Pod-Config variables into playbook
+      include_vars:
+        file: "{{ SourceConfigFile }}"
+
+
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
@@ -22,7 +67,9 @@
                                     Target.Deployment: {{ Target.Deployment }}
 
                                            Pod.Number: {{ Pod.Number }}
-                            Source Configuration File: templates/{{ PodTemplate }}
+
+                       Pod-Config File Being Prepared: {{ SourceConfigFile }}
+                               Configuration Template: {{ Target.TemplateFolder }}/{{ PodTemplate }}
                             Target Configuration File: {{ PodConfigFile }}
 
           =================================================================================================
@@ -34,20 +81,24 @@
       pause:
         seconds: 2
         prompt: |
+          =====================================================================================================
           =============================================  NOTICE  ==============================================
+          =====================================================================================================
           
           Generating static configuration file for Pod {{ Pod.Number }}.   Please be patient, as this can take
           some time.  On average, it takes between 4-7 minutes to complete, but this time may vary depending
           on the size of your lab, and the speed of your Ansible Control Station (a.k.a. Ansible Controller).
           
-          Once the file has been generated, it will be saved to this file:  {{ lookup('env','HOME') }}/{{ PodConfigFile }}
+                The following source file is being prepared: {{ SourceConfigFile }}
+
+               Once parpared, it will be saved to this file: {{ lookup('env','HOME') }}/{{ PodConfigFile }}
 
           =====================================================================================================
 
 
     - name: Delete existing configuration file
       file:
-        path: "/tmp/{{ PodConfigFile }}"
+        path: "{{ lookup('env','HOME') }}/{{ PodConfigFile }}"
         state: absent
       when:
         - Pod.Number is defined
@@ -57,7 +108,7 @@
  
     - name: Create Pod Configuration File (Used For Pod Deployment)
       template: 
-        src: "../templates/{{ PodTemplate }}"
+        src: "{{ Target.TemplateFolder }}/{{ PodTemplate }}"
         dest: "{{ lookup('env','HOME') }}/{{ PodConfigFile }}"
         force: yes
       when: 
