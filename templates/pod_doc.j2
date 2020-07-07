@@ -200,7 +200,7 @@ Deploy target: {{ Target.FQDN }}</p>
     <td>vSAN</td>
     <td>{{ Nested_Router.Interface.vSAN.VLAN }}</td>
     <td>{{ "{}/{}".format(Nested_Router.Interface.vSAN.IPv4.Address, Nested_Router.Interface.vSAN.IPv4.Prefix) | ipaddr('network/prefix') }}</td>
-    <td>{{ pod_network }}.{{ pod + vsan }}.1</td>
+    <td>{{ Nested_Router.Interface.vSAN.IPv4.Address }}</td>
   </tr>
   <tr>
     <td>IP Storage</td>
