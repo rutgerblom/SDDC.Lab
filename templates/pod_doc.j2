@@ -181,55 +181,61 @@ Deploy target: {{ Target.FQDN }}</p>
   </tr>
   <tr>
     <td>Management</td>
-    <td>{{ physicalESX.vlan }}</td>
+    <td>{{ Nested_Router.Interface.Management.VLAN }}</td>
     <td>{{ pod_network }}.{{ pod + management }}.0/{{ mgmt_network_mask_cidr }}</td>
     <td>{{ pod_network }}.{{ pod + management }}.1</td>
   </tr>
   <tr>
     <td>vMotion</td>
-    <td>{{ pod + vmotion }}</td>
+    <td>{{ Nested_Router.Interface.vMotion.VLAN }}</td>
     <td>{{ pod_network }}.{{ pod + vmotion }}.0/{{ vmotion_network_mask_cidr }}</td>
     <td>{{ pod_network }}.{{ pod + vmotion }}.1</td>
   </tr>
   <tr>
     <td>vSAN</td>
-    <td>{{ pod + vsan }}</td>
+    <td>{{ Nested_Router.Interface.vSAN.VLAN }}</td>
     <td>{{ pod_network }}.{{ pod + vsan }}.0/{{ vsan_network_mask_cidr }}</td>
     <td>{{ pod_network }}.{{ pod + vsan }}.1</td>
   </tr>
   <tr>
     <td>IP Storage</td>
-    <td>{{ pod + ipstorage }}</td>
+    <td>{{ Nested_Router.Interface.IPStorage.VLAN }}</td>
     <td>{{ pod_network }}.{{ pod + ipstorage }}.0/{{ ipstorage_network_mask_cidr }}</td>
     <td>{{ pod_network }}.{{ pod + ipstorage }}.1</td>
   </tr>
   <tr>
-    <td>Overlay Transport</td>
-    <td>{{ pod + transport }}</td>
+    <td>TEP</td>
+    <td>{{ Nested_Router.Interface.Transport.VLAN }}</td>
     <td>{{ pod_network }}.{{ pod + transport }}.0/{{ transport_network_mask_cidr }}</td>
     <td>{{ transport_gw }}</td>
   </tr>
   <tr>
     <td>Service VM Management</td>
-    <td>{{ pod + svmmanagement }}</td>
+    <td>{{ Nested_Router.Interface.ServiceVM.VLAN }}</td>
     <td>{{ pod_network }}.{{ pod + svmmanagement }}.0/{{ svmmanagement_network_mask_cidr }}</td>
     <td>{{ pod_network }}.{{ pod + svmmanagement }}.1</td>
   </tr>
   <tr>
-    <td>NSX Edge Uplink #1</td>
-    <td>{{ pod + nsx_edge_uplink_1 }}</td>
+    <td>NSX Edge Uplink 1</td>
+    <td>{{ Nested_Router.Interface.NSXEdgeUplink1.VLAN }}</td>
     <td>{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.0/{{ nsx_edge_uplink_1_network_mask_cidr }}</td>
     <td>{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.1</td>
   </tr>
   <tr>
-    <td>NSX Edge Uplink #2</td>
-    <td>{{ pod + nsx_edge_uplink_2 }}</td>
-    <td>{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.0/{{ nsx_edge_uplink_2_network_mask_cidr }}</td>
-    <td>{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.1</td>
+    <td>NSX Edge Uplink 2</td>
+    <td>{{ Nested_Router.Interface.NSXEdgeUplink2.VLAN }}</td>
+    <td>{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.0/{{ nsx_edge_uplink_1_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.1</td>
   </tr>
   <tr>
+    <td>RTEP</td>
+    <td>{{ Nested_Router.Interface.RTEP.VLAN }}</td>
+    <td>{{ pod_network }}.{{ pod + vmnetwork }}.0/{{ vmnetwork_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + vmnetwork }}.1</td>
+  </tr>
+    <tr>
     <td>VM Network</td>
-    <td>{{ pod + vmnetwork }}</td>
+    <td>{{ Nested_Router.Interface.VMNetwor.VLAN }}</td>
     <td>{{ pod_network }}.{{ pod + vmnetwork }}.0/{{ vmnetwork_network_mask_cidr }}</td>
     <td>{{ pod_network }}.{{ pod + vmnetwork }}.1</td>
   </tr>
