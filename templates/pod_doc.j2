@@ -38,7 +38,8 @@ Deploy target: {{ Target.FQDN }}</p>
     <td>vCenter</td>
 {% if Deploy.UseDNS == True %}
     <td><a href="https://{{ Nested_vCenter.FQDN }}">https://{{ Nested_vCenter.FQDN }}</a></td>
-{% else %}
+{% endif %}
+{% if Deploy.UseDNS != True %}
     <td><a href="https://{{ Nested_vCenter.Address.IPv4.Address }}">https://{{ Nested_vCenter.Address.IPv4.Address }}</a></td>
 {% endif %}
   </tr>
@@ -104,15 +105,19 @@ Deploy target: {{ Target.FQDN }}</p>
     <td>vCenter VAMI</td>
 {% if Deploy.UseDNS == True %}
     <td><a href="https://{{ Nested_vCenter.FQDN }}:5480">https://{{ Nested_vCenter.FQDN }}:5480</a></td>
-{% else %}
+{% endif %}
+{% if Deploy.UseDNS != True %}
     <td><a href="https://{{ Nested_vCenter.IP }}:5480">https://{{ Nested_vCenter.IP }}:5480</a></td>
+{% endif %}
   </tr>
   <tr>
     <td>vCenter CLI</td>
 {% if Deploy.UseDNS == True %}
     <td><a href="ssh://root@{{ Nested_vCenter.FQDN }}">ssh://root@{{ Nested_vCenter.FQDN }}</a></td>
-{% else %}
+{% endif %}
+{% if Deploy.UseDNS != True %}
     <td><a href="ssh://root@{{ Nested_vCenter.IP }}">ssh://root@{{ Nested_vCenter.IP }}</a></td>
+{% endif %}
   </tr>
 {% if Deploy.Router == True %}
   <tr>
