@@ -1,25 +1,36 @@
 {#
- #     Author: Luis Chanu
+ #     Author: Luis Chanu and Rutger Blom
  #   Filename: templates/var_NSXT_IPPools.j2
  #    Used By: This file is used by the playbook createNsxIpPool.yml
  #    Purpose: This Jinja2 template file is used to create the data structure that is provided to the nsxt_policy_ip_pool method.
  #
  #}
+ip_pools:
 {% for Pool in Nested_NSXT.Networking.IPPools %}
 - display_name: "{{ Pool.Name }}"
-  description:  "{{ Pool.Description }}"
-  dns:
-    server: "{{ Pool.DNS.Server }}"
-    domain: "{{ Pool.DNS.Domain }}"
+  state: "present"
+{% if Pool.Tags.Tag %}
   tags:
-    tag:   "{{ Pool.Tags.Tag }}"
-    scope: "{{ Pool.Tags.Scope }}"
+    - tag: "{{ Pool.Tags.Tag }}"
+{% endif %}
+{% if Pool.Tags.Scope %}
+      scope: "{{ Pool.Tags.Scope }}"
+{% endif %}
+  description:  "{{ Pool.Description }}"
   pool_static_subnets:
 {% for IPRange in Pool.IPRanges %}
-  - allocation_ranges:
-    - start: "{{ IPRange.Start }}"
-      end:   "{{ IPRange.End }}"
-    cidr: {{ "{}/{}".format(IPRange.Start, IPRange.Prefix) | ipaddr('network/prefix') }}
-    gateway_ip: "{{ IPRange.Gateway }}"
+    - display_name: "{{ IPRange.Start | ipaddr('int') }}"
+      state: "present"
+      allocation_ranges:
+      - start: "{{ IPRange.Start }}"
+        end:   "{{ IPRange.End }}"
+      cidr: {{ "{}/{}".format(IPRange.Start, IPRange.Prefix) | ipaddr('network/prefix') }}
+{% if IPRange.Gateway %}
+      gateway_ip: "{{ IPRange.Gateway }}"
+{% endif %}
+{% if IPRange.Start | ipv4 %}
+      dns_nameservers: "{{ Pool.DNS.Server }}"
+{% endif %}
+      dns_suffix: "{{ Pool.DNS.Domain }}"
 {% endfor %}
 {% endfor %}
