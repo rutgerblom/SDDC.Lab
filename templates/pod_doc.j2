@@ -183,13 +183,13 @@ Deploy target: {{ Target.FQDN }}</p>
     <td>Management</td>
     <td>{{ Nested_Router.Interface.Management.VLAN }}</td>
     <td>{{ "{}/{}".format(Nested_Router.Interface.Management.IPv4.Address, Nested_Router.Interface.Management.IPv4.Prefix) | ipaddr('network/prefix') }}</td>
-    <td>{{ pod_network }}.{{ pod + management }}.1</td>
+    <td>{{ Nested_Router.Interface.Management.IPv4.Address }}</td>
   </tr>
   <tr>
     <td>vMotion</td>
     <td>{{ Nested_Router.Interface.vMotion.VLAN }}</td>
     <td>{{ "{}/{}".format(Nested_Router.Interface.vMotion.IPv4.Address, Nested_Router.Interface.vMotion.IPv4.Prefix) | ipaddr('network/prefix') }}</td>
-    <td>{{ pod_network }}.{{ pod + vmotion }}.1</td>
+    <td>{{ Nested_Router.Interface.vMotion.IPv4.Address }}</td>
   </tr>
   <tr>
     <td>vSAN</td>
@@ -201,43 +201,43 @@ Deploy target: {{ Target.FQDN }}</p>
     <td>IP Storage</td>
     <td>{{ Nested_Router.Interface.IPStorage.VLAN }}</td>
     <td>{{ "{}/{}".format(Nested_Router.Interface.IPStorage.IPv4.Address, Nested_Router.Interface.IPStorage.IPv4.Prefix) | ipaddr('network/prefix') }}</td>
-    <td>{{ pod_network }}.{{ pod + ipstorage }}.1</td>
+    <td>{{ Nested_Router.Interface.vSAN.IPv4.Address }}</td>
   </tr>
   <tr>
     <td>TEP</td>
     <td>{{ Nested_Router.Interface.Transport.VLAN }}</td>
     <td>{{ "{}/{}".format(Nested_Router.Interface.Transport.IPv4.Address, Nested_Router.Interface.Transport.IPv4.Prefix) | ipaddr('network/prefix') }}</td>
-    <td>{{ transport_gw }}</td>
+    <td>{{ Nested_Router.Interface.Transport.IPv4.Address }}</td>
   </tr>
   <tr>
     <td>Service VM Management</td>
     <td>{{ Nested_Router.Interface.ServiceVM.VLAN }}</td>
     <td>{{ "{}/{}".format(Nested_Router.Interface.ServiceVM.IPv4.Address, Nested_Router.Interface.ServiceVM.IPv4.Prefix) | ipaddr('network/prefix') }}</td>
-    <td>{{ pod_network }}.{{ pod + svmmanagement }}.1</td>
+    <td>{{ Nested_Router.Interface.ServiceVM.IPv4.Address }}</td>
   </tr>
   <tr>
     <td>NSX Edge Uplink 1</td>
     <td>{{ Nested_Router.Interface.NSXEdgeUplink1.VLAN }}</td>
     <td>{{ "{}/{}".format(Nested_Router.Interface.NSXEdgeUplink1.IPv4.Address, Nested_Router.Interface.NSXEdgeUplink1.IPv4.Prefix) | ipaddr('network/prefix') }}</td>
-    <td>{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.1</td>
+    <td>{{ Nested_Router.Interface.NSXEdgeUplink1.IPv4.Address}}</td>
   </tr>
   <tr>
     <td>NSX Edge Uplink 2</td>
     <td>{{ Nested_Router.Interface.NSXEdgeUplink2.VLAN }}</td>
     <td>{{ "{}/{}".format(Nested_Router.Interface.NSXEdgeUplink2.IPv4.Address, Nested_Router.Interface.NSXEdgeUplink2.IPv4.Prefix) | ipaddr('network/prefix') }}</td>
-    <td>{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.1</td>
+    <td>{{ Nested_Router.Interface.NSXEdgeUplink2.IPv4.Address }}</td>
   </tr>
   <tr>
     <td>RTEP</td>
     <td>{{ Nested_Router.Interface.RTEP.VLAN }}</td>
     <td>{{ "{}/{}".format(Nested_Router.Interface.RTEP.IPv4.Address, Nested_Router.Interface.RTEP.IPv4.Prefix) | ipaddr('network/prefix') }}</td>
-    <td>{{ pod_network }}.{{ pod + vmnetwork }}.1</td>
+    <td>{{ Nested_Router.Interface.RTEP.IPv4.Address }}</td>
   </tr>
     <tr>
     <td>VM Network</td>
     <td>{{ Nested_Router.Interface.VMNetwork.VLAN }}</td>
     <td>{{ "{}/{}".format(Nested_Router.Interface.VMNetwork.IPv4.Address, Nested_Router.Interface.VMNetwork.IPv4.Prefix) | ipaddr('network/prefix') }}</td>
-    <td>{{ pod_network }}.{{ pod + vmnetwork }}.1</td>
+    <td>{{ Nested_Router.Interface.VMNetwork.IPv4.Address }}</td>
   </tr>
 </table>
 <br>
