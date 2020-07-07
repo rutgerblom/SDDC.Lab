@@ -1,15 +1,9 @@
-## Rutger has ownership of this file for the v2 migration ##
-##
-## ToDo:
-##
-##
+## Rutger has ownership of this file for the v2 migration
+## converted to STATIC config files
 ---
 - hosts: localhost
   name: createVds.yml
   gather_facts: false
-  vars_files:
-    - ../config.yml
-    - ../software.yml
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -55,11 +49,11 @@
                                Nested_vCenter.Password: {{ Nested_vCenter.Password }}
                              Nested_vCenter.DataCenter: {{ Nested_vCenter.DataCenter }}
 
-                                            Nested_vCenter.Networking.vSwitch.Name: {{ Nested_vCenter.Networking.vSwitch.Name }}
-                                      Nested_vCenter.Networking.vSwitch.Config.MTU: {{ Nested_vCenter.Networking.vSwitch.Config.MTU }}
-                          Nested_vCenter.Networking.vSwitch.Config.NumberOfUplinks: {{ Nested_vCenter.Networking.vSwitch.Config.NumberOfUplinks }}
-               Nested_vCenter.Networking.vSwitch.Config.LinkDiscoveryProtocol.Type: {{ Nested_vCenter.Networking.vSwitch.Config.LinkDiscoveryProtocol.Type }}
-          Nested_vCenter.Networking.vSwitch.Config.LinkDiscoveryProtocol.Operation: {{ Nested_vCenter.Networking.vSwitch.Config.LinkDiscoveryProtocol.Operation }}
+                                          vSwitch.Name: {{ Nested_vCenter.Networking.vSwitch.Name }}
+                                    vSwitch.Config.MTU: {{ Nested_vCenter.Networking.vSwitch.Config.MTU }}
+                        vSwitch.Config.NumberOfUplinks: {{ Nested_vCenter.Networking.vSwitch.Config.NumberOfUplinks }}
+                            LinkDiscoveryProtocol.Type: {{ Nested_vCenter.Networking.vSwitch.Config.LinkDiscoveryProtocol.Type }}
+                       LinkDiscoveryProtocol.Operation: {{ Nested_vCenter.Networking.vSwitch.Config.LinkDiscoveryProtocol.Operation }}
 
           =================================================================================================
       when:
