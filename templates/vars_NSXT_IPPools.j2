@@ -9,13 +9,9 @@ ip_pools:
 {% for Pool in Nested_NSXT.Networking.IPPools %}
 - display_name: "{{ Pool.Name }}"
   state: "present"
-{% if Pool.Tags.Tag %}
   tags:
     - tag: "{{ Pool.Tags.Tag }}"
-{% endif %}
-{% if Pool.Tags.Scope %}
       scope: "{{ Pool.Tags.Scope }}"
-{% endif %}
   description:  "{{ Pool.Description }}"
   pool_static_subnets:
 {% for IPRange in Pool.IPRanges %}
