@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+</head>
+<body>
+<h1>vsphere-nsxt-lab-deploy</h1>
+
+<h2>Pod-{{Pod.Number}} Documentation</h2>
+
+<p>Deployed by: {{ lookup('env','SUDO_USER') }}<br>
+Deployed at: {{ time }}<br>
+Deploy target: {{ Target.FQDN }}</p>
+  
+<h3>Links</h3>
+<table>
+  <tr>
+    <th>Description</th>
+    <th>Link</th>
+  </tr>
+  <tr>
+    <td>vCenter</td>
+{% if Deploy.UseDNS == True %}
+    <td><a href="https://{{ Nested_vCenter.FQDN }}">https://{{ Nested_vCenter.FQDN }}</a></td>
+{% else %}
+    <td><a href="https://{{ Nested_vCenter.Address.IPv4.Address }}">https://{{ Nested_vCenter.Address.IPv4.Address }}</a></td>
+{% endif %}
+  </tr>
+{% if Deploy.NSXT.GlobalManager == True and Deploy.UseDNS == True %}
+  <tr>
+    <td>NSX-T Global Manager</td>
+    <td><a href="https://{{ Nested_NSXT.Components.GlobalManager.FQDN }}">https://{{ Nested_NSXT.Components.GlobalManager.FQDN }}</a>/</td>
+  </tr>
+{% endif %}
+{% if Deploy.NSXT.GlobalManager == True and Deploy.UseDNS != True%}
+  <tr>
+    <td>NSX-T Local Manager</td>
+    <td><a href="https://{{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Address }}">https://{{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Address }}</a>/</td>
+  </tr>
+{% endif %}
+{% if Deploy.NSXT.LocalManager == True and Deploy.UseDNS == True %}
+  <tr>
+    <td>NSX-T Local Manager</td>
+    <td><a href="https://{{ Nested_NSXT.Components.LocalManager.FQDN }}">https://{{ Nested_NSXT.Components.LocalManager.FQDN }}</a>/</td>
+  </tr>
+{% endif %}
+{% if Deploy.NSXT.LocalManager == True and Deploy.UseDNS != True%}
+  <tr>
+    <td>NSX-T Local Manager</td>
+    <td><a href="https://{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Address }}">https://{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Address }}</a>/</td>
+  </tr>
+{% endif %}
+{% if Deploy.NSXT.GlobalManager == True and Deploy.UseDNS == True %}
+  <tr>
+    <td>NSX-T Global Manager CLI</td>
+    <td><a href="ssh://{{ Nested_NSXT.Components.GlobalManager.FQDN }}">ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Components.LocalManager.FQDN }}</a>/</td>
+  </tr>
+{% endif %}
+{% if Deploy.NSXT.GlobalManager == True and Deploy.UseDNS != True %}
+  <tr>
+    <td>NSX-T Global Manager CLI</td>
+    <td><a href="ssh://{{ Nested_NSXT.Components.GlobalManager.IP }}">ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Components.LocalManager.IP }}</a>/</td>
+  </tr>
+{% endif %}
+{% if Deploy.NSXT.LocalManager == True and Deploy.UseDNS == True %}
+  <tr>
+    <td>NSX-T Local Manager CLI</td>
+    <td><a href="ssh://{{ Nested_NSXT.Components.LocalManager.FQDN }}">ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Components.LocalManager.FQDN }}</a>/</td>
+  </tr>
+{% endif %}
+{% if Deploy.NSXT.LocalManager == True and Deploy.UseDNS != True %}
+  <tr>
+    <td>NSX-T Local Manager CLI</td>
+    <td><a href="ssh://{{ Nested_NSXT.Components.LocalManager.IP }}">ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Components.LocalManager.IP }}</a>/</td>
+  </tr>
+{% endif %}
+{% if Deploy.NSXT.Edge == True and Deploy.UseDNS == True %}
+  <tr>
+    <td>NSX-T Edge Transport Node 1 CLI</td>
+    <td><a href="ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Vars.EdgeNodes.EdgeNode1.Host }}">ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Vars.EdgeNodes.EdgeNode1.Host }}</a>/</td>
+  </tr>
+  <tr>
+    <td>NSX-T Edge Transport Node 2 CLI</td>
+    <td><a href="ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Vars.EdgeNodes.EdgeNode2.Host }}">ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Vars.EdgeNodes.EdgeNode2.Host }}</a>/</td>
+  </tr>
+{% endif %}
+  <tr>
+    <td>vCenter VAMI</td>
+{% if Deploy.UseDNS == True %}
+    <td><a href="https://{{ Nested_vCenter.FQDN }}:5480">https://{{ Nested_vCenter.FQDN }}:5480</a></td>
+{% else %}
+    <td><a href="https://{{ Nested_vCenter.IP }}:5480">https://{{ Nested_vCenter.IP }}:5480</a></td>
+  </tr>
+  <tr>
+    <td>vCenter CLI</td>
+{% if Deploy.UseDNS == True %}
+    <td><a href="ssh://root@{{ Nested_vCenter.FQDN }}">ssh://root@{{ Nested_vCenter.FQDN }}</a></td>
+{% else %}
+    <td><a href="ssh://root@{{ Nested_vCenter.IP }}">ssh://root@{{ Nested_vCenter.IP }}</a></td>
+  </tr>
+{% if Deploy.Router == True %}
+  <tr>
+    <td>VyOS Router</td>
+    <td><a href="ssh://vyos@{{ Nested_Router.Interface.Management.IPv4.Address }}">ssh://vyos@{{ Nested_Router.Interface.Management.IPv4.Address }}</a></td>
+  </tr>
+{% endif %}
+</table>
+<br>
+
+<h3>Credentials</h3>
+<table>
+  <tr>
+    <th>Description</th>
+    <th>Username</th>
+    <th>Password</th>
+  </tr>
+  <tr>
+    <td>vCenter</td>
+    <td>{{ Nested_vCenter.User }}</td>
+    <td>{{ Nested_vCenter.Password }}</td>
+  </tr>
+  <tr>
+    <td>ESXi</td>
+    <td>root</td>
+    <td>{{ Nested_vCenter.Password }}</td>
+  </tr>
+{% if Deploy.NSXT.LocalManager == True %}
+  <tr>
+    <td>NSX-T Admin</td>
+    <td>{{ Nested_NSXT.Credentials.admin.Name }}</td>
+    <td>{{ Nested_NSXT.Credentials.admin.Password }}</td>
+  </tr>
+  <tr>
+    <td>NSX-T Audit</td>
+    <td>{{ Nested_NSXT.Credentials.audit.Name }}</td>
+    <td>{{ Nested_NSXT.Credentials.audit.Password }}</td>
+  </tr>
+  <tr>
+    <td>NSX-T Root</td>
+    <td>{{ Nested_NSXT.Credentials.root.Name }}</td>
+    <td>{{ Nested_NSXT.Credentials.root.Password }}</td>
+  </tr>
+{% endif %}
+  <tr>
+    <td>vCenter VAMI and CLI</td>
+    <td>root</td>
+    <td>{{ Nested_vCenter.Password }}</td>
+  </tr>
+{% if Deploy.Router == True %}
+    <td>VyOS Router CLI</td>
+    <td>vyos</td>
+    <td>VMware1!</td>
+  </tr>
+{% endif %}
+</table>
+<br>
+
+<h3>VLANs</h3>
+<table>
+  <tr>
+    <th>VLAN Description</th>
+    <th>VLAN ID</th>
+    <th>CIDR</th>
+    <th>Gateway</th>
+  </tr>
+  <tr>
+    <td>Management</td>
+    <td>{{ physicalESX.vlan }}</td>
+    <td>{{ pod_network }}.{{ pod + management }}.0/{{ mgmt_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + management }}.1</td>
+  </tr>
+  <tr>
+    <td>vMotion</td>
+    <td>{{ pod + vmotion }}</td>
+    <td>{{ pod_network }}.{{ pod + vmotion }}.0/{{ vmotion_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + vmotion }}.1</td>
+  </tr>
+  <tr>
+    <td>vSAN</td>
+    <td>{{ pod + vsan }}</td>
+    <td>{{ pod_network }}.{{ pod + vsan }}.0/{{ vsan_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + vsan }}.1</td>
+  </tr>
+  <tr>
+    <td>IP Storage</td>
+    <td>{{ pod + ipstorage }}</td>
+    <td>{{ pod_network }}.{{ pod + ipstorage }}.0/{{ ipstorage_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + ipstorage }}.1</td>
+  </tr>
+  <tr>
+    <td>Overlay Transport</td>
+    <td>{{ pod + transport }}</td>
+    <td>{{ pod_network }}.{{ pod + transport }}.0/{{ transport_network_mask_cidr }}</td>
+    <td>{{ transport_gw }}</td>
+  </tr>
+  <tr>
+    <td>Service VM Management</td>
+    <td>{{ pod + svmmanagement }}</td>
+    <td>{{ pod_network }}.{{ pod + svmmanagement }}.0/{{ svmmanagement_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + svmmanagement }}.1</td>
+  </tr>
+  <tr>
+    <td>NSX Edge Uplink #1</td>
+    <td>{{ pod + nsx_edge_uplink_1 }}</td>
+    <td>{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.0/{{ nsx_edge_uplink_1_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.1</td>
+  </tr>
+  <tr>
+    <td>NSX Edge Uplink #2</td>
+    <td>{{ pod + nsx_edge_uplink_2 }}</td>
+    <td>{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.0/{{ nsx_edge_uplink_2_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.1</td>
+  </tr>
+  <tr>
+    <td>VM Network</td>
+    <td>{{ pod + vmnetwork }}</td>
+    <td>{{ pod_network }}.{{ pod + vmnetwork }}.0/{{ vmnetwork_network_mask_cidr }}</td>
+    <td>{{ pod_network }}.{{ pod + vmnetwork }}.1</td>
+  </tr>
+</table>
+<br>
+
+<h3>FQDNs and IP addresses</h3>
+<table>
+  <tr>
+    <th>FQDN</th>
+    <th>IP address</th>
+  </tr>
+  <tr>
+    <td>{{ vcenter.fqdn }}</td>
+    <td>{{ vcenter.ip }}</td>
+  </tr>
+{% for item in vESX %}
+  <tr>
+    <td>{{ vESX[item].fqdn }}</td>
+    <td>{{ vESX[item].ip }}</td>
+  </tr>
+{% endfor %}
+{% if deploy_nsxt == true %}
+{% for item in nsxman %}
+  <tr>
+    <td>{{ nsxman[item].hostname }}</td>
+    <td>{{ nsxman[item].ip }}</td>
+  </tr>
+{% endfor %}
+{% endif %}
+{% if deploy_nsxt_edge == true %}
+  <tr>
+    <td>{{ edge_node1 }}.{{ domain }}</td>
+    <td>{{ pod_network }}.{{ pod + management }}.61</td>
+  </tr>
+  <tr>
+    <td>{{ edge_node2 }}.{{ domain }}</td>
+    <td>{{ pod_network }}.{{ pod + management }}.62</td>
+  </tr>
+{% endif %}
+</table>
+
+</body>
+</html>
