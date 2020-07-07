@@ -1,12 +1,43 @@
 ## Luis has ownership of this file for the v2 migration ##
+## Conerted to support STATIC Config file
 ---
 - hosts: localhost
   name: deployRouter.yml
   gather_facts: false
-  vars_files:
-    - ../software.yml
-    - ../config.yml
   tasks:
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
@@ -68,7 +99,7 @@
 
     - name: Check if VyOS installation file exists locally in the software repository (Legacy and Latest)
       stat:
-        path: "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version]['Location'].Local }}/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
+        path: "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
       register: InstallerFileCheck
 
     - name: Create temp directory for installation file
@@ -78,7 +109,7 @@
 
     - name: Copy VyOS installation file to temp folder if it already exists locally rather than downloading (overwrite if exists)
       copy:
-        src:  "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version]['Location'].Local }}/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
+        src:  "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         force: yes
       when:
@@ -89,7 +120,7 @@
 
     - name: Download VyOS installation media (overwrite if exists)
       get_url:
-        url: "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version]['Location'].URL }}/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
+        url:  "{{ Deploy.Software.Router.URL }}/{{ Deploy.Software.Router.File }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         force: yes
       when: 
@@ -99,8 +130,8 @@
 
     - name: Update VyOS installation file in the local software repository (overwrite if exists)
       copy:
-        src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
-        dest:  "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version]['Location'].Local }}/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
+        src:  "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
+        dest: "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
         force: yes
       when:
         - InstallerFileCheck.stat.exists != true
@@ -110,7 +141,7 @@
 
     - name: Create configuration template file for VyOS router
       template: 
-        src: "{{ Target.TemplateFolder }}/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Template }}"
+        src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
       when: 
         - Deploy.Router == true

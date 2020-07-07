@@ -1,12 +1,43 @@
 ## Luis has ownership of converting this file to v2
+## converted to STATIC config files
 ---
 - hosts: localhost
   name: deployVc.yml
   gather_facts: false
-  vars_files:
-    - ../config.yml
-    - ../software.yml
   tasks:
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
@@ -31,11 +62,11 @@
                                                Vendor: {{ Deploy.Software.vCenter.Vendor }}
                                               Product: {{ Deploy.Software.vCenter.Product }}
                                               Version: {{ Deploy.Software.vCenter.Version }}
-                                       Location.Local: {{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Location'].Local }}
-                                                 File: {{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].File }}
+                                       Location.Local: {{ Deploy.Software.vCenter.Directory }}
+                                                 File: {{ Deploy.Software.vCenter.File }}
 
-                                        Host Template: {{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Template'].ESXi }}
-                                     vCenter Template: {{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Template'].vCenter }}
+                                        Host Template: {{ Deploy.Software.vCenter.Template.ESXi }}
+                                     vCenter Template: {{ Deploy.Software.vCenter.Template.vCenter }}
                                 Installation Template: {{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}
 
           =================================================================================================
@@ -59,7 +90,7 @@
 
     - name: Create vCenter with embedded PSC installtion template (Target=Host)
       template: 
-        src: "../templates/{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Template'].ESXi }}"
+        src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.ESXi }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
       when:
         - vcenter_check.status != 200
@@ -67,14 +98,14 @@
 
     - name: Create vCenter with embedded PSC installtion template (Target=vCenter)
       template: 
-        src: "../templates/{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Template'].vCenter }}"
+        src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.vCenter }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
       when:
         - vcenter_check.status != 200
         - Target.Deployment == "vCenter"
 
     - name: Mount vCenter ISO
-      action: mount name='{{ Target.ISOMount }}/VCSA' src="{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Location'].Local }}/{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].File }}" opts=loop fstype=iso9660 state=mounted
+      action: mount name='{{ Target.ISOMount }}/VCSA' src="{{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }}" opts=loop fstype=iso9660 state=mounted
       when: vcenter_check.status != 200
 
     - debug:
@@ -90,7 +121,7 @@
       when: vcenter_check.status != 200
 
     - name: Unmount vCenter ISO
-      action: mount name='{{ Target.ISOMount }}/VCSA' src="{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Location'].Local }}/{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].File }}" opts=loop fstype=iso9660 state=absent
+      action: mount name='{{ Target.ISOMount }}/VCSA' src="{{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }}" opts=loop fstype=iso9660 state=absent
       when: vcenter_check.status != 200
 
     - name: Delete the temporary vCenter with embedded PSC installation template
