@@ -1,11 +1,9 @@
-## Rutger has ownership of this file for the v2 migration ##
+## Rutger has ownership of this file for the v2 migration
+## converted to STATIC config files
 ---
 - hosts: localhost
   name: deployNestedEsxi.yml
   gather_facts: false
-  vars_files:
-    - ../config.yml
-    - ../software.yml
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -54,8 +52,9 @@
                                      Target.Datastore: {{ Target.Datastore }}
                                       Target.VMFolder: {{ Target.VMFolder }}
                                      Target.ISOFolder: {{ Target.ISOFolder }}
-
                           Target.PortGroup.Trunk.Name: {{ Target.PortGroup.Trunk.Name }}
+
+                         Deploy.Software.ESXi.Version: {{ Deploy.Software.ESXi.Version }}
                        Deploy.Software.ESXi.Installer: {{ Deploy.Software.ESXi.Installer }}
 
           =================================================================================================
