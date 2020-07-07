@@ -259,8 +259,8 @@ Deploy target: {{ Target.FQDN }}</p>
   </tr>
 {% for item in Nested_ESXi.Hosts %}
   <tr>
-    <td>{{ Hosts[item].FQDN }}</td>
-    <td>{{ Hosts[item].vmk.vmk0.Address.IPv4.Address }}</td>
+    <td>{{ Nested_ESXi.Hosts[item].FQDN }}</td>
+    <td>{{ Nested_ESXi.Hosts[item].vmk.vmk0.Address.IPv4.Address }}</td>
   </tr>
 {% endfor %}
 {% if Deploy.NSXT.GlobalManager == True %}
