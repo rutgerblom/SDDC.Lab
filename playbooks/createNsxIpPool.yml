@@ -58,7 +58,7 @@
 
     - name: Read IP Pools data structure from file
       set_fact:
-        var_IPPools: "{{ lookup('file', file_name) }}"
+        var_IPPools: "{{ lookup('file', file_name) | from_yaml }}"
       when:
         - Deploy.NSXT.LocalManager == true
 
@@ -83,6 +83,7 @@
         username: "{{ Nested_NSXT.Credentials.admin.Name }}"
         password: "{{ Nested_NSXT.Credentials.admin.Password }}"
         validate_certs: false
+        state: present
         display_name: "{{ item.display_name }}"
         description:  "{{ item.description }}"
         pool_static_subnets: "{{ item.pool_static_subnets }}"
@@ -90,7 +91,7 @@
           tag:   "{{ item.tags.tag }}"
           scope: "{{ item.tags.scope }}"
       with_items:
-        - "{{ var_IPPools }}"
+        - "{{ var_IPPools.ip_pools }}"
       when:
         - Deploy.NSXT.LocalManager == true
 
