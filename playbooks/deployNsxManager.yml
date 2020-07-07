@@ -1,4 +1,5 @@
 ## Luis has ownership of this file for the v2 migration ##
+## Converted to STATIC Config files
 #
 # ToDo:
 #  1) Use API to disable password expiration for admin.  Documented here: https://docs.vmware.com/en/VMware-NSX-T-Data-Center/3.0/installation/GUID-89E9BD91-6FD4-481A-A76F-7A20DB5B916C.html
@@ -7,10 +8,40 @@
 - hosts: localhost
   name: deployNsxManager.yml
   gather_facts: false
-  vars_files:
-    - ../software.yml
-    - ../config.yml
   tasks:
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
@@ -57,8 +88,8 @@
                                    Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                    Network DNS Domain: {{ Common.DNS.Domain }}
 
-                                     NSX-T Media Path: {{ Software[Deploy.Software.NSXT.Vendor][Deploy.Software.NSXT.Product]['Installers'][Deploy.Software.NSXT.Version]['Location'].Local }}
-                                     NSX-T Media File: {{ Software[Deploy.Software.NSXT.Vendor][Deploy.Software.NSXT.Product]['Installers'][Deploy.Software.NSXT.Version].File }}
+                                     NSX-T Media Path: {{ Deploy.Software.NSXT.Directory }}
+                                     NSX-T Media File: {{ Deploy.Software.NSXT.File }}
 
           =================================================================================================
       when:
@@ -87,7 +118,7 @@
         datacenter: "{{ Target.DataCenter }}"
         cluster: "{{ Target.Cluster }}"
         name: "{{ Nested_NSXT.Components.LocalManager.VMName }}"
-        ovf:  "{{ Software[Deploy.Software.NSXT.Vendor][Deploy.Software.NSXT.Product]['Installers'][Deploy.Software.NSXT.Version]['Location'].Local }}/{{ Software[Deploy.Software.NSXT.Vendor][Deploy.Software.NSXT.Product]['Installers'][Deploy.Software.NSXT.Version].File }}"
+        ovf:  "{{ Deploy.Software.NSXT.Directory }}/{{ Deploy.Software.NSXT.File }}"
         deployment_option: "{{ Nested_NSXT.Components.LocalManager.Deployment.Size }}"
         networks:
           "Network 1": "{{ Target.PortGroup.Management.Name }}"
