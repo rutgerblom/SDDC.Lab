@@ -34,6 +34,11 @@
       when:
         - DEBUG.DisplayVariables == true
 
+    - name: Create temp directory
+      file:
+        path: "{{ Target.TempFolder }}"
+        state: directory
+
     - name: Create Ruby script for silencing vSAN warnings
       template: 
         src: "../templates/vsan_silence.rb.j2"

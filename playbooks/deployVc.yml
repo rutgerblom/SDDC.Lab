@@ -42,6 +42,11 @@
       when:
         - DEBUG.DisplayVariables == true
 
+    - name: Create temp directory
+      file:
+        path: "{{ Target.TempFolder }}"
+        state: directory
+
     - name: Check if vCenter is already installed
       uri:
         url: https://{{ Nested_vCenter.Address.IPv4.Address }}

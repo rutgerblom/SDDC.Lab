@@ -43,6 +43,11 @@
       when:
         - DEBUG.DisplayVariables == true
 
+    - name: Create temp directory
+      file:
+        path: "{{ Target.TempFolder }}"
+        state: directory
+
     - name: Check if the VyOS router is already deployed
       vmware_guest_info:
         hostname: "{{ Target.FQDN }}"
