@@ -87,9 +87,7 @@
         display_name: "{{ item.display_name }}"
         description:  "{{ item.description }}"
         pool_static_subnets: "{{ item.pool_static_subnets }}"
-        tags:
-          tag:   "{{ item.tags.tag }}"
-          scope: "{{ item.tags.scope }}"
+        tags: "{{ item.tags }}"
       with_items:
         - "{{ var_IPPools.ip_pools }}"
       when:
