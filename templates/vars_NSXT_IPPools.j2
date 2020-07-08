@@ -5,7 +5,6 @@
  #    Purpose: This Jinja2 template file is used to create the data structure that is provided to the nsxt_policy_ip_pool method.
  #
  #}
-{#ip_pools:#}
 {% for Pool in Nested_NSXT.Networking.IPPools %}
 - display_name: "{{ Pool.Name }}"
   description:  "{{ Pool.Description }}"
@@ -15,7 +14,6 @@
       scope: "{{ Pool.Tags.Scope }}"
   pool_static_subnets:
 {% for Allocation in Pool.Allocations %}
-{#    - display_name: "{{ Alocation.Name | ipaddr('int') }}" #}
     - description: "{{ Allocation.Description }}"
       state: "present"
       allocation_ranges:
@@ -23,11 +21,11 @@
       - start: "{{ IPRange.Start }}"
         end:   "{{ IPRange.End }}"
 {% set IPRange_CIDR = {{ "{}/{}".format(IPRange.Start, Allocation.Prefix) | ipaddr('network/prefix') }} %}
-{% endfor %}{# IPRange #}
+{% endfor %}
       cidr: "{{ IPRange_CIDR }}"
 {% if Allocation.Gateway %}
       gateway_ip: "{{ Allocation.Gateway }}"
-{% endif %}{# Allocation #}
+{% endif %}
 {% if Allocation.DNS.Server %}
       dns_nameservers: "{{ Allocation.DNS.Server }}"
 {% endif %}
