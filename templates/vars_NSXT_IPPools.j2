@@ -25,11 +25,11 @@
 {% set IPRange_CIDR = {{ "{}/{}".format(IPRange.Start, Allocation.Prefix) | ipaddr('network/prefix') }} %}
 {% endfor %}{# IPRange #}
       cidr: {{ IPRange_CIDR }}
-{% if Allication.Gateway %}
-      gateway_ip: "{{ Allication.Gateway }}"
+{% if Allocation.Gateway %}
+      gateway_ip: "{{ Allocation.Gateway }}"
 {% endif %}{# Allocation #}
-{% if Allication.DNS.Server %}
-      dns_nameservers: "{{ Allication.DNS.Server }}"
+{% if Allocation.DNS.Server %}
+      dns_nameservers: "{{ Allocation.DNS.Server }}"
 {% endif %}
       dns_suffix: "{{ Allocation.DNS.Domain }}"
 {% endfor %}{# Pool #}
