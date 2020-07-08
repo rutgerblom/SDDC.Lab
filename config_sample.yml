@@ -8,7 +8,7 @@ DEBUG:
 
 
 Pod:
-  Number: 230
+  Number: 200
   BaseNetwork:
     IPv4: '10.203'
     IPv6: "FD00:0000:0000"
@@ -1380,38 +1380,63 @@ Nested_NSXT:
     IPPools:
     - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
       Description: IP Pool for TEPs
-      DNS:
-        Server:   "{{ Common.DNS.Server1.IPv4 }}"
-        Domain:   "{{ Common.DNS.Domain }}"
       Tags:
         Tag:
         Scope:
-      IPRanges:
-      - Start:   "{{ Net.Transport.IPv4.Network }}.10"
-        End:     "{{ Net.Transport.IPv4.Network }}.99"
+      Allocations:
+      - Description: IP Pool for TEPs
         Prefix:  "{{ Net.Transport.IPv4.Prefix }}"
         Gateway: "{{ Net.Transport.IPv4.Network }}.1"
-      - Start:   "{{ Net.Transport.IPv6.Network }}::10"
-        End:     "{{ Net.Transport.IPv6.Network }}::99"
-        Prefix:  "{{ Net.Transport.IPv6.Prefix }}"
-        Gateway:
+        DNS:
+          Server:  "{{ Common.DNS.Server1.IPv4 }}"
+          Domain:  "{{ Common.DNS.Domain }}"
+        IPRanges:
+        - Start:   "{{ Net.Transport.IPv4.Network }}.10"
+          End:     "{{ Net.Transport.IPv4.Network }}.99"
     - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-RTEP-Pool"
       Description: IP Pool for Remote TEPs
-      DNS:
-        Server:   "{{ Common.DNS.Server1.IPv4 }}"
-        Domain:   "{{ Common.DNS.Domain }}"
       Tags:
         Tag:
         Scope:
-      IPRanges:
-      - Start:   "{{ Net.RTEP.IPv4.Network }}.10"
-        End:     "{{ Net.RTEP.IPv4.Network }}.99"
+      Allocations:
+      - Description: IP Pool for Remote TEPs
         Prefix:  "{{ Net.RTEP.IPv4.Prefix }}"
         Gateway: "{{ Net.RTEP.IPv4.Network }}.1"
-      - Start:   "{{ Net.RTEP.IPv6.Network }}::10"
-        End:     "{{ Net.RTEP.IPv6.Network }}::99"
-        Prefix:  "{{ Net.RTEP.IPv6.Prefix }}"
+        DNS:
+          Server:  "{{ Common.DNS.Server1.IPv4 }}"
+          Domain:  "{{ Common.DNS.Domain }}"
+        IPRanges:
+          - Start: "{{ Net.RTEP.IPv4.Network }}.10"
+            End:   "{{ Net.RTEP.IPv4.Network }}.99"
+    - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Test-Pool"
+      Description: IP Test Pool with both IPv4 and IPv6 Allocations
+      Tags:
+        Tag:
+        Scope:
+      Allocations:
+      - Description: "IPv6 Test Address Range"
+        Prefix:  "{{ Net.VMNetwork.IPv6.Prefix }}"
         Gateway:
+        DNS:
+          Server:   "{{ Common.DNS.Server1.IPv6 }}"
+          Domain:   "{{ Common.DNS.Domain }}"
+        IPRanges:
+        - Start:   "{{ Net.VMNetwork.IPv6.Network }}::10"
+          End:     "{{ Net.VMNetwork.IPv6.Network }}::49"
+        - Start:   "{{ Net.VMNetwork.IPv6.Network }}::50"
+          End:     "{{ Net.VMNetwork.IPv6.Network }}::99"
+      - Description: "IPv4 Test Address Range"
+        Prefix:  "{{ Net.VMNetwork.IPv4.Prefix }}"
+        Gateway:
+        DNS:
+          Server:   "{{ Common.DNS.Server1.IPv6 }}"
+          Domain:   "{{ Common.DNS.Domain }}"
+        IPRanges:
+          - Start: "{{ Net.VMNetwork.IPv4.Network }}.10"
+            End:   "{{ Net.VMNetwork.IPv4.Network }}.49"
+          - Start: "{{ Net.VMNetwork.IPv4.Network }}.50"
+            End:   "{{ Net.VMNetwork.IPv4.Network }}.99"
+
     Segments:
     - Name: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
       AdminStateEnabled: true
