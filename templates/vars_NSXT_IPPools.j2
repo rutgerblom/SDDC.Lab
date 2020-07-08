@@ -21,7 +21,7 @@ ip_pools:
 {% for IPRange in Allocation.IPRanges %}
       - start: "{{ IPRange.Start }}"
         end:   "{{ IPRange.End }}"
-{#{% set IPRange_CIDR = {{ "{}/{}".format(IPRange.Start, Allocation.Prefix) | ipaddr('network/prefix') }} %}#}
+{% set IPRange_CIDR = ("{}/{}".format(IPRange.Start, Allocation.Prefix) | ipaddr('network/prefix')) %}
 {% endfor %}{# IPRange #}
       cidr: "{{ "{}/{}".format(IPRange.Start, Allocation.Prefix) | ipaddr('network/prefix') }}"
 {% if Allocation.Gateway %}
