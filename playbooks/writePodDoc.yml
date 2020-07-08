@@ -4,13 +4,17 @@
 - hosts: localhost
   name: writePodDoc.yml
   gather_facts: false
+
+  vars:
+    - PodDocFile: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Documentation.html"
   
   vars_prompt:
 
     - name: DestinationPodDocFile
-      prompt: "Where would you like to save the Pod documentation HTML file (Enter full path with file)?"
+      prompt: "Where would you like to save the Pod documentation HTML file?"
       unsafe: yes
       private: no
+      default: "{{ lookup('env','HOME') }}/{{ PodDocFile }}"
 
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
