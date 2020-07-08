@@ -1416,7 +1416,7 @@ Nested_NSXT:
       Allocations:
       - Description: "IPv6 Test Address Range"
         Prefix:  "{{ Net.VMNetwork.IPv6.Prefix }}"
-        Gateway:
+        Gateway: ""
         DNS:
           Server:   "{{ Common.DNS.Server1.IPv6 }}"
           Domain:   "{{ Common.DNS.Domain }}"
@@ -1427,9 +1427,9 @@ Nested_NSXT:
           End:     "{{ Net.VMNetwork.IPv6.Network }}::99"
       - Description: "IPv4 Test Address Range"
         Prefix:  "{{ Net.VMNetwork.IPv4.Prefix }}"
-        Gateway:
+        Gateway: "{{ Net.VMNetwork.IPv4.Network }}.1"
         DNS:
-          Server:   "{{ Common.DNS.Server1.IPv6 }}"
+          Server:   "{{ Common.DNS.Server1.IPv4 }}"
           Domain:   "{{ Common.DNS.Domain }}"
         IPRanges:
           - Start: "{{ Net.VMNetwork.IPv4.Network }}.10"
