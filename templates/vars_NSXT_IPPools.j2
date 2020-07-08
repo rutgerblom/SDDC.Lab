@@ -5,28 +5,31 @@
  #    Purpose: This Jinja2 template file is used to create the data structure that is provided to the nsxt_policy_ip_pool method.
  #
  #}
-ip_pools:
+{#ip_pools:#}
 {% for Pool in Nested_NSXT.Networking.IPPools %}
 - display_name: "{{ Pool.Name }}"
+  description:  "{{ Pool.Description }}"
   state: "present"
   tags:
     - tag: "{{ Pool.Tags.Tag }}"
       scope: "{{ Pool.Tags.Scope }}"
-  description:  "{{ Pool.Description }}"
   pool_static_subnets:
-{% for IPRange in Pool.IPRanges %}
-    - display_name: "{{ IPRange.Start | ipaddr('int') }}"
+{% for Allocation in Pool.Allocations %}
+#    - display_name: "{{ Alocation.Name | ipaddr('int') }}"
+    - description: "{{ Allocation.Description }}"
       state: "present"
       allocation_ranges:
+{% for IPRange in Allocation.IPRanges %}
       - start: "{{ IPRange.Start }}"
         end:   "{{ IPRange.End }}"
-      cidr: {{ "{}/{}".format(IPRange.Start, IPRange.Prefix) | ipaddr('network/prefix') }}
-{% if IPRange.Gateway %}
-      gateway_ip: "{{ IPRange.Gateway }}"
+{% set IPRange_CIDR = {{ "{}/{}".format(IPRange.Start, Allocation.Prefix) | ipaddr('network/prefix') }} %}
+{% endfor %}{# IPRange #}
+      cidr: {{ IPRange_CIDR }}
+{% if Allication.Gateway %}
+      gateway_ip: "{{ Allication.Gateway }}"
+{% endif %}{# Allocation #}
+{% if Allication.DNS.Server %}
+      dns_nameservers: "{{ Allication.DNS.Server }}"
 {% endif %}
-{% if IPRange.Start | ipv4 %}
-      dns_nameservers: "{{ Pool.DNS.Server }}"
-{% endif %}
-      dns_suffix: "{{ Pool.DNS.Domain }}"
-{% endfor %}
-{% endfor %}
+      dns_suffix: "{{ Allocation.DNS.Domain }}"
+{% endfor %}{# Pool #}
