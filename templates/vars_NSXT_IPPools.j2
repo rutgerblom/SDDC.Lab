@@ -21,10 +21,9 @@ ip_pools:
 {% for IPRange in Allocation.IPRanges %}
       - start: "{{ IPRange.Start }}"
         end:   "{{ IPRange.End }}"
-{% set X = IPRange.Start %}
-{% set IPRange_CIDR = ("{}/{}".format(IPRange.Start, Allocation.Prefix) | ipaddr('network/prefix')) %}
+{# {% set IPRange_CIDR = ("{}/{}".format(IPRange.Start, Allocation.Prefix) | ipaddr('network/prefix')) %} #}
 {% endfor %}{# IPRange #}
-      cidr: "{{ X }}"
+      cidr: "1.1.1.0/24"
 {% if Allocation.Gateway %}
       gateway_ip: "{{ Allocation.Gateway }}"
 {% endif %}
