@@ -124,7 +124,7 @@
         pool_static_subnets: "{{ item.pool_static_subnets }}"
         tags: "{{ item.tags }}"
       with_items:
-        - "{{ var_IPPools }}"
+        - "{{ var_IPPools.ip_pools }}"
       when:
         - Deploy.NSXT.LocalManager == true
         - var_IPPools != ""
