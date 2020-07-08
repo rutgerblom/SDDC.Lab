@@ -103,7 +103,7 @@
         prompt: |
           ================================ Display var_IPPools Variable ===================================
 
-              var_IPPools: {{ var_IPPools }}
+              var_IPPools: {{ var_IPPools | to_nice_yaml(indent=2) }}
 
           =================================================================================================
       when:
@@ -124,7 +124,7 @@
         pool_static_subnets: "{{ item.pool_static_subnets }}"
         tags: "{{ item.tags }}"
       with_items:
-        - "{{ var_IPPools.ip_pools }}"
+        - "{{ var_IPPools }}"
       when:
         - Deploy.NSXT.LocalManager == true
         - var_IPPools != ""
