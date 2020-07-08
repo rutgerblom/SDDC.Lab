@@ -1,10 +1,4 @@
-{#
- #     Author: Luis Chanu & Rutger Blom
- #   Filename: templates/var_NSXT_IPPools.j2
- #    Used By: This file is used by the playbook createNsxIpPool.yml
- #    Purpose: This Jinja2 template file is used to create the data structure that is provided to the nsxt_policy_ip_pool method.
- #
- #}
+
 ip_pools:
 {% for Pool in Nested_NSXT.Networking.IPPools %}
 - display_name: "{{ Pool.Name }}"
@@ -22,7 +16,7 @@ ip_pools:
       - start: "{{ IPRange.Start }}"
         end:   "{{ IPRange.End }}"
 {% set IPRange_CIDR = {{ "{}/{}".format(IPRange.Start, Allocation.Prefix) | ipaddr('network/prefix') }} %}
-{% endfor %}
+{% endfor %}{# IPRange #}
       cidr: "{{ IPRange_CIDR }}"
 {% if Allocation.Gateway %}
       gateway_ip: "{{ Allocation.Gateway }}"
@@ -31,4 +25,5 @@ ip_pools:
       dns_nameservers: "{{ Allocation.DNS.Server }}"
 {% endif %}
       dns_suffix: "{{ Allocation.DNS.Domain }}"
-{% endfor %}
+{% endfor %}{# Allocation #}
+{% endfor %}{# Pool #}
