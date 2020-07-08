@@ -16,7 +16,7 @@ ip_pools:
       scope: "{{ Pool.Tags.Scope }}"
   pool_static_subnets:
 {% for Allocation in Pool.Allocations %}
-    - display_name: "{{ "{}/{}".format(Allocation.IPRanges[0].Start, Allocation.Prefix) | ipaddr('network/prefix') }}"
+    - display_name: "{{ "{}/{}".format(Allocation.IPRanges[0].Start, Allocation.Prefix) | ipaddr('network/prefix') | ipaddr('network') }}"
       description: "{{ Allocation.Description }}"
       state: "present"
       allocation_ranges:
