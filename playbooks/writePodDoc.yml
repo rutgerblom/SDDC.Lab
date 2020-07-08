@@ -4,13 +4,17 @@
 - hosts: localhost
   name: writePodDoc.yml
   gather_facts: false
+
+  vars:
+    - PodDocFile: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Documentation.html"
   
   vars_prompt:
 
     - name: DestinationPodDocFile
-      prompt: "Where would you like to save the Pod documentation HTML file (Enter full path with file)?"
+      prompt: "Where would you like to save the Pod documentation HTML file?"
       unsafe: yes
       private: no
+      default: "{{ lookup('env','HOME') }}/{{ PodDocFile }}"
 
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
@@ -28,7 +32,7 @@
               1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
                  command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
                  located in your home directory:
-                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+                                    sudo ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
 
               2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
                  All Pod configuration files used to deploy labs MUST be generated using that script.

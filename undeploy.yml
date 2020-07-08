@@ -3,7 +3,6 @@
 - hosts: localhost
   gather_facts: false
   vars_files:
-    - ./answerfile.yml
     - ./config.yml
     - ./software.yml
   tasks:
@@ -92,8 +91,8 @@
       poll: 0
       ignore_errors: true
 
-    - name: Remove static route on the Ansible control node
-      command: ./ip route del "{{ pod_network }}.{{ pod + management }}.0/24"
+    - name: Remove static route on the Ansible Control Station
+      command: ./ip route del "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}"
       args:
         chdir: /bin/
       register: iproute
@@ -102,10 +101,4 @@
         - deploy_router == true
         - router.protocol == "static"
 
-    - name: Delete the Pod documentation
-      file: 
-        path: "/home/$SUDO_USER/pod-{{ pod }}-doc.html"
-        state: absent
-      when: 
-        - DEBUG_keep_config_files != true
 
