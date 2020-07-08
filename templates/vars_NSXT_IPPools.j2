@@ -6,6 +6,7 @@
  #
  #}
 ip_pools:
+{% set ns = namespace(CIDR="") %}
 {% for Pool in Nested_NSXT.Networking.IPPools %}
 - display_name: "{{ Pool.Name }}"
   description:  "{{ Pool.Description }}"
@@ -21,9 +22,9 @@ ip_pools:
 {% for IPRange in Allocation.IPRanges %}
       - start: "{{ IPRange.Start }}"
         end:   "{{ IPRange.End }}"
-{# {% set IPRange_CIDR = ("{}/{}".format(IPRange.Start, Allocation.Prefix) | ipaddr('network/prefix')) %} #}
+{% set ns.CIDR = ("{}/{}".format(IPRange.Start, Allocation.Prefix) | ipaddr('network/prefix')) %} #}
 {% endfor %}{# IPRange #}
-      cidr: "1.1.1.0/24"
+      cidr: "{{ ns.CIDR }}"
 {% if Allocation.Gateway %}
       gateway_ip: "{{ Allocation.Gateway }}"
 {% endif %}
