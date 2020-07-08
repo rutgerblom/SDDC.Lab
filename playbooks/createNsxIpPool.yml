@@ -83,18 +83,18 @@
         - Deploy.NSXT.LocalManager == true
 
 
-    - name: Read IP Pools data structure from file
-      set_fact:
-        var_IPPools: "{{ lookup('file', LOCAL_IPPools_File) | from_yaml }}"
-      when:
-        - Deploy.NSXT.LocalManager == true
-
 #    - name: Read IP Pools data structure from file
-#      include_vars:
-#        file: "{{ LOCAL_IPPools_File }}"
-#        name: var_IPPools
+#      set_fact:
+#        var_IPPools: "{{ lookup('file', LOCAL_IPPools_File) | from_yaml }}"
 #      when:
 #        - Deploy.NSXT.LocalManager == true
+
+    - name: Read IP Pools data structure from file
+      include_vars:
+        file: "{{ LOCAL_IPPools_File }}"
+        name: var_IPPools
+      when:
+        - Deploy.NSXT.LocalManager == true
 
 
     - name: DEBUG -- Display Target Variables (Pause)
