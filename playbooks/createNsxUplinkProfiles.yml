@@ -103,6 +103,13 @@
         - Deploy.NSXT.LocalManager == true
         - var_UplinkProfiles != ""
 
+
+    - name: Display Named Teamings
+      debug:
+        var: var_UplinkProfiles.uplink_profiles[2].named_teamings
+        verbosity: 4
+        
+
     - name: Create Uplink Profiles
       nsxt_uplink_profiles:
         hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
@@ -114,7 +121,7 @@
         description: "{{ item.description }}"                              # Description
         transport_vlan: "{{ item.transport_vlan }}"                        # Overlay Transport VLAN
 #        send_enabled: true                            # Send LLDP
-#        enabled: false                                       # Enable NIOC
+#        enabled: true                                       # Enable NIOC
 #        send_enabled: "{{ item.send_enabled }}"                            # Send LLDP
 #        enabled: "{{ item.enabled }}"                                      # Enable NIOC
         mtu: "{{ item.mtu }}"                                              # Overlay MTU
