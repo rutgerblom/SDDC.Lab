@@ -108,7 +108,7 @@
       debug:
         var: var_UplinkProfiles.uplink_profiles[2].named_teamings
         verbosity: 4
-        
+
 
     - name: Create Uplink Profiles
       nsxt_uplink_profiles:
@@ -126,7 +126,7 @@
 #        enabled: "{{ item.enabled }}"                                      # Enable NIOC
         mtu: "{{ item.mtu }}"                                              # Overlay MTU
         teaming: "{{ item.teaming }}"                                      # Default NIC Teaming
-        named_teamings: "{{ item.named_teamings }}"                        # Named Teaming Policies
+        named_teamings: "{{ item }}"                        # Named Teaming Policies
         state: "present"
       with_items:
         - "{{ var_UplinkProfiles.uplink_profiles }}"
