@@ -133,8 +133,7 @@
         teaming: "{{ item.teaming }}"                                      # Default NIC Teaming
         named_teamings: "{{ item.named_teamings }}"                        # Named Teaming Policies
         state: "present"
-      with_items:
-        - "{{ var_UplinkProfiles }}"
+      loop: "{{ var_UplinkProfiles }}"
       when:
         - Deploy.NSXT.LocalManager == true
         - var_UplinkProfiles != ""
