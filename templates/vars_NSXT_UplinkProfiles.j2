@@ -32,7 +32,7 @@ uplink_profiles:
     named_teamings:
 {% if UplinkProfile.NamedTeamings is defined and UplinkProfile.NamedTeamings[0]|length %}
 {% for NamedTeaming in UplinkProfile.NamedTeamings %}
-{# }    - display_name: "{{ NamedTeaming.Name }}" #}
+    - name: "{{ NamedTeaming.Name }}"
     - policy: "{{ NamedTeaming.Policy }}"
       active_list:
 {% for ActiveUplink in NamedTeaming.ActiveUplinks %}
