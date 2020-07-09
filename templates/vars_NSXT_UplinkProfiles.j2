@@ -29,7 +29,7 @@ uplink_profiles:
 {% endfor %}{# StandbyUplink in Teaming #}
 {% endif %}{# StandbyUplinks #}
 {############# Named Teaming Policy  #############}
-{% if UplinkProfile.NamedTeamings is defined %}
+{#{% if UplinkProfile.NamedTeamings is defined %} #}
     named_teamings:
 {% for NamedTeaming in UplinkProfile.NamedTeamings %}
     - display_name: "{{ NamedTeaming.Name }}"
@@ -45,7 +45,7 @@ uplink_profiles:
       - uplink_name: "{{ StandbyUplink.Name }}"
         uplink_type: "{{ StandbyUplink.Type }}"
 {% endfor %}{# StandbyUplink in Named_Teamings #}
-{% endif %}{# StandbyUplinks #}
+{% endif %}{# NamedTeaming.StandbyUplinks #}
 {% endfor %}{# NamedTeaming #}
-{% endif %}{# NamedTeamings #}
+{# {% endif %}{# UplinkProfile.NamedTeamings #}
 {% endfor %}{# UplinkProfile #}
