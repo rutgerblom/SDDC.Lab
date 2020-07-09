@@ -31,20 +31,19 @@ uplink_profiles:
 {############# Named Teaming Policy  #############}
 {% if UplinkProfile.NamedTeamings is defined and UplinkProfile.NamedTeamings[0]|length %}
     named_teamings:
-      named_teamings:
 {% for NamedTeaming in UplinkProfile.NamedTeamings %}
-      - name: "{{ NamedTeaming.Name }}"
-        policy: "{{ NamedTeaming.Policy }}"
-        active_list:
+    - name: "{{ NamedTeaming.Name }}"
+      policy: "{{ NamedTeaming.Policy }}"
+      active_list:
 {% for ActiveUplink in NamedTeaming.ActiveUplinks %}
-        - uplink_name: "{{ ActiveUplink.Name }}"
-          uplink_type: "{{ ActiveUplink.Type }}"
+      - uplink_name: "{{ ActiveUplink.Name }}"
+        uplink_type: "{{ ActiveUplink.Type }}"
 {% endfor %}{# ActiveUplink #}
 {% if NamedTeaming.StandbyUplinks is defined %}
-        standby_list:
+      standby_list:
 {% for StandbyUplink in NamedTeaming.StandbyUplinks %}
-        - uplink_name: "{{ StandbyUplink.Name }}"
-          uplink_type: "{{ StandbyUplink.Type }}"
+      - uplink_name: "{{ StandbyUplink.Name }}"
+        uplink_type: "{{ StandbyUplink.Type }}"
 {% endfor %}{# StandbyUplink in Named_Teamings #}
 {% endif %}{# NamedTeaming.StandbyUplinks #}
 {% endfor %}{# NamedTeaming #}
