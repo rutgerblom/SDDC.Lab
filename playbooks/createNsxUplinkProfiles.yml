@@ -129,9 +129,9 @@
 #        enabled: "{{ item.enabled }}"                                      # Enable NIOC
         mtu: "{{ item.mtu }}"                                              # Overlay MTU
         teaming: "{{ item.teaming }}"                                      # Default NIC Teaming
-        named_teamings: "{{ item.value.named_teamings }}"                        # Named Teaming Policies
+        named_teamings: "{{ item.named_teamings }}"                        # Named Teaming Policies
         state: "present"
-      loop: "{{ var_UplinkProfiles }}"
+      loop: "{{ var_UplinkProfiles | dict2items }}"
       when:
         - Deploy.NSXT.LocalManager == true
         - var_UplinkProfiles != ""
