@@ -38,6 +38,38 @@
       when: Valid_Pod_Config_File is not defined
 
 
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+
+                                       Target.vSwitch: {{ Target.vSwitch }}
+                          Target.PortGroup.Trunk.Name: {{ Target.PortGroup.Trunk.Name }}
+                          Target.PortGroup.Trunk.VLAN: {{ Target.PortGroup.Trunk.VLAN }}
+                     Target.PortGroup.Management.Name: {{ Target.PortGroup.Management.Name }}
+                     Target.PortGroup.Management.VLAN: {{ Target.PortGroup.Management.VLAN }}
+
+                                   Nested_Router.Name: {{ Nested_Router.Name }}
+                                Nested_vCenter.VMName: {{ Nested_vCenter.VMName }}
+           Nested_NSXT.Components.LocalManager.VMName: {{ Nested_NSXT.Components.LocalManager.VMName }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+
     - name: Remove VyOS router VM
       vmware_guest:
         hostname: "{{ Target.FQDN }}"
