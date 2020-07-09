@@ -1464,6 +1464,7 @@ Nested_NSXT:
       TransportZone: "TZ-Overlay"
       VLANS:
 
+
   System:
     Fabric:
       TransportZone:
@@ -1482,3 +1483,60 @@ Nested_NSXT:
           Description: GEVEVE Overlay Transport Zone
           Switch: "NVDS-1"
           TeamingPolicies: []
+
+      Profile:
+        UplinkProfiles:
+        - Name: "ESXi-Uplink-Profile"
+          Description: ESXi Host Transport Node Uplink Profile
+          EnableNIOC: false
+          SendLLDP: true
+          Transport:
+            VLAN: "{{ Net.Transport.VLAN }}"
+            MTU:  9000
+          DefaultTeaming:
+            Policy: "LOADBALANCE_SRCID"                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
+            ActiveUplinks:
+            - Name: "uplink-1"
+              Type: "PNIC"
+            - Name: "uplink-2"
+              Type: "PNIC"
+
+        - Name: "Edge-Uplink-Profile"
+          Description: Edge Transport Node Uplink Profile
+          EnableNIOC: false
+          SendLLDP: true
+          Transport:
+            VLAN: "{{ Net.Transport.VLAN }}"
+            MTU:  9000
+          DefaultTeaming:
+            Policy: "LOADBALANCE_SRCID"                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
+            ActiveUplinks:
+            - Name: "uplink-1"
+              Type: "PNIC"
+            - Name: "uplink-2"
+              Type: "PNIC"
+
+        - Name: "Sample-Uplink-Profile"
+          Description: Sample Uplink Profile
+          EnableNIOC: false
+          SendLLDP: true
+          Transport:
+            VLAN: "{{ Net.Transport.VLAN }}"
+            MTU:  9000
+          DefaultTeaming:
+            Policy: "LOADBALANCE_SRCID"                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
+            ActiveUplinks:
+            - Name: "uplink-1"
+              Type: "PNIC"
+            - Name: "uplink-2"
+              Type: "PNIC"
+          NamedTeamings:
+            - Name: NTP_SampleFailOver
+              Policy: "FAILOVER_ORDER"
+              ActiveUplinks:
+              - Name: "uplink-1"
+                Type: "PNIC"
+              StandbyUplinks:
+              - Name: "uplink-2"
+                Type: "PNIC"
+
