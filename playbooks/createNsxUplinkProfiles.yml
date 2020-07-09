@@ -1,12 +1,9 @@
 ## Luis has ownership of this module
-## NOT DONE YET -- Need to migrate var_nst to j2 template, and look at data structure.
-## Not sure there's a difference between 2.5 and 3.0 on this call
+## Converted to v2 static configs
 ---
 - hosts: localhost
   name: createNsxUplinkProfiles.yml
   gather_facts: false
-#  vars_files:
-#    - ../answerfile.yml
   vars:
     LOCAL_UplinkProfiles_File: "{{ Target.VarsFolder }}/vars_NSXT_UplinkProfiles"
   tasks:
@@ -80,14 +77,12 @@
       when:
         - Deploy.NSXT.LocalManager == true
 
-
-## Read in var_UplinkProfiles variable
+    ## Read in var_UplinkProfiles variable
     - name: Read var_UplinkProfiles data structure from file
       include_vars:
         file: "{{ LOCAL_UplinkProfiles_File }}"
       when:
         - Deploy.NSXT.LocalManager == true
-
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -103,16 +98,6 @@
         - Deploy.NSXT.LocalManager == true
         - var_UplinkProfiles != ""
 
-    - name: Display Default Teamings
-      debug:
-        msg: "{{ var_UplinkProfiles }}"
-
-
-    - name: Display Named Teamings
-      debug:
-        msg: "{{ var_UplinkProfiles[2].named_teamings }}"
-
-
     - name: Create Uplink Profiles
       nsxt_uplink_profiles:
         hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
@@ -125,7 +110,7 @@
         transport_vlan: "{{ item.transport_vlan }}"                        # Overlay Transport VLAN
         mtu: "{{ item.mtu }}"                                              # Overlay MTU
         teaming: "{{ item.teaming }}"                                      # Default NIC Teaming
-        named_teamings: "{{ item.named_teamings | default(omit) }}"                        # Named Teaming Policies
+        named_teamings: "{{ item.named_teamings | default(omit) }}"        # Named Teaming Policy, but omit it if it does not exist
         state: "present"
       with_list: "{{ var_UplinkProfiles }}"
       when:
@@ -139,44 +124,3 @@
       when: 
         - Deploy.NSXT.LocalManager == true
         - DEBUG.KeepConfigFiles != true
-
-
-
-#    - name: Load variables for NSX-T
-#      include_vars:
-#        file: nsxt_vars.yml
-#      when: Deploy.NSXT.LocalManager == true
-#
-#    - name: Create NSX-T 2.5 uplink profiles
-#      nsxt_uplink_profiles:
-#        hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
-#        username: "{{ Nested_NSXT.Credentials.admin.Name }}"
-#        password: "{{ Nested_NSXT.Credentials.admin.Password }}"
-#        validate_certs: False
-#        resource_type: UplinkHostSwitchProfile
-#        display_name: "{{ item.display_name }}"
-#        teaming: "{{ item.teaming }}"
-#        transport_vlan: "{{ Net.Transport.VLAN }}" 
-#        state: "present"
-#      with_items:
-#        - "{{ uplink_profiles2 }}"
-#      when:
-#        - Deploy.NSXT.LocalManager == true
-#        - nsxt_major_version == 2
-#
-#    - name: Create NSX-T 3.0 uplink profiles
-#      nsxt_uplink_profiles:
-#        hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
-#        username: "{{ Nested_NSXT.Credentials.admin.Name }}"
-#        password: "{{ Nested_NSXT.Credentials.admin.Password }}"
-#        validate_certs: False
-#        resource_type: UplinkHostSwitchProfile
-#        display_name: "{{ item.display_name }}"
-#        teaming: "{{ item.teaming }}"
-#        transport_vlan: "{{ Net.Transport.VLAN }}" 
-#        state: "present"
-#      with_items:
-#        - "{{ uplink_profiles3 }}"
-#      when:
-#        - Deploy.NSXT.LocalManager == true
-#        - nsxt_major_version == 3
