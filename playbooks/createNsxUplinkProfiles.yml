@@ -123,10 +123,6 @@
         display_name: "{{ item.display_name }}"
         description: "{{ item.description }}"                              # Description
         transport_vlan: "{{ item.transport_vlan }}"                        # Overlay Transport VLAN
-#        send_enabled: true                            # Send LLDP
-#        enabled: true                                       # Enable NIOC
-        send_enabled: "{{ item.send_enabled | default(true) }}"                            # Send LLDP
-        enabled: "{{ item.enabled | default(true) }}"                                      # Enable NIOC
         mtu: "{{ item.mtu }}"                                              # Overlay MTU
         teaming: "{{ item.teaming }}"                                      # Default NIC Teaming
         named_teamings: "{{ item.named_teamings | default(None) }}"                        # Named Teaming Policies
