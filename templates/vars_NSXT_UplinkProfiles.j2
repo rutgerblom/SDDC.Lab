@@ -1,0 +1,51 @@
+{#
+ #    Authors: Luis Chanu & Rutger Blom
+ #   Filename: templates/var_NSXT_UplinkProfiles.j2
+ #    Used By: This file is used by the playbook createNsxUplinkProfiles.yml
+ #    Purpose: This Jinja2 template file is used to create the data structure that is provided to the nsxt_uplink_profiles module.
+ #
+ #}
+uplink_profiles:
+{% for UplinkProfile in Nested_NSXT.System.Fabric.Profile.UplinkProfiles %}
+  - display_name:  "{{ UplinkProfile.Name }}"
+    description:   "{{ UplinkProfile.Description }}"
+    transport_vlan: {{ UplinkProfile.Transport.VLAN }}
+    send_enabled:   {{ UplinkProfile.SendLLDP|bool }}
+    enabled: {{ UplinkProfile.EnableNIOC|bool }}
+    mtu: {{ UplinkProfile.Transport.MTU }}
+{############# Default Teaming Policy #############}
+    teaming:
+      policy: "{{ UplinkProfile.DefaultTeaming.Policy }}"
+      active_list:
+{% for ActiveUplink in UplinkProfile.DefaultTeaming.ActiveUplinks %}
+      - uplink_name: "{{ ActiveUplink.Name }}"
+        uplink_type: "{{ ActiveUplink.Type }}"
+{% endfor %}{# ActiveUplink #}
+{% if UplinkProfile.DefaultTeaming.StandbyUplinks is defined %}
+      standby_list:
+{% for StandbyUplink in UplinkProfile.DefaultTeaming.StandbyUplinks %}
+      - uplink_name: "{{ StandbyUplink.Name }}"
+        uplink_type: "{{ StandbyUplink.Type }}"
+{% endfor %}{# StandbyUplink in Teaming #}
+{% endif %}{# StandbyUplinks #}
+{############# Named Teaming Policy  #############}
+{% if UplinkProfile.NamedTeamings is defined %}
+    named_teamings:
+{% for NamedTeaming in UplinkProfile.NamedTeamings %}
+    - display_name: "{{ NamedTeaming.Name }}"
+      policy: "{{ NamedTeaming.Policy }}"
+      active_list:
+{% for ActiveUplink in NamedTeaming.ActiveUplinks %}
+      - uplink_name: "{{ ActiveUplink.Name }}"
+        uplink_type: "{{ ActiveUplink.Type }}"
+{% endfor %}{# ActiveUplink #}
+{% if NamedTeaming.StandbyUplinks is defined %}
+      standby_list:
+{% for StandbyUplink in NamedTeaming.StandbyUplinks %}
+      - uplink_name: "{{ StandbyUplink.Name }}"
+        uplink_type: "{{ StandbyUplink.Type }}"
+{% endfor %}{# StandbyUplink in Named_Teamings #}
+{% endif %}{# StandbyUplinks #}
+{% endfor %}{# NamedTeaming #}
+{% endif %}{# NamedTeamings #}
+{% endfor %}{# UplinkProfile #}
