@@ -3,7 +3,7 @@ edge_transport_nodes2:
 - display_name: "{{ edge_node1 }}"
   host_switches:
   - host_switch_profiles:
-    - name: edge-uplink-profile
+    - name: Edge-Uplink-Profile
       type: UplinkHostSwitchProfile
     host_switch_name: "{{ nvds_name }}"
     pnics:
@@ -49,7 +49,7 @@ edge_transport_nodes2:
 - display_name: "{{ edge_node2 }}"
   host_switches:
   - host_switch_profiles:
-    - name: edge-uplink-profile
+    - name: Edge-Uplink-Profile
       type: UplinkHostSwitchProfile
     host_switch_name: "{{ nvds_name }}"
     pnics:
@@ -98,7 +98,7 @@ edge_transport_nodes3:
 - display_name: "{{ edge_node1 }}"
   host_switches:
   - host_switch_profiles:
-    - name: edge-uplink-profile
+    - name: Edge-Uplink-Profile
       type: UplinkHostSwitchProfile
     host_switch_name: "{{ nvds_name }}"
     host_switch_mode: STANDARD
@@ -148,7 +148,7 @@ edge_transport_nodes3:
 - display_name: "{{ edge_node2 }}"
   host_switches:
   - host_switch_profiles:
-    - name: edge-uplink-profile
+    - name: Edge-Uplink-Profile
       type: UplinkHostSwitchProfile
     host_switch_name: "{{ nvds_name }}"
     host_switch_mode: STANDARD
@@ -201,7 +201,7 @@ transport_node_profiles2:
 - display_name: "{{ tn_profile_name }}"
   host_switches:
   - host_switch_profiles:
-    - name: esxi-uplink-profile
+    - name: ESXi-Uplink-Profile
       type: UplinkHostSwitchProfile
     - name: LLDP [Send Packet Enabled]
       type: LldpHostSwitchProfile
@@ -222,7 +222,7 @@ transport_node_profiles3:
 - display_name: "{{ tn_profile_name }}"
   host_switches:
   - host_switch_profiles:
-    - name: esxi-uplink-profile
+    - name: ESXi-Uplink-Profile
       type: UplinkHostSwitchProfile
     host_switch_name: "{{ vds.name }}"
     host_switch_mode: STANDARD
@@ -282,7 +282,7 @@ transport_node_profiles3:
 
 # NSX-T Uplink Profiles NSX-T 2.5
 uplink_profiles2:
-- display_name: "esxi-uplink-profile"
+- display_name: "ESXi-Uplink-Profile"
   teaming:
     active_list:
     - uplink_name: "uplink-1"
@@ -291,7 +291,7 @@ uplink_profiles2:
       uplink_type: PNIC
     policy: "LOADBALANCE_SRCID"
   pod + transport: "{{ pod + transport }}"
-- display_name: "edge-uplink-profile"
+- display_name: "Edge-Uplink-Profile"
   teaming:
     active_list:
     - uplink_name: "uplink-1"
@@ -303,7 +303,7 @@ uplink_profiles2:
 
 # NSX-T Uplink Profiles NSX-T 3.0
 uplink_profiles3:
-- display_name: "esxi-uplink-profile"
+- display_name: "ESXi-Uplink-Profile"
   teaming:
     active_list:
     - uplink_name: "uplink-1"
@@ -312,7 +312,7 @@ uplink_profiles3:
       uplink_type: PNIC
     policy: "LOADBALANCE_SRCID"
   pod + transport: "{{ pod + transport }}"
-- display_name: "edge-uplink-profile"
+- display_name: "Edge-Uplink-Profile"
   teaming:
     active_list:
     - uplink_name: "uplink-1"
