@@ -105,7 +105,7 @@
 
     - name: Display Default Teamings
       debug:
-        msg: "{{ var_UplinkProfiles[2].teaming }}"
+        msg: "{{ var_UplinkProfiles }}"
 
 
     - name: Display Named Teamings
@@ -131,7 +131,7 @@
         teaming: "{{ item.teaming }}"                                      # Default NIC Teaming
         named_teamings: "{{ item.named_teamings }}"                        # Named Teaming Policies
         state: "present"
-      loop: "{{ var_UplinkProfiles | dict2items }}"
+      with_list: "{{ var_UplinkProfiles }}"
       when:
         - Deploy.NSXT.LocalManager == true
         - var_UplinkProfiles != ""
