@@ -125,7 +125,7 @@
         transport_vlan: "{{ item.transport_vlan }}"                        # Overlay Transport VLAN
         mtu: "{{ item.mtu }}"                                              # Overlay MTU
         teaming: "{{ item.teaming }}"                                      # Default NIC Teaming
-        named_teamings: "{{ item.named_teamings | default(None) }}"                        # Named Teaming Policies
+        named_teamings: "{{ item.named_teamings | default(omit) }}"                        # Named Teaming Policies
         state: "present"
       with_list: "{{ var_UplinkProfiles }}"
       when:
