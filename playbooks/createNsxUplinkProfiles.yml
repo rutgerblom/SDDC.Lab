@@ -103,6 +103,11 @@
         - Deploy.NSXT.LocalManager == true
         - var_UplinkProfiles != ""
 
+    - name: Display Default Teamings
+      debug:
+        var: var_UplinkProfiles.uplink_profiles[2].teaming
+        verbosity: 4
+
 
     - name: Display Named Teamings
       debug:
