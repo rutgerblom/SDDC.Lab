@@ -2,31 +2,36 @@
  #     Author: Luis Chanu & Rutger Blom
  #   Filename: templates/var_NSXT_IPPools.j2
  #    Used By: This file is used by the playbook createNsxIpPool.yml
- #    Purpose: This Jinja2 template file is used to create the data structure that is provided to the nsxt_policy_ip_pool method.
+ #    Purpose: This Jinja2 template file is used to create the data structure that is provided to the nsxt_policy_ip_pool module.
  #
  #}
 ip_pools:
+{% set ns = namespace(CIDR="") %}
 {% for Pool in Nested_NSXT.Networking.IPPools %}
 - display_name: "{{ Pool.Name }}"
+  description:  "{{ Pool.Description }}"
   state: "present"
   tags:
     - tag: "{{ Pool.Tags.Tag }}"
       scope: "{{ Pool.Tags.Scope }}"
-  description:  "{{ Pool.Description }}"
   pool_static_subnets:
-{% for IPRange in Pool.IPRanges %}
-    - display_name: "{{ IPRange.Start | ipaddr('int') }}"
+{% for Allocation in Pool.Allocations %}
+    - display_name: "{{ "{}/{}".format(Allocation.IPRanges[0].Start, Allocation.Prefix) | ipaddr('network/prefix') | ipaddr('network') }}"
+      description: "{{ Allocation.Description }}"
       state: "present"
       allocation_ranges:
+{% for IPRange in Allocation.IPRanges %}
       - start: "{{ IPRange.Start }}"
         end:   "{{ IPRange.End }}"
-      cidr: {{ "{}/{}".format(IPRange.Start, IPRange.Prefix) | ipaddr('network/prefix') }}
-{% if IPRange.Gateway %}
-      gateway_ip: "{{ IPRange.Gateway }}"
+{% set ns.CIDR = ("{}/{}".format(IPRange.Start, Allocation.Prefix) | ipaddr('network/prefix')) %}
+{% endfor %}{# IPRange #}
+      cidr: "{{ ns.CIDR }}"
+{% if Allocation.Gateway %}
+      gateway_ip: "{{ Allocation.Gateway }}"
 {% endif %}
-{% if IPRange.Start | ipv4 %}
-      dns_nameservers: "{{ Pool.DNS.Server }}"
+{% if Allocation.DNS.Server %}
+      dns_nameservers: "{{ Allocation.DNS.Server }}"
 {% endif %}
-      dns_suffix: "{{ Pool.DNS.Domain }}"
-{% endfor %}
-{% endfor %}
+      dns_suffix: "{{ Allocation.DNS.Domain }}"
+{% endfor %}{# Allocation #}
+{% endfor %}{# Pool #}

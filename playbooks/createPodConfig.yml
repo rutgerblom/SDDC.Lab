@@ -84,14 +84,16 @@
           =====================================================================================================
           =============================================  NOTICE  ==============================================
           =====================================================================================================
-          
+
           Generating static configuration file for Pod {{ Pod.Number }}.   Please be patient, as this can take
           some time.  On average, it takes between 4-7 minutes to complete, but this time may vary depending
           on the size of your lab, and the speed of your Ansible Control Station (a.k.a. Ansible Controller).
-          
-                The following source file is being prepared: {{ SourceConfigFile }}
 
-               Once prepared, you can deploy the Pod with: sudo ansible-playbook -e "@{{ lookup('env','HOME') }}/{{ PodConfigFile }}" deploy.yml
+                The following source file is being prepared: {{ SourceConfigFile }}
+               Once parpared, it will be saved to this file: {{ lookup('env','HOME') }}/{{ PodConfigFile }}
+
+          Once prepared, you can deploy the Pod using the following command:
+                          sudo ansible-playbook -e "@{{ lookup('env','HOME') }}/{{ PodConfigFile }}" deploy.yml
 
           =====================================================================================================
 
