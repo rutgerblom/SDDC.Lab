@@ -30,7 +30,7 @@ uplink_profiles:
 {% endif %}{# StandbyUplinks #}
 {############# Named Teaming Policy  #############}
     named_teamings:
-{% if UplinkProfile.NamedTeamings[0] is defined %}
+{% if UplinkProfile.NamedTeamings is defined and UplinkProfile.NamedTeamings[0]|length %}
 {% for NamedTeaming in UplinkProfile.NamedTeamings %}
 {# }    - display_name: "{{ NamedTeaming.Name }}" #}
     - policy: "{{ NamedTeaming.Policy }}"
