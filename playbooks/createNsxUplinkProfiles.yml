@@ -81,10 +81,10 @@
         - Deploy.NSXT.LocalManager == true
 
 
+## Read in var_UplinkProfiles variable
     - name: Read var_UplinkProfiles data structure from file
       include_vars:
         file: "{{ LOCAL_UplinkProfiles_File }}"
-#        name: var_UplinkProfiles
       when:
         - Deploy.NSXT.LocalManager == true
 
@@ -105,14 +105,12 @@
 
     - name: Display Default Teamings
       debug:
-        var: var_UplinkProfiles[2].teaming
-        verbosity: 4
+        msg: var_UplinkProfiles[2].teaming
 
 
     - name: Display Named Teamings
       debug:
-        var: var_UplinkProfiles[2].named_teamings
-        verbosity: 4
+        msg: var_UplinkProfiles[2].named_teamings
 
 
     - name: Create Uplink Profiles
