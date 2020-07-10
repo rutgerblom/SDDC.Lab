@@ -123,7 +123,7 @@ clusters:
 
 # Configuration for the VDS within the nested vSphere environment.
 vds:
-  name:                      "Pod-{{ pod }}-vSwitch"
+  name:                      "Pod-{{ '%03d'|format(pod) }}-VDS"
   mtu:                       "9000"
   uplinks:                   "2"
   discovery_proto:           "lldp"

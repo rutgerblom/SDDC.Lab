@@ -1180,7 +1180,7 @@ Nested_vCenter:
   DataCenter: "Pod-{{ '%03d'|format(Pod.Number|int) }}-DataCenter"
   Networking:
     vSwitch:
-      Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"
+      Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-VDS"
       Clusters:
       - Management
       - Compute-A
@@ -1356,7 +1356,7 @@ Nested_NSXT:
 
 ##
 ## Changes to some of the 'Vars' variables below may require changes to Nested_NSXT below
-###
+##
   Vars:
     NVDSName:          "NVDS-1"
     Tier0_Name:        "T0-Gateway-01"
