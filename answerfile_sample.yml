@@ -149,10 +149,10 @@ nvds_name:                   "NVDS-1"
 tz_vlan_name:                "TZ-VLAN"              
 tz_overlay_name:             "TZ-Overlay"              
 tz_edge_name:                "TZ-Edge"              
-ip_pool_name:                "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
+ip_pool_name:                "Pod-{{ '%03d'|format(pod) }}-TEP-Pool"
 tn_profile_name:             "TNP-ESXi-Hosts"              
-edge_node1:                  "T0-EdgeVM-01"              
-edge_node2:                  "T0-EdgeVM-02"              
+edge_node1:                  "Pod-{{ '%03d'|format(pod) }}-T0-EdgeVM-01"
+edge_node2:                  "Pod-{{ '%03d'|format(pod) }}-T0-EdgeVM-02"             
 edge_node_vsphere_cluster:   "Edge"                                 # The vSphere cluster in the nested environment where the Edge VMs should be deployed.
 edge_node1_vesxi:            "pod-{{ '%03d'|format(pod) }}-esxi-91.{{ domain }}"   # The nested ESXi host where Edge VM 1 should be placed. Specify IP address if there's no working DNS. 
 edge_node2_vesxi:            "pod-{{ '%03d'|format(pod) }}-esxi-92.{{ domain }}"   # The nested ESXi host where Edge VM 2 should be placed. Specify IP address if there's no working DNS.
