@@ -1498,7 +1498,6 @@ Nested_NSXT:
               Type: "PNIC"
             - Name: "uplink-2"
               Type: "PNIC"
-
         - Name: "Edge-Uplink-Profile"
           Description: Edge Transport Node Uplink Profile
           Transport:
@@ -1511,7 +1510,6 @@ Nested_NSXT:
               Type: "PNIC"
             - Name: "uplink-2"
               Type: "PNIC"
-
         - Name: "Sample-Uplink-Profile"
           Description: Sample Uplink Profile
           Transport:
@@ -1534,3 +1532,23 @@ Nested_NSXT:
               - Name: "uplink-2"
                 Type: "PNIC"
 
+        TransportNodeProfiles:
+        - Name: "TNP-ESXi-Hosts"
+          Description: ESXi Transport Node Profile
+          HostSwitches:
+          - Name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
+            Mode: STANDARD
+            Type: "VDS"
+            TransportZones:
+            - Name: "TZ-Overlay"
+            - Name: "TZ-VLAN"
+            UplinkProfile:
+              Name: ESXi-Uplink-Profile
+            IPPool:
+              Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
+            Uplinks:
+            - NSXUplinkName: "uplink-1"
+              VDSUplinkName: "Uplink 1"
+            - NSXUplinkName: "uplink-2"
+              VDSUplinkName: "Uplink 2"
+         
