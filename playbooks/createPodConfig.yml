@@ -12,15 +12,22 @@
 
   vars_prompt:
 
-    - name: SourceConfigFile
-      prompt: "What Pod-Config file you would like to have prepared for use (Enter full path with file)?"
+    - name: SourceConfigPath
+      prompt: "In which directory is the Pod-Config file you want to have prepared located?"
       unsafe: yes
       private: no
+      default: "{{ lookup('env','PWD') }}"
+
+    - name: SourceConfigFile
+      prompt: "What is the name of the configuration file that you would like to have prepared?"
+      unsafe: yes
+      private: no
+      default: "Config_Sample.yml"
 
   tasks:
     - name: Check to see if the Pod-Config file to be prepared exists
       stat:
-        path: "{{ SourceConfigFile }}"
+        path: "{{ SourceConfigPath }}/{{ SourceConfigFile }}"
       register: ConfigFileCheck
 
 
@@ -35,7 +42,7 @@
             The provided Pod-Config file could not be found, so this playbook is ending WITHOUT creating any
             output file.  The following provided Pod-Config file could not be found:
 
-                                                    {{ SourceConfigFile }}
+                                    {{ SourceConfigPath }}/{{ SourceConfigFile }}
 
             Please verify the file name provided is correct, and that it is located in the path provided.
 
@@ -52,7 +59,7 @@
 
     - name: Include Pod-Config variables into playbook
       include_vars:
-        file: "{{ SourceConfigFile }}"
+        file: "{{ SourceConfigPath }}/{{ SourceConfigFile }}"
 
 
     - name: DEBUG -- Display Target Variables (Pause)
@@ -68,7 +75,7 @@
 
                                            Pod.Number: {{ Pod.Number }}
 
-                       Pod-Config File Being Prepared: {{ SourceConfigFile }}
+                       Pod-Config File Being Prepared: {{ SourceConfigPath }}/{{ SourceConfigFile }}
                                Configuration Template: {{ Target.TemplateFolder }}/{{ PodTemplate }}
                             Target Configuration File: {{ PodConfigFile }}
 
@@ -89,7 +96,7 @@
           some time.  On average, it takes between 4-7 minutes to complete, but this time may vary depending
           on the size of your lab, and the speed of your Ansible Control Station (a.k.a. Ansible Controller).
 
-                The following source file is being prepared: {{ SourceConfigFile }}
+                The following source file is being prepared: {{ SourceConfigPath }}/{{ SourceConfigFile }}
                Once parpared, it will be saved to this file: {{ lookup('env','HOME') }}/{{ PodConfigFile }}
 
           Once prepared, you can deploy the Pod using the following command:
