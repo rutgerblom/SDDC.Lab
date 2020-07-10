@@ -2,9 +2,9 @@
 DEBUG:
   KeepConfigFiles: false
   KeepInstallerFiles: false
-  DisplayVariables: true
+  DisplayVariables: false
   DisplayVariables_DNS: false
-  DisplayDelayInSeconds: 10
+  DisplayDelayInSeconds: 5
 
 
 Pod:
@@ -1180,7 +1180,7 @@ Nested_vCenter:
   DataCenter: "Pod-{{ '%03d'|format(Pod.Number|int) }}-DataCenter"
   Networking:
     vSwitch:
-      Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"
+      Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-VDS"
       Clusters:
       - Management
       - Compute-A
@@ -1356,7 +1356,7 @@ Nested_NSXT:
 
 ##
 ## Changes to some of the 'Vars' variables below may require changes to Nested_NSXT below
-###
+##
   Vars:
     NVDSName:          "NVDS-1"
     Tier0_Name:        "T0-Gateway-01"
@@ -1464,6 +1464,7 @@ Nested_NSXT:
       TransportZone: "TZ-Overlay"
       VLANS:
 
+
   System:
     Fabric:
       TransportZone:
@@ -1482,3 +1483,72 @@ Nested_NSXT:
           Description: GEVEVE Overlay Transport Zone
           Switch: "NVDS-1"
           TeamingPolicies: []
+
+      Profile:
+        UplinkProfiles:
+        - Name: "ESXi-Uplink-Profile"
+          Description: ESXi Host Transport Node Uplink Profile
+          Transport:
+            VLAN: "{{ Net.Transport.VLAN }}"
+            MTU:  9000
+          DefaultTeaming:
+            Policy: "LOADBALANCE_SRCID"                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
+            ActiveUplinks:
+            - Name: "uplink-1"
+              Type: "PNIC"
+            - Name: "uplink-2"
+              Type: "PNIC"
+        - Name: "Edge-Uplink-Profile"
+          Description: Edge Transport Node Uplink Profile
+          Transport:
+            VLAN: "{{ Net.Transport.VLAN }}"
+            MTU:  9000
+          DefaultTeaming:
+            Policy: "LOADBALANCE_SRCID"                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
+            ActiveUplinks:
+            - Name: "uplink-1"
+              Type: "PNIC"
+            - Name: "uplink-2"
+              Type: "PNIC"
+        - Name: "Sample-Uplink-Profile"
+          Description: Sample Uplink Profile
+          Transport:
+            VLAN: "{{ Net.Transport.VLAN }}"
+            MTU:  9000
+          DefaultTeaming:
+            Policy: "LOADBALANCE_SRCID"                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
+            ActiveUplinks:
+            - Name: "uplink-1"
+              Type: "PNIC"
+            - Name: "uplink-2"
+              Type: "PNIC"
+          NamedTeamings:
+            - Name: NTP_SampleFailOver
+              Policy: "FAILOVER_ORDER"
+              ActiveUplinks:
+              - Name: "uplink-1"
+                Type: "PNIC"
+              StandbyUplinks:
+              - Name: "uplink-2"
+                Type: "PNIC"
+
+        TransportNodeProfiles:
+        - Name: "TNP-ESXi-Hosts"
+          Description: ESXi Transport Node Profile
+          HostSwitches:
+          - Name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
+            Mode: STANDARD
+            Type: "VDS"
+            TransportZones:
+            - Name: "TZ-Overlay"
+            - Name: "TZ-VLAN"
+            UplinkProfile:
+              Name: ESXi-Uplink-Profile
+            IPPool:
+              Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
+            Uplinks:
+            - NSXUplinkName: "uplink-1"
+              VDSUplinkName: "Uplink 1"
+            - NSXUplinkName: "uplink-2"
+              VDSUplinkName: "Uplink 2"
+         
