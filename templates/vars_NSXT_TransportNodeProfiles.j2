@@ -12,8 +12,8 @@ var_TransportNodeProfiles:
     host_switches:
 {% for HostSwitch in TransportNodeProfile.HostSwitches %}
     - host_switch_profiles:
-      - name: "{{ HostSwitch.UplinkProfile.Name}}
-        type: "{{ Hostswitch.UplinkProfile.Type }}
+      - name: "{{ HostSwitch.UplinkProfile.Name}}"
+        type: "{{ HostSwitch.UplinkProfile.Type }}"
       host_switch_name: "{{ HostSwitch.Name }}"
       host_switch_mode: "{{ HostSwitch.Mode }}"
       host_switch_type: "{{ HostSwitch.Type }}"
@@ -27,6 +27,7 @@ var_TransportNodeProfiles:
         ip_pool_name: "{{ HostSwitch.IPPool.Name }}"
       transport_zone_endpoints:
 {% for TransportZone in HostSwitch.TransportZones %}
-      - transport_zone_name: "{{ TransportZone.Name %}
+      - transport_zone_name: "{{ TransportZone.Name }}"
 {% endfor %}{# TransportZone #}
+{% endfor %}{# HostSwitch #}
 {% endfor %}{# TransportNodeProfile #}
