@@ -5,9 +5,6 @@
   gather_facts: false
   vars:
       LOCAL_TransportNodeProfiles_File: "{{ Target.VarsFolder }}/vars_NSXT_TransportNodeProfiles"
-  vars_files:
-    - ../answerfile.yml
-    - ../config.yml
   tasks:
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -22,42 +19,52 @@
 
                   Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
 
-          Nested_NSXT.System.Fabric.Profile.UplinkProfiles: {{ Nested_NSXT.System.Fabric.Profile.TransportNodeProfiles }}
+          Nested_NSXT.System.Fabric.Profile.TransportNodeProfiles: {{ Nested_NSXT.System.Fabric.Profile.TransportNodeProfiles }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
         - Deploy.NSXT.LocalManager == true
-  
-    - name: Load variables for NSX-T
-      include_vars:
-        file: nsxt_vars.yml
-      when:        
-        - deploy_nsxt == true
-        
-    - name: Create NSX-T 2.5 transport node profile 
-      nsxt_transport_node_profiles:
-        hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
-        username: "{{ Nested_NSXT.Credentials.admin.Name }}"
-        password: "{{ Nested_NSXT.Credentials.admin.Password }}"
-        validate_certs: False
-        resource_type: TransportNodeProfile
-        display_name: "{{ item.display_name }}"
-        description: Transport Node Profile
-        host_switch_spec:
-          resource_type: StandardHostSwitchSpec
-          host_switches: "{{item.host_switches}}"
-        transport_zone_endpoints:
-        - transport_zone_name: "{{ tz_overlay_name }}"
-        - transport_zone_name: "{{ tz_vlan_name }}"
-        state: present
-      with_items:
-        - "{{ transport_node_profiles2 }}"
-      when:
-        - deploy_nsxt == true
-        - nsxt_major_version == 2
 
-    - name: Create NSX-T 3.0 transport node profile 
+
+    - name: Create 'vars' directory
+      file:
+        path: "{{ Target.VarsFolder }}"
+        state: directory
+      when:
+        - Deploy.NSXT.LocalManager == true
+
+
+    - name: Create file with Transport Node Profile data structure
+      template:
+        src:  "{{ Target.TemplateFolder }}/vars_NSXT_TransportNodeProfiles.j2"
+        dest: "{{ LOCAL_TransportNodeProfiles_File }}"
+        force: true
+      when:
+        - Deploy.NSXT.LocalManager == true
+
+    ## Read in var_TransportNodeProfiles variable
+    - name: Read var_TransportNodeProfiles data structure from file
+      include_vars:
+        file: "{{ LOCAL_TransportNodeProfiles_File }}"
+      when:
+        - Deploy.NSXT.LocalManager == true
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display var_TransportNodeProfiles Variable ===================================
+
+              var_TransportNodeProfiles: {{ var_TransportNodeProfiles | to_nice_yaml(indent=2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.NSXT.LocalManager == true
+        - var_TransportNodeProfiles != ""
+
+    - name: Create Transport Node Profiles 
       nsxt_transport_node_profiles:
         hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
         username: "{{ Nested_NSXT.Credentials.admin.Name }}"
@@ -65,13 +72,20 @@
         validate_certs: False
         resource_type: TransportNodeProfile
         display_name: "{{ item.display_name }}"
-        description: Transport Node Profile
+        description: "{{ item.description }}" 
         host_switch_spec:
           resource_type: StandardHostSwitchSpec
           host_switches: "{{item.host_switches}}"
         state: present
-      with_items:
-        - "{{ transport_node_profiles3 }}"
+      with_list: "{{ var_TransportNodeProfiles }}"
       when:
-        - deploy_nsxt == true
-        - nsxt_major_version == 3
+        - Deploy.NSXT.LocalManager == true
+        - var_TransportNodeProfiles != ""
+
+    - name: Delete Transport Node Profiles data structure file
+      file: 
+        path: "{{ LOCAL_TransportNodeProfiles_File }}"
+        state: absent
+      when: 
+        - Deploy.NSXT.LocalManager == true
+        - DEBUG.KeepConfigFiles != true
