@@ -1,37 +1,77 @@
 ## Rutger has ownership of this module
+# Converted to support STATIC Config files
 ---
 - hosts: localhost
+  name: attachNsxTnp.yml
   gather_facts: false
-  vars_files:
-    - ../answerfile.yml
   tasks:
-    - name: Check if NSX-T license file exists
-      stat: 
-        path: "{{ nsxlicense }}"
-      register: nsxlicensekey
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
 
-    - name: Load variables for NSX-T
-      include_vars:
-        file: nsxt_vars.yml
-      when: 
-        - nsxlicensekey.stat.exists == True        
-        - deploy_nsxt == true
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                          Ansible Playbook: {{ ansible_play_name }}
+
+                                         Target.Deployment: {{ Target.Deployment }}
+
+                  Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
+
+          Nested_NSXT.System.Fabric.Profile.TransportNodeProfiles.Name: {{ Nested_NSXT.System.Fabric.Profile.TransportNodeProfiles.Name }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.NSXT.LocalManager == true
       
     - name: Attach NSX-T transport node profile to vSphere cluster
       nsxt_transport_node_collections:
-        hostname: "{{ nsxman.nsxman01.ip }}"
-        username: "{{ nsxmanadminuser }}"
-        password: "{{ nsxmanpassword }}"
+        hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
+        username: "{{ Nested_NSXT.Credentials.admin.Name }}"
+        password: "{{ Nested_NSXT.Credentials.admin.Password }}"
         validate_certs: False
         display_name: "TNC"
         resource_type: "TransportNodeCollection"
         description: "Transport Node Collections"
-        compute_manager_name: "{{ vcenter.vmname }}"
+        compute_manager_name: "{{ Nested_vCenter.VMName }}"
         cluster_name: "{{ item.key }}"
-        transport_node_profile_name: "{{ tn_profile_name }}"
+        transport_node_profile_name: "{{ Nested_NSXT.System.Fabric.Profile.TransportNodeProfiles.Name }}"
         state: present
-      with_dict: "{{ clusters }}"
+      loop: "{{ Nested_Clusters | dict2items }}"
       when: 
-        - nsxlicensekey.stat.exists == True
-        - deploy_nsxt == true
-        - item.value.prep_nsx == true
+        - Deploy.NSXT.LocalManager == true
+        - item.value.Prep_NSX == true
+        - item.value.DeployHosts == true
