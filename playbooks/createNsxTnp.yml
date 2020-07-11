@@ -1,10 +1,34 @@
 ## Rutger has ownership of this module
 ---
 - hosts: localhost
+  name: createNsxTnp.yml
   gather_facts: false
+  vars:
+      LOCAL_TransportNodeProfiles_File: "{{ Target.VarsFolder }}/vars_NSXT_TransportNodeProfiles"
   vars_files:
     - ../answerfile.yml
+    - ../config.yml
   tasks:
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                          Ansible Playbook: {{ ansible_play_name }}
+
+                                         Target.Deployment: {{ Target.Deployment }}
+
+                  Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
+
+          Nested_NSXT.System.Fabric.Profile.UplinkProfiles: {{ Nested_NSXT.System.Fabric.Profile.TransportNodeProfiles }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.NSXT.LocalManager == true
+  
     - name: Load variables for NSX-T
       include_vars:
         file: nsxt_vars.yml
@@ -13,9 +37,9 @@
         
     - name: Create NSX-T 2.5 transport node profile 
       nsxt_transport_node_profiles:
-        hostname: "{{ nsxman.nsxman01.ip }}"
-        username: "{{ nsxmanadminuser }}"
-        password: "{{ nsxmanpassword }}"
+        hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
+        username: "{{ Nested_NSXT.Credentials.admin.Name }}"
+        password: "{{ Nested_NSXT.Credentials.admin.Password }}"
         validate_certs: False
         resource_type: TransportNodeProfile
         display_name: "{{ item.display_name }}"
@@ -35,9 +59,9 @@
 
     - name: Create NSX-T 3.0 transport node profile 
       nsxt_transport_node_profiles:
-        hostname: "{{ nsxman.nsxman01.ip }}"
-        username: "{{ nsxmanadminuser }}"
-        password: "{{ nsxmanpassword }}"
+        hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
+        username: "{{ Nested_NSXT.Credentials.admin.Name }}"
+        password: "{{ Nested_NSXT.Credentials.admin.Password }}"
         validate_certs: False
         resource_type: TransportNodeProfile
         display_name: "{{ item.display_name }}"
