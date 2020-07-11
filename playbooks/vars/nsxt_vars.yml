@@ -196,52 +196,55 @@ edge_transport_nodes3:
         storage: "vsanDatastore{{ edge_node_vsphere_cluster }}"
         host: "{{ edge_node2_vesxi }}"
 
-
+##
+## Ansible Module 'createNsxTnp.yml' converted to v2 configuration //RB
+##
 ##
 ## Used in 'createNsxTnp.yml'
 ##
 # NSX-T Transport Node Profile NSX-T 2.5
-transport_node_profiles2:
-- display_name: "{{ tn_profile_name }}"
-  host_switches:
-  - host_switch_profiles:
-    - name: ESXi-Uplink-Profile
-      type: UplinkHostSwitchProfile
-    - name: LLDP [Send Packet Enabled]
-      type: LldpHostSwitchProfile
-    - name: nsx-default-nioc-hostswitch-profile
-      type: NiocProfile
-    host_switch_name: "{{ nvds_name }}"
-    pnics:
-    - device_name: vmnic3
-      uplink_name: "uplink-1"
-    - device_name: vmnic4
-      uplink_name: "uplink-2"      
-    ip_assignment_spec:
-      resource_type: StaticIpPoolSpec
-      ip_pool_name: "{{ ip_pool_name }}"
+#transport_node_profiles2:
+#- display_name: "{{ tn_profile_name }}"
+#  host_switches:
+#  - host_switch_profiles:
+#    - name: ESXi-Uplink-Profile
+#      type: UplinkHostSwitchProfile
+#    - name: LLDP [Send Packet Enabled]
+#      type: LldpHostSwitchProfile
+#    - name: nsx-default-nioc-hostswitch-profile
+#      type: NiocProfile
+#    host_switch_name: "{{ nvds_name }}"
+#    pnics:
+#    - device_name: vmnic3
+#      uplink_name: "uplink-1"
+#    - device_name: vmnic4
+#      uplink_name: "uplink-2"      
+#    ip_assignment_spec:
+#      resource_type: StaticIpPoolSpec
+#      ip_pool_name: "{{ ip_pool_name }}"
+
 
 # NSX-T Transport Node Profile NSX-T 3.0
-transport_node_profiles3:
-- display_name: "{{ tn_profile_name }}"
-  host_switches:
-  - host_switch_profiles:
-    - name: ESXi-Uplink-Profile
-      type: UplinkHostSwitchProfile
-    host_switch_name: "{{ vds.name }}"
-    host_switch_mode: STANDARD
-    host_switch_type: VDS
-    uplinks:
-    - uplink_name: "uplink-1"
-      vds_uplink_name: "Uplink 1"
-    - uplink_name: "uplink-2"
-      vds_uplink_name: "Uplink 2"  
-    ip_assignment_spec:
-      resource_type: StaticIpPoolSpec
-      ip_pool_name: "{{ ip_pool_name }}"
-    transport_zone_endpoints:
-    - transport_zone_name: "{{ tz_overlay_name }}"
-    - transport_zone_name: "{{ tz_vlan_name }}"
+#transport_node_profiles3:
+#- display_name: "{{ tn_profile_name }}"
+#  host_switches:
+#  - host_switch_profiles:
+#    - name: ESXi-Uplink-Profile
+#      type: UplinkHostSwitchProfile
+#    host_switch_name: "{{ vds.name }}"
+#    host_switch_mode: STANDARD
+#    host_switch_type: VDS
+#    uplinks:
+#    - uplink_name: "uplink-1"
+#      vds_uplink_name: "Uplink 1"
+#    - uplink_name: "uplink-2"
+#      vds_uplink_name: "Uplink 2"  
+#    ip_assignment_spec:
+#      resource_type: StaticIpPoolSpec
+#      ip_pool_name: "{{ ip_pool_name }}"
+#    transport_zone_endpoints:
+#    - transport_zone_name: "{{ tz_overlay_name }}"
+#    - transport_zone_name: "{{ tz_vlan_name }}"
 
 
 
