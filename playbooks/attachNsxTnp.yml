@@ -68,10 +68,11 @@
         description: "Transport Node Collections"
         compute_manager_name: "{{ Nested_vCenter.VMName }}"
         cluster_name: "{{ item.key }}"
-        transport_node_profile_name: "{{ Nested_NSXT.System.Fabric.Profile.TransportNodeProfiles.Name }}"
+        transport_node_profile_name: "{{ item.value.NSXT_TransportNodeProfile }}"
         state: present
       loop: "{{ Nested_Clusters | dict2items }}"
       when: 
         - Deploy.NSXT.LocalManager == true
         - item.value.Prep_NSX == true
         - item.value.DeployHosts == true
+        - item.value.NSXT_TransportNodeProfile != ""
