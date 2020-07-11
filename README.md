@@ -1,4 +1,4 @@
-# vsphere-nsxt-lab-deploy
+# SDDC.Lab
 
 ## Table of Contents
 
