@@ -1466,6 +1466,9 @@ Nested_NSXT:
       Description: Web Segment
       TransportZone: "TZ-Overlay"
       ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+      ConnectedTo:
+        Tier: 1
+        GatewayName: "T1-Gateway-01"
       VLANS:
       Tags:
       - Tag:
@@ -1475,6 +1478,9 @@ Nested_NSXT:
       Description: App Segment
       TransportZone: "TZ-Overlay"
       ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+      ConnectedTo:
+        Tier: 1
+        GatewayName: "T1-Gateway-01"
       VLANS:
       Tags:
       - Tag:
@@ -1484,6 +1490,9 @@ Nested_NSXT:
       Description: DB Segment
       TransportZone: "TZ-Overlay"
       ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+      ConnectedTo:
+        Tier: 1
+        GatewayName: "T1-Gateway-01"
       VLANS:
       Tags:
       - Tag:
@@ -1492,7 +1501,7 @@ Nested_NSXT:
       AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
       Description: "Test Segment with many VLANs"
       TransportZone: "TZ-VLAN"
-      ReplicationMode: SOURCE                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+      ReplicationMode: SOURCE                                                  # ReplicationMode can be "MTEP" or "SOURCE"
       VLANS:
       - "{{ Net.NSXEdgeUplink2.VLAN }}"
       - "{{ Net.NSXEdgeUplink1.VLAN }}"
@@ -1512,6 +1521,9 @@ Nested_NSXT:
       Description: Test Overlay Segment without VLAN
       TransportZone: "TZ-Overlay"
       ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+      ConnectedTo:
+        Tier: 0
+        GatewayName: "T0-Gateway-01"
       Tags:
       - Tag:
         Scope:
@@ -1521,6 +1533,9 @@ Nested_NSXT:
       Description: "DELETEv1 segment after v2 migration is complete"
       TransportZone: "TZ-Edge"
       ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+      ConnectedTo:
+        Tier: 0
+        GatewayName: "T0-Gateway-01"
       VLANS:
       - "{{ Net.NSXEdgeUplink1.VLAN }}"
     - Name: "seg-vlan-{{ Net.NSXEdgeUplink2.VLAN }}"
@@ -1528,6 +1543,9 @@ Nested_NSXT:
       Description: "DELETEv1 segment after v2 migration is complete"
       TransportZone: "TZ-Edge"
       ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+      ConnectedTo:
+        Tier:
+        GatewayName:
       VLANS:
       - "{{ Net.NSXEdgeUplink2.VLAN }}"
 

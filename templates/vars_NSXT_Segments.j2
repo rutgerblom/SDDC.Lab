@@ -14,6 +14,13 @@ var_Segments:
     admin_state:  "{{ Segment.AdminState }}"
     replication_mode: "{{ Segment.ReplicationMode }}"
     transport_zone_display_name: "{{ Segment.TransportZone }}"
+{% if Segment.ConnectedTo is defined %}
+{% if Segment.ConnectedTo.Tier == 0 %}
+    tier0_display_name: "{{ Segment.ConnectedTo.GatewayName }}"
+{% elif Segment.ConnectedTo.Tier == 1 %}
+    tier1_display_name: "{{ Segment.ConnectedTo.GatewayName }}"
+{% endif %}{# Segment.ConnectedTo.Tier == 0 #}
+{% endif %}{# Segment.ConnectedTo is defined #}
     tags:
 {###### Make sure Tags is defined #####}
 {% if (Segment.Tags is defined) %}
@@ -27,7 +34,9 @@ var_Segments:
       - tag: ""
         scope: ""
 {% endif %}{# Segment.Tags is defined #}
-{###### Only incluce 'vlan_ids' for VLAN-backed segments #####}
+
+
+{###### Only include 'vlan_ids' for VLAN-backed segments #####}
 {% if Nested_NSXT.System.Fabric.TransportZone[Segment.TransportZone].Type == "VLAN" %}
 {###### Verify user included VLANS variable with at least one entry  #####}
 {% if (Segment.VLANS is defined) and (Segment.VLANS|length) > 0 %}
@@ -35,6 +44,6 @@ var_Segments:
 {% for VLAN in Segment.VLANS %}
       - "{{ VLAN }}"
 {% endfor %}{# VLAN #}
-{% endif %}{# Type==VLAN #}
 {% endif %}{# Segment.VLANS is defined #}
+{% endif %}{# Type==VLAN #}
 {% endfor %}{# Segment #}
