@@ -28,9 +28,10 @@ vmnetwork:                   9
 # Paths to ISO and OVA files
 esxIso:                      "/iso/VMware-VMvisor-Installer-7.0.0-15843807.x86_64.iso"     # ESXi 7.0
 #esxIso:                     "/iso/VMware-VMvisor-Installer-201912001-15160138.x86_64.iso" # ESXi 6.7
-vcIso:                       "/iso/VMware-VCSA-all-7.0.0-16189094.iso"                     # vCenter 7.0
+vcIso:                       "/iso/VMware-VCSA-all-7.0.0-15952498.iso"                     # vCenter 7.0
 #vcIso:                      "/iso/VMware-VCSA-all-6.7.0-14367737.iso"                     # vCenter 6.7
-NsxManOva:                   "/iso/nsx-unified-appliance-3.0.0.0.0.15946739.ova"           # NSX-T 3.0
+NsxManOva:                   "/iso/nsx-unified-appliance-3.0.1.0.0.16404476.ova"           # NSX-T 3.0.1
+#NsxManOva:                   "/iso/nsx-unified-appliance-3.0.0.0.0.15946739.ova"          # NSX-T 3.0
 #NsxManOva:                  "/iso/nsx-unified-appliance-2.5.1.0.0.15314292.ova"           # NSX-T 2.5.1
 VyosOva:                     "/iso/vyos-1.1.8-amd64.ova"                                   # Will be downloaded if deploy_router == true and router_version == legacy
 VyosIso:                     "/iso/vyos-rolling-latest.iso"                                # Will be downloaded if deploy_router == true and router_version == latest
@@ -54,22 +55,22 @@ nfs_type:                    "nfs"                     # NFS version 3
 
 # VyOS router configuration
 router_hostname:             "Router"
-router_public_ip:            "10.203.0.{{ pod }}/24"                  # CIDR notation. Should be an IP address in the same subnet as your Ansible control node.
-router_default_gw:           "10.203.0.1"                             # IP address of the next-hop on your physical network (upstream router)
-router_public_pg:            "pg-management"                          # Change this to an existing port group for the router's public interface.
-router_as:                   "65000"                                  # BGP AS number on your router (VyOS if deploy_router == true)
+router_public_ip:            "10.203.0.{{ pod }}/24"   # CIDR notation. Should be an IP address in the same subnet as your Ansible control node. 
+router_default_gw:           "10.203.0.1"              # IP address of the next-hop on your physical network (upstream router)
+router_public_pg:            "Lab-Routers"             # Change this to an existing port group for the router's public interface.
+router_as:                   "65000"                   # BGP AS number on your router (VyOS if deploy_router == true)
 router_vmname:               "Pod-{{ '%03d'|format(pod) }}-{{ router_hostname }}"
 
 router:
-  protocol: ospf                                                      # Either "static" or "ospf" are supported
+  protocol: ospf                                       # Either "static" or "ospf" are supported
   ospf:
-    area: 666                                                         # specify OSPF area for uplink peering connction
+    area: 666                                          # specify OSPF peering area
 
 # Some global network properties for the nested environment
-dns1:                        "10.203.0.5"                           # Your primary DNS server available to the nested environment.
-dns2:                        ""                         # Your secondary DNS server available to the nested environment.
-ntp1:                        "10.200.0.10"                         # Your 1st NTP server available to the nested environment's management network
-domain:                      "sddc.lab"                            # The DNS domain name for the nested environment.
+dns1:                        "10.203.0.5"                                # Your primary DNS server available to the nested environment.
+dns2:                        ""                                          # Your secondary DNS server available to the nested environment.
+ntp1:                        "10.200.0.10"                               # Your NTP server available to the nested environment's management network
+domain:                      "sddc.lab"                                  # The DNS domain name for the nested environment.
 mgmt_network_mask:           "255.255.255.0"
 mgmt_network_mask_cidr:      "24"
 vmotion_network_mask:        "255.255.255.0"
@@ -89,25 +90,26 @@ nsx_edge_uplink_2_network_mask_cidr:  "24"
 vmnetwork_network_mask:      "255.255.255.0"
 vmnetwork_network_mask_cidr: "24"
 
-transport_gw:                  "{{ pod_network }}.{{ pod + transport }}.1"
-router_peer_ip1:               "{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.1"       # IP address of the router on the 1st BGP peering VLAN
-router_peer_ip2:               "{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.1"       # IP address of the router on the 2nd BGP peering VLAN
-uplink_1_ip1:                  "{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.2"       # IP address of Tier-0 external interface 1 on the 1st BGP peering VLAN
-uplink_1_ip2:                  "{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.3"       # IP address of Tier-0 external interface 2 on the 1st BGP peering VLAN
-uplink_2_ip1:                  "{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.2"       # IP address of Tier-0 external interface 3 on the 2nd BGP peering VLAN
-uplink_2_ip2:                  "{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.3"       # IP address of Tier-0 external interface 4 on the 2nd BGP peering VLAN
-nsx_as:                        "65001"                                                   # BGP AS number on the NSX-T side
+transport_gw:                "{{ pod_network }}.{{ pod + transport }}.1"
+router_peer_ip1:             "{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.1"       # IP address of the router on the 1st BGP peering VLAN
+router_peer_ip2:             "{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.1"       # IP address of the router on the 2nd BGP peering VLAN
+uplink_1_ip1:                "{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.2"       # IP address of Tier-0 external interface 1 on the 1st BGP peering VLAN
+uplink_1_ip2:                "{{ pod_network }}.{{ pod + nsx_edge_uplink_1 }}.3"       # IP address of Tier-0 external interface 2 on the 1st BGP peering VLAN
+uplink_2_ip1:                "{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.2"       # IP address of Tier-0 external interface 3 on the 2nd BGP peering VLAN
+uplink_2_ip2:                "{{ pod_network }}.{{ pod + nsx_edge_uplink_2 }}.3"       # IP address of Tier-0 external interface 4 on the 2nd BGP peering VLAN
+nsx_as:                      "65001"                                                   # BGP AS number on the NSX-T side
+
 
 # New vCenter appliance configuration
 vcenter:
   ip:                        "{{ pod_network }}.{{ pod + management }}.5"   # vCenter IP address 
   mask:                      "24"  
   gw:                        "{{ pod_network }}.{{ pod + management }}.1"  
-  fqdn:                      "pod-{{ '%03d'|format(pod) }}-vcenter.{{ domain }}"           # vCenter FQDN if there is a working DNS server, otherwise specify the vCenter IP address here.
+  fqdn:                      "pod-{{ '%03d'|format(pod) }}-vcenter.{{ domain }}"       # vCenter FQDN if there is a working DNS server, otherwise specify the vCenter IP address here.
   vmname:                    "Pod-{{ '%03d'|format(pod) }}-vCenter"  
   user:                      "administrator@vsphere.local"  
   password:                  "VMware1!"  
-  datacenter:                "DC01"  
+  datacenter:                "Pod-{{ pod }}-DataCenter"  
   domain:                    "vsphere.local"                                # SSO domain
 
 # vSphere clusters in the nested environment. You can add, remove or rename nested vSphere clusters below. 
