@@ -1,10 +1,8 @@
 ## Luis has ownership of this file for v2 conversion
 ---
 - hosts: localhost
-  name: createNsxVLANSegments.yml
+  name: createNsxOverlaySegments.yml
   gather_facts: false
-#  vars_files:
-#    - ../answerfile.yml
   vars:
       LOCAL_Segments_File: "{{ Target.VarsFolder }}/vars_NSXT_Segments"
   tasks:
@@ -93,7 +91,7 @@
         - Deploy.NSXT.LocalManager == true
         - var_Segments != ""
 
-    ## Create only VLAN-backed Segments in var_Segments  ##
+    ## Create only OVERLAY Segments in var_Segments  ##
     - name: Create NSX-T Segments
       nsxt_policy_segment:
         hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
@@ -105,13 +103,15 @@
         admin_state:  "{{ item.admin_state }}"
         replication_mode: "{{ item.replication_mode }}"
         transport_zone_display_name: "{{ item.transport_zone_display_name }}"
+        tier0_display_name: "{{ item.tier0_display_name | default(omit) }}"
+        tier1_display_name: "{{ item.tier1_display_name | default(omit) }}"
         tags: "{{ item.tags }}"
         vlan_ids: "{{ item.vlan_ids }}"
         state: "present"
       loop: "{{ var_Segments }}"
       when: 
       - Deploy.NSXT.LocalManager == true
-      - Nested_NSXT.System.Fabric.TransportZone[item.transport_zone_display_name].Type == "VLAN"
+      - Nested_NSXT.System.Fabric.TransportZone[item.transport_zone_display_name].Type == "OVERLAY"
 
     - name: Delete Segments data structure file
       file: 
@@ -120,34 +120,3 @@
       when: 
         - Deploy.NSXT.LocalManager == true
         - DEBUG.KeepConfigFiles != true
-
-
-
-
-##
-## Previous config if needed for reference
-##
-#    - name: Load variables for NSX-T
-#      include_vars:
-#        file: nsxt_vars.yml
-#      when:        
-#        - deploy_nsxt == true
-#        - deploy_nsxt_edge == true
-#        - nsxt_major_version == 3
-#
-#    - name: Create Uplink segment
-#      nsxt_policy_segment:
-#        hostname: "{{ nsxman.nsxman01.ip }}"
-#        username: "{{ nsxmanadminuser }}"
-#        password: "{{ nsxmanpassword }}"
-#        validate_certs: False
-#        display_name: "{{ item.display_name }}"
-#        vlan_ids: "{{ item.vlan_id }}"
-#        transport_zone_display_name: "{{ item.tz }}"
-#        state: "present"
-#      with_items:
-#        - "{{ segments }}"
-#      when:
-#        - deploy_nsxt == true
-#        - deploy_nsxt_edge == true
-#        - nsxt_major_version == 3
