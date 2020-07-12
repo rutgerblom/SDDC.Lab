@@ -1,0 +1,153 @@
+## Luis has ownership of this file for v2 conversion
+---
+- hosts: localhost
+  name: createNsxVLANSegments.yml
+  gather_facts: false
+#  vars_files:
+#    - ../answerfile.yml
+  vars:
+      LOCAL_Segments_File: "{{ Target.VarsFolder }}/vars_NSXT_Segments"
+  tasks:
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+             Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
+
+                      Nested_NSXT.Networking.Segments: {{ Nested_NSXT.Networking.Segments }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Create 'vars' directory
+      file:
+        path: "{{ Target.VarsFolder }}"
+        state: directory
+      when: Deploy.NSXT.LocalManager == true
+
+    - name: Create file with Segments data structure
+      template:
+        src:  "{{ Target.TemplateFolder }}/vars_NSXT_Segments.j2"
+        dest: "{{ LOCAL_Segments_File }}"
+        force: true
+      when: Deploy.NSXT.LocalManager == true
+
+    ## Read in var_Segments variable
+    - name: Read var_Segments data structure from file
+      include_vars:
+        file: "{{ LOCAL_Segments_File }}"
+      when: Deploy.NSXT.LocalManager == true
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display var_Segments Variable ===================================
+
+              var_Segments: {{ var_Segments | to_nice_yaml(indent=2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.NSXT.LocalManager == true
+        - var_Segments != ""
+
+    ## Create only VLAN-backed Segments in var_Segments  ##
+    - name: Create NSX-T Segments
+      nsxt_policy_segment:
+        hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
+        username: "{{ Nested_NSXT.Credentials.admin.Name }}"
+        password: "{{ Nested_NSXT.Credentials.admin.Password }}"
+        validate_certs: False
+        display_name: "{{ item.display_name }}"
+        description:  "{{ item.description }}"
+        admin_state:  "{{ item.admin_state }}"
+        replication_mode: "{{ item.replication_mode }}"
+        transport_zone_display_name: "{{ item.transport_zone_display_name }}"
+        tags: "{{ item.tags }}"
+        vlan_ids: "{{ item.vlan_ids }}"
+        state: "present"
+      loop: "{{ var_Segments }}"
+      when: 
+      - Deploy.NSXT.LocalManager == true
+      - Nested_NSXT.System.Fabric.TransportZone[item.transport_zone_display_name].Type == "VLAN"
+
+    - name: Delete Segments data structure file
+      file: 
+        path: "{{ LOCAL_Segments_File }}"
+        state: absent
+      when: 
+        - Deploy.NSXT.LocalManager == true
+        - DEBUG.KeepConfigFiles != true
+
+
+
+
+##
+## Previous config if needed for reference
+##
+#    - name: Load variables for NSX-T
+#      include_vars:
+#        file: nsxt_vars.yml
+#      when:        
+#        - deploy_nsxt == true
+#        - deploy_nsxt_edge == true
+#        - nsxt_major_version == 3
+#
+#    - name: Create Uplink segment
+#      nsxt_policy_segment:
+#        hostname: "{{ nsxman.nsxman01.ip }}"
+#        username: "{{ nsxmanadminuser }}"
+#        password: "{{ nsxmanpassword }}"
+#        validate_certs: False
+#        display_name: "{{ item.display_name }}"
+#        vlan_ids: "{{ item.vlan_id }}"
+#        transport_zone_display_name: "{{ item.tz }}"
+#        state: "present"
+#      with_items:
+#        - "{{ segments }}"
+#      when:
+#        - deploy_nsxt == true
+#        - deploy_nsxt_edge == true
+#        - nsxt_major_version == 3
