@@ -34,8 +34,6 @@ var_Segments:
       - tag: ""
         scope: ""
 {% endif %}{# Segment.Tags is defined #}
-
-
 {###### Only include 'vlan_ids' for VLAN-backed segments #####}
 {% if Nested_NSXT.System.Fabric.TransportZone[Segment.TransportZone].Type == "VLAN" %}
 {###### Verify user included VLANS variable with at least one entry  #####}
@@ -46,4 +44,11 @@ var_Segments:
 {% endfor %}{# VLAN #}
 {% endif %}{# Segment.VLANS is defined #}
 {% endif %}{# Type==VLAN #}
+{###### Only include Subnets for Overlay-backed segments #####}
+{% if Nested_NSXT.System.Fabric.TransportZone[Segment.TransportZone].Type == "OVERLAY" %}
+    subnets:
+{% for Subnet in Segment.Subnets %}
+      - gateway_address: "{{ Subnet.GatewayCIDR }}"
+{% endfor %}{# Subnet #}
+{% endif %}{# OVERLAY #}
 {% endfor %}{# Segment #}
