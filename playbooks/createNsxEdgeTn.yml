@@ -53,7 +53,7 @@
 
                   Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
 
-          Nested_NSXT.System.Fabric.Profile.EdgeTransportNodes: {{ Nested_NSXT.System.Fabric.Profile.EdgeTransportNodes }}
+          Nested_NSXT.System.Fabric.EdgeTransportNodes: {{ Nested_NSXT.System.Fabric.EdgeTransportNodes }}
 
           =================================================================================================
       when:
@@ -111,11 +111,11 @@
           host_switches: "{{ item.host_switches }}"
         node_deployment_info: "{{ item.node_deployment_info }}"
         state: present 
-      with_list: "{{ var_TransportNodeProfiles }}"
+      with_list: "{{ var_EdgeTransportNodes }}"
       when:
         - Deploy.NSXT.LocalManager == true
         - Deploy.NSXT.Edge == true
-        - var_TransportNodeProfiles != ""
+        - var_EdgeTransportNodes != ""
       async: 1800
       poll: 0
 
@@ -124,10 +124,11 @@
       when: 
         - Deploy.NSXT.LocalManager == true
         - Deploy.NSXT.Edge == true
+        - var_EdgeTransportNodes != ""
 
     - name: Wait until the NSX-T API reports that no Edge transport nodes are in "PENDING" state (wait max 90 minutes)
       uri:
-        url: https://{{ item.value.ip }}/api/v1/transport-nodes/state?status=PENDING
+        url: https://{{ Nested_NSXT.Components.LocalManager.FQDN }}/api/v1/transport-nodes/state?status=PENDING
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
@@ -137,7 +138,6 @@
         body_format: json
         return_content: yes
         status_code: 200
-      with_dict: "{{ nsxman }}"
       register: result
       until: result.json.result_count == 0
       retries: 180
@@ -145,3 +145,4 @@
       when: 
         - Deploy.NSXT.LocalManager == true
         - Deploy.NSXT.Edge == true
+        - var_EdgeTransportNodes != ""

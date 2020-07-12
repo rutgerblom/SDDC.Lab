@@ -1655,4 +1655,79 @@ Nested_NSXT:
               VDSUplinkName: "Uplink 1"
             - NSXUplinkName: "uplink-2"
               VDSUplinkName: "Uplink 2"
-         
+
+      EdgeTransportNodes:
+      - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
+        Description: NSX-T Edge Transport Node
+        HostSwitches:
+        - Name: "NVDS-1"
+          Mode: STANDARD
+          TransportZones:
+          - Name: "TZ-Edge"
+          - Name: "TZ-Overlay"
+          UplinkProfile:
+            Name: "Edge-Uplink-Profile"
+          IPPool:
+            Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
+            Type: "StaticIpPoolSpec"
+          Uplinks:
+          - NSXUplinkName: "uplink-1"
+            DeviceName: "fp-eth0"
+          - NSXUplinkName: "uplink-2"
+            DeviceName: "fp-eth1"
+        Deployment:
+          VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
+          FormFactor: "SMALL"
+          CLIPassword:  "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          RootPassword: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          vCenterName:  "{{ Nested_vCenter.VMName }}"
+          vCenterUser:  "{{ Nested_vCenter.User }}"
+          vCenterPassword: "{{ Nested_vCenter.Password }}"
+          DataPortGroups:
+          - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Name }}"
+          - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Name }}"
+          ManagementPortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+          ManagementIPAddress: "{{ Net.Management.IPv4.Network }}.61"
+          ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
+          Gateway: "{{ Net.Management.IPv4.Network }}.1"
+          Hostname: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01.{{ Common.DNS.Domain }}" 
+          vSphereCluster: "Edge"
+          ESXiHost: "{{ Nested_ESXi.Hosts.ESXi91.FQDN }}"
+          Datastore: "vsanDatastoreEdge"
+      - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
+        Description: NSX-T Edge Transport Node
+        HostSwitches:
+        - Name: "NVDS-1"
+          Mode: STANDARD
+          TransportZones:
+          - Name: "TZ-Edge"
+          - Name: "TZ-Overlay"
+          UplinkProfile:
+            Name: "Edge-Uplink-Profile"
+          IPPool:
+            Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
+            Type: "StaticIpPoolSpec"
+          Uplinks:
+          - NSXUplinkName: "uplink-1"
+            DeviceName: "fp-eth0"
+          - NSXUplinkName: "uplink-2"
+            DeviceName: "fp-eth1"
+        Deployment:
+          VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
+          FormFactor: "SMALL"
+          CLIPassword:  "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          RootPassword: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          vCenterName:  "{{ Nested_vCenter.VMName }}"
+          vCenterUser:  "{{ Nested_vCenter.User }}"
+          vCenterPassword: "{{ Nested_vCenter.Password }}"
+          DataPortGroups:
+          - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Name }}"
+          - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Name }}"
+          ManagementPortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+          ManagementIPAddress: "{{ Net.Management.IPv4.Network }}.62"
+          ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
+          Gateway: "{{ Net.Management.IPv4.Network }}.1"
+          Hostname: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02.{{ Common.DNS.Domain }}" 
+          vSphereCluster: "Edge"
+          ESXiHost: "{{ Nested_ESXi.Hosts.ESXi92.FQDN }}"
+          Datastore: "vsanDatastoreEdge"
