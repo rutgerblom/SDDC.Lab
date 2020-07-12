@@ -414,7 +414,7 @@ Nested_Router:
     ASN: 65000
     RouterID: "{{ Net.Management.IPv4.Network }}.1"
     Neighbors:
-    - Name: "T0-EdgeVM-1-1"
+    - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01-1"
       ASN: 65001
       IPv4:
         Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
@@ -422,7 +422,7 @@ Nested_Router:
       IPv6:
         Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::2"       # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
-    - Name: "T0-EdgeVM-1-2"
+    - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01-2"
       ASN: 65001
       IPv4:
         Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
@@ -430,7 +430,7 @@ Nested_Router:
       IPv6:
         Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::2"       # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
-    - Name: "T0-EdgeVM-2-1"
+    - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02-1"
       ASN: 65001
       IPv4:
         Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
@@ -438,7 +438,7 @@ Nested_Router:
       IPv6:
         Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::3"       # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
-    - Name: "T0-EdgeVM-2-2"
+    - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02-2"
       ASN: 65001
       IPv4:
         Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.3"        # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
@@ -1442,30 +1442,52 @@ Nested_NSXT:
 
     Segments:
     - Name: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
-      AdminStateEnabled: true
+      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
       Description: "NSX T0-Edge Uplink 1"
       TransportZone: "TZ-Edge"
-      VLANS: "{{ Net.NSXEdgeUplink1.VLAN }}"
+      ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+      VLANS:
+      - "{{ Net.NSXEdgeUplink1.VLAN }}"
+      Tags:
+        Tag:
+        Scope:
     - Name: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
-      AdminStateEnabled: true
+      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
       Description: "NSX T0-Edge Uplink 2"
       TransportZone: "TZ-Edge"
-      VLANS: "{{ Net.NSXEdgeUplink2.VLAN }}"
+      ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+      VLANS:
+      - "{{ Net.NSXEdgeUplink2.VLAN }}"
+      Tags:
+        Tag:
+        Scope:
     - Name: "SEG-Web"
-      AdminStateEnabled: true
+      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
       Description: Web Segment
       TransportZone: "TZ-Overlay"
+      ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
       VLANS:
+      Tags:
+        Tag:
+        Scope:
     - Name: "SEG-App"
-      AdminStateEnabled: true
+      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
       Description: App Segment
       TransportZone: "TZ-Overlay"
+      ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
       VLANS:
+      Tags:
+        Tag:
+        Scope:
     - Name: "SEG-DB"
-      AdminStateEnabled: true
+      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
       Description: DB Segment
       TransportZone: "TZ-Overlay"
+      ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
       VLANS:
+      Tags:
+        Tag:
+        Scope:
 
 
   System:
