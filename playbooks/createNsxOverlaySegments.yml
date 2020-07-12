@@ -105,8 +105,8 @@
         transport_zone_display_name: "{{ item.transport_zone_display_name }}"
         tier0_display_name: "{{ item.tier0_display_name | default(omit) }}"
         tier1_display_name: "{{ item.tier1_display_name | default(omit) }}"
+        subnets: "{{ item.subnets | default(omit) }}"
         tags: "{{ item.tags }}"
-        vlan_ids: "{{ item.vlan_ids }}"
         state: "present"
       loop: "{{ var_Segments }}"
       when: 
