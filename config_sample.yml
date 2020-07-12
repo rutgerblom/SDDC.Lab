@@ -8,7 +8,7 @@ DEBUG:
 
 
 Pod:
-  Number: 200
+  Number: 240
   BaseNetwork:
     IPv4: '10.203'
     IPv6: "FD00:0000:0000"
@@ -1449,7 +1449,7 @@ Nested_NSXT:
       VLANS:
       - "{{ Net.NSXEdgeUplink1.VLAN }}"
       Tags:
-        Tag:
+      - Tag:
         Scope:
     - Name: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
       AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
@@ -1459,7 +1459,7 @@ Nested_NSXT:
       VLANS:
       - "{{ Net.NSXEdgeUplink2.VLAN }}"
       Tags:
-        Tag:
+      - Tag:
         Scope:
     - Name: "SEG-Web"
       AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
@@ -1468,7 +1468,7 @@ Nested_NSXT:
       ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
       VLANS:
       Tags:
-        Tag:
+      - Tag:
         Scope:
     - Name: "SEG-App"
       AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
@@ -1477,7 +1477,7 @@ Nested_NSXT:
       ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
       VLANS:
       Tags:
-        Tag:
+      - Tag:
         Scope:
     - Name: "SEG-DB"
       AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
@@ -1486,8 +1486,50 @@ Nested_NSXT:
       ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
       VLANS:
       Tags:
-        Tag:
+      - Tag:
         Scope:
+    - Name: "SEG-TEST-Complicated-VLAN-Segment"
+      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
+      Description: "Test Segment with many VLANs"
+      TransportZone: "TZ-VLAN"
+      ReplicationMode: SOURCE                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+      VLANS:
+      - "{{ Net.NSXEdgeUplink2.VLAN }}"
+      - "{{ Net.NSXEdgeUplink1.VLAN }}"
+      - 100
+      - 101
+      - 102
+      - 103
+      - 104
+      - "105-110"
+      Tags:
+      - Tag: "Goofy"
+        Scope: "Disney"
+      - Tag: "Mickey"
+        Scope: "Disney"
+    - Name: "SEG-Test-Overlay-Without-VLANS"
+      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
+      Description: Test Overlay Segment without VLAN
+      TransportZone: "TZ-Overlay"
+      ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+      Tags:
+      - Tag:
+        Scope:
+########################### *TBD* DELETE below Segments after full migration is completed -- These are just to assist with v2 conversion #################
+    - Name: "seg-vlan-{{ Net.NSXEdgeUplink1.VLAN }}"
+      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
+      Description: "DELETEv1 segment after v2 migration is complete"
+      TransportZone: "TZ-Edge"
+      ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+      VLANS:
+      - "{{ Net.NSXEdgeUplink1.VLAN }}"
+    - Name: "seg-vlan-{{ Net.NSXEdgeUplink2.VLAN }}"
+      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
+      Description: "DELETEv1 segment after v2 migration is complete"
+      TransportZone: "TZ-Edge"
+      ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+      VLANS:
+      - "{{ Net.NSXEdgeUplink2.VLAN }}"
 
 
   System:
