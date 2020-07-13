@@ -88,7 +88,8 @@ def main():
             vcenter=dict(required=True, type='str'),
             user=dict(required=True, type='str'),
             passwd=dict(required=True, type='str', no_log=True),
-	    cluster=dict(required=True, type='str'),
+	        cluster=dict(required=True, type='str'),
+            datastorename=dict(required=True, type='str'),
         ),
         supports_check_mode=False,
     )
@@ -122,7 +123,7 @@ def main():
     cl = get_obj(content, [vim.ClusterComputeResource], module.params['cluster'])
     for ds in cl.datastore:
         if ds.summary.name.startswith("vsanDatastore"):
-            ds.RenameDatastore("vsanDatastore" + module.params['cluster'])
+            ds.RenameDatastore(module.params['datastorename'])
 
 #        print str(host.config.vsanHostConfig.storageInfo.diskMapping) 
     module.exit_json(changed=True, result="vSAN Disks claimed !!!!")
