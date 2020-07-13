@@ -1,0 +1,15 @@
+{#
+ #    Authors: Luis Chanu & Rutger Blom
+ #   Filename: templates/var_NSXT_EdgeTransportNodes.j2
+ #    Used By: This file is used by the playbook createNsxEdgeCluster.yml
+ #    Purpose: This Jinja2 template file is used to create the data structure that is provided to the nsxt_edge_clusters module.
+ #
+ #}
+var_EdgeClusters:
+{% for EdgeCluster in Nested_NSXT.System.Fabric.Nodes.EdgeClusters %}
+  - display_name: "{{ EdgeCluster.Name }}"
+    members:
+{% for Member in EdgeCluster.Members %}
+      - transport_node_name: "{{ Member.Name }}"
+{% endfor %}{# Member #}
+{% endfor %}{# EdgeCluster #}
