@@ -68,6 +68,7 @@
         esxi_username: "{{ item.value.User }}"
         esxi_password: "{{ item.value.Password }}"
         state: present
+      ignore_errors: true
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
