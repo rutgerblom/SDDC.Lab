@@ -1380,192 +1380,341 @@ Nested_NSXT:
         Host: "{{ Nested_ESXi.Hosts.ESXi92.FQDN }}"
 
   Networking:
+    Tier0Gateways:
+      - Name:         "T0-Gateway-01"
+        Description:  "Tier-0 Gateway for SDDC.Lab"
+        HA_Mode:      "ACTIVE_ACTIVE"                                      # Options are "ACTIVE_ACTIVE" or "ACTIVE_STANDBY"
+        FailoverMode: "NON_PREEMPTIVE"                                     # Options are "NON_PREEMPTIVE" or "PREEMPTIVE"
+        Tags:
+          - Tag:
+            Scope:
+        LocaleServices:
+          - Name:        "T0-Gateway-01_Locale_Services"
+            Description: "T0-Gateway-01 Locale Services Description"
+            Tags:
+              - Tag: "Test Tag *TBD*"
+                Scope: "Test Scope *TBD*"
+            EdgeCluster:
+              Name:        "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
+            RouteRedistributionConfig:
+              BGP_Enabled: true
+              Rules:
+                - Name: Redistribute Connected
+                  Types:                                                  # Types include TIER0_STATIC, TIER0_CONNECTED, TIER0_EXTERNAL_INTERFACE, TIER0_LOOPBACK_INTERFACE, TIER0_SEGMENT, TIER0_ROUTER_LINK, TIER0_SERVICE_INTERFACE, TIER0_DNS_FORWARDER_IP, TIER0_IPSEC_LOCAL_IP, TIER0_NAT, TIER0_EVPN_TEP_IP, TIER1_STATIC, TIER1_NAT, TIER1_LB_VIP, TIER1_LB_SNAT, TIER1_DNS_FORWARDER_IP, TIER1_CONNECTED, TIER1_SERVICE_INTERFACE, TIER1_SEGMENT, TIER1_IPSEC_LOCAL_ENDPOINT
+                    - TIER0_CONNECTED
+                    - TIER0_SEGMENT
+                    - TIER1_CONNECTED
+                    - TIER1_SEGMENT
+        BGP:
+          Enabled: true
+          ### ToDo: *TBD* - Update Nested_Router to obtain the ASN of the remote peer via reference ### //LC
+          LocalASN: 65001
+          ECMP: true
+          InterSRiBGP: true
+          MultiPathRelax: true
+          GracefulRestartConfig:
+            Mode: HELPER_ONLY                                             # Options are DISABLE, GR_AND_HELPER, HELPER_ONLY, and GRACEFUL_RESTART
+          Neighbors:
+            - Name:      "{{ Nested_Router.Name }}-Uplink-1-IPv4"
+              Address:   "{{ Nested_Router.Interface.NSXEdgeUplink1.IPv4.Address }}"
+              RemoteASN: "{{ Nested_Router.BGP.ASN }}"
+              AllowASIn: false
+              SourceAddresses:
+                - "{{ Net.NSXEdgeUplink1.IPv4.Network}}.2"
+                - "{{ Net.NSXEdgeUplink1.IPv4.Network}}.3"
+              BFD:
+                Enabled: false
+              GracefulRestartMode: DISABLE
+              BGPSettings:
+                HoldDownTime: 180
+                KeepAliveTime: 60
+                MaxHopLimit: 1
+                Password: ""
+            - Name:      "{{ Nested_Router.Name }}-Uplink-2-IPv4"
+              Address:   "{{ Nested_Router.Interface.NSXEdgeUplink2.IPv4.Address }}"
+              RemoteASN: "{{ Nested_Router.BGP.ASN }}"
+              AllowASIn: false
+              SourceAddresses:
+                - "{{ Net.NSXEdgeUplink2.IPv4.Network}}.2"
+                - "{{ Net.NSXEdgeUplink2.IPv4.Network}}.3"
+              BFD:
+                Enabled: false
+              GracefulRestartMode: DISABLE
+              BGPSettings:
+                HoldDownTime: 180
+                KeepAliveTime: 60
+                MaxHopLimit: 1
+                Password: ""
+            - Name:      "{{ Nested_Router.Name }}-Uplink-1-IPv6"
+              Address:   "{{ Nested_Router.Interface.NSXEdgeUplink1.IPv6.Address }}"
+              RemoteASN: "{{ Nested_Router.BGP.ASN }}"
+              AllowASIn: false
+              SourceAddresses:
+                - "{{ Net.NSXEdgeUplink1.IPv6.Network}}::2"
+                - "{{ Net.NSXEdgeUplink1.IPv6.Network}}::3"
+              BFD:
+                Enabled: false
+              GracefulRestartMode: DISABLE
+              BGPSettings:
+                HoldDownTime: 180
+                KeepAliveTime: 60
+                MaxHopLimit: 1
+                Password: ""
+            - Name:      "{{ Nested_Router.Name }}-Uplink-2-IPv6"
+              Address:   "{{ Nested_Router.Interface.NSXEdgeUplink2.IPv6.Address }}"
+              RemoteASN: "{{ Nested_Router.BGP.ASN }}"
+              AllowASIn: false
+              SourceAddresses:
+                - "{{ Net.NSXEdgeUplink2.IPv6.Network}}::2"
+                - "{{ Net.NSXEdgeUplink2.IPv6.Network}}::3"
+              BFD:
+                Enabled: false
+              GracefulRestartMode: DISABLE
+              BGPSettings:
+                HoldDownTime: 180
+                KeepAliveTime: 60
+                MaxHopLimit: 1
+                Password: ""
+          Interfaces:
+            - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01-1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
+              Description: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01 Uplink 1"
+              Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
+              URPFMode: NONE                                                                    # Options are NONE or STRICT
+              EdgeNodeInfo:
+                EdgeClusterName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
+                EdgeNodeName:    "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
+              SegmentName: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
+              Subnets:
+                - Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"
+                  Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
+                - Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::2"
+                  Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
+            - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01-2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
+              Description: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01 Uplink 2"
+              Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
+              URPFMode: NONE                                                                    # Options are NONE or STRICT
+              EdgeNodeInfo:
+                EdgeClusterName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
+                EdgeNodeName:    "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
+              SegmentName: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
+              Subnets:
+                - Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"
+                  Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
+                - Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::2"
+                  Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
+            - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02-1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
+              Description: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02 Uplink 1"
+              Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
+              URPFMode: NONE                                                                    # Options are NONE or STRICT
+              EdgeNodeInfo:
+                EdgeClusterName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
+                EdgeNodeName:    "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
+              SegmentName: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
+              Subnets:
+                - Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"
+                  Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
+                - Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::3"
+                  Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
+            - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02-2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
+              Description: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02 Uplink 2"
+              Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
+              URPFMode: NONE                                                                    # Options are NONE or STRICT
+              EdgeNodeInfo:
+                EdgeClusterName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
+                EdgeNodeName:    "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
+              SegmentName: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
+              Subnets:
+                - Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.3"
+                  Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
+                - Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::3"
+                  Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
+
     IPPools:
-    - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
-      Description: IP Pool for TEPs
-      Tags:
-        Tag:
-        Scope:
-      Allocations:
-      - Description: IP Pool for TEPs
-        Prefix:  "{{ Net.Transport.IPv4.Prefix }}"
-        Gateway: "{{ Net.Transport.IPv4.Network }}.1"
-        DNS:
-          Server:  "{{ Common.DNS.Server1.IPv4 }}"
-          Domain:  "{{ Common.DNS.Domain }}"
-        IPRanges:
-        - Start:   "{{ Net.Transport.IPv4.Network }}.10"
-          End:     "{{ Net.Transport.IPv4.Network }}.99"
-    - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-RTEP-Pool"
-      Description: IP Pool for Remote TEPs
-      Tags:
-        Tag:
-        Scope:
-      Allocations:
-      - Description: IP Pool for Remote TEPs
-        Prefix:  "{{ Net.RTEP.IPv4.Prefix }}"
-        Gateway: "{{ Net.RTEP.IPv4.Network }}.1"
-        DNS:
-          Server:  "{{ Common.DNS.Server1.IPv4 }}"
-          Domain:  "{{ Common.DNS.Domain }}"
-        IPRanges:
-          - Start: "{{ Net.RTEP.IPv4.Network }}.10"
-            End:   "{{ Net.RTEP.IPv4.Network }}.99"
-    - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Test-Pool"
-      Description: IP Test Pool with both IPv4 and IPv6 Allocations
-      Tags:
-        Tag:
-        Scope:
-      Allocations:
-      - Description: "IPv6 Test Address Range"
-        Prefix:  "{{ Net.VMNetwork.IPv6.Prefix }}"
-        Gateway: ""
-        DNS:
-          Server:   "{{ Common.DNS.Server1.IPv6 }}"
-          Domain:   "{{ Common.DNS.Domain }}"
-        IPRanges:
-        - Start:   "{{ Net.VMNetwork.IPv6.Network }}::10"
-          End:     "{{ Net.VMNetwork.IPv6.Network }}::49"
-        - Start:   "{{ Net.VMNetwork.IPv6.Network }}::50"
-          End:     "{{ Net.VMNetwork.IPv6.Network }}::99"
-      - Description: "IPv4 Test Address Range"
-        Prefix:  "{{ Net.VMNetwork.IPv4.Prefix }}"
-        Gateway: "{{ Net.VMNetwork.IPv4.Network }}.1"
-        DNS:
-          Server:   "{{ Common.DNS.Server1.IPv4 }}"
-          Domain:   "{{ Common.DNS.Domain }}"
-        IPRanges:
-          - Start: "{{ Net.VMNetwork.IPv4.Network }}.10"
-            End:   "{{ Net.VMNetwork.IPv4.Network }}.49"
-          - Start: "{{ Net.VMNetwork.IPv4.Network }}.50"
-            End:   "{{ Net.VMNetwork.IPv4.Network }}.99"
+      - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
+        Description: IP Pool for TEPs
+        Tags:
+          Tag:
+          Scope:
+        Allocations:
+          - Description: IP Pool for TEPs
+            Prefix:  "{{ Net.Transport.IPv4.Prefix }}"
+            Gateway: "{{ Net.Transport.IPv4.Network }}.1"
+            DNS:
+              Server:  "{{ Common.DNS.Server1.IPv4 }}"
+              Domain:  "{{ Common.DNS.Domain }}"
+            IPRanges:
+              - Start:   "{{ Net.Transport.IPv4.Network }}.10"
+                End:     "{{ Net.Transport.IPv4.Network }}.99"
+      - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-RTEP-Pool"
+        Description: IP Pool for Remote TEPs
+        Tags:
+          Tag:
+          Scope:
+        Allocations:
+          - Description: IP Pool for Remote TEPs
+            Prefix:  "{{ Net.RTEP.IPv4.Prefix }}"
+            Gateway: "{{ Net.RTEP.IPv4.Network }}.1"
+            DNS:
+              Server:  "{{ Common.DNS.Server1.IPv4 }}"
+              Domain:  "{{ Common.DNS.Domain }}"
+            IPRanges:
+              - Start: "{{ Net.RTEP.IPv4.Network }}.10"
+                End:   "{{ Net.RTEP.IPv4.Network }}.99"
+      - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Test-Pool"
+        Description: IP Test Pool with both IPv4 and IPv6 Allocations
+        Tags:
+          Tag:
+          Scope:
+        Allocations:
+          - Description: "IPv6 Test Address Range"
+            Prefix:  "{{ Net.VMNetwork.IPv6.Prefix }}"
+            Gateway: ""
+            DNS:
+              Server:   "{{ Common.DNS.Server1.IPv6 }}"
+              Domain:   "{{ Common.DNS.Domain }}"
+            IPRanges:
+              - Start:   "{{ Net.VMNetwork.IPv6.Network }}::10"
+                End:     "{{ Net.VMNetwork.IPv6.Network }}::49"
+              - Start:   "{{ Net.VMNetwork.IPv6.Network }}::50"
+                End:     "{{ Net.VMNetwork.IPv6.Network }}::99"
+          - Description: "IPv4 Test Address Range"
+            Prefix:  "{{ Net.VMNetwork.IPv4.Prefix }}"
+            Gateway: "{{ Net.VMNetwork.IPv4.Network }}.1"
+            DNS:
+              Server:   "{{ Common.DNS.Server1.IPv4 }}"
+              Domain:   "{{ Common.DNS.Domain }}"
+            IPRanges:
+              - Start: "{{ Net.VMNetwork.IPv4.Network }}.10"
+                End:   "{{ Net.VMNetwork.IPv4.Network }}.49"
+              - Start: "{{ Net.VMNetwork.IPv4.Network }}.50"
+                End:   "{{ Net.VMNetwork.IPv4.Network }}.99"
 
 ##
 ## If Overlay segments are configured with a subnet, they will be connected to the Gateway specified.  If not, the Segments
 ## are only created within NSX-T, but not connected.  Subnets are only added to Overlay segments.
 ##
     Segments:
-    - Name: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
-      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
-      Description: "NSX T0-Edge Uplink 1"
-      TransportZone: "TZ-Edge"
-      ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
-      VLANS:
-      - "{{ Net.NSXEdgeUplink1.VLAN }}"
-      Tags:
-      - Tag:
-        Scope:
-    - Name: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
-      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
-      Description: "NSX T0-Edge Uplink 2"
-      TransportZone: "TZ-Edge"
-      ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
-      VLANS:
-      - "{{ Net.NSXEdgeUplink2.VLAN }}"
-      Tags:
-      - Tag:
-        Scope:
-    - Name: "SEG-Web"
-      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
-      Description: Web Segment
-      TransportZone: "TZ-Overlay"
-      ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
-      ConnectedTo:
-        Tier: 1
-        GatewayName: "T1-Gateway-01"
-      Subnets:
-        - GatewayCIDR: "1.1.1.1/24"
-        - GatewayCIDR: "FD00:A:A::1/64"
-      VLANS:
-      Tags:
-      - Tag:
-        Scope:
-    - Name: "SEG-App"
-      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
-      Description: App Segment
-      TransportZone: "TZ-Overlay"
-      ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
-      ConnectedTo:
-        Tier: 1
-        GatewayName: "T1-Gateway-01"
-      Subnets:
-        - GatewayCIDR: "1.1.2.1/24"
-        - GatewayCIDR: "FD00:A:B::1/64"
-      VLANS:
-      Tags:
-      - Tag:
-        Scope:
-    - Name: "SEG-DB"
-      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
-      Description: DB Segment
-      TransportZone: "TZ-Overlay"
-      ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
-      ConnectedTo:
-        Tier: 1
-        GatewayName: "T1-Gateway-01"
-      Subnets:
-        - GatewayCIDR: "1.1.3.1/24"
-        - GatewayCIDR: "FD00:A:C::1/64"
-      VLANS:
-      Tags:
-      - Tag:
-        Scope:
-    - Name: "SEG-TEST-Complicated-VLAN-Segment"
-      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
-      Description: "*TBD* Test Segment with many VLANs"
-      TransportZone: "TZ-VLAN"
-      ReplicationMode: SOURCE                                                  # ReplicationMode can be "MTEP" or "SOURCE"
-      VLANS:
-      - "{{ Net.NSXEdgeUplink2.VLAN }}"
-      - "{{ Net.NSXEdgeUplink1.VLAN }}"
-      - 100
-      - 101
-      - 102
-      - 103
-      - 104
-      - "105-110"
-      Tags:
-      - Tag: "Goofy"
-        Scope: "Disney"
-      - Tag: "Mickey"
-        Scope: "Disney"
-    - Name: "SEG-Test-Overlay-Without-VLANS"
-      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
-      Description: Test Overlay Segment without VLAN
-      TransportZone: "TZ-Overlay"
-      ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
-      ConnectedTo:
-        Tier: 0
-        GatewayName: "T0-Gateway-01"
-      Subnets:
-        - GatewayCIDR: "1.1.4.1/24"
-        - GatewayCIDR: "FD00:A:D::1/64"
-      Tags:
-      - Tag: "Minnie"
-        Scope: "Disney"
-      - Tag: "Donald"
-        Scope: "Disney"
-########################### *TBD* DELETE below Segments after full migration is completed -- These are just to assist with v2 conversion #################
-    - Name: "seg-vlan-{{ Net.NSXEdgeUplink1.VLAN }}"
-      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
-      Description: "DELETEv1 segment after v2 migration is complete"
-      TransportZone: "TZ-Edge"
-      ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
-      ConnectedTo:
-        Tier: 0
-        GatewayName: "T0-Gateway-01"
-      VLANS:
-      - "{{ Net.NSXEdgeUplink1.VLAN }}"
-    - Name: "seg-vlan-{{ Net.NSXEdgeUplink2.VLAN }}"
-      AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
-      Description: "DELETEv1 segment after v2 migration is complete"
-      TransportZone: "TZ-Edge"
-      ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
-      ConnectedTo:
-        Tier:
-        GatewayName:
-      VLANS:
-      - "{{ Net.NSXEdgeUplink2.VLAN }}"
+      - Name: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
+        AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
+        Description: "NSX T0-Edge Uplink 1"
+        TransportZone: "TZ-Edge"
+        ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+        VLANS:
+          - "{{ Net.NSXEdgeUplink1.VLAN }}"
+        Tags:
+          - Tag:
+            Scope:
+      - Name: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
+        AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
+        Description: "NSX T0-Edge Uplink 2"
+        TransportZone: "TZ-Edge"
+        ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+        VLANS:
+          - "{{ Net.NSXEdgeUplink2.VLAN }}"
+        Tags:
+          - Tag:
+            Scope:
+      - Name: "SEG-Web"
+        AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
+        Description: Web Segment
+        TransportZone: "TZ-Overlay"
+        ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+        ConnectedTo:
+          Tier: 1
+          GatewayName: "T1-Gateway-01"
+        Subnets:
+          - GatewayCIDR: "1.1.1.1/24"
+          - GatewayCIDR: "FD00:A:A::1/64"
+        VLANS:
+        Tags:
+          - Tag:
+            Scope:
+      - Name: "SEG-App"
+        AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
+        Description: App Segment
+        TransportZone: "TZ-Overlay"
+        ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+        ConnectedTo:
+          Tier: 1
+          GatewayName: "T1-Gateway-01"
+        Subnets:
+          - GatewayCIDR: "1.1.2.1/24"
+          - GatewayCIDR: "FD00:A:B::1/64"
+        VLANS:
+        Tags:
+          - Tag:
+            Scope:
+      - Name: "SEG-DB"
+        AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
+        Description: DB Segment
+        TransportZone: "TZ-Overlay"
+        ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+        ConnectedTo:
+          Tier: 1
+          GatewayName: "T1-Gateway-01"
+        Subnets:
+          - GatewayCIDR: "1.1.3.1/24"
+          - GatewayCIDR: "FD00:A:C::1/64"
+        VLANS:
+        Tags:
+          - Tag:
+            Scope:
+      - Name: "SEG-TEST-Complicated-VLAN-Segment"
+        AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
+        Description: "*TBD* Test Segment with many VLANs"
+        TransportZone: "TZ-VLAN"
+        ReplicationMode: SOURCE                                                  # ReplicationMode can be "MTEP" or "SOURCE"
+        VLANS:
+          - "{{ Net.NSXEdgeUplink2.VLAN }}"
+          - "{{ Net.NSXEdgeUplink1.VLAN }}"
+          - 100
+          - 101
+          - 102
+          - 103
+          - 104
+          - "105-110"
+        Tags:
+          - Tag: "Goofy"
+            Scope: "Disney"
+          - Tag: "Mickey"
+            Scope: "Disney"
+      - Name: "SEG-Test-Overlay-Without-VLANS"
+        AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
+        Description: Test Overlay Segment without VLAN
+        TransportZone: "TZ-Overlay"
+        ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+        ConnectedTo:
+          Tier: 0
+          GatewayName: "T0-Gateway-01"
+        Subnets:
+          - GatewayCIDR: "1.1.4.1/24"
+          - GatewayCIDR: "FD00:A:D::1/64"
+        Tags:
+          - Tag: "Minnie"
+            Scope: "Disney"
+          - Tag: "Donald"
+            Scope: "Disney"
+  ########################### *TBD* DELETE below Segments after full migration is completed -- These are just to assist with v2 conversion #################
+      - Name: "seg-vlan-{{ Net.NSXEdgeUplink1.VLAN }}"
+        AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
+        Description: "DELETEv1 segment after v2 migration is complete"
+        TransportZone: "TZ-Edge"
+        ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+        ConnectedTo:
+          Tier: 0
+          GatewayName: "T0-Gateway-01"
+        VLANS:
+          - "{{ Net.NSXEdgeUplink1.VLAN }}"
+      - Name: "seg-vlan-{{ Net.NSXEdgeUplink2.VLAN }}"
+        AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
+        Description: "DELETEv1 segment after v2 migration is complete"
+        TransportZone: "TZ-Edge"
+        ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
+        ConnectedTo:
+          Tier:
+          GatewayName:
+        VLANS:
+          - "{{ Net.NSXEdgeUplink2.VLAN }}"
 
 
   System:
@@ -1589,145 +1738,147 @@ Nested_NSXT:
 
       Profile:
         UplinkProfiles:
-        - Name: "ESXi-Uplink-Profile"
-          Description: ESXi Host Transport Node Uplink Profile
-          Transport:
-            VLAN: "{{ Net.Transport.VLAN }}"
-            MTU:  9000
-          DefaultTeaming:
-            Policy: "LOADBALANCE_SRCID"                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
-            ActiveUplinks:
-            - Name: "uplink-1"
-              Type: "PNIC"
-            - Name: "uplink-2"
-              Type: "PNIC"
-        - Name: "Edge-Uplink-Profile"
-          Description: Edge Transport Node Uplink Profile
-          Transport:
-            VLAN: "{{ Net.Transport.VLAN }}"
-            MTU:  9000
-          DefaultTeaming:
-            Policy: "LOADBALANCE_SRCID"                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
-            ActiveUplinks:
-            - Name: "uplink-1"
-              Type: "PNIC"
-            - Name: "uplink-2"
-              Type: "PNIC"
-        - Name: "Sample-Uplink-Profile"
-          Description: Sample Uplink Profile
-          Transport:
-            VLAN: "{{ Net.Transport.VLAN }}"
-            MTU:  9000
-          DefaultTeaming:
-            Policy: "LOADBALANCE_SRCID"                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
-            ActiveUplinks:
-            - Name: "uplink-1"
-              Type: "PNIC"
-            - Name: "uplink-2"
-              Type: "PNIC"
-          NamedTeamings:
-            - Name: NTP_SampleFailOver
-              Policy: "FAILOVER_ORDER"
+          - Name: "ESXi-Uplink-Profile"
+            Description: ESXi Host Transport Node Uplink Profile
+            Transport:
+              VLAN: "{{ Net.Transport.VLAN }}"
+              MTU:  9000
+            DefaultTeaming:
+              Policy: "LOADBALANCE_SRCID"                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
               ActiveUplinks:
-              - Name: "uplink-1"
-                Type: "PNIC"
-              StandbyUplinks:
-              - Name: "uplink-2"
-                Type: "PNIC"
+                - Name: "uplink-1"
+                  Type: "PNIC"
+                - Name: "uplink-2"
+                  Type: "PNIC"
+          - Name: "Edge-Uplink-Profile"
+            Description: Edge Transport Node Uplink Profile
+            Transport:
+              VLAN: "{{ Net.Transport.VLAN }}"
+              MTU:  9000
+            DefaultTeaming:
+              Policy: "LOADBALANCE_SRCID"                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
+              ActiveUplinks:
+                - Name: "uplink-1"
+                  Type: "PNIC"
+                - Name: "uplink-2"
+                  Type: "PNIC"
+          - Name: "Sample-Uplink-Profile"
+            Description: Sample Uplink Profile
+            Transport:
+              VLAN: "{{ Net.Transport.VLAN }}"
+              MTU:  9000
+            DefaultTeaming:
+              Policy: "LOADBALANCE_SRCID"                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
+              ActiveUplinks:
+                - Name: "uplink-1"
+                  Type: "PNIC"
+                - Name: "uplink-2"
+                  Type: "PNIC"
+            NamedTeamings:
+              - Name: NTP_SampleFailOver
+                Policy: "FAILOVER_ORDER"
+                ActiveUplinks:
+                  - Name: "uplink-1"
+                    Type: "PNIC"
+                StandbyUplinks:
+                  - Name: "uplink-2"
+                    Type: "PNIC"
 
         TransportNodeProfiles:
-        - Name: "TNP-ESXi-Hosts"
-          Description: ESXi Transport Node Profile
-          HostSwitches:
-          - Name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
-            Mode: STANDARD
-            Type: "VDS"
-            TransportZones:
-            - Name: "TZ-Overlay"
-            - Name: "TZ-VLAN"
-            UplinkProfile:
-              Name: "ESXi-Uplink-Profile"
-            IPPool:
-              Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
-              Type: "StaticIpPoolSpec"
-            Uplinks:
-            - NSXUplinkName: "uplink-1"
-              VDSUplinkName: "Uplink 1"
-            - NSXUplinkName: "uplink-2"
-              VDSUplinkName: "Uplink 2"
+          - Name: "TNP-ESXi-Hosts"
+            Description: ESXi Transport Node Profile
+            HostSwitches:
+              - Name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
+                Mode: STANDARD
+                Type: "VDS"
+                TransportZones:
+                  - Name: "TZ-Overlay"
+                  - Name: "TZ-VLAN"
+                UplinkProfile:
+                  Name: "ESXi-Uplink-Profile"
+                IPPool:
+                  Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
+                  Type: "StaticIpPoolSpec"
+                Uplinks:
+                  - NSXUplinkName: "uplink-1"
+                    VDSUplinkName: "Uplink 1"
+                  - NSXUplinkName: "uplink-2"
+                    VDSUplinkName: "Uplink 2"
 
+### NOTICE TO RUTGER - Because of all the stuff under System in the menu, I ended up going one additional layer deep here.  So, the EdgeTransportNodes data structure below should ge below "Nodes" ####
+###  'Nodes' should be created here, and EdgeTransportNodes moved over to the right by two.  I didn't move it, because I didn't want to break your script.
       EdgeTransportNodes:
-      - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
-        Description: NSX-T Edge Transport Node
-        HostSwitches:
-        - Name: "NVDS-1"
-          Mode: STANDARD
-          TransportZones:
-          - Name: "TZ-Edge"
-          - Name: "TZ-Overlay"
-          UplinkProfile:
-            Name: "Edge-Uplink-Profile"
-          IPPool:
-            Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
-            Type: "StaticIpPoolSpec"
-          Uplinks:
-          - NSXUplinkName: "uplink-1"
-            DeviceName: "fp-eth0"
-          - NSXUplinkName: "uplink-2"
-            DeviceName: "fp-eth1"
-        Deployment:
-          VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
-          FormFactor: "SMALL"
-          CLIPassword:  "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-          RootPassword: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-          vCenterName:  "{{ Nested_vCenter.VMName }}"
-          vCenterUser:  "{{ Nested_vCenter.User }}"
-          vCenterPassword: "{{ Nested_vCenter.Password }}"
-          DataPortGroups:
-          - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Name }}"
-          - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Name }}"
-          ManagementPortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
-          ManagementIPAddress: "{{ Net.Management.IPv4.Network }}.61"
-          ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
-          Gateway: "{{ Net.Management.IPv4.Network }}.1"
-          Hostname: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01.{{ Common.DNS.Domain }}" 
-          vSphereCluster: "Edge"
-          ESXiHost: "{{ Nested_ESXi.Hosts.ESXi91.FQDN }}"
-          Datastore: "vsanDatastoreEdge"
-      - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
-        Description: NSX-T Edge Transport Node
-        HostSwitches:
-        - Name: "NVDS-1"
-          Mode: STANDARD
-          TransportZones:
-          - Name: "TZ-Edge"
-          - Name: "TZ-Overlay"
-          UplinkProfile:
-            Name: "Edge-Uplink-Profile"
-          IPPool:
-            Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
-            Type: "StaticIpPoolSpec"
-          Uplinks:
-          - NSXUplinkName: "uplink-1"
-            DeviceName: "fp-eth0"
-          - NSXUplinkName: "uplink-2"
-            DeviceName: "fp-eth1"
-        Deployment:
-          VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
-          FormFactor: "SMALL"
-          CLIPassword:  "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-          RootPassword: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-          vCenterName:  "{{ Nested_vCenter.VMName }}"
-          vCenterUser:  "{{ Nested_vCenter.User }}"
-          vCenterPassword: "{{ Nested_vCenter.Password }}"
-          DataPortGroups:
-          - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Name }}"
-          - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Name }}"
-          ManagementPortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
-          ManagementIPAddress: "{{ Net.Management.IPv4.Network }}.62"
-          ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
-          Gateway: "{{ Net.Management.IPv4.Network }}.1"
-          Hostname: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02.{{ Common.DNS.Domain }}" 
-          vSphereCluster: "Edge"
-          ESXiHost: "{{ Nested_ESXi.Hosts.ESXi92.FQDN }}"
-          Datastore: "vsanDatastoreEdge"
+        - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
+          Description: NSX-T Edge Transport Node
+          HostSwitches:
+            - Name: "NVDS-1"
+              Mode: STANDARD
+              TransportZones:
+                - Name: "TZ-Edge"
+                - Name: "TZ-Overlay"
+              UplinkProfile:
+                Name: "Edge-Uplink-Profile"
+              IPPool:
+                Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
+                Type: "StaticIpPoolSpec"
+              Uplinks:
+                - NSXUplinkName: "uplink-1"
+                  DeviceName: "fp-eth0"
+                - NSXUplinkName: "uplink-2"
+                  DeviceName: "fp-eth1"
+          Deployment:
+            VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
+            FormFactor: "SMALL"
+            CLIPassword:  "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+            RootPassword: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+            vCenterName:  "{{ Nested_vCenter.VMName }}"
+            vCenterUser:  "{{ Nested_vCenter.User }}"
+            vCenterPassword: "{{ Nested_vCenter.Password }}"
+            DataPortGroups:
+              - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Name }}"
+              - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Name }}"
+            ManagementPortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+            ManagementIPAddress: "{{ Net.Management.IPv4.Network }}.61"
+            ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
+            Gateway: "{{ Net.Management.IPv4.Network }}.1"
+            Hostname: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01.{{ Common.DNS.Domain }}" 
+            vSphereCluster: "Edge"
+            ESXiHost: "{{ Nested_ESXi.Hosts.ESXi91.FQDN }}"
+            Datastore: "vsanDatastoreEdge"
+        - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
+          Description: NSX-T Edge Transport Node
+          HostSwitches:
+            - Name: "NVDS-1"
+              Mode: STANDARD
+              TransportZones:
+                - Name: "TZ-Edge"
+                - Name: "TZ-Overlay"
+              UplinkProfile:
+                Name: "Edge-Uplink-Profile"
+              IPPool:
+                Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
+                Type: "StaticIpPoolSpec"
+              Uplinks:
+                - NSXUplinkName: "uplink-1"
+                  DeviceName: "fp-eth0"
+                - NSXUplinkName: "uplink-2"
+                  DeviceName: "fp-eth1"
+          Deployment:
+            VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
+            FormFactor: "SMALL"
+            CLIPassword:  "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+            RootPassword: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+            vCenterName:  "{{ Nested_vCenter.VMName }}"
+            vCenterUser:  "{{ Nested_vCenter.User }}"
+            vCenterPassword: "{{ Nested_vCenter.Password }}"
+            DataPortGroups:
+              - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Name }}"
+              - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Name }}"
+            ManagementPortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+            ManagementIPAddress: "{{ Net.Management.IPv4.Network }}.62"
+            ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
+            Gateway: "{{ Net.Management.IPv4.Network }}.1"
+            Hostname: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02.{{ Common.DNS.Domain }}" 
+            vSphereCluster: "Edge"
+            ESXiHost: "{{ Nested_ESXi.Hosts.ESXi92.FQDN }}"
+            Datastore: "vsanDatastoreEdge"

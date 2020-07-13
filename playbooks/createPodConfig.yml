@@ -93,7 +93,7 @@
           =====================================================================================================
 
           Generating static configuration file for Pod {{ Pod.Number }}.   Please be patient, as this can take
-          some time.  On average, it takes between 4-7 minutes to complete, but this time may vary depending
+          some time.  On average, it takes between 5-15 minutes to complete, but this time may vary depending
           on the size of your lab, and the speed of your Ansible Control Station (a.k.a. Ansible Controller).
 
                 The following source file is being prepared: {{ SourceConfigPath }}/{{ SourceConfigFile }}
@@ -114,6 +114,9 @@
         - Pod.Number >= 10
         - Pod.Number <= 240
 
+    - name: Create variable with current date and time
+      set_fact: 
+        time: "{{lookup('pipe','date \"+%d-%B-%Y %H:%M\"')}}"
  
     - name: Create Pod Configuration File (Used For Pod Deployment)
       template: 
