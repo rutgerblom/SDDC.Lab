@@ -114,6 +114,9 @@
         - Pod.Number >= 10
         - Pod.Number <= 240
 
+    - name: Create variable with current date and time
+      set_fact: 
+        time: "{{lookup('pipe','date \"+%d-%B-%Y %H:%M\"')}}"
  
     - name: Create Pod Configuration File (Used For Pod Deployment)
       template: 
