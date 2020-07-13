@@ -1,0 +1,115 @@
+{#
+ #      Authors: Luis Chanu & Rutger Blom
+ #     Filename: templates/var_NSXT_T0Gateways.j2
+ #      Used By: This file is used by the createNsxT0Gateways.yml playbook
+ #      Purpose: This Jinja2 template file is used to create the data structure that is provided to the nsxt_policy_segments module.
+ #
+ #  Description: This script creates a data structure containing ALL Segments in the Pod Config file.  It's up 
+ #               to the playbook using this template to filter only the type of Segments it wants to process.
+ #}
+var_T0Gateways:
+{% for Gateway in Nested_NSXT.Networking.Tier0Gateways %}
+  - display_name:  "{{ Gateway.Name }}"
+    description:   "{{ Gateway.Description }}"
+    ha_mode:       "{{ Gateway.HA_Mode }}"
+    failover_mode: "{{ Gateway.FailoverMode }}"
+    tags:
+{###### Make sure Tags is defined #####}
+{% if (Gateway.Tags is defined) %}
+{###### If Tags is defined, add them to the list #}
+{% for SingleTag in Gateway.Tags %}
+      - tag: "{{ SingleTag.Tag | default(None) }}"
+        scope: "{{ SingleTag.Scope | default(None) }}"
+{% endfor %}{# SingleTag #}
+{###### If not defined, add one set of "None" entries to ensure 'tags' header has a list member #####}
+{% else %}
+      - tag: ""
+        scope: ""
+{% endif %}{# Gateway.Tags is defined #}
+    locale_services:
+{% for Service in Gateway.LocaleServices %}
+      - state: present
+        display_name: "{{ Service.Name }}"
+        description: "{{ Service.Description }}"
+        tags:
+{###### Make sure Tags is defined #####}
+{% if (Service.Tags is defined) %}
+{###### If Tags is defined, add them to the list #}
+{% for SingleTag in Service.Tags %}
+          - tag: "{{ SingleTag.Tag | default(None) }}"
+            scope: "{{ SingleTag.Scope | default(None) }}"
+{% endfor %}{# SingleTag #}
+{###### If not defined, add one set of "None" entries to ensure 'tags' header has a list member #####}
+{% else %}
+          - tag: ""
+            scope: ""
+{% endif %}{# Service.Tags is defined #}
+        edge_cluster_info:
+          edge_cluster_display_name: "{{ Service.EdgeCluster.Name }}"
+        route_redistribution_config:
+          bgp_enabled: {{ Service.RouteRedistributionConfig.BGP_Enabled }}
+          redistribution_rules:
+{% for Rule in Service.RouteRedistributionConfig.Rules %}
+            - name: "{{ Rule.Name }}"
+              route_redistribution_types:
+{% for Type in Rule.Types %}
+                - "{{ Type }}"
+{% endfor %}{# Type #}
+{% endfor %}{# Rule #}
+{% endfor %}{# Service #}
+{##### Begin BGP Configuration #####}
+    BGP:
+      state: present
+      enabled: {{ Gateway.BGP.Enabled }}
+      ecmp: {{ Gateway.BGP.ECMP }}
+      local_as_num: {{ Gateway.BGP.LocalASN }}
+      inter_sr_ibgp: {{ Gateway.BGP.InterSRiBGP }}
+      multipath_relax: {{ Gateway.BGP.MultiPathRelax }}
+      graceful_restart_config:
+        mode: "{{ Gateway.BGP.GracefulRestartConfig.Mode }}"
+      neighbors:
+{% for Neighbor in Gateway.BGP.Neighbors %}
+{##### Verify Neighbor address type matches Deploy IP type #####}
+{% if (Deploy.IPv4 and Neighbor.Address | ipv4) or (Deploy.IPv6 and Neighbor.Address | ipv6) %}
+        - display_name: "{{ Neighbor.Name }}"
+          address: "{{ Neighbor.Address }}"
+          remote_as_num: {{ Neighbor.RemoteASN }}
+          allow_as_in: {{ Neighbor.AllowASIn }}
+          bfd:
+            enabled: {{ Neighbor.BFD.Enabled }}
+          graceful_restart_mode: "{{ Neighbor.GracefulRestartMode }}"
+          hold_down_time: {{ Neighbor.BGPSettings.HoldDownTime }}
+          keep_alive_time: {{ Neighbor.BGPSettings.KeepAliveTime  }}
+          maximum_hop_limit: {{ Neighbor.BGPSettings.MaxHopLimit }}
+          password: "{{ Neighbor.BGPSettings.Password }}"
+          source_addresses:
+{% for Address in Neighbor.SourceAddresses %}
+{##### Only add source addresses that are the same address type as the neighbor's ip address #}
+{% if ((Neighbor.Address | ipv4) and (Address | ipv4)) or ((Neighbor.Address | ipv6) and (Address | ipv6)) %}
+            - "{{ Address }}"
+{% endif %}{# Neighbor.Address #}
+{% endfor %}{# Address #}
+{% endif %}{# Deploy.IPv4 or Deploy.IPv6 #}
+{% endfor %}{# Neighbor #}
+{##### Assign IP Addresses To Tier-0 SR Uplink Interfaces #####}
+      interfaces:
+{% for Interface in Gateway.BGP.Interfaces %}
+        - state: present
+          type: "{{ Interface.Type }}"
+          display_name: "{{ Interface.Name }}"
+          description: "{{ Interface.Description }}"
+          urpf_mode: "{{ Interface.URPFMode }}"
+          segment_display_name: "{{ Interface.SegmentName }}"
+          edge_node_info:
+            edge_cluster_display_name: "{{ Interface.EdgeNodeInfo.EdgeClusterName }}"
+            edge_node_display_name: "{{ Interface.EdgeNodeInfo.EdgeNodeName }}"
+          subnets:
+{% for Subnet in Interface.Subnets %}
+{##### Only add Interface Address types that match allowed Deploy IP types #####}
+{% if ((Deploy.IPv4 and Subnet.Address | ipv4) or (Deploy.IPv6 and Subnet.Address | ipv6)) %}
+            - ip_addresses: "{{ Subnet.Address }}"
+              prefix_len: {{ Subnet.Prefix }}
+{% endif %}{# Deploy.IPv4 or Deploy.IPv6 #}
+{% endfor %}{# Subnet #}
+{% endfor %}{# Interface #}
+{% endfor %}{# Gateway #}
