@@ -59,6 +59,7 @@
       when:
         - DEBUG.DisplayVariables == true
         - Deploy.NSXT.LocalManager == true
+        - Deploy.NSXT.Edge == true
 
 
     - name: Create 'vars' directory
@@ -67,6 +68,7 @@
         state: directory
       when:
         - Deploy.NSXT.LocalManager == true
+        - Deploy.NSXT.Edge == true
 
 
     - name: Create file with Edge Transport Node data structure
@@ -76,6 +78,7 @@
         force: true
       when:
         - Deploy.NSXT.LocalManager == true
+        - Deploy.NSXT.Edge == true
 
     ## Read in var_EdgeTransportNodes variable
     - name: Read var_EdgeTransportNodes data structure from file
@@ -96,6 +99,7 @@
       when:
         - DEBUG.DisplayVariables == true
         - Deploy.NSXT.LocalManager == true
+        - Deploy.NSXT.Edge == true
         - var_EdgeTransportNodes != ""     
 
     - name: Deploy and configure Edge Transport Nodes

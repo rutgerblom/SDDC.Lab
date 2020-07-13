@@ -1881,3 +1881,12 @@ Nested_NSXT:
               vSphereCluster: "Edge"
               ESXiHost: "{{ Nested_ESXi.Hosts.ESXi92.FQDN }}"
               Datastore: "{{ Nested_Clusters.Edge.vsanDatastore}}"
+
+        EdgeClusters:
+          - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
+            ClusterProfile:
+              - Name: "nsx-default-edge-high-availability-profile"
+            Members:
+              - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
+              - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
+            
