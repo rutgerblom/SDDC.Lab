@@ -181,6 +181,7 @@
         user: "{{ Nested_vCenter.User }}"
         passwd: "{{ Nested_vCenter.Password }}"
         cluster: "{{ item.key }}"
+        datastorename: "{{ item.value.vsanDatastore }}"
       ignore_errors: true
       loop: "{{ Nested_Clusters | dict2items }}"
       when:
