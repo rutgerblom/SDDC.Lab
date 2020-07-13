@@ -1844,7 +1844,7 @@ Nested_NSXT:
             Hostname: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01.{{ Common.DNS.Domain }}" 
             vSphereCluster: "Edge"
             ESXiHost: "{{ Nested_ESXi.Hosts.ESXi91.FQDN }}"
-            Datastore: "vsanDatastoreEdge"
+            Datastore: "{{ Nested_Clusters.Edge.vsanDatastore}}"
         - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
           Description: NSX-T Edge Transport Node
           HostSwitches:
@@ -1881,4 +1881,4 @@ Nested_NSXT:
             Hostname: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02.{{ Common.DNS.Domain }}" 
             vSphereCluster: "Edge"
             ESXiHost: "{{ Nested_ESXi.Hosts.ESXi92.FQDN }}"
-            Datastore: "vsanDatastoreEdge"
+            Datastore: "{{ Nested_Clusters.Edge.vsanDatastore}}"
