@@ -123,6 +123,7 @@ def main():
     cl = get_obj(content, [vim.ClusterComputeResource], module.params['cluster'])
     for ds in cl.datastore:
         if ds.summary.name.startswith("vsanDatastore"):
+            #ds.RenameDatastore("vsanDatastore" + module.params['cluster'])
             ds.RenameDatastore(module.params['datastorename'])
 
 #        print str(host.config.vsanHostConfig.storageInfo.diskMapping) 
