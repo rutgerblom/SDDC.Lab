@@ -111,8 +111,6 @@ def main():
     cluster_config_spec.vsanConfig = configure_vsan()
     task = cluster.ReconfigureComputeResource_Task(cluster_config_spec, True)
     wait_for_tasks([task], SI)
-#    ds = get_obj(content, [vim.Datastore], "vsanDatastore")
-#    ds.RenameDatastore("vsanDatastore" + module.params['cluster'])
     module.exit_json(changed=True, result="vSAN is enabled on cluster " + module.params['cluster'])
 
 
