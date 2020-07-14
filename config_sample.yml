@@ -1386,16 +1386,16 @@ Nested_NSXT:
         HA_Mode:      "ACTIVE_ACTIVE"                                      # Options are "ACTIVE_ACTIVE" or "ACTIVE_STANDBY"
         FailoverMode: "NON_PREEMPTIVE"                                     # Options are "NON_PREEMPTIVE" or "PREEMPTIVE"
         Tags:
-          - Tag:
-            Scope:
+          - Tag: "Auto-Created"
+            Scope: "SDDC.Lab"
         LocaleServices:
           - Name:        "T0-Gateway-01_Locale_Services"
             Description: "T0-Gateway-01 Locale Services Description"
             Tags:
-              - Tag: "Test Tag *TBD*"
-                Scope: "Test Scope *TBD*"
+              - Tag:
+                Scope:
             EdgeCluster:
-              Name:        "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
+              Name:      "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
             RouteRedistributionConfig:
               BGP_Enabled: true
               Rules:
