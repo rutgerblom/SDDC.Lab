@@ -12,8 +12,18 @@ var_IPPools:
   description:  "{{ Pool.Description }}"
   state: "present"
   tags:
-    - tag: "{{ Pool.Tags.Tag }}"
-      scope: "{{ Pool.Tags.Scope }}"
+{###### Make sure Tags is defined #####}
+{% if (Pool.Tags is defined) %}
+{###### If Tags is defined, add them to the list #}
+{% for SingleTag in Pool.Tags %}
+    - tag: "{{ SingleTag.Tag | default(None) }}"
+      scope: "{{ SingleTag.Scope | default(None) }}"
+{% endfor %}{# SingleTag #}
+{###### If not defined, add one set of "None" entries to ensure 'tags' header has a list member #####}
+{% else %}
+    - tag: ""
+      scope: ""
+{% endif %}{# Pool.Tags is defined #}
   pool_static_subnets:
 {% for Allocation in Pool.Allocations %}
     - display_name: "{{ "{}/{}".format(Allocation.IPRanges[0].Start, Allocation.Prefix) | ipaddr('network/prefix') | ipaddr('network') }}"
