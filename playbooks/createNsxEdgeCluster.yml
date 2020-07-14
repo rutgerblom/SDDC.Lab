@@ -1,53 +1,138 @@
 ## Rutger has ownership of this module
+# Converted to support STATIC Config files
 ---
 - hosts: localhost
-  gather_facts: false 
-  vars_files:
-    - ../answerfile.yml
+  name: createNsxEdgeCluster.yml
+  gather_facts: false
+  vars:
+      LOCAL_EdgeClusters_File: "{{ Target.VarsFolder }}/vars_NSXT_EdgeClusters"
   tasks:
-    - name: Check if NSX-T license file exists
-      stat: 
-        path: "{{ nsxlicense }}"
-      register: nsxlicensekey
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
 
-    - name: Create NSX-T Edge cluster
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                          Ansible Playbook: {{ ansible_play_name }}
+
+                                         Target.Deployment: {{ Target.Deployment }}
+
+                  Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
+
+          Nested_NSXT.System.Fabric.EdgeTransportNodes: {{ Nested_NSXT.System.Fabric.EdgeTransportNodes }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.NSXT.LocalManager == true
+
+
+    - name: Create 'vars' directory
+      file:
+        path: "{{ Target.VarsFolder }}"
+        state: directory
+      when:
+        - Deploy.NSXT.LocalManager == true
+
+
+    - name: Create file with Edge Cluster data structure
+      template:
+        src:  "{{ Target.TemplateFolder }}/vars_NSXT_EdgeClusters.j2"
+        dest: "{{ LOCAL_EdgeClusters_File }}"
+        force: true
+      when:
+        - Deploy.NSXT.LocalManager == true
+
+    ## Read in var_EdgeClusters variable
+    - name: Read var_EdgeClusters data structure from file
+      include_vars:
+        file: "{{ LOCAL_EdgeClusters_File }}"
+      when:
+        - Deploy.NSXT.LocalManager == true
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display var_EdgeClusters Variable ===================================
+
+              var_EdgeTransportNodes: {{ var_EdgeClusters | to_nice_yaml(indent=2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.NSXT.LocalManager == true
+        - var_EdgeClusters != ""
+
+
+    - name: Create NSX-T Edge Cluster
       nsxt_edge_clusters:
-        hostname: "{{ nsxman.nsxman01.ip }}"
-        username: "{{ nsxmanadminuser }}"
-        password: "{{ nsxmanpassword }}"
+        hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
+        username: "{{ Nested_NSXT.Credentials.admin.Name }}"
+        password: "{{ Nested_NSXT.Credentials.admin.Password }}"
         validate_certs: False
-        display_name: "{{ edge_cluster_name }}"
-        cluster_profile_bindings:
-        - profile_name: "nsx-default-edge-high-availability-profile"
-          resource_type: EdgeHighAvailabilityProfile          
-        members:
-        - transport_node_name: "{{ edge_node1 }}"
-        - transport_node_name: "{{ edge_node2 }}"
+        display_name: "{{ item.display_name }}"
+        cluster_profile_bindings: "{{ item.cluster_profile_bindings }}"
+        members: "{{ item.members }}"
         state: present
       register: edge_cluster
+      with_list: "{{ var_EdgeClusters }}"
       when: 
-        - nsxlicensekey.stat.exists == true
-        - deploy_nsxt == true
-        - deploy_nsxt_edge == true
+        - Deploy.NSXT.LocalManager == true
+        - Deploy.NSXT.Edge == true
+        - var_EdgeClusters != ""
 
     - name:  Wait until the NSX-T API reports that the edge cluster is in realized state (wait max 30 minutes)
       uri:
-        url: https://{{ item.value.ip }}/policy/api/v1/infra/sites/default/enforcement-points/default/edge-clusters/{{ edge_cluster.id }}
+        url: https://{{ Nested_NSXT.Components.LocalManager.FQDN }}policy/api/v1/infra/sites/default/enforcement-points/default/edge-clusters/{{ edge_cluster.id }}
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
-        url_username: "{{ nsxmanadminuser }}"
-        url_password: "{{ nsxmanpassword }}"
+        url_username: "{{ Nested_NSXT.Credentials.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credentials.admin.Password }}"
         method: GET
         body_format: json
         return_content: yes
         status_code: 200
-      with_dict: "{{ nsxman }}"
       register: result
       until: result.status == 200
       retries: 60
       delay: 30
       when: 
-        - nsxlicensekey.stat.exists == true
-        - deploy_nsxt == true
-        - deploy_nsxt_edge == true
+        - Deploy.NSXT.LocalManager == true
+        - Deploy.NSXT.Edge == true
+        - var_EdgeClusters != ""
