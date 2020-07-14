@@ -1548,8 +1548,8 @@ Nested_NSXT:
         Description: IP Pool for TEPs
 ### *TBD* Need to modify IPPools to support list of Tags.  See T0Gateway for good code example
         Tags:
-          Tag: "Auto-Created"
-          Scope: "SDDC.Lab"
+          - Tag: "Auto-Created"
+            Scope: "SDDC.Lab"
         Allocations:
           - Description: IP Pool for TEPs
             Prefix:  "{{ Net.Transport.IPv4.Prefix }}"
@@ -1563,8 +1563,8 @@ Nested_NSXT:
       - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-RTEP-Pool"
         Description: IP Pool for Remote TEPs
         Tags:
-          Tag: "Auto-Created"
-          Scope: "SDDC.Lab"
+          - Tag: "Auto-Created"
+            Scope: "SDDC.Lab"
         Allocations:
           - Description: IP Pool for Remote TEPs
             Prefix:  "{{ Net.RTEP.IPv4.Prefix }}"
