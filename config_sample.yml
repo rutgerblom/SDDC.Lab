@@ -1578,8 +1578,8 @@ Nested_NSXT:
       - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Test-Pool"
         Description: IP Test Pool with both IPv4 and IPv6 Allocations
         Tags:
-          Tag: "Auto-Created"
-          Scope: "SDDC.Lab"
+          - Tag: "Auto-Created"
+            Scope: "SDDC.Lab"
         Allocations:
           - Description: "IPv6 Test Address Range"
             Prefix:  "{{ Net.VMNetwork.IPv6.Prefix }}"
