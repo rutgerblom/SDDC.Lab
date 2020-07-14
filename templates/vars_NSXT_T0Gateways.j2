@@ -58,58 +58,61 @@ var_T0Gateways:
 {% endfor %}{# Rule #}
 {% endfor %}{# Service #}
 {##### Begin BGP Configuration #####}
-    BGP:
-      state: present
-      enabled: {{ Gateway.BGP.Enabled }}
-      ecmp: {{ Gateway.BGP.ECMP }}
-      local_as_num: {{ Gateway.BGP.LocalASN }}
-      inter_sr_ibgp: {{ Gateway.BGP.InterSRiBGP }}
-      multipath_relax: {{ Gateway.BGP.MultiPathRelax }}
-      graceful_restart_config:
-        mode: "{{ Gateway.BGP.GracefulRestartConfig.Mode }}"
-      neighbors:
+        BGP:
+          state: present
+          enabled: {{ Gateway.BGP.Enabled }}
+          ecmp: {{ Gateway.BGP.ECMP }}
+          local_as_num: "{{ Gateway.BGP.LocalASN }}"
+          inter_sr_ibgp: {{ Gateway.BGP.InterSRiBGP }}
+          multipath_relax: {{ Gateway.BGP.MultiPathRelax }}
+          graceful_restart_config:
+            mode: "{{ Gateway.BGP.GracefulRestartConfig.Mode }}"
+          neighbors:
 {% for Neighbor in Gateway.BGP.Neighbors %}
 {##### Verify Neighbor address type matches Deploy IP type #####}
 {% if (Deploy.IPv4 and Neighbor.Address | ipv4) or (Deploy.IPv6 and Neighbor.Address | ipv6) %}
-        - display_name: "{{ Neighbor.Name }}"
-          address: "{{ Neighbor.Address }}"
-          remote_as_num: {{ Neighbor.RemoteASN }}
-          allow_as_in: {{ Neighbor.AllowASIn }}
-          bfd:
-            enabled: {{ Neighbor.BFD.Enabled }}
-          graceful_restart_mode: "{{ Neighbor.GracefulRestartMode }}"
-          hold_down_time: {{ Neighbor.BGPSettings.HoldDownTime }}
-          keep_alive_time: {{ Neighbor.BGPSettings.KeepAliveTime  }}
-          maximum_hop_limit: {{ Neighbor.BGPSettings.MaxHopLimit }}
-          password: "{{ Neighbor.BGPSettings.Password }}"
-          source_addresses:
+            - state: present
+              display_name: "{{ Neighbor.Name }}"
+              neighbor_address: "{{ Neighbor.Address }}"
+              remote_as_num: "{{ Neighbor.RemoteASN }}"
+              allow_as_in: {{ Neighbor.AllowASIn }}
+{##### BFD Not supported with IPv6 #####}
+{% if Deploy.IPv6 is false %}
+              bfd:
+                enabled: {{ Neighbor.BFD.Enabled }}
+{% endif %}{# Deploy.IPv6 == false #}
+              graceful_restart_mode: "{{ Neighbor.GracefulRestartMode }}"
+              hold_down_time: {{ Neighbor.BGPSettings.HoldDownTime }}
+              keep_alive_time: {{ Neighbor.BGPSettings.KeepAliveTime  }}
+              maximum_hop_limit: {{ Neighbor.BGPSettings.MaxHopLimit }}
+              password: "{{ Neighbor.BGPSettings.Password }}"
+              source_addresses:
 {% for Address in Neighbor.SourceAddresses %}
 {##### Only add source addresses that are the same address type as the neighbor's ip address #}
 {% if ((Neighbor.Address | ipv4) and (Address | ipv4)) or ((Neighbor.Address | ipv6) and (Address | ipv6)) %}
-            - "{{ Address }}"
+                - "{{ Address }}"
 {% endif %}{# Neighbor.Address #}
 {% endfor %}{# Address #}
 {% endif %}{# Deploy.IPv4 or Deploy.IPv6 #}
 {% endfor %}{# Neighbor #}
 {##### Assign IP Addresses To Tier-0 SR Uplink Interfaces #####}
-    interfaces:
+        interfaces:
 {% for Interface in Gateway.BGP.Interfaces %}
-      - state: present
-        type: "{{ Interface.Type }}"
-        display_name: "{{ Interface.Name }}"
-        description: "{{ Interface.Description }}"
-        urpf_mode: "{{ Interface.URPFMode }}"
-        segment_display_name: "{{ Interface.SegmentName }}"
-        edge_node_info:
-          edge_cluster_display_name: "{{ Interface.EdgeNodeInfo.EdgeClusterName }}"
-          edge_node_display_name: "{{ Interface.EdgeNodeInfo.EdgeNodeName }}"
-        subnets:
+          - state: present
+            type: "{{ Interface.Type }}"
+            display_name: "{{ Interface.Name }}"
+            description: "{{ Interface.Description }}"
+            urpf_mode: "{{ Interface.URPFMode }}"
+            segment_display_name: "{{ Interface.SegmentName }}"
+            edge_node_info:
+              edge_cluster_display_name: "{{ Interface.EdgeNodeInfo.EdgeClusterName }}"
+              edge_node_display_name: "{{ Interface.EdgeNodeInfo.EdgeNodeName }}"
+            subnets:
 {% for Subnet in Interface.Subnets %}
 {##### Only add Interface Address types that match allowed Deploy IP types #####}
 {% if ((Deploy.IPv4 and Subnet.Address | ipv4) or (Deploy.IPv6 and Subnet.Address | ipv6)) %}
-          - ip_addresses:
-              - "{{ Subnet.Address }}"
-            prefix_len: {{ Subnet.Prefix }}
+              - ip_addresses: ["{{ Subnet.Address }}"]
+                prefix_len: {{ Subnet.Prefix }}
 {% endif %}{# Deploy.IPv4 or Deploy.IPv6 #}
 {% endfor %}{# Subnet #}
 {% endfor %}{# Interface #}
