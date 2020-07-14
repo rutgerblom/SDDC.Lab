@@ -55,15 +55,5 @@ var_T1Gateways:
         edge_cluster_info:
           edge_cluster_display_name: "{{ Service.EdgeCluster.Name | default(omit) }}"
 {% endif %}{# Service.EdgeCluster.Name #}
-        route_redistribution_config:
-          bgp_enabled: {{ Service.RouteRedistributionConfig.BGP_Enabled }}
-          redistribution_rules:
-{% for Rule in Service.RouteRedistributionConfig.Rules %}
-            - name: "{{ Rule.Name }}"
-              route_redistribution_types:
-{% for Type in Rule.Types %}
-                - "{{ Type }}"
-{% endfor %}{# Type #}
-{% endfor %}{# Rule #}
 {% endfor %}{# Service #}
 {% endfor %}{# Gateway #}
