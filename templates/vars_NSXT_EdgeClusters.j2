@@ -8,6 +8,10 @@
 var_EdgeClusters:
 {% for EdgeCluster in Nested_NSXT.System.Fabric.Nodes.EdgeClusters %}
   - display_name: "{{ EdgeCluster.Name }}"
+    cluster_profile_bindings:
+{% for ClusterProfile in EdgeCluster.ClusterProfiles %}
+      - profile_name: "{{ ClusterProfile.Name }}"
+{% endfor %}{# ClusterProfile #}
     members:
 {% for Member in EdgeCluster.Members %}
       - transport_node_name: "{{ Member.Name }}"
