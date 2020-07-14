@@ -90,7 +90,7 @@
         - Deploy.NSXT.LocalManager == true
         - var_T1Gateways != ""
 
-    - name: Create NSX-T Tier-0 Gateway
+    - name: Create NSX-T Tier-1 Gateway
       nsxt_policy_tier1:
         hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
         username: "{{ Nested_NSXT.Credentials.admin.Name }}"
@@ -98,8 +98,10 @@
         validate_certs: False
         state: present
         display_name: "{{ item.display_name }}"
-        ha_mode: "{{ item.ha_mode }}"
-        failover_mode: "{{ item.failover_mode }}"
+#        failover_mode: "{{ item.failover_mode }}"
+        tier0_display_name: "{{ item.tier0_display_name }}"
+        pool_allocation: "{{ item.pool_allocation }}"
+        route_advertisement_types: "{{ item.route_advertisement_types }}"
         tags: "{{ item.tags | default(omit) }}"
         locale_services: "{{ item.locale_services }}"
       with_items:
@@ -107,7 +109,7 @@
       when:
         - Deploy.NSXT.LocalManager == true
 
-    - name: Delete T1Segments data structure file
+    - name: Delete T1Gateways data structure file
       file: 
         path: "{{ LOCAL_T1Gateways_File }}"
         state: absent

@@ -50,8 +50,11 @@ var_T1Gateways:
           - tag: ""
             scope: ""
 {% endif %}{# Service.Tags is defined #}
+{##### Only include Edge Cluster information if one is specified #####}
+{% if Service.EdgeCluster.Name is defined and Service.EdgeCluster.Name|length %}
         edge_cluster_info:
-          edge_cluster_display_name: "{{ Service.EdgeCluster.Name }}"
+          edge_cluster_display_name: "{{ Service.EdgeCluster.Name | default(omit) }}"
+{% endif %}{# Service.EdgeCluster.Name #}
         route_redistribution_config:
           bgp_enabled: {{ Service.RouteRedistributionConfig.BGP_Enabled }}
           redistribution_rules:
