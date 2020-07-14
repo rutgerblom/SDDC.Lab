@@ -1360,6 +1360,8 @@ Nested_NSXT:
 ##
 ## Changes to some of the 'Vars' variables below may require changes to Nested_NSXT below
 ##
+## *TBD* Reminder to remove the below "Vars" section once all scripts are converted
+##
   Vars:
     NVDSName:          "NVDS-1"
     Tier0_Name:        "T0-Gateway-01"
@@ -1386,16 +1388,16 @@ Nested_NSXT:
         HA_Mode:      "ACTIVE_ACTIVE"                                      # Options are "ACTIVE_ACTIVE" or "ACTIVE_STANDBY"
         FailoverMode: "NON_PREEMPTIVE"                                     # Options are "NON_PREEMPTIVE" or "PREEMPTIVE"
         Tags:
-          - Tag:
-            Scope:
+          - Tag: "Auto-Created"
+            Scope: "SDDC.Lab"
         LocaleServices:
           - Name:        "T0-Gateway-01_Locale_Services"
             Description: "T0-Gateway-01 Locale Services Description"
             Tags:
-              - Tag: "Test Tag *TBD*"
-                Scope: "Test Scope *TBD*"
+              - Tag: "Auto-Created"
+                Scope: "SDDC.Lab"
             EdgeCluster:
-              Name:        "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
+              Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
             RouteRedistributionConfig:
               BGP_Enabled: true
               Rules:
@@ -1478,12 +1480,15 @@ Nested_NSXT:
           Interfaces:
             - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01-1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
               Description: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01 Uplink 1"
+              SegmentName: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
+              Tags:
+                - Tag: "Auto-Created"
+                  Scope: "SDDC.Lab"
               EdgeNodeInfo:
                 EdgeClusterName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
                 EdgeNodeName:    "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
-              SegmentName: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
               Subnets:
                 - Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
@@ -1491,12 +1496,15 @@ Nested_NSXT:
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
             - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01-2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
               Description: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01 Uplink 2"
+              SegmentName: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
+              Tags:
+                - Tag: "Auto-Created"
+                  Scope: "SDDC.Lab"
               EdgeNodeInfo:
                 EdgeClusterName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
                 EdgeNodeName:    "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
-              SegmentName: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
               Subnets:
                 - Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
@@ -1504,12 +1512,15 @@ Nested_NSXT:
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
             - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02-1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
               Description: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02 Uplink 1"
+              SegmentName: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
+              Tags:
+                - Tag: "Auto-Created"
+                  Scope: "SDDC.Lab"
               EdgeNodeInfo:
                 EdgeClusterName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
                 EdgeNodeName:    "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
-              SegmentName: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
               Subnets:
                 - Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
@@ -1517,24 +1528,55 @@ Nested_NSXT:
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
             - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02-2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
               Description: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02 Uplink 2"
+              SegmentName: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
+              Tags:
+                - Tag: "Auto-Created"
+                  Scope: "SDDC.Lab"
               EdgeNodeInfo:
                 EdgeClusterName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
                 EdgeNodeName:    "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
-              SegmentName: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
               Subnets:
                 - Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.3"
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
                 - Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::3"
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
 
+    Tier1Gateways:
+      - Name:           "T1-Gateway-01"
+        Description:    "Tier-1 Gateway for SDDC.Lab"
+        FailoverMode:   "NON_PREEMPTIVE"                                # Options are "NON_PREEMPTIVE" or "PREEMPTIVE"
+        Tier0Gateway:   "T0-Gateway-01"
+        PoolAllocation: "ROUTING"
+        Tags:
+          - Tag: "Auto-Created"
+            Scope: "SDDC.Lab"
+        RouteAdvertisementTypes:
+          - TIER1_CONNECTED
+        LocaleServices:
+          - Name:        "T1-Gateway-01_Locale_Services"
+            Description: "T1-Gateway-01 Locale Services Description"
+            Tags:
+              - Tag: "Auto-Created"
+                Scope: "SDDC.Lab"
+            EdgeCluster:
+              Name: ""
+            RouteRedistributionConfig:
+              BGP_Enabled: true
+              Rules:
+                - Name: Redistribute Connected
+                  Types:                                                  # Types include TIER0_STATIC, TIER0_CONNECTED, TIER0_EXTERNAL_INTERFACE, TIER0_LOOPBACK_INTERFACE, TIER0_SEGMENT, TIER0_ROUTER_LINK, TIER0_SERVICE_INTERFACE, TIER0_DNS_FORWARDER_IP, TIER0_IPSEC_LOCAL_IP, TIER0_NAT, TIER0_EVPN_TEP_IP, TIER1_STATIC, TIER1_NAT, TIER1_LB_VIP, TIER1_LB_SNAT, TIER1_DNS_FORWARDER_IP, TIER1_CONNECTED, TIER1_SERVICE_INTERFACE, TIER1_SEGMENT, TIER1_IPSEC_LOCAL_ENDPOINT
+                    - TIER1_CONNECTED
+                    - TIER1_SEGMENT
+
     IPPools:
       - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
         Description: IP Pool for TEPs
+### *TBD* Need to modify IPPools to support list of Tags.  See T0Gateway for good code example
         Tags:
-          Tag:
-          Scope:
+          - Tag: "Auto-Created"
+            Scope: "SDDC.Lab"
         Allocations:
           - Description: IP Pool for TEPs
             Prefix:  "{{ Net.Transport.IPv4.Prefix }}"
@@ -1548,8 +1590,8 @@ Nested_NSXT:
       - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-RTEP-Pool"
         Description: IP Pool for Remote TEPs
         Tags:
-          Tag:
-          Scope:
+          - Tag: "Auto-Created"
+            Scope: "SDDC.Lab"
         Allocations:
           - Description: IP Pool for Remote TEPs
             Prefix:  "{{ Net.RTEP.IPv4.Prefix }}"
@@ -1563,8 +1605,8 @@ Nested_NSXT:
       - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Test-Pool"
         Description: IP Test Pool with both IPv4 and IPv6 Allocations
         Tags:
-          Tag:
-          Scope:
+          - Tag: "Auto-Created"
+            Scope: "SDDC.Lab"
         Allocations:
           - Description: "IPv6 Test Address Range"
             Prefix:  "{{ Net.VMNetwork.IPv6.Prefix }}"
@@ -1602,8 +1644,8 @@ Nested_NSXT:
         VLANS:
           - "{{ Net.NSXEdgeUplink1.VLAN }}"
         Tags:
-          - Tag:
-            Scope:
+          - Tag: "Auto-Created"
+            Scope: "SDDC.Lab"
       - Name: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
         AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
         Description: "NSX T0-Edge Uplink 2"
@@ -1612,8 +1654,8 @@ Nested_NSXT:
         VLANS:
           - "{{ Net.NSXEdgeUplink2.VLAN }}"
         Tags:
-          - Tag:
-            Scope:
+          - Tag: "Auto-Created"
+            Scope: "SDDC.Lab"
       - Name: "SEG-Web"
         AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
         Description: Web Segment
@@ -1627,8 +1669,8 @@ Nested_NSXT:
           - GatewayCIDR: "FD00:A:A::1/64"
         VLANS:
         Tags:
-          - Tag:
-            Scope:
+          - Tag: "Auto-Created"
+            Scope: "SDDC.Lab"
       - Name: "SEG-App"
         AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
         Description: App Segment
@@ -1657,8 +1699,8 @@ Nested_NSXT:
           - GatewayCIDR: "FD00:A:C::1/64"
         VLANS:
         Tags:
-          - Tag:
-            Scope:
+          - Tag: "Auto-Created"
+            Scope: "SDDC.Lab"
       - Name: "SEG-TEST-Complicated-VLAN-Segment"
         AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
         Description: "*TBD* Test Segment with many VLANs"
@@ -1674,8 +1716,8 @@ Nested_NSXT:
           - 104
           - "105-110"
         Tags:
-          - Tag: "Goofy"
-            Scope: "Disney"
+          - Tag: "Auto-Created"
+            Scope: "SDDC.Lab"
           - Tag: "Mickey"
             Scope: "Disney"
       - Name: "SEG-Test-Overlay-Without-VLANS"
@@ -1690,8 +1732,8 @@ Nested_NSXT:
           - GatewayCIDR: "1.1.4.1/24"
           - GatewayCIDR: "FD00:A:D::1/64"
         Tags:
-          - Tag: "Minnie"
-            Scope: "Disney"
+          - Tag: "Auto-Created"
+            Scope: "SDDC.Lab"
           - Tag: "Donald"
             Scope: "Disney"
   ########################### *TBD* DELETE below Segments after full migration is completed -- These are just to assist with v2 conversion #################

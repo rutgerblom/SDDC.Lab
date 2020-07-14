@@ -1,10 +1,10 @@
 # Luis has ownership of this playbook for v2 conversion
 ---
 - hosts: localhost
-  name: createNsxT0Gateway.yml
+  name: createNsxT1Gateway.yml
   gather_facts: false
   vars:
-    LOCAL_T0Gateways_File: "{{ Target.VarsFolder }}/vars_NSXT_T0Gateways"
+    LOCAL_T1Gateways_File: "{{ Target.VarsFolder }}/vars_NSXT_T1Gateways"
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -51,7 +51,7 @@
 
              Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
 
-                 Nested_NSXT.Networking.Tier0Gateways: {{ Nested_NSXT.Networking.Tier0Gateways }}
+                 Nested_NSXT.Networking.Tier1Gateways: {{ Nested_NSXT.Networking.Tier1Gateways }}
 
           =================================================================================================
       when:
@@ -63,53 +63,55 @@
         state: directory
       when: Deploy.NSXT.LocalManager == true
 
-    - name: Create file with T0 Gateways data structure
+    - name: Create file with T1 Gateways data structure
       template:
-        src:  "{{ Target.TemplateFolder }}/vars_NSXT_T0Gateways.j2"
-        dest: "{{ LOCAL_T0Gateways_File }}"
+        src:  "{{ Target.TemplateFolder }}/vars_NSXT_T1Gateways.j2"
+        dest: "{{ LOCAL_T1Gateways_File }}"
         force: true
       when: Deploy.NSXT.LocalManager == true
 
-    ## Read in var_T0Gateways variable
-    - name: Read var_T0Gateways data structure from file
+    ## Read in var_T1Gateways variable
+    - name: Read var_T1Gateways data structure from file
       include_vars:
-        file: "{{ LOCAL_T0Gateways_File }}"
+        file: "{{ LOCAL_T1Gateways_File }}"
       when: Deploy.NSXT.LocalManager == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display var_T0Gateways Variable ===================================
+          ================================ Display var_T1Gateways Variable ===================================
 
-              var_T0Gateways: {{ var_T0Gateways | to_nice_yaml(indent=2) }}
+              var_T1Gateways: {{ var_T1Gateways | to_nice_yaml(indent=2) }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
         - Deploy.NSXT.LocalManager == true
-        - var_T0Gateways != ""
+        - var_T1Gateways != ""
 
-    - name: Create NSX-T Tier-0 Gateway
-      nsxt_policy_tier0:
+    - name: Create NSX-T Tier-1 Gateway
+      nsxt_policy_tier1:
         hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
         username: "{{ Nested_NSXT.Credentials.admin.Name }}"
         password: "{{ Nested_NSXT.Credentials.admin.Password }}"
         validate_certs: False
         state: present
         display_name: "{{ item.display_name }}"
-        ha_mode: "{{ item.ha_mode }}"
         failover_mode: "{{ item.failover_mode }}"
+        tier0_display_name: "{{ item.tier0_display_name }}"
+        pool_allocation: "{{ item.pool_allocation }}"
+        route_advertisement_types: "{{ item.route_advertisement_types }}"
         tags: "{{ item.tags | default(omit) }}"
         locale_services: "{{ item.locale_services }}"
       with_items:
-        - "{{ var_T0Gateways }}"
+        - "{{ var_T1Gateways }}"
       when:
         - Deploy.NSXT.LocalManager == true
 
-    - name: Delete T0Gateways data structure file
+    - name: Delete T1Gateways data structure file
       file: 
-        path: "{{ LOCAL_T0Gateways_File }}"
+        path: "{{ LOCAL_T1Gateways_File }}"
         state: absent
       when: 
         - Deploy.NSXT.LocalManager == true

@@ -1,0 +1,59 @@
+{#
+ #       Authors: Luis Chanu & Rutger Blom
+ #      Filename: templates/var_NSXT_T1Gateways.j2
+ #       Used By: This file is used by the createNsxT1Gateway.yml playbook
+ #       Purpose: This Jinja2 template file is used to create the data structure that is provided to the nsxt_policy_segments module.
+ #
+ # Documentation: Ansible module documentation can be found at: https://github.com/vmware/ansible-for-nsxt/blob/master/library/nsxt_policy_tier1.py
+ #}
+var_T1Gateways:
+{% for Gateway in Nested_NSXT.Networking.Tier1Gateways %}
+  - display_name:  "{{ Gateway.Name }}"
+    description:   "{{ Gateway.Description }}"
+    failover_mode: "{{ Gateway.FailoverMode | default(omit) }}"
+    tier0_display_name: "{{ Gateway.Tier0Gateway | default(omit) }}"
+    pool_allocation: "{{ Gateway.PoolAllocation }}"
+    route_advertisement_types:
+{% if Gateway.RouteAdvertisementTypes is defined %}
+{% for Type in Gateway.RouteAdvertisementTypes %}
+      - "{{ Type }}"
+{% endfor %}{# Type #}
+{% endif %}{# Gateway.RouteAdvertisementTypes #}
+    tags:
+{###### Make sure Tags is defined #####}
+{% if (Gateway.Tags is defined) %}
+{###### If Tags is defined, add them to the list #}
+{% for SingleTag in Gateway.Tags %}
+      - tag: "{{ SingleTag.Tag | default(None) }}"
+        scope: "{{ SingleTag.Scope | default(None) }}"
+{% endfor %}{# SingleTag #}
+{###### If not defined, add one set of "None" entries to ensure 'tags' header has a list member #####}
+{% else %}
+      - tag: ""
+        scope: ""
+{% endif %}{# Gateway.Tags is defined #}
+    locale_services:
+{% for Service in Gateway.LocaleServices %}
+      - state: present
+        display_name: "{{ Service.Name }}"
+        description: "{{ Service.Description }}"
+        tags:
+{###### Make sure Tags is defined #####}
+{% if (Service.Tags is defined) %}
+{###### If Tags is defined, add them to the list #}
+{% for SingleTag in Service.Tags %}
+          - tag: "{{ SingleTag.Tag | default(None) }}"
+            scope: "{{ SingleTag.Scope | default(None) }}"
+{% endfor %}{# SingleTag #}
+{###### If not defined, add one set of "None" entries to ensure 'tags' header has a list member #####}
+{% else %}
+          - tag: ""
+            scope: ""
+{% endif %}{# Service.Tags is defined #}
+{##### Only include Edge Cluster information if one is specified #####}
+{% if Service.EdgeCluster.Name is defined and Service.EdgeCluster.Name|length %}
+        edge_cluster_info:
+          edge_cluster_display_name: "{{ Service.EdgeCluster.Name | default(omit) }}"
+{% endif %}{# Service.EdgeCluster.Name #}
+{% endfor %}{# Service #}
+{% endfor %}{# Gateway #}
