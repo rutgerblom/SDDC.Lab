@@ -74,6 +74,13 @@
         mode: "0775"
       with_dict: "{{ Software.VMware.vRNI.Installers }}"
 
+    - name: Create VMware vRLI
+      file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0775"
+      with_dict: "{{ Software.VMware.vRLI.Installers }}"
+
 
 ##
 ## VyOS
