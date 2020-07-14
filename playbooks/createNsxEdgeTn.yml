@@ -150,3 +150,24 @@
         - Deploy.NSXT.LocalManager == true
         - Deploy.NSXT.Edge == true
         - var_EdgeTransportNodes != ""
+
+    - name: Wait until the NSX-T API reports that no Edge transport nodes are in "IN_PROGRESS" state (wait max 90 minutes)
+      uri:
+        url: https://{{ Nested_NSXT.Components.LocalManager.FQDN }}/api/v1/transport-nodes/state?status=IN_PROGRESS
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credentials.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credentials.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.json.result_count == 0
+      retries: 180
+      delay: 30
+      when: 
+        - Deploy.NSXT.LocalManager == true
+        - Deploy.NSXT.Edge == true
+        - var_EdgeTransportNodes != ""
