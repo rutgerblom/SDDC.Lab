@@ -1480,12 +1480,15 @@ Nested_NSXT:
           Interfaces:
             - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01-1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
               Description: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01 Uplink 1"
+              SegmentName: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
+              Tags:
+                - Tag: "Auto-Created"
+                  Scope: "SDDC.Lab"
               EdgeNodeInfo:
                 EdgeClusterName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
                 EdgeNodeName:    "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
-              SegmentName: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
               Subnets:
                 - Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
@@ -1493,12 +1496,15 @@ Nested_NSXT:
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
             - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01-2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
               Description: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01 Uplink 2"
+              SegmentName: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
+              Tags:
+                - Tag: "Auto-Created"
+                  Scope: "SDDC.Lab"
               EdgeNodeInfo:
                 EdgeClusterName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
                 EdgeNodeName:    "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
-              SegmentName: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
               Subnets:
                 - Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
@@ -1506,12 +1512,15 @@ Nested_NSXT:
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
             - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02-1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
               Description: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02 Uplink 1"
+              SegmentName: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
+              Tags:
+                - Tag: "Auto-Created"
+                  Scope: "SDDC.Lab"
               EdgeNodeInfo:
                 EdgeClusterName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
                 EdgeNodeName:    "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
-              SegmentName: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
               Subnets:
                 - Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
@@ -1519,12 +1528,15 @@ Nested_NSXT:
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
             - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02-2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
               Description: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02 Uplink 2"
+              SegmentName: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
+              Tags:
+                - Tag: "Auto-Created"
+                  Scope: "SDDC.Lab"
               EdgeNodeInfo:
                 EdgeClusterName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
                 EdgeNodeName:    "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
-              SegmentName: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
               Subnets:
                 - Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.3"
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
