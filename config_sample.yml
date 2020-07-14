@@ -1397,7 +1397,7 @@ Nested_NSXT:
               - Tag: "Auto-Created"
                 Scope: "SDDC.Lab"
             EdgeCluster:
-              Name:      "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
+              Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
             RouteRedistributionConfig:
               BGP_Enabled: true
               Rules:
@@ -1542,6 +1542,33 @@ Nested_NSXT:
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
                 - Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::3"
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
+
+    Tier1Gateways:
+      - Name:           "T1-Gateway-01"
+        Description:    "Tier-1 Gateway for SDDC.Lab"
+        FailoverMode:   "NON_PREEMPTIVE"                                # Options are "NON_PREEMPTIVE" or "PREEMPTIVE"
+        Tier0Gateway:   "T0-Gateway-01"
+        PoolAllocation: "ROUTING"
+        Tags:
+          - Tag: "Auto-Created"
+            Scope: "SDDC.Lab"
+        RouteAdvertisementTypes:
+          - TIER1_CONNECTED
+        LocaleServices:
+          - Name:        "T1-Gateway-01_Locale_Services"
+            Description: "T1-Gateway-01 Locale Services Description"
+            Tags:
+              - Tag: "Auto-Created"
+                Scope: "SDDC.Lab"
+            EdgeCluster:
+              Name:
+            RouteRedistributionConfig:
+              BGP_Enabled: true
+              Rules:
+                - Name: Redistribute Connected
+                  Types:                                                  # Types include TIER0_STATIC, TIER0_CONNECTED, TIER0_EXTERNAL_INTERFACE, TIER0_LOOPBACK_INTERFACE, TIER0_SEGMENT, TIER0_ROUTER_LINK, TIER0_SERVICE_INTERFACE, TIER0_DNS_FORWARDER_IP, TIER0_IPSEC_LOCAL_IP, TIER0_NAT, TIER0_EVPN_TEP_IP, TIER1_STATIC, TIER1_NAT, TIER1_LB_VIP, TIER1_LB_SNAT, TIER1_DNS_FORWARDER_IP, TIER1_CONNECTED, TIER1_SERVICE_INTERFACE, TIER1_SEGMENT, TIER1_IPSEC_LOCAL_ENDPOINT
+                    - TIER1_CONNECTED
+                    - TIER1_SEGMENT
 
     IPPools:
       - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
