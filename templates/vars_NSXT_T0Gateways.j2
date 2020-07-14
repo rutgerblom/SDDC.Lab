@@ -115,5 +115,18 @@ var_T0Gateways:
                 prefix_len: {{ Subnet.Prefix }}
 {% endif %}{# Deploy.IPv4 or Deploy.IPv6 #}
 {% endfor %}{# Subnet #}
+            tags:
+{###### Make sure Tags is defined #####}
+{% if (Interface.Tags is defined) %}
+{###### If Tags is defined, add them to the list #}
+{% for SingleTag in Interface.Tags %}
+              - tag: "{{ SingleTag.Tag | default(None) }}"
+                scope: "{{ SingleTag.Scope | default(None) }}"
+{% endfor %}{# SingleTag #}
+{###### If not defined, add one set of "None" entries to ensure 'tags' header has a list member #####}
+{% else %}
+              - tag: ""
+                scope: ""
+{% endif %}{# Interface.Tags is defined #}
 {% endfor %}{# Interface #}
 {% endfor %}{# Gateway #}
