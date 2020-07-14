@@ -1,0 +1,116 @@
+# Luis has ownership of this playbook for v2 conversion
+---
+- hosts: localhost
+  name: createNsxT1Gateway.yml
+  gather_facts: false
+  vars:
+    LOCAL_T1Gateways_File: "{{ Target.VarsFolder }}/vars_NSXT_T1Gateways"
+  tasks:
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+             Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
+
+                 Nested_NSXT.Networking.Tier1Gateways: {{ Nested_NSXT.Networking.Tier1Gateways }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Create 'vars' directory
+      file:
+        path: "{{ Target.VarsFolder }}"
+        state: directory
+      when: Deploy.NSXT.LocalManager == true
+
+    - name: Create file with T1 Gateways data structure
+      template:
+        src:  "{{ Target.TemplateFolder }}/vars_NSXT_T1Gateways.j2"
+        dest: "{{ LOCAL_T1Gateways_File }}"
+        force: true
+      when: Deploy.NSXT.LocalManager == true
+
+    ## Read in var_T1Gateways variable
+    - name: Read var_T1Gateways data structure from file
+      include_vars:
+        file: "{{ LOCAL_T1Gateways_File }}"
+      when: Deploy.NSXT.LocalManager == true
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display var_T1Gateways Variable ===================================
+
+              var_T1Gateways: {{ var_T1Gateways | to_nice_yaml(indent=2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.NSXT.LocalManager == true
+        - var_T1Gateways != ""
+
+    - name: Create NSX-T Tier-0 Gateway
+      nsxt_policy_tier1:
+        hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
+        username: "{{ Nested_NSXT.Credentials.admin.Name }}"
+        password: "{{ Nested_NSXT.Credentials.admin.Password }}"
+        validate_certs: False
+        state: present
+        display_name: "{{ item.display_name }}"
+        ha_mode: "{{ item.ha_mode }}"
+        failover_mode: "{{ item.failover_mode }}"
+        tags: "{{ item.tags | default(omit) }}"
+        locale_services: "{{ item.locale_services }}"
+      with_items:
+        - "{{ var_T1Gateways }}"
+      when:
+        - Deploy.NSXT.LocalManager == true
+
+    - name: Delete T1Segments data structure file
+      file: 
+        path: "{{ LOCAL_T1Gateways_File }}"
+        state: absent
+      when: 
+        - Deploy.NSXT.LocalManager == true
+        - DEBUG.KeepConfigFiles != true
