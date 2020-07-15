@@ -46,9 +46,13 @@ var_Segments:
 {% endif %}{# Type==VLAN #}
 {###### Only include Subnets for Overlay-backed segments #####}
 {% if Nested_NSXT.System.Fabric.TransportZone[Segment.TransportZone].Type == "OVERLAY" %}
+{% if (Segment.Subnets is defined) and (Segment.Subnets|length) > 0 %}
     subnets:
 {% for Subnet in Segment.Subnets %}
+{% if ((Deploy.IPv4 and Subnet.GatewayCIDR | ipv4) or (Deploy.IPv6 and Subnet.GatewayCIDR | ipv6)) %}
       - gateway_address: "{{ Subnet.GatewayCIDR }}"
+{% endif %}{# Deploy.IPv4 or Deploy.IPv6 #}
 {% endfor %}{# Subnet #}
+{% endif %}{# Segment.Subnets is defined #}
 {% endif %}{# OVERLAY #}
 {% endfor %}{# Segment #}
