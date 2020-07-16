@@ -220,9 +220,151 @@
 
 
 
+##
+## Add Nested_vRLI
+##
+    - name: DEBUG -- Display IPv4 'A' record for Nested_vRLI
+      pause:
+        seconds: 1
+        prompt: |
+          ======================== Display Nested_vRLI DNS IPv4 "A" Record =============================
+
+                                        Deploy.UseDNS: {{ Deploy.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ Nested_vRLI.VMName }}
+                                                Value: {{ Nested_vRLI.Address.IPv4.Address }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.UseDNS == true
+        - Deploy.IPv4 == true
+
+    - name: Delete IPv4 'A' records for Nested_vRLI
+      nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     "A"
+        protocol: "udp"
+        zone:     "{{ Common.DNS.Domain }}"
+        record:   "{{ Nested_vRLI.VMName }}"
+        value:    "{{ Nested_vRLI.Address.IPv4.Address }}"
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.UseDNS == true
+        - Deploy.IPv4 == true
 
 
 
+
+    - name: DEBUG -- Display IPv4 'PTR' record for Nested_vRLI
+      pause:
+        seconds: 1
+        prompt: |
+          ======================== Display Nested_vRLI DNS IPv4 "PTR" Record ===========================
+
+                                        Deploy.UseDNS: {{ Deploy.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                               Record: {{ Nested_vRLI.Address.IPv4.Address | ipaddr('revdns') }}
+                                                Value: {{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.UseDNS == true
+        - Deploy.IPv4 == true
+
+    - name: Delete IPv4 'PTR' records for Nested_vRLI
+      nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     "PTR"
+        protocol: "udp"
+        record:   "{{ Nested_vRLI.Address.IPv4.Address | ipaddr('revdns') }}"
+        value:    "{{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}."
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.UseDNS == true
+        - Deploy.IPv4 == true
+
+
+
+
+    - name: DEBUG -- Display IPv6 'AAAA' record for Nested_vRLI
+      pause:
+        seconds: 1
+        prompt: |
+          ======================= Display Nested_vRLI DNS IPv6 "AAAA" Record ===========================
+
+                                        Deploy.UseDNS: {{ Deploy.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ Nested_vRLI.VMName }}
+                                                Value: {{ Nested_vRLI.Address.IPv6.Address }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.UseDNS == true
+        - Deploy.IPv6 == true
+
+    - name: Delete IPv6 'AAAA' records for Nested_vRLI
+      nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv6 }}"
+        type:     "AAAA"
+        protocol: "udp"
+        zone:     "{{ Common.DNS.Domain }}"
+        record:   "{{ Nested_vRLI.VMName }}"
+        value:    "{{ Nested_vRLI.Address.IPv6.Address }}"
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.UseDNS == true
+        - Deploy.IPv6 == true
+
+
+
+
+
+    - name: DEBUG -- Display IPv6 'PTR' record for Nested_vRLI
+      pause:
+        seconds: 1
+        prompt: |
+          ======================== Display Nested_vRLI DNS IPv6 "PTR" Record ===========================
+
+                                        Deploy.UseDNS: {{ Deploy.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                               Record: {{ Nested_vRLI.Address.IPv6.Address | ipaddr('revdns') }}
+                                                Value: {{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.UseDNS == true
+        - Deploy.IPv6 == true
+
+
+    - name: Delete IPv6 'PTR' records for Nested_vRLI
+      nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv6 }}"
+        type:     "PTR"
+        protocol: "udp"
+        record:   "{{ Nested_vRLI.Address.IPv6.Address | ipaddr('revdns') }}"
+        value:    "{{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}."
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.UseDNS == true
+        - Deploy.IPv6 == true
 
 ##
 ## Remove Nested_ESXi Hosts
