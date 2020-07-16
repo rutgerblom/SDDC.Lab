@@ -81,6 +81,17 @@
         state: absent
       ignore_errors: true
 
+    - name: Remove vRLI VM
+      vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_vRLI.VMName }}"
+        force: true
+        state: absent
+      ignore_errors: true
+
     - name: Remove ESXi VMs
       vmware_guest:
         hostname: "{{ Target.FQDN }}"
