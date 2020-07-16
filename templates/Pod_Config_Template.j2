@@ -48,6 +48,7 @@ Deploy:
   UseNFS: {{ Deploy.UseNFS }}
   UseDNS: {{ Deploy.UseDNS }}
   EnableSSH: {{ Deploy.EnableSSH }}
+  vRLI: {{ Deploy.vRLI }}
   Software:
     Options:
       UseLocalInstaller: {{ Deploy.Software.Options.UseLocalInstaller }}
@@ -95,6 +96,15 @@ Deploy:
       Directory: "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version]['Location'].Local }}"
       File:      "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
       URL:       "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version]['Location'].URL }}"
+    vRLI:
+      Vendor:    "{{ Deploy.Software.vRLI.Vendor }}"
+      Product:   "{{ Deploy.Software.vRLI.Product }}"
+      Version:   "{{ Deploy.Software.vRLI.Version }}"
+      Patch:     {{ Deploy.Software.vRLI.Patch }}
+      Config:    "{{ Deploy.Software.vRLI.Config }}"
+      Installer: "{{ Deploy.Software.vRLI.Installer }}"
+      Directory: "{{ Software[Deploy.Software.vRLI.Vendor][Deploy.Software.vRLI.Product]['Installers'][Deploy.Software.vRLI.Version]['Location'].Local }}"
+      File:      "{{ Software[Deploy.Software.vRLI.Vendor][Deploy.Software.vRLI.Product]['Installers'][Deploy.Software.vRLI.Version].File }}"
 
 
 
@@ -112,6 +122,10 @@ Net:
 
 Nested_Router:
   {{ Nested_Router | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+
+Nested_vRLI:
+  {{ Nested_vRLI | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
 
 Nested_Clusters:

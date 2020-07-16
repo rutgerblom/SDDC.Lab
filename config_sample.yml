@@ -26,6 +26,7 @@ Deploy:
   UseNFS: false
   UseDNS: true
   EnableSSH: true
+  vRLI: true                                                          ## *TBD* - vRLI will not be deployed regardless of this setting. Need to investigate OVF properties.
   Software:
     Options:
       UseLocalInstaller: true
@@ -58,6 +59,13 @@ Deploy:
       Patch:   false
       Config:  "Pod-{{ '%03d'|format(Pod.Number|int) }}-Router.conf"
       Installer: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Installer-Router"
+    vRLI:
+      Vendor:  VMware
+      Product: vRLI
+      Version: '8.1.1'
+      Patch:   false
+      Config:  "Pod-{{ '%03d'|format(Pod.Number|int) }}-vRLI.conf"
+      Installer: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Installer-vRLI"
 
 
 ##
@@ -446,6 +454,22 @@ Nested_Router:
       IPv6:
         Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::3"       # *TBD* -- This needs to be updated to reference the NSX Edge Gateway objects directly
         Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
+
+
+Nested_vRLI:
+  VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vRLI"
+  FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-vRLI.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.6{% endif %}"
+  Deployment:
+    Size: small
+    AllowRootSSH: "{{ Deploy.EnableSSH }}"
+  Address:
+    IPv4:
+      Address: "{{ Net.Management.IPv4.Network }}.6"
+      Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+      Gateway: "{{ Net.Management.IPv4.Network }}.1"
+    IPv6:
+      Address: "{{ Net.Management.IPv6.Network }}::6"
+      Prefix:  "{{ Net.Management.IPv6.Prefix }}"
 
 
 Nested_Clusters:
