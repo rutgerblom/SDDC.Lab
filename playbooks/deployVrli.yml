@@ -123,10 +123,10 @@
           vami.ip0.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Address.IPv4.Address }}"
           vami.netmask0.VMware_vCenter_Log_Insight: "{{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) | ipaddr('netmask') }}"
           vami.searchpath.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
-          vm.name: "VMware_vCenter_Log_Insight"
+          vm.name: "{{ Nested_vRLI.VMName }}"
       when:
         - Deploy.vRLI == true
         - vrli_check.status != 200
-      async: 7200
+      async: 1800
       poll: 0
-      register: deployment
+      register: vrli_deployment
