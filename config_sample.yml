@@ -459,6 +459,10 @@ Nested_Router:
 Nested_vRLI:
   VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vRLI"
   FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-vRLI.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.6{% endif %}"
+  Credentials:
+    root:
+      Name: root
+      Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
   Deployment:
     Size: small
     AllowRootSSH: "{{ Deploy.EnableSSH }}"
