@@ -1,0 +1,132 @@
+---
+- hosts: localhost
+  name: deployVrli.yml
+  gather_facts: false
+  tasks:
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+
+                                         vRLI Version: {{ Deploy.Software.vRLI.Version }}
+                                            vRLI FQDN: {{ Nested_vRLI.FQDN }}
+                                          vRLI VMName: {{ Nested_vRLI.VMName }}
+
+
+                                                OVF Variables
+                                                =============
+
+                                            vRLI Size: {{ Nested_vRLI.Deployment.Size }}
+                                    Network PortGroup: {{ Target.PortGroup.Management.Name }}
+
+                                 Network IPv4 Address: {{ Nested_vRLI.Address.IPv4.Address }}
+                                      Network Netmask: {{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) | ipaddr('netmask') }}
+                                      Network Gateway: {{ Nested_vRLI.Address.IPv4.Gateway }}
+                                            vRLI FQDN: {{ Nested_vRLI.FQDN }}
+
+                                   Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                   Network DNS Domain: {{ Common.DNS.Domain }}
+
+                                     vRLI Media Path: {{ Deploy.Software.vRLI.Directory }}
+                                     vRLI Media File: {{ Deploy.Software.vRLI.File }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Check if vRLI is already installed
+      uri:
+        url: https://{{ Nested_vRLI.FQDN }}
+        validate_certs: false
+        timeout: 5
+      register: vrli_check
+      ignore_errors: true
+      failed_when: false
+      no_log: true
+      when: Deploy.vRLI == true
+
+    - name: Deploy vRLI
+      vmware_deploy_ovf:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: false
+        datastore: "{{ Target.Datastore }}"
+        allow_duplicates: false
+        folder: "{{ Target.VMFolder }}"
+        datacenter: "{{ Target.DataCenter }}"
+        cluster: "{{ Target.Cluster }}"
+        name: "{{ Nested_vRLI.VMName }}"
+        ovf: "{{ Deploy.Software.vRLI.Directory }}/{{ Deploy.Software.vRLI.File }}"
+        deployment_option: "{{ Nested_vRLI.Deployment.Size }}"
+        networks:
+          "Network 1": "{{ Target.PortGroup.Management.Name }}"
+        disk_provisioning: "{{ Common.DiskProvisioning }}"
+        power_on: true
+        fail_on_spec_warnings: true
+        wait_for_ip_address: true
+        inject_ovf_env: true
+        properties:
+          hostname: "{{ Nested_vRLI.FQDN }}"
+          preferipv6: "False"
+          rootpw: "{{ Common.Password.Nested }}"
+          vami.DNS.VMware_vCenter_Log_Insight: "{{ Common.DNS.Server1.IPv4 }}"
+          vami.domain.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
+          vami.gateway.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Address.IPv4.Gateway }}"
+          vami.ip0.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Address.IPv4.Address }}"
+          vami.netmask0.VMware_vCenter_Log_Insight: "{{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) | ipaddr('netmask') }}"
+          vami.searchpath.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
+          vm.name: "VMware_vCenter_Log_Insight"
+      when:
+        - Deploy.vRLI == true
+        - vrli_check.status != 200
+      async: 7200
+      poll: 0
+      register: deployment
