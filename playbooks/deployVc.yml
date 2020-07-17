@@ -67,7 +67,11 @@
 
                                         Host Template: {{ Deploy.Software.vCenter.Template.ESXi }}
                                      vCenter Template: {{ Deploy.Software.vCenter.Template.vCenter }}
+                          Host Template (Replication): {{ Deploy.Software.vCenter.Template.Repl_ESXi }}
+                       vCenter Template (Replication): {{ Deploy.Software.vCenter.Template.Repl_vCenter }}
                                 Installation Template: {{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}
+
+                          vCenter Replication Partner: {{ Nested_vCenter.SSO.ReplicationPartner }}
 
           =================================================================================================
       when:
@@ -88,21 +92,41 @@
       failed_when: false
       no_log: True
 
-    - name: Create vCenter with embedded PSC installtion template (Target=Host)
+    - name: Create vCenter with embedded PSC installtion template (Target=Host) - No Replication Partner
       template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.ESXi }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
       when:
         - vcenter_check.status != 200
         - Target.Deployment == "Host"
+        - Nested_vCenter.SSO.ReplicationPartner == ""
 
-    - name: Create vCenter with embedded PSC installtion template (Target=vCenter)
+    - name: Create vCenter with embedded PSC installtion template (Target=vCenter) - No Replication Partner
       template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.vCenter }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
       when:
         - vcenter_check.status != 200
         - Target.Deployment == "vCenter"
+        - Nested_vCenter.SSO.ReplicationPartner == ""
+
+    - name: Create vCenter with embedded PSC installtion template (Target=Host) - With Replication Partner
+      template: 
+        src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.Repl_ESXi }}"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
+      when:
+        - vcenter_check.status != 200
+        - Target.Deployment == "Host"
+        - Nested_vCenter.SSO.ReplicationPartner != ""
+
+    - name: Create vCenter with embedded PSC installtion template (Target=vCenter) - With Replication Partner
+      template: 
+        src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.Repl_vCenter }}"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
+      when:
+        - vcenter_check.status != 200
+        - Target.Deployment == "vCenter"
+        - Nested_vCenter.SSO.ReplicationPartner != ""
 
     - name: Mount vCenter ISO
       action: mount name='{{ Target.ISOMount }}/VCSA' src="{{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }}" opts=loop fstype=iso9660 state=mounted
