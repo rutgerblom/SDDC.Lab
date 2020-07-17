@@ -61,7 +61,7 @@
       when:
         - DEBUG.DisplayVariables == true
 
-    - name: Deploy nested ESXi hosts on vCenter
+    - name: Deploy nested ESXi hosts
       vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -107,55 +107,6 @@
       async: 1800
       poll: 0
       when:
-        - Target.Deployment == "vCenter"
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
-
-    - name: Deploy nested ESXi hosts directly onto the ESXi Host
-      vmware_guest:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: false
-        name: "{{ item.value.VMName }}"
-        state: poweredon
-        guest_id: vmkernel65Guest
-        esxi_hostname: "{{ Target.FQDN }}"
-        folder: "{{ Target.VMFolder }}"
-        disk:
-        - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['BootDiskSize'] }}"
-          type: "{{ Common.DiskProvisioning }}"
-          datastore: "{{ Target.Datastore }}"
-        - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['vSAN']['CapacitySize'] }}"
-          type: "{{ Common.DiskProvisioning }}"
-          datastore: "{{ Target.Datastore }}"
-        - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['vSAN']['CacheSize'] }}"
-          type: "{{ Common.DiskProvisioning }}"
-          datastore: "{{ Target.Datastore }}"
-        hardware:
-          nested_virt: true
-          memory_mb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['Memory'] }}"
-          num_cpus: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['CPU'] }}"
-          num_cpu_cores_per_socket: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['CoresPerSocket'] }}"
-          scsi: paravirtual
-        networks:
-          - name: "{{ Target.PortGroup.Trunk.Name }}"
-            device_type: vmxnet3
-          - name: "{{ Target.PortGroup.Trunk.Name }}"
-            device_type: vmxnet3
-          - name: "{{ Target.PortGroup.Trunk.Name }}"
-            device_type: vmxnet3
-          - name: "{{ Target.PortGroup.Trunk.Name }}"
-            device_type: vmxnet3
-          - name: "{{ Target.PortGroup.Trunk.Name }}"
-            device_type: vmxnet3
-        cdrom:
-          type: "iso"
-          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      async: 1800
-      poll: 0
-      when:
-        - Target.Deployment == "Host"
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
     - name: Check if the nested ESXi hosts are ready (wait max 15 minutes)
