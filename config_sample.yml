@@ -26,7 +26,7 @@ Deploy:
   UseNFS: false
   UseDNS: true
   EnableSSH: true
-  vRLI: true                                                          ## *TBD* - vRLI will not be deployed regardless of this setting. Need to investigate OVF properties.
+  vRLI: true                                                          ## *TBD* - vRLI will not be deployed regardless of this setting. Need to investigate OVF properties. //RB
   Software:
     Options:
       UseLocalInstaller: true
@@ -1207,7 +1207,7 @@ Nested_vCenter:
   SSO:
     Domain: vsphere.local
     Site: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Site"
-    ReplicationPartner: ''
+    ReplicationPartner: ""                                                                 # If replication partner hostname is provided, the Replication template will be used to configure vCenter.  Else, field should be left as an empty string ("").
   DataCenter: "Pod-{{ '%03d'|format(Pod.Number|int) }}-DataCenter"
   Networking:
     vSwitch:

@@ -61,6 +61,8 @@ Deploy:
       Config:    "{{ Deploy.Software.vCenter.Config }}"
       Installer: "{{ Deploy.Software.vCenter.Installer }}"
       Template:
+        Repl_vCenter: "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Template'].Repl_vCenter }}"
+        Repl_ESXi:    "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Template'].Repl_ESXi }}"
         vCenter: "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Template'].vCenter }}"
         ESXi:    "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Template'].ESXi }}"
       Directory: "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Location'].Local }}"
