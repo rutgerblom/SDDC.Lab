@@ -1,56 +1,111 @@
 interfaces {
     ethernet eth0 {
+{% if Deploy.IPv4 %}
         address {{ Nested_Router.Interface.Uplink.IPv4.Address }}/{{ Nested_Router.Interface.Uplink.IPv4.Prefix }}
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
+        address {{ Nested_Router.Interface.Uplink.IPv6.Address }}/{{ Nested_Router.Interface.Uplink.IPv6.Prefix }}
+{% endif %}{# Deploy.IPv6 #}
     }
     ethernet eth1 {
         mtu 9000
         vif {{ Nested_Router.Interface.Management.VLAN }} {
+{% if Deploy.IPv4 %}
             address {{ Nested_Router.Interface.Management.IPv4.Address }}/{{ Nested_Router.Interface.Management.IPv4.Prefix }}
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
+            address {{ Nested_Router.Interface.Management.IPv6.Address }}/{{ Nested_Router.Interface.Management.IPv6.Prefix }}
+{% endif %}{# Deploy.IPv6 #}
             description Management
             mtu 1500
         }
         vif {{ Nested_Router.Interface.vMotion.VLAN }} {
+{% if Deploy.IPv4 %}
             address {{ Nested_Router.Interface.vMotion.IPv4.Address }}/{{ Nested_Router.Interface.vMotion.IPv4.Prefix }}
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
+            address {{ Nested_Router.Interface.vMotion.IPv6.Address }}/{{ Nested_Router.Interface.vMotion.IPv6.Prefix }}
+{% endif %}{# Deploy.IPv6 #}
             description vMotion
             mtu 9000
         }
         vif {{ Nested_Router.Interface.vSAN.VLAN }} {
+{% if Deploy.IPv4 %}
             address {{ Nested_Router.Interface.vSAN.IPv4.Address }}/{{ Nested_Router.Interface.vSAN.IPv4.Prefix }}
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
+            address {{ Nested_Router.Interface.vSAN.IPv6.Address }}/{{ Nested_Router.Interface.vSAN.IPv6.Prefix }}
+{% endif %}{# Deploy.IPv6 #}
             description vSAN
             mtu 9000
         }
         vif {{ Nested_Router.Interface.IPStorage.VLAN }} {
+{% if Deploy.IPv4 %}
             address {{ Nested_Router.Interface.IPStorage.IPv4.Address }}/{{ Nested_Router.Interface.IPStorage.IPv4.Prefix }}
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
+            address {{ Nested_Router.Interface.IPStorage.IPv6.Address }}/{{ Nested_Router.Interface.IPStorage.IPv6.Prefix }}
+{% endif %}{# Deploy.IPv6 #}
             description "IP Storage"
             mtu 9000
         }
         vif {{ Nested_Router.Interface.Transport.VLAN }} {
+{% if Deploy.IPv4 %}
             address {{ Nested_Router.Interface.Transport.IPv4.Address }}/{{ Nested_Router.Interface.Transport.IPv4.Prefix }}
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
+            address {{ Nested_Router.Interface.Transport.IPv6.Address }}/{{ Nested_Router.Interface.Transport.IPv6.Prefix }}
+{% endif %}{# Deploy.IPv6 #}
             description "Overlay Transport"
             mtu 9000
         }
         vif {{ Nested_Router.Interface.ServiceVM.VLAN }} {
+{% if Deploy.IPv4 %}
             address {{ Nested_Router.Interface.ServiceVM.IPv4.Address }}/{{ Nested_Router.Interface.ServiceVM.IPv4.Prefix }}
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
+            address {{ Nested_Router.Interface.ServiceVM.IPv6.Address }}/{{ Nested_Router.Interface.ServiceVM.IPv6.Prefix }}
+{% endif %}{# Deploy.IPv6 #}
             description "Service VM Management"
             mtu 1500
         }
         vif {{ Nested_Router.Interface.NSXEdgeUplink1.VLAN }} {
+{% if Deploy.IPv4 %}
             address {{ Nested_Router.Interface.NSXEdgeUplink1.IPv4.Address }}/{{ Nested_Router.Interface.NSXEdgeUplink1.IPv4.Prefix }}
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
+            address {{ Nested_Router.Interface.NSXEdgeUplink1.IPv6.Address }}/{{ Nested_Router.Interface.NSXEdgeUplink1.IPv6.Prefix }}
+{% endif %}{# Deploy.IPv6 #}
             description "NSX Edge Uplink #1"
             mtu 1500
         }
         vif {{ Nested_Router.Interface.NSXEdgeUplink2.VLAN }} {
+{% if Deploy.IPv4 %}
             address {{ Nested_Router.Interface.NSXEdgeUplink2.IPv4.Address }}/{{ Nested_Router.Interface.NSXEdgeUplink2.IPv4.Prefix }}
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
+            address {{ Nested_Router.Interface.NSXEdgeUplink2.IPv6.Address }}/{{ Nested_Router.Interface.NSXEdgeUplink2.IPv6.Prefix }}
+{% endif %}{# Deploy.IPv6 #}
             description "NSX Edge Uplink #2"
             mtu 1500
         }
         vif {{ Nested_Router.Interface.RTEP.VLAN }} {
+{% if Deploy.IPv4 %}
             address {{ Nested_Router.Interface.RTEP.IPv4.Address }}/{{ Nested_Router.Interface.RTEP.IPv4.Prefix }}
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
+            address {{ Nested_Router.Interface.RTEP.IPv6.Address }}/{{ Nested_Router.Interface.RTEP.IPv6.Prefix }}
+{% endif %}{# Deploy.IPv6 #}
             description "RTEP Transport"
             mtu 1500
         }
         vif {{ Nested_Router.Interface.VMNetwork.VLAN }} {
+{% if Deploy.IPv4 %}
             address {{ Nested_Router.Interface.VMNetwork.IPv4.Address }}/{{ Nested_Router.Interface.VMNetwork.IPv4.Prefix }}
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
+            address {{ Nested_Router.Interface.VMNetwork.IPv6.Address }}/{{ Nested_Router.Interface.VMNetwork.IPv6.Prefix }}
+{% endif %}{# Deploy.IPv6 #}
             description "VM Network"
             mtu 1500
         }
@@ -85,11 +140,12 @@ nat {
 protocols {
     bgp {{ Nested_Router.BGP.ASN }} {
 {% for Neighbor in Nested_Router.BGP.Neighbors %}
+{% if Deploy.IPv4 %}
         neighbor {{ Neighbor.IPv4.Address }} {
 {% if Deploy.Software.Router.Version == "Legacy" %}
             default-originate {
             }
-{% endif %}
+{% endif %}{# Legacy #}
 {% if Deploy.Software.Router.Version == "Latest" %}
             address-family {
                 ipv4-unicast {
@@ -97,16 +153,36 @@ protocols {
                     }
                 }
             }
-{% endif %}
+{% endif %}{# Latest #}
             description {{ Neighbor.Name }}
             remote-as {{ Neighbor.ASN }}
         }
-{% endfor %}
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
+        neighbor {{ Neighbor.IPv6.Address }} {
+{% if Deploy.Software.Router.Version == "Legacy" %}
+            default-originate {
+            }
+{% endif %}{# Legacy #}
+{% if Deploy.Software.Router.Version == "Latest" %}
+            address-family {
+                ipv6-unicast {
+                    default-originate {
+                    }
+                }
+            }
+{% endif %}{# Latest #}
+            description {{ Neighbor.Name }}
+            remote-as {{ Neighbor.ASN }}
+        }
+{% endif %}{# Deploy.IPv6 #}
+{% endfor %}{# Neighbor #}
         parameters {
             router-id {{ Nested_Router.BGP.RouterID }}
         }
     }
 {% if Nested_Router.Protocol == "OSPF" %}
+{% if Deploy.IPv4 %}
     ospf {
         area {{ Nested_Router.OSPF.Area }} {
             network {{ "{}/{}".format(Nested_Router.Interface.Uplink.IPv4.Address, Nested_Router.Interface.Uplink.IPv4.Prefix) | ipaddr('network/prefix') }}
@@ -124,7 +200,27 @@ protocols {
             }
         }
     }
-{% endif %}
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
+    ospfv3 {
+{#### Convert OSPF Area from decimal to dot decimal notation ####}
+        area {{ (((Nested_Router.OSPF.Area / (256 | pow(3)))|int) % 256)|int }}.{{ (((Nested_Router.OSPF.Area / (256 | pow(2)))|int) % 256)|int }}.{{ (((Nested_Router.OSPF.Area / 256)|int) % 256)|int }}.{{ (Nested_Router.OSPF.Area % 256)|int }} {
+            interface eth0
+        }
+        log-adjacency-changes {
+        }
+        parameters {
+            router-id {{ Nested_Router.OSPF.RouterID }}
+        }
+        redistribute {
+            bgp {
+            }
+            connected {
+            }
+        }
+    }
+{% endif %}{# Deploy.IPv6 #}
+{% endif %}{# Nested_Router.Protocol == OSPF #}
 {% if Nested_Router.Protocol == "Static" %}
     static {
         route 0.0.0.0/0 {
@@ -132,7 +228,7 @@ protocols {
             }
         }
     }
-{% endif %}
+{% endif %}{# Nested_Router.Protocol == Static #}
 }
 service {
     dhcp-server {
