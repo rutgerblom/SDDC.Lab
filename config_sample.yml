@@ -536,7 +536,7 @@ Nested_ESXi:
   Hosts:
     ESXi21:
       Cluster: Management
-      FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-11.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.21{% endif %}"
+      FQDN: "{% if Deploy.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-21.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.21{% endif %}"
       VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-21"
       User: root
       Password: "{{ Common.Password.Nested }}"
@@ -1907,7 +1907,7 @@ Nested_NSXT:
                 - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Name }}"
                 - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Name }}"
               ManagementPortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
-              ManagementIPAddress: "{{ Net.Management.IPv4.Network }}.18"
+              ManagementIPAddress: "{{ Net.Management.IPv4.Network }}.254"
               ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
               Hostname: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01.{{ Common.DNS.Domain }}" 
@@ -1944,7 +1944,7 @@ Nested_NSXT:
                 - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Name }}"
                 - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Name }}"
               ManagementPortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
-              ManagementIPAddress: "{{ Net.Management.IPv4.Network }}.19"
+              ManagementIPAddress: "{{ Net.Management.IPv4.Network }}.253"
               ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
               Hostname: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02.{{ Common.DNS.Domain }}" 
