@@ -1,57 +1,19 @@
-## Luis has ownership of this file for the v2 migration ##
 ---
 - hosts: localhost
   gather_facts: false
-  vars:
-    NewLine: "\n"
-  vars_files:
-    - ../software.yml
-    - ../licenses.yml
-    - ../config.yml
-#    - ../answerfile.yml
   tasks:
-    - name: DEBUG -- Display Target Variables (Pause)
-      pause:
-        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
-        prompt: |
-          =================================== DEBUG: Display Variables ====================================
-
-                                     Ansible Playbook: deployRouter.yml
-
-                                    Target.Deployment: {{ Target.Deployment }}
-
-                                          Target.FQDN: {{ Target.FQDN }}
-                                          Target.User: {{ Target.User }}
-                                      Target.Password: {{ Target.Password }}
-                                       Target.vSwitch: {{ Target.vSwitch }}
-                                       Target.Cluster: {{ Target.Cluster }}
-                                    Target.DataCenter: {{ Target.DataCenter }}
-                                     Target.Datastore: {{ Target.Datastore }}
-                                      Target.VMFolder: {{ Target.VMFolder }}
-                                     Target.ISOFolder: {{ Target.ISOFolder }}
-                                    Target.TempFolder: {{ Target.TempFolder }}
-
-                          Target.PortGroup.Trunk.Name: {{ Target.PortGroup.Trunk.Name }}
-                          Target.PortGroup.Trunk.VLAN: {{ Target.PortGroup.Trunk.VLAN }}
-                    Target.PortGroup.Management.Name : {{ Target.PortGroup.Management.Name }}
-                    Target.PortGroup.Management.VLAN : {{ Target.PortGroup.Management.VLAN }}
-
-                       Deploy.Software.Router.Version: {{ Deploy.Software.Router.Version }}
-
-            Deploy.Software.Options.UseLocalInstaller: {{ Deploy.Software.Options.UseLocalInstaller }}
-            Deploy.Software.Options.KeepNewInstallers: {{ Deploy.Software.Options.KeepNewInstallers }}
-
-          =================================================================================================
-      when:
-        - DEBUG.DisplayVariables == true
-
-    - name: Create temp directory
+    - name: Create temp directory in case it doesn't already exist
       file:
         path: "{{ Target.TempFolder }}"
         state: directory
 
-    - name: Create template file for the VyOS router
+    - name: Delete the temporary template file for VyOS router
+      file: 
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
+        state: absent
+
+    - name: Create configuration template file for VyOS router
       template: 
-        src: "../templates/{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Template }}"
+        src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
 
