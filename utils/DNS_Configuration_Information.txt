@@ -28,6 +28,7 @@ NOTE: By design, the local DNS server is NOT updated to point to itself for DNS 
 //
 acl lab-networks {
   10.203.0.0/16;
+  fd00::/48;
   10.0.0.0/8;			// Should include Ansible Control Station
   localhost;
   localnets;
@@ -78,6 +79,14 @@ zone "203.10.in-addr.arpa" {
   allow-update {10.0.0.0/8;};           // Needs to be the IP address of the Ansible control station
   allow-transfer {10.0.0.0/8;};         // Should be the address of the Ansible control station -- Used just for testing
   file "/var/lib/bind/db.10.203";
+};
+
+zone "0.0.d.f.ipv6.arpa" {
+  type master;
+  allow-update {10.0.0.0/8;};           // Needs to be the IP address of the Ansible control station
+  allow-transfer {10.0.0.0/8;};         // Should be the address of the Ansible control station -- Used just for testing
+  file "/var/lib/bind/db.fd00";
+  notify yes;
 };
 
 
@@ -141,6 +150,28 @@ $ORIGIN 203.10.in-addr.arpa.
 
 ; PTR records
 5.0    IN   PTR  dns.sddc.lab.
+
+
+================================= NEXT FILE ============================================
+
+
+;;
+;; File: /var/lib/bind/db.fd00
+;;
+
+$ORIGIN .
+$TTL 604800     ; 1 week
+0.0.d.f.ipv6.arpa      IN SOA  dns.sddc.lab. admin.sddc.lab. (
+                                361        ; serial
+                                604800     ; refresh (1 week)
+                                86400      ; retry (1 day)
+                                2419200    ; expire (4 weeks)
+                                604800     ; minimum (1 week)
+                                )
+0.0.d.f.ipv6.arpa.     IN NS    dns.sddc.lab.
+$ORIGIN 0.0.d.f.ipv6.arpa.
+$TTL 604800     ; 1 week
+dns.sddc.lab.           A       10.203.0.5
 
 
 ================================= NEXT FILE ============================================
