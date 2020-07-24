@@ -31,7 +31,7 @@ This repository contains Ansible code that performs automated deployments of com
 * The physical standalone ESXi host hostname must be resolvable by DNS.
 * An Ubuntu 18.04/20.04 VM with the following software:
   * sudo apt install python3 python3-pip xorriso
-  * pip3 install ansible pyvim pyvmomi netaddr jmespath
+  * pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython
   * git clone https://github.com/rutgerblom/SDDC.Lab.git (git checkout dev-v2)
   * ESXi and vCenter ISO files as well as the NSX-T Manager OVA file.
 * For deploying NSX-T you need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval)).
