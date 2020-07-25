@@ -74,8 +74,12 @@
                                    Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                    Network DNS Domain: {{ Common.DNS.Domain }}
 
-                                     vRLI Media Path: {{ Deploy.Software.vRLI.Directory }}
-                                     vRLI Media File: {{ Deploy.Software.vRLI.File }}
+                                      vRLI Admin User: {{ Nested_vRLI.Credentials.admin.Name }}
+                                  vRLI Admin Password: {{ Nested_vRLI.Credentials.admin.Password }}
+                                   vRLI Root Password: {{ Nested_vRLI.Credentials.root.Password }}
+
+                                      vRLI Media Path: {{ Deploy.Software.vRLI.Directory }}
+                                      vRLI Media File: {{ Deploy.Software.vRLI.File }}
 
           =================================================================================================
       when:
@@ -92,7 +96,7 @@
       no_log: true
       when: Deploy.vRLI == true
 
-    - name: Deploy vRLI
+    - name: Deploy vRLI from OVA
       vmware_deploy_ovf:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -110,7 +114,6 @@
           "Network 1": "{{ Target.PortGroup.Management.Name }}"
         disk_provisioning: "{{ Common.DiskProvisioning }}"
         power_on: true
-        fail_on_spec_warnings: true
         wait_for_ip_address: true
         inject_ovf_env: true
         properties:
@@ -129,17 +132,39 @@
         - vrli_check.status != 200
       register: vrli_deployment
 
-    - name: Bootstrap vRLI via vRLI API
+    - name: Wait 3 minutes for the vRLI API to become available
+      pause: seconds=180
+      when:
+        - Deploy.vRLI == true
+        - vrli_check.status != 200
+
+    - name: Bootstrap via vRLI API
       uri:
-        url: https://{{ Nested_vRLI.FQDN }}/api/v1/deployment/new
+        url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/deployment/new
         validate_certs: no
         method: POST
+        timeout: 120
         body:
           user:
             userName: "{{ Nested_vRLI.Credentials.admin.Name }}"
             password: "{{ Nested_vRLI.Credentials.admin.Password }}"
             email: "{{ (Nested_vRLI.Credentials.admin.Name + '@' + Common.DNS.Domain) }}"
         body_format: json
+      when:
+        - Deploy.vRLI == true
+        - vrli_check.status != 200
+
+    - name: Obtain session ID from vRLI API 
+      uri:
+        url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/sessions
+        validate_certs: no
+        method: POST
+        body:
+          username: "{{ Nested_vRLI.Credentials.admin.Name }}"
+          password: "{{ Nested_vRLI.Credentials.admin.Password }}"
+          provider: "Local"
+        body_format: json
+      register: session
       when:
         - Deploy.vRLI == true
         - vrli_check.status != 200
