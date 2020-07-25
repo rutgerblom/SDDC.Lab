@@ -114,19 +114,17 @@
         wait_for_ip_address: true
         inject_ovf_env: true
         properties:
-          hostname: "{{ Nested_vRLI.FQDN }}"
+          vm.vmname: "VMware_vCenter_Log_Insight"
           preferipv6: "False"
           rootpw: "{{ Nested_vRLI.Credentials.root.Password }}"
+          hostname: "{{ Nested_vRLI.FQDN }}"
           vami.DNS.VMware_vCenter_Log_Insight: "{{ Common.DNS.Server1.IPv4 }}"
           vami.domain.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
           vami.gateway.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Address.IPv4.Gateway }}"
           vami.ip0.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Address.IPv4.Address }}"
           vami.netmask0.VMware_vCenter_Log_Insight: "{{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) | ipaddr('netmask') }}"
           vami.searchpath.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
-          vm.name: "{{ Nested_vRLI.VMName }}"
       when:
         - Deploy.vRLI == true
         - vrli_check.status != 200
-      async: 1800
-      poll: 0
       register: vrli_deployment
