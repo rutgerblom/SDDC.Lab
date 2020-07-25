@@ -128,3 +128,18 @@
         - Deploy.vRLI == true
         - vrli_check.status != 200
       register: vrli_deployment
+
+    - name: Bootstrap vRLI via vRLI API
+      uri:
+        url: https://{{ Nested_vRLI.FQDN }}/api/v1/deployment/new
+        validate_certs: no
+        method: POST
+        body:
+          user:
+            userName: "{{ Nested_vRLI.Credentials.admin.Name }}"
+            password: "{{ Nested_vRLI.Credentials.admin.Password }}"
+            email: "{{ (Nested_vRLI.Credentials.admin.Name + '@' + Common.DNS.Domain) }}"
+        body_format: json
+      when:
+        - Deploy.vRLI == true
+        - vrli_check.status != 200
