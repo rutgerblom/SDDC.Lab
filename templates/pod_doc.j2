@@ -36,61 +36,39 @@ Deploy target: {{ Target.FQDN }}</p>
   </tr>
   <tr>
     <td>vCenter</td>
-{% if Deploy.UseDNS == True %}
     <td><a href="https://{{ Nested_vCenter.FQDN }}">https://{{ Nested_vCenter.FQDN }}</a></td>
-{% else %}
-    <td><a href="https://{{ Nested_vCenter.Address.IPv4.Address }}">https://{{ Nested_vCenter.Address.IPv4.Address }}</a></td>
-{% endif %}
   </tr>
-{% if Deploy.NSXT.GlobalManager == True and Deploy.UseDNS == True %}
+{% if Deploy.NSXT.GlobalManager == True %}
   <tr>
     <td>NSX-T Global Manager</td>
     <td><a href="https://{{ Nested_NSXT.Components.GlobalManager.FQDN }}">https://{{ Nested_NSXT.Components.GlobalManager.FQDN }}</a>/</td>
   </tr>
 {% endif %}
-{% if Deploy.NSXT.GlobalManager == True and Deploy.UseDNS != True%}
-  <tr>
-    <td>NSX-T Local Manager</td>
-    <td><a href="https://{{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Address }}">https://{{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Address }}</a>/</td>
-  </tr>
-{% endif %}
-{% if Deploy.NSXT.LocalManager == True and Deploy.UseDNS == True %}
+{% if Deploy.NSXT.LocalManager == True %}
   <tr>
     <td>NSX-T Local Manager</td>
     <td><a href="https://{{ Nested_NSXT.Components.LocalManager.FQDN }}">https://{{ Nested_NSXT.Components.LocalManager.FQDN }}</a>/</td>
   </tr>
 {% endif %}
-{% if Deploy.NSXT.LocalManager == True and Deploy.UseDNS != True%}
+{% if Deploy.vRLI == True %}
   <tr>
-    <td>NSX-T Local Manager</td>
-    <td><a href="https://{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Address }}">https://{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Address }}</a>/</td>
+    <td>vRealize Log Insight</td>
+    <td><a href="https://{{ Nested_vRLI.FQDN }}">https://{{ Nested_vRLI.FQDN }}</a>/</td>
   </tr>
 {% endif %}
-{% if Deploy.NSXT.GlobalManager == True and Deploy.UseDNS == True %}
+{% if Deploy.NSXT.GlobalManager == True %}
   <tr>
     <td>NSX-T Global Manager CLI</td>
     <td><a href="ssh://{{ Nested_NSXT.Components.GlobalManager.FQDN }}">ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Components.LocalManager.FQDN }}</a>/</td>
   </tr>
 {% endif %}
-{% if Deploy.NSXT.GlobalManager == True and Deploy.UseDNS != True %}
-  <tr>
-    <td>NSX-T Global Manager CLI</td>
-    <td><a href="ssh://{{ Nested_NSXT.Components.GlobalManager.IP }}">ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Components.LocalManager.IP }}</a>/</td>
-  </tr>
-{% endif %}
-{% if Deploy.NSXT.LocalManager == True and Deploy.UseDNS == True %}
+{% if Deploy.NSXT.LocalManager == True %}
   <tr>
     <td>NSX-T Local Manager CLI</td>
     <td><a href="ssh://{{ Nested_NSXT.Components.LocalManager.FQDN }}">ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Components.LocalManager.FQDN }}</a>/</td>
   </tr>
 {% endif %}
-{% if Deploy.NSXT.LocalManager == True and Deploy.UseDNS != True %}
-  <tr>
-    <td>NSX-T Local Manager CLI</td>
-    <td><a href="ssh://{{ Nested_NSXT.Components.LocalManager.IP }}">ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Components.LocalManager.IP }}</a>/</td>
-  </tr>
-{% endif %}
-{% if Deploy.NSXT.Edge == True and Deploy.UseDNS == True %}
+{% if Deploy.NSXT.Edge == True %}
   <tr>
     <td>NSX-T Edge Transport Node 1 CLI</td>
     <td><a href="ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Vars.EdgeNodes.EdgeNode1.Host }}">ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Vars.EdgeNodes.EdgeNode1.Host }}</a>/</td>
@@ -102,19 +80,11 @@ Deploy target: {{ Target.FQDN }}</p>
 {% endif %}
   <tr>
     <td>vCenter VAMI</td>
-{% if Deploy.UseDNS == True %}
     <td><a href="https://{{ Nested_vCenter.FQDN }}:5480">https://{{ Nested_vCenter.FQDN }}:5480</a></td>
-{% else %}
-    <td><a href="https://{{ Nested_vCenter.IP }}:5480">https://{{ Nested_vCenter.IP }}:5480</a></td>
-{% endif %}
   </tr>
   <tr>
     <td>vCenter CLI</td>
-{% if Deploy.UseDNS == True %}
     <td><a href="ssh://root@{{ Nested_vCenter.FQDN }}">ssh://root@{{ Nested_vCenter.FQDN }}</a></td>
-{% else %}
-    <td><a href="ssh://root@{{ Nested_vCenter.IP }}">ssh://root@{{ Nested_vCenter.IP }}</a></td>
-{% endif %}
   </tr>
 {% if Deploy.Router == True %}
   <tr>
@@ -140,7 +110,7 @@ Deploy target: {{ Target.FQDN }}</p>
   <tr>
     <td>ESXi</td>
     <td>root</td>
-    <td>{{ Nested_vCenter.Password }}</td>
+    <td>{{ Common.Password.Nested }}</td>
   </tr>
 {% if Deploy.NSXT.LocalManager == True %}
   <tr>
@@ -157,6 +127,18 @@ Deploy target: {{ Target.FQDN }}</p>
     <td>NSX-T Root</td>
     <td>{{ Nested_NSXT.Credentials.root.Name }}</td>
     <td>{{ Nested_NSXT.Credentials.root.Password }}</td>
+  </tr>
+{% endif %}
+{% if Deploy.vRLI == True %}
+  <tr>
+    <td>vRealize Log Insight Admin</td>
+    <td>{{ Nested_vRLI.Credentials.admin.Name }}</td>
+    <td>{{ Nested_vRLI.Credentials.admin.Password }}</td>
+  </tr>
+  <tr>
+    <td>vRealize Log Insight Root</td>
+    <td>{{ Nested_vRLI.Credentials.root.Name }}</td>
+    <td>{{ Nested_vRLI.Credentials.root.Password }}</td>
   </tr>
 {% endif %}
   <tr>
