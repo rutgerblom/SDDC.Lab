@@ -1,0 +1,50 @@
+{#
+ #      Authors: Luis Chanu & Rutger Blom
+ #     Filename: templates/var_License_vSAN.j2
+ #      Used By: This file is used by the playbook addLicenses.yml
+ #      Purpose: This Jinja2 template file is used to create a list vSAN enabled clusters and the accompanying license which should be assigned to it.
+ #               This script actually tracks license socket usage, and will consume use the same license until available sockets remaining
+ #               on the license isn't sufficient.  At that point, it will use the next license, and so on.
+ #
+ #    Important: This file uses the 'do' feature of Jinja.  In order for this to function, the following lines need to be included in the
+ #               ansible.cfg file:
+ #                                   [defaults]
+ #                                   jinja2_extensions = jinja2.ext.do,jinja2.ext.i18n
+ #
+ #}
+{% set ns = namespace() %}
+{% set ns.LicenseAssignedToCluster=false %}
+{% set ns.Licenses=vSAN_Licenses %}
+{% set ns.ClusterSockets=0|int %}
+{% for ClusterName, ClusterSettings in Nested_Clusters.items() %}
+{# Reset Global flag that ensures that each Cluster only gets one license assigned to it #}
+{% set ns.LicenseAssignedToCluster=false %}
+{# Only process this cluster if it has hosts deployed and configured for vSAN (i.e. NOT configured for VMFS volumes) #}
+{% if ClusterSettings.DeployHosts == true and Nested_ESXi.HardwareSettings[ClusterName].CreateVMFS != true %}
+  - Cluster: "{{ ClusterName }}"
+{# Reset Sockets Totals Used by this cluster #}
+{% set ns.ClusterSockets=0 %}
+{# Iterate through all hosts #}
+{% for HostName, HostConfig in Nested_ESXi.Hosts.items() %}
+{# We only care about the ones that are members of this vSphere cluster #}
+{% if HostConfig.Cluster == ClusterName %}
+{# Calculate number of sockets this host needs #}
+{% set HostSockets = (Nested_ESXi.HardwareSettings[ClusterName].CPU / Nested_ESXi.HardwareSettings[ClusterName].CoresPerSocket) | int %}
+{# {% set NewQuantity = ns.ClusterSockets + HostSockets %} #}
+{% set ns.ClusterSockets = ns.ClusterSockets + HostSockets %}
+{% endif %}{# HostConfig.Cluster #}
+{% endfor %}{# Hosts #}
+    Sockets: {{ ns.ClusterSockets }}
+{% for License in ns.Licenses %}
+{# Only assign if Qty available, and if the cluster hasn't already been assigned a licnese #}
+{% if License.Quantity >= ns.ClusterSockets and ns.LicenseAssignedToCluster != true %}
+    License: "{{ License.KeyCode }}"
+{# Current Cluster has consumed a license, so flag that #}
+{% set ns.LicenseAssignedToCluster = true %}
+{# License assigned, so reduce available license count by socket number consumed by cluster #}
+{% set NewQuantity = License.Quantity - ns.ClusterSockets %}
+{% do License.update({'Quantity': NewQuantity}) %}
+{% endif %}{# License.Quantity #}
+{% endfor %}{# License #}
+{% endif %}{# ClusterSettings.DeployHosts == true #}
+{% endfor %}{# Clusters #}
