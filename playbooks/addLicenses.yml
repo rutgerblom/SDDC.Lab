@@ -98,11 +98,11 @@
 
     - name: Assign an ESXi license to each deployed ESXi host
       set_fact:
-        ESXiHostsToLicense: "{{ lookup('template', '{{ Target.TemplateFolder }}/vars_License_ESXi.j2') | from_yaml }}"
+        HostsToLicense: "{{ lookup('template', '{{ Target.TemplateFolder }}/vars_License_ESXi.j2') | from_yaml }}"
 
     - name: DEBUG - Display ESXi Hosts and assigned Licenses
       debug:
-        var: ESXiHostsToLicense
+        var: HostsToLicense
       when: DEBUG.DisplayVariables == true
 
     - name: Add ESXi Licenses to vCenter Server, and assign to ESXi host
@@ -114,23 +114,37 @@
         esxi_hostname: "{{ item.Host | lower }}"
         license: "{{ item.License }}"
         state: present
-      loop: "{{ ESXiHostsToLicense }}"
+      loop: "{{ HostsToLicense }}"
 
 
 ##
 ## License vSAN
 ##
     # Use ESXi version to match against vSAN License Version
+    - name: Create list of all applicable vSAN licenses
+      set_fact:
+        vSAN_Licenses: "{{ (vSAN_Licenses | default([])) + [ item ] }}"
+      loop: "{{ License.VMware.vSAN.Licenses }}"
+      when:
+        - Deploy.Software.ESXi.Version is match("{{ item.Version }}")
+
+    - name: Assign a vSAN license to each deployed vSAN Cluster
+      set_fact:
+        ClustersToLicense: "{{ lookup('template', '{{ Target.TemplateFolder }}/vars_License_vSAN.j2') | from_yaml }}"
+
+    - name: DEBUG - Display vSAN Clusters and assigned Licenses
+      debug:
+        var: ClustersToLicense
+      when: DEBUG.DisplayVariables == true
+
     - name: Add vSAN Licenses to vCenter Server
       vcenter_license:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: no
-        license: "{{ item.KeyCode }}"
+        cluster_name: "{{ item.Cluster }}"
+        license: "{{ item.License }}"
         state: present
-      loop: "{{ License.VMware.vSAN.Licenses }}"
-      when:
-        - Deploy.Software.ESXi.Version is match("{{ item.Version }}")
-        - False
+      loop: "{{ ClustersToLicense }}"
 
