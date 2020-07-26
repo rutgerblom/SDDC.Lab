@@ -1,0 +1,35 @@
+{#
+ #      Authors: Luis Chanu & Rutger Blom
+ #     Filename: templates/var_License_ESXi.j2
+ #      Used By: This file is used by the playbook addLicenses.yml
+ #      Purpose: This Jinja2 template file is used to create a list hosts and the accompanying license which should be assigned to it.
+ #               This script actually tracks license socket usage, and will consume use the same license until available sockets remaining
+ #               on the license isn't sufficient.  At that point, it will use the next license, and so on.
+ #
+ #    Important: This file uses the 'do' feature of Jinja.  In order for this to function, the following lines need to be included in the
+ #               ansible.cfg file:
+ #                                   [defaults]
+ #                                   jinja2_extensions = jinja2.ext.do,jinja2.ext.i18n
+ #
+ #}
+{% set ns = namespace() %}
+{% set ns.LicenseAssignedToHost=false %}
+{% set ns.Licenses=ESXi_Licenses %}
+{% for HostName, HostConfig in Nested_ESXi.Hosts.items() %}
+{# Calculate number of sockets this host needs #}
+{% set HostSockets = (Nested_ESXi.HardwareSettings[HostConfig.Cluster].CPU / Nested_ESXi.HardwareSettings[HostConfig.Cluster].CoresPerSocket) | int %}
+{# Reset Global flag that ensures that each host only gets one license assigned to it #}
+{% set ns.LicenseAssignedToHost=false %}
+{% for License in ns.Licenses %}
+{# Only assign license if Qty avaiable, Hosts for the given cluster were deployed, and Host hasn't already been assigned a licnese #}
+{% if License.Quantity >= HostSockets and Nested_Clusters[HostConfig.Cluster].DeployHosts == true and ns.LicenseAssignedToHost != true %}
+  - Host: "{{ HostConfig.FQDN }}"
+    License: "{{ License.KeyCode }}"
+{# Current Host has consumed a license, so set flag #}
+{% set ns.LicenseAssignedToHost = true %}
+{# License assigned, so reduce available license count by socket number consumed by host #}
+{% set NewQuantity = License.Quantity - HostSockets %}
+{% do License.update({'Quantity': NewQuantity}) %}
+{% endif %}{# HostSockets #}
+{% endfor %}{# Licenses #}
+{% endfor %}{# Hosts #}
