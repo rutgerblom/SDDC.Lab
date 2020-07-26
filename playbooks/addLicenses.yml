@@ -1,0 +1,136 @@
+## Luis has ownership of this file
+---
+- hosts: localhost
+  name: addLicenses.yml
+  vars_files:
+    - ../licenses.yml
+  gather_facts: false
+  tasks:
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+
+                                               vCenter Server
+                                               ==============
+                                               Vendor: {{ Deploy.Software.vCenter.Vendor }}
+                                              Product: {{ Deploy.Software.vCenter.Product }}
+                                              Version: {{ Deploy.Software.vCenter.Version }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+##
+## License vCenter Server
+##
+    - name: Add vCenter Licenses to vCenter Server
+      vcenter_license:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: no
+        license: "{{ item.KeyCode }}"
+        state: present
+      loop: "{{ License.VMware.vCenter.Licenses }}"
+      when:
+        - Deploy.Software.vCenter.Version is match("{{ item.Version }}")
+
+##
+## License ESXi Hosts
+##
+    - name: Create list of all applicable ESXi licenses
+      set_fact:
+        ESXi_Licenses: "{{ (ESXi_Licenses | default([])) + [ item ] }}"
+      loop: "{{ License.VMware.ESXi.Licenses }}"
+      when:
+        - Deploy.Software.ESXi.Version is match("{{ item.Version }}")
+
+#    - name: Create list of all deployed ESXi hosts
+#      set_fact:
+#        ESXi_Hosts: "{{ (ESXi_Hosts | default([])) + [ item.value ] }}"
+#      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+#      when:
+#        - Nested_Clusters[item.value.Cluster].DeployHosts == true
+
+    - name: Assign an ESXi license to each deployed ESXi host
+      set_fact:
+        ESXiHostsToLicense: "{{ lookup('template', '{{ Target.TemplateFolder }}/vars_License_ESXi.j2') | from_yaml }}"
+
+    - name: DEBUG - Display ESXi Hosts and assigned Licenses
+      debug:
+        var: ESXiHostsToLicense
+      when: DEBUG.DisplayVariables == true
+
+    - name: Add ESXi Licenses to vCenter Server, and assign to ESXi host
+      vcenter_license:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: no
+        esxi_hostname: "{{ item.Host | lower }}"
+        license: "{{ item.License }}"
+        state: present
+      loop: "{{ ESXiHostsToLicense }}"
+
+
+##
+## License vSAN
+##
+    # Use ESXi version to match against vSAN License Version
+    - name: Add vSAN Licenses to vCenter Server
+      vcenter_license:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: no
+        license: "{{ item.KeyCode }}"
+        state: present
+      loop: "{{ License.VMware.vSAN.Licenses }}"
+      when:
+        - Deploy.Software.ESXi.Version is match("{{ item.Version }}")
+        - False
+
