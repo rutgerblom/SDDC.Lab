@@ -139,7 +139,6 @@
       args:
         chdir: "{{ Target.ISOMount }}/VCSA/vcsa-cli-installer/lin64/"
       register: vcdeploy
-      ignore_errors: True
       when: vcenter_check.status != 200
 
     - name: Unmount vCenter ISO
