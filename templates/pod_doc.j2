@@ -69,14 +69,12 @@ Deploy target: {{ Target.FQDN }}</p>
   </tr>
 {% endif %}
 {% if Deploy.NSXT.Edge == True %}
+{% for EdgeTransportNode in Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes %}
   <tr>
-    <td>NSX-T Edge Transport Node 1 CLI</td>
-    <td><a href="ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Vars.EdgeNodes.EdgeNode1.Host }}">ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Vars.EdgeNodes.EdgeNode1.Host }}</a>/</td>
+    <td>{{ EdgeTransportNode.Name }}</td>
+    <td><a href="ssh://admin@{{ EdgeTransportNode.Name }}.{{ Common.DNS.Domain">ssh://admin@{{ EdgeTransportNode.Name }}.{{ Common.DNS.Domain</a>/</td>
   </tr>
-  <tr>
-    <td>NSX-T Edge Transport Node 2 CLI</td>
-    <td><a href="ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Vars.EdgeNodes.EdgeNode2.Host }}">ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Vars.EdgeNodes.EdgeNode2.Host }}</a>/</td>
-  </tr>
+{% endfor %}{# EdgeTransportNode #}
 {% endif %}
   <tr>
     <td>vCenter VAMI</td>
@@ -261,14 +259,12 @@ Deploy target: {{ Target.FQDN }}</p>
   </tr>
 {% endif %}
 {% if Deploy.NSXT.Edge == True %}
+{% for EdgeTransportNode in Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes %}
   <tr>
-    <td>{{ Nested_NSXT.Vars.EdgeNodes.EdgeNode1.Host }}</td>
+    <td>{{ EdgeTransportNode.Name }}</td>
     <td>TBD</td>
   </tr>
-  <tr>
-    <td>{{ Nested_NSXT.Vars.EdgeNodes.EdgeNode1.Host }}</td>
-    <td>TBD</td>
-  </tr>
+{% endfor %}{# EdgeTransportNode #}
 {% endif %}
 </table>
 
