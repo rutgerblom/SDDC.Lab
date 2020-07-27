@@ -68,14 +68,6 @@ Deploy target: {{ Target.FQDN }}</p>
     <td><a href="ssh://{{ Nested_NSXT.Components.LocalManager.FQDN }}">ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Components.LocalManager.FQDN }}</a>/</td>
   </tr>
 {% endif %}
-{% if Deploy.NSXT.Edge == True %}
-{% for EdgeTransportNode in Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes %}
-  <tr>
-    <td>{{ EdgeTransportNode.Name }}</td>
-    <td><a href="ssh://admin@{{ EdgeTransportNode.Name }}.{{ Common.DNS.Domain">ssh://admin@{{ EdgeTransportNode.Name }}.{{ Common.DNS.Domain</a>/</td>
-  </tr>
-{% endfor %}{# EdgeTransportNode #}
-{% endif %}
   <tr>
     <td>vCenter VAMI</td>
     <td><a href="https://{{ Nested_vCenter.FQDN }}:5480">https://{{ Nested_vCenter.FQDN }}:5480</a></td>
@@ -257,14 +249,6 @@ Deploy target: {{ Target.FQDN }}</p>
     <td>{{ Nested_NSXT.Components.CloudServicesManager.FQDN }}</td>
     <td>{{ Nested_NSXT.Components.CloudServicesManager.Address.IPv4.Address }}</td>
   </tr>
-{% endif %}
-{% if Deploy.NSXT.Edge == True %}
-{% for EdgeTransportNode in Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes %}
-  <tr>
-    <td>{{ EdgeTransportNode.Name }}</td>
-    <td>TBD</td>
-  </tr>
-{% endfor %}{# EdgeTransportNode #}
 {% endif %}
 </table>
 
