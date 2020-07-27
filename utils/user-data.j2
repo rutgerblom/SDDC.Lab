@@ -1,0 +1,22 @@
+#cloud-config
+autoinstall:
+  version: 1
+  locale: {{ LOCAL_UbuntuOSLocale }}
+  keyboard:
+    layout: {{ LOCAL_UbuntuOSKeyboardLayout }}
+    variant: {{ LOCAL_UbuntuOSKeyboardVariant }}
+  network:
+    network:
+      version: 2
+      ethernets:
+        ens192:
+          addresses: [{{ LOCAL_UbuntuOSIPv4Address }}]
+          gateway4: {{ LOCAL_UbuntuOSIPv4Gateway }}
+  identity:
+    hostname: {{ LOCAL_UbuntuOSHostname }}
+    username: {{ LOCAL_UbuntuOSUser }}
+    password: "$6$ryx4qBcSL3V1qKaU$UVKN5KO0gwjUqha0OQkGX8CL/Dbp3NCPo52vEvXO1/2s3NkFcvw540HPWc1g6/7UFEmYEbeRXFdttuguFsvj00" # VMware1!
+  ssh:
+    install-server: yes
+  late-commands:
+    - echo '{{ LOCAL_UbuntuOSUser }} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu # Allow user to run sudo without password

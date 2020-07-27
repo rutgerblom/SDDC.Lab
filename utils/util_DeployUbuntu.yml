@@ -1,0 +1,178 @@
+---
+- hosts: localhost
+  name: util_DeployUbuntu.yml
+  gather_facts: false
+  vars:
+    LOCAL_TempDir: "/tmp"
+    LOCAL_WorkingDir: "/tmp/ubuntu20"
+    LOCAL_UbuntuISO: "ubuntu-20.04-live-server-amd64.iso"
+    LOCAL_UbuntuISO_URL: "https://releases.ubuntu.com/20.04/ubuntu-20.04-live-server-amd64.iso"
+    LOCAL_New_UbuntuISO: "ubuntu2004.iso"
+    LOCAL_ESXiHost: "esxi03.demo.local"
+    LOCAL_ESXiUser: "root"
+    LOCAL_ESXiPassword: "VMware1!"
+    LOCAL_DataCenter: "ha-datacenter"
+    LOCAL_vSphereCluster: ""
+    LOCAL_VMFolder: "ha-datacenter/vm"
+    LOCAL_DataStore: "nested_nfs01"
+    LOCAL_DataStoreDir: "/Lab-ISO-Folder"
+    LOCAL_UbuntuVMName: "ubuntu-server"
+    LOCAL_UbuntuVMDiskSize: "50"           # gigabytes
+    LOCAL_UbuntuVMMemorySize: "2048"       # megabytes
+    LOCAL_UbuntuVMCPUs: "1"
+    LOCAL_UbuntuVMCPUCores: "1"
+    LOCAL_UbuntuVMPortGroup: "Lab-Routers"
+    LOCAL_UbuntuOSLocale: "en_US"
+    LOCAL_UbuntuOSKeyboardLayout: "en"
+    LOCAL_UbuntuOSKeyboardVariant: "us"
+    LOCAL_UbuntuOSIPv4Address: "10.203.0.50/24"
+    LOCAL_UbuntuOSIPv4Gateway: "10.203.0.1"
+    LOCAL_UbuntuOSIPv4DNS: "10.203.0.5"
+    LOCAL_UbuntuOSSearchDomain: "sddc.lab"
+    LOCAL_UbuntuOSHostname: "ubuntu-server"
+    LOCAL_UbuntuOSUser: "ubuntu"
+  tasks:
+    - name: Create working directory on Ansible Controller
+      file:
+        path: "{{ LOCAL_WorkingDir }}"
+        state: directory
+
+    - name: Check if Ubuntu ISO exists locally on Ansible Controller
+      stat:
+        path: "{{ LOCAL_TempDir }}/{{ LOCAL_UbuntuISO }}"
+      register: InstallerFileCheck
+
+    - name: Download Ubuntu ISO (if ISO file doesn't exist locally)
+      get_url:
+        url:  "{{ LOCAL_UbuntuISO_URL }}"
+        dest: "{{ LOCAL_TempDir }}/{{ LOCAL_UbuntuISO }}"
+      when:
+        - InstallerFileCheck.stat.exists != true
+        
+    - name: Mount Ubuntu ISO
+      action: mount name="{{ LOCAL_WorkingDir }}/iso" src="{{ LOCAL_TempDir }}/{{ LOCAL_UbuntuISO }}" opts=loop fstype=iso9660 state=mounted
+
+    - name: Copy Ubuntu ISO contents to working directory
+      copy: 
+        src: "{{ LOCAL_WorkingDir }}/iso/"
+        dest: "{{ LOCAL_WorkingDir }}/isocopy/"
+
+    - name: Unmount Ubuntu ISO
+      action: mount name="{{ LOCAL_WorkingDir }}/iso" src="{{ LOCAL_TempDir }}/{{ LOCAL_UbuntuISO }}" fstype=iso9660 state=absent
+
+    - name: Edit txt.cfg to modify append line 
+      replace:
+        dest: "{{ LOCAL_WorkingDir }}/isocopy/isolinux/txt.cfg"
+        regexp: 'append   initrd=/casper/initrd quiet  ---'
+        replace: 'append   initrd=/casper/initrd quiet --- autoinstall ds=nocloud;s=/cdrom/SDDC.Lab/'
+
+    - name: Create directory to store user-data and meta-data
+      file:
+        path: "{{ LOCAL_WorkingDir }}/isocopy/SDDC.Lab"
+        state: directory
+
+    - name: Copy user-data file to directory
+      template: 
+        src: "./user-data.j2"
+        dest: "{{ LOCAL_WorkingDir }}/isocopy/SDDC.Lab/user-data"
+
+    - name: Create empty meta-data file in directory
+      file:
+        path: "{{ LOCAL_WorkingDir }}/isocopy/SDDC.Lab/meta-data"
+        state: touch
+
+    - name: Create custom Ubuntu ISO
+      command: "xorrisofs -relaxed-filenames -J -R -o {{ LOCAL_TempDir }}/{{ LOCAL_New_UbuntuISO }} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ LOCAL_WorkingDir }}/isocopy/"
+      args:
+        chdir: "{{ LOCAL_WorkingDir }}/isocopy/"
+
+    - name: Upload the custum Ubuntu ISO to the datastore
+      vsphere_copy: 
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        datacenter: "{{ LOCAL_DataCenter }}"
+        src: "{{ LOCAL_TempDir }}/{{ LOCAL_New_UbuntuISO }}" 
+        datastore: "{{ LOCAL_DataStore }}"
+        path: "{{ LOCAL_DataStoreDir }}/{{ LOCAL_New_UbuntuISO }}"
+
+    - name: Deploy Ubuntu VM
+      vmware_guest:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        name: "{{ LOCAL_UbuntuVMName }}"
+        state: poweredon
+        guest_id: ubuntu64Guest
+        cluster: "{{ LOCAL_vSphereCluster }}"
+        datacenter: "{{ LOCAL_DataCenter }}"
+        folder: "{{ LOCAL_VMFolder }}"
+        disk:
+        - size_gb: "{{ LOCAL_UbuntuVMDiskSize }}"
+          type: "thin"
+          datastore: "{{ LOCAL_DataStore }}"
+        hardware:
+          memory_mb: "{{ LOCAL_UbuntuVMMemorySize }}"
+          num_cpus: "{{ LOCAL_UbuntuVMCPUs }}"
+          num_cpu_cores_per_socket: "{{ LOCAL_UbuntuVMCPUCores }}"
+          scsi: paravirtual
+        networks:
+          - name: "{{ LOCAL_UbuntuVMPortGroup }}"
+            device_type: vmxnet3
+        cdrom:
+          type: "iso"
+          iso_path: "[{{ LOCAL_DataStore }}] {{ LOCAL_DataStoreDir }}/{{ LOCAL_New_UbuntuISO }}"
+        annotation: "Username: {{ LOCAL_UbuntuOSUser }} Password: VMware1!"
+
+    - name: Wait 10 minutes for the Ubuntu installation to complete
+      pause:
+        seconds: 600
+
+    - name: Copy network configuration file to working directory
+      template: 
+        src: "./00-installer-config.j2"
+        dest: "{{ LOCAL_WorkingDir }}/00-installer-config.yaml"
+
+    - name: Copy network configuration file to Ubuntu VM
+      vmware_guest_file_operation:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        vm_id: "{{ LOCAL_UbuntuVMName }}"
+        vm_username: "{{ LOCAL_UbuntuOSUser }}"
+        vm_password: "VMware1!"
+        copy:
+            src: "{{ LOCAL_WorkingDir }}/00-installer-config.yaml"
+            dest: "/home/{{ LOCAL_UbuntuOSUser }}/00-installer-config.yaml"
+
+    - name: Move network configuration file to right location on Ubuntu VM
+      vmware_vm_shell:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        vm_id: "{{ LOCAL_UbuntuVMName }}"
+        vm_username: "{{ LOCAL_UbuntuOSUser }}"
+        vm_password: "VMware1!"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/00-installer-config.yaml /etc/netplan/00-installer-config.yaml"
+
+    - name: Restart the network on Ubuntu VM
+      vmware_vm_shell:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        vm_id: "{{ LOCAL_UbuntuVMName }}"
+        vm_username: "{{ LOCAL_UbuntuOSUser }}"
+        vm_password: "VMware1!"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "netplan apply"
+
+    - name: Delete working directory on Ansible controller
+      file:
+        path: "{{ LOCAL_WorkingDir }}"
+        state: absent
