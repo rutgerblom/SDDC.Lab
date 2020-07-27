@@ -1,11 +1,11 @@
 ---
 - hosts: localhost
-  name: writePodDoc.yml
+  name: createPodDoc.yml
   gather_facts: false
 
   vars:
     - PodDocFile: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Documentation.html"
-    - PodDocTemplate: "pod_doc.j2"
+    - PodDocTemplate: "Pod_Doc.j2"
 
   vars_prompt:
 
