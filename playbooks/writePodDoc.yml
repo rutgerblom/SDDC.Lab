@@ -5,14 +5,15 @@
 
   vars:
     - PodDocFile: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Documentation.html"
-  
+    - PodDocTemplate: "pod_doc.j2"
+
   vars_prompt:
 
-    - name: DestinationPodDocFile
-      prompt: "Where would you like to save the Pod documentation HTML file?"
+    - name: DestinationPodDocPath
+      prompt: "In which directory would you like to save the Pod documentation HTML file?"
       unsafe: yes
       private: no
-      default: "{{ lookup('env','HOME') }}/{{ PodDocFile }}"
+      default: "{{ lookup('env','HOME') }}"
 
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
@@ -43,13 +44,47 @@
       when:
         - Valid_Pod_Config_File is not defined
 
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                           Pod.Number: {{ Pod.Number }}
+
+                               Pod Documentation Path: {{ DestinationPodDocPath }}/{{ PodDocFile }}
+                               Configuration Template: {{ Target.TemplateFolder }}/{{ PodDocTemplate }}
+                            Target Documentation File: {{ PodDocFile }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == false
+
+    - name: Inform user of Pod documentation HTML file location
+      pause:
+        seconds: 2
+        prompt: |
+          =====================================================================================================
+          =============================================  NOTICE  ==============================================
+          =====================================================================================================
+
+          Generating the Pod documentation file for Pod {{ Pod.Number }}.
+
+               Once generated, it will be saved to this file: {{ DestinationPodDocPath }}/{{ PodDocFile }}
+
+          =====================================================================================================
+
     - name: Create variable with current date and time
       set_fact: 
         time: "{{lookup('pipe','date \"+%d-%B-%Y %H:%M\"')}}"
 
-    - name: Write Pod documentation
+    - name: Write Pod Documentation
       template: 
-        src: "../templates/pod_doc.j2"
-        dest: "{{ DestinationPodDocFile }}"
-        mode: "0666"
+        src: "{{ Target.TemplateFolder }}/{{ PodDocTemplate }}"
+        dest: "{{ DestinationPodDocPath }}/{{ PodDocFile }}"
       ignore_errors: true
