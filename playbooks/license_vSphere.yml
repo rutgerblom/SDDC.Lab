@@ -77,7 +77,7 @@
         state: present
       loop: "{{ License.VMware.vCenter.Licenses }}"
       when:
-        - Deploy.Software.vCenter.Version is match("{{ item.Version }}")
+        - Deploy.Software.vCenter.Version is match( item.Version )
 
 ##
 ## License ESXi Hosts
@@ -87,7 +87,7 @@
         ESXi_Licenses: "{{ (ESXi_Licenses | default([])) + [ item ] }}"
       loop: "{{ License.VMware.ESXi.Licenses }}"
       when:
-        - Deploy.Software.ESXi.Version is match("{{ item.Version }}")
+        - Deploy.Software.ESXi.Version is match( item.Version )
 
     - name: Assign an ESXi license to each deployed ESXi host
       set_fact:
@@ -126,7 +126,7 @@
         vSAN_Licenses: "{{ (vSAN_Licenses | default([])) + [ item ] }}"
       loop: "{{ License.VMware.vSAN.Licenses }}"
       when:
-        - Deploy.Software.ESXi.Version is match("{{ item.Version }}")
+        - Deploy.Software.ESXi.Version is match( item.Version )
 
     - name: Assign a vSAN license to each deployed vSAN Cluster
       set_fact:
