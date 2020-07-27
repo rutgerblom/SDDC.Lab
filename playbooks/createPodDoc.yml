@@ -10,7 +10,7 @@
   vars_prompt:
 
     - name: DestinationPodDocPath
-      prompt: "In which directory would you like to save the Pod documentation HTML file?"
+      prompt: "In which directory would you like to save {{ PodDocFile }}?"
       unsafe: yes
       private: no
       default: "{{ lookup('env','HOME') }}"
@@ -63,7 +63,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == false
+        - DEBUG.DisplayVariables == true
 
     - name: Inform user of Pod documentation HTML file location
       pause:
