@@ -1388,30 +1388,6 @@ Nested_NSXT:
           Address: "{{ Net.Management.IPv6.Network }}::15"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
 
-##
-## Changes to some of the 'Vars' variables below may require changes to Nested_NSXT below
-##
-## *TBD* Reminder to remove the below "Vars" section once all scripts are converted
-##
-  Vars:
-    NVDSName:          "NVDS-1"
-    Tier0_Name:        "T0-Gateway-01"
-    TZ_VLAN_Name:      "TZ-VLAN"
-    TZ_Overlay_Name:   "TZ-Overlay"
-    TZ_Edge_Name:      "TZ-Edge"
-    TEP_Pool_Name:     "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
-    TN_Profile_Name:   "TNP-ESXi-Hosts"
-    EdgeNodes:
-      Password:        "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-      vSphereCluster:  "Edge"
-      EdgeClusterName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
-      EdgeNode1:
-        Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
-        Host: "{{ Nested_ESXi.Hosts.ESXi91.FQDN }}"
-      EdgeNode2:
-        Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
-        Host: "{{ Nested_ESXi.Hosts.ESXi92.FQDN }}"
-
   Networking:
     Tier0Gateways:
       - Name:         "T0-Gateway-01"
