@@ -41,6 +41,8 @@ var_EdgeTransportNodes:
         vm_deployment_config:
           enable_ssh: "{{ EdgeTransportNode.Deployment.EnableSSH }}"
           allow_ssh_root_login: "{{ EdgeTransportNode.Deployment.AllowRootSSH }}"
+          search_domains:
+            - "{{ Common.DNS.Domain }}"
           dns_servers:
             - "{{ Common.DNS.Server1.IPv4 }}"
 {% if Common.DNS.Server2.IPv4 %}
