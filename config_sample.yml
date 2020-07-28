@@ -1892,6 +1892,9 @@ Nested_NSXT:
               vSphereCluster: "Edge"
               ESXiHost: "{{ Nested_ESXi.Hosts.ESXi91.FQDN }}"
               Datastore: "{{ Nested_Clusters.Edge.vsanDatastore}}"
+            Tags:
+              - Tag: "Auto-Created"
+                Scope: "SDDC.Lab"
           - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
             Description: NSX-T Edge Transport Node
             HostSwitches:
@@ -1931,6 +1934,9 @@ Nested_NSXT:
               vSphereCluster: "Edge"
               ESXiHost: "{{ Nested_ESXi.Hosts.ESXi92.FQDN }}"
               Datastore: "{{ Nested_Clusters.Edge.vsanDatastore}}"
+            Tags:
+              - Tag: "Auto-Created"
+                Scope: "SDDC.Lab"
 
         EdgeClusters:
           - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
@@ -1939,4 +1945,7 @@ Nested_NSXT:
             Members:
               - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
               - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
+            Tags:
+              - Tag: "Auto-Created"
+                Scope: "SDDC.Lab"
             
