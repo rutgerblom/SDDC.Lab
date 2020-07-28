@@ -1,6 +1,6 @@
-# ToDo:
-#   1) Create IPv6 Reverse Zone
-#
+##
+## Disabled IPv6 Dynamic DNS updates for everything but Nested_Router.
+##
 ---
 - hosts: localhost
   name: updateDNS.yml
@@ -182,8 +182,6 @@
         - Deploy.IPv6 == true
 
 
-
-
     - name: DEBUG -- Display IPv6 'PTR' records for Nested_Router
       pause:
         seconds: 1
@@ -259,8 +257,6 @@
         - Deploy.IPv4 == true
 
 
-
-
     - name: DEBUG -- Display IPv4 'PTR' record for Nested_vRLI
       pause:
         seconds: 1
@@ -316,6 +312,7 @@
         - DEBUG.DisplayVariables == true
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
+        - False
 
     - name: Create IPv6 'AAAA' records for Nested_vRLI
       nsupdate:
@@ -329,10 +326,7 @@
       when:
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
-
-
-
-
+        - False
 
     - name: DEBUG -- Display IPv6 'PTR' record for Nested_vRLI
       pause:
@@ -353,7 +347,7 @@
         - DEBUG.DisplayVariables == true
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
-
+        - False
 
     - name: Create IPv6 'PTR' records for Nested_vRLI
       nsupdate:
@@ -366,6 +360,7 @@
       when:
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
+        - False
 
 
 
@@ -394,7 +389,6 @@
         - Deploy.UseDNS == true
         - Deploy.IPv4 == true
 
-
     - name: Create IPv4 'A' records for Nested_ESXi hosts
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
@@ -408,7 +402,6 @@
       when: 
         - Deploy.UseDNS == true
         - Deploy.IPv4 == true
-
 
 
     - name: DEBUG -- Display IPv4 'PTR' records for Nested_ESXi Hosts
@@ -470,6 +463,7 @@
         - DEBUG.DisplayVariables == true
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
+        - False
 
     - name: Create IPv6 'AAAA' records for Nested_ESXi hosts
       nsupdate:
@@ -484,6 +478,7 @@
       when: 
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
+        - False
 
 
 
@@ -509,6 +504,7 @@
         - DEBUG.DisplayVariables == true
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
+        - False
 
     - name: Create IPv6 'PTR' records for Nested_ESXi hosts
       nsupdate:
@@ -522,6 +518,7 @@
       when: 
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
+        - False
 
 
 
@@ -620,6 +617,7 @@
         - DEBUG.DisplayVariables == true
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
+        - False
 
     - name: Create IPv6 'AAAA' records for Nested_vCenter
       nsupdate:
@@ -633,6 +631,7 @@
       when:
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
+        - False
 
 
 
@@ -657,6 +656,7 @@
         - DEBUG.DisplayVariables == true
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
+        - False
 
 
     - name: Create IPv6 'PTR' records for Nested_vCenter
@@ -670,6 +670,7 @@
       when:
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
+        - False
 
 
 ##
@@ -770,6 +771,7 @@
         - DEBUG.DisplayVariables == true
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
+        - False
 
     - name: Create IPv6 'AAAA' records for Nested_NSXT Components
       nsupdate:
@@ -784,6 +786,7 @@
       when:
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
+        - False
 
 
 
@@ -807,6 +810,7 @@
         - DEBUG.DisplayVariables == true
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
+        - False
 
     - name: Create IPv6 'PTR' records for Nested_NSXT Components
       nsupdate:
@@ -820,4 +824,4 @@
       when:
         - Deploy.UseDNS == true
         - Deploy.IPv6 == true
-
+        - False
