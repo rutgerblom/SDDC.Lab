@@ -8,6 +8,19 @@
 var_EdgeClusters:
 {% for EdgeCluster in Nested_NSXT.System.Fabric.Nodes.EdgeClusters %}
   - display_name: "{{ EdgeCluster.Name }}"
+    tags:
+{###### Make sure Tags is defined #####}
+{% if (EdgeCluster.Tags is defined) %}
+{###### If Tags is defined, add them to the list #}
+{% for SingleTag in EdgeCluster.Tags %}
+      - tag: "{{ SingleTag.Tag | default(None) }}"
+        scope: "{{ SingleTag.Scope | default(None) }}"
+{% endfor %}{# Tag #}
+{###### If not defined, add one set of "None" entries to ensure 'tags' header has a list member #####}
+{% else %}
+      - tag: ""
+        scope: ""
+{% endif %}{# EdgeTransportNode.Tags is defined #}
     cluster_profile_bindings:
 {% for ClusterProfile in EdgeCluster.ClusterProfiles %}
       - profile_name: "{{ ClusterProfile.Name }}"

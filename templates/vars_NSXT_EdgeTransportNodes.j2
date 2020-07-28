@@ -8,6 +8,19 @@
 var_EdgeTransportNodes:
 {% for EdgeTransportNode in Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes %}
   - display_name: "{{ EdgeTransportNode.Name }}"
+    tags:
+{###### Make sure Tags is defined #####}
+{% if (EdgeTransportNode.Tags is defined) %}
+{###### If Tags is defined, add them to the list #}
+{% for SingleTag in EdgeTransportNode.Tags %}
+      - tag: "{{ SingleTag.Tag | default(None) }}"
+        scope: "{{ SingleTag.Scope | default(None) }}"
+{% endfor %}{# Tag #}
+{###### If not defined, add one set of "None" entries to ensure 'tags' header has a list member #####}
+{% else %}
+      - tag: ""
+        scope: ""
+{% endif %}{# EdgeTransportNode.Tags is defined #}
     description: "{{ EdgeTransportNode.Description }}"
     host_switches:
 {% for HostSwitch in EdgeTransportNode.HostSwitches %}
