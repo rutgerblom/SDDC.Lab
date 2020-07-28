@@ -41,7 +41,7 @@ esxcfg-firewall -e ntpClient
 esxcli storage nmp satp rule add -s VMW_SATP_LOCAL -d "$(esxcli storage core device capacity list | grep `expr {{ Nested_ESXi.HardwareSettings[item.value.Cluster].vSAN.CacheSize }} \* 1024` | sed 's/.*\(mpx.*L[0-9]\).*/\1/')" -o enable_ssd
 
 # Reclaim vSAN Flash disk
-esxcli storage core claiming reclaim -d mpx.vmhba0:C0:T1:L0
+esxcli storage core claiming reclaim -d "$(esxcli storage core device capacity list | grep `expr {{ Nested_ESXi.HardwareSettings[item.value.Cluster].vSAN.CacheSize }} \* 1024` | sed 's/.*\(mpx.*L[0-9]\).*/\1/')"
 
 # Disable CEIP
 esxcli system settings advanced set -o /UserVars/HostClientCEIPOptIn -i 2
