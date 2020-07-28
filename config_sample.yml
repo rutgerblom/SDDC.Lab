@@ -1874,6 +1874,8 @@ Nested_NSXT:
             Deployment:
               VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
               FormFactor: "SMALL"
+              EnableSSH: "{{ Deploy.EnableSSH }}"
+              AllowRootSSH: "{{ Deploy.EnableSSH }}"
               CLIPassword:  "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
               RootPassword: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
               vCenterName:  "{{ Nested_vCenter.VMName }}"
@@ -1911,6 +1913,8 @@ Nested_NSXT:
             Deployment:
               VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
               FormFactor: "SMALL"
+              EnableSSH: "{{ Deploy.EnableSSH }}"
+              AllowRootSSH: "{{ Deploy.EnableSSH }}"
               CLIPassword:  "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
               RootPassword: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
               vCenterName:  "{{ Nested_vCenter.VMName }}"
