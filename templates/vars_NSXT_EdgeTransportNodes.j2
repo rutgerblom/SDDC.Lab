@@ -43,8 +43,14 @@ var_EdgeTransportNodes:
           allow_ssh_root_login: {{"{{ EdgeTransportNode.Deployment.AllowRootSSH }}"
           dns_servers:
           - "{{ Common.DNS.Server1.IPv4 }}"
+{% if Common.DNS.Server2.IPv4 %}
+          - "{{ Common.DNS.Server2.IPv4 }}"
+{% endif %}
           ntp_servers:
           - "{{ Common.NTP.Server1.IPv4 }}"
+{% if Common.NTP.Server2.IPv4 %}
+          - "{{ Common.NTP.Server2.IPv4 }}"
+{% endif %}
           placement_type: VsphereDeploymentConfig
           vc_name: "{{ EdgeTransportNode.Deployment.vCenterName }}"
           vc_username: "{{ EdgeTransportNode.Deployment.vCenterUser }}"
