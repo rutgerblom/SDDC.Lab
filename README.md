@@ -37,3 +37,7 @@ This repository contains Ansible code that performs automated deployments of com
 * For deploying NSX-T you need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval)).
 * A layer-3 switch with an appropriate OSPFv2 configuration matching the OSPFv2 settings in your config.yml file (for dynamic routing between your pods and the physical network).
 * The default settings require DNS name resolution.
+* If IPv6 deployment is enabled:
+  * The Ansible controller must be IPv6 enabled
+  * DNS server must be IPv6 enabled
+  * DNS server must have IPv6 reverse zone

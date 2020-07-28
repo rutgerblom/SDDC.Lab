@@ -6,9 +6,6 @@
 - hosts: localhost
   name: preparePhysical.yml
   gather_facts: false
-  vars_files:
-    - ../config.yml
-    - ../software.yml
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -178,8 +175,6 @@
           mac_changes: True
       when:
         - Target.Deployment == "vCenter"
-
-
 
     - name: Wait 5 seconds for the port groups to become available
       pause: seconds=5
