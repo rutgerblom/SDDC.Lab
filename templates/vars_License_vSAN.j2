@@ -19,8 +19,8 @@
 {% for ClusterName, ClusterSettings in Nested_Clusters.items() %}
 {# Reset Global flag that ensures that each Cluster only gets one license assigned to it #}
 {% set ns.LicenseAssignedToCluster=false %}
-{# Only process this cluster if it has hosts deployed and configured for vSAN (i.e. NOT configured for VMFS volumes) #}
-{% if ClusterSettings.DeployHosts == true and Nested_ESXi.HardwareSettings[ClusterName].CreateVMFS != true %}
+{# Only process this cluster if it has hosts deployed and has vSAN enabled #}
+{% if ClusterSettings.DeployHosts == true and ClusterSettings.vSAN == true %}
   - Cluster: "{{ ClusterName }}"
 {# Reset Sockets Totals Used by this cluster #}
 {% set ns.ClusterSockets=0 %}
