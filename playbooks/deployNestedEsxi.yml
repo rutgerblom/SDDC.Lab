@@ -107,7 +107,7 @@
       when:
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
-    - name: Check if the nested ESXi hosts are ready (wait max 15 minutes)
+    - name: Check if the nested ESXi hosts are ready
       vmware_guest_info:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -123,6 +123,10 @@
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+
+    - name: Wait 5 minutes for the nested ESXi hosts to stabilize
+      pause:
+        seconds: 300
 
     - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the datastore
       vsphere_file:
