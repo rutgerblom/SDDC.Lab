@@ -98,7 +98,7 @@
         - DEBUG.DisplayVariables == true
         - Deploy.NSXT.LocalManager == true
         - Deploy.NSXT.Edge == true
-        - var_EdgeTransportNodes != ""     
+        - var_EdgeTransportNodes != ""
 
     - name: Deploy and configure Edge Transport Nodes
       nsxt_transport_nodes:
@@ -107,11 +107,12 @@
         password: "{{ Nested_NSXT.Credentials.admin.Password }}"
         validate_certs: False
         display_name: "{{ item.display_name }}"
-        description: "Edge transport node"
+        description: "{{ item.description }}"
         host_switch_spec:
           resource_type: StandardHostSwitchSpec
           host_switches: "{{ item.host_switches }}"
         node_deployment_info: "{{ item.node_deployment_info }}"
+        tags: "{{ item.tags }}"
         state: present 
       with_list: "{{ var_EdgeTransportNodes }}"
       when:
@@ -121,8 +122,8 @@
       async: 1800
       poll: 0
 
-    - name: Wait 1 minute for the NSX-T API to process Edge transport node deployment information
-      pause: minutes=1
+    - name: Wait 2 minutes for the NSX-T API to process Edge transport node deployment information
+      pause: minutes=2
       when: 
         - Deploy.NSXT.LocalManager == true
         - Deploy.NSXT.Edge == true

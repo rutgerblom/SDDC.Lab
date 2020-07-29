@@ -184,3 +184,41 @@
       delay: 30
       when: 
         - Deploy.NSXT.LocalManager == true
+
+
+##
+## Disable Password Expiration for all users except for root (API does not permit disabling for 'root' user)
+##
+    - name: Obtain NSX-T Local Manager User List
+      uri:
+        url: https://{{ Nested_NSXT.Components.LocalManager.FQDN | lower }}/api/v1/node/users
+        validate_certs: no
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credentials.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credentials.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: UserList
+      when: 
+        - Deploy.NSXT.LocalManager == true
+
+    - name: Disable Password Expiration Of All NSX-T Users (except for 'root')
+      uri:
+        url: https://{{ Nested_NSXT.Components.LocalManager.FQDN | lower }}/api/v1/node/users/{{ item.userid }}
+        validate_certs: no
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credentials.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credentials.admin.Password }}"
+        method: PUT
+        body_format: json
+        body: '{ "password_change_frequency": 0 }'
+        return_content: yes
+        status_code: 200
+      loop: "{{ UserList.json.results }}"
+      when: 
+        - Deploy.NSXT.LocalManager == true
+        - item.userid > 0
