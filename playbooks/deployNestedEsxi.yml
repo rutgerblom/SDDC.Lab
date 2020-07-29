@@ -124,10 +124,6 @@
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
-    - name: Wait 5 minutes for the nested ESXi hosts to stabilize
-      pause:
-        seconds: 300
-
     - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the datastore
       vsphere_file:
         host: "{{ Target.FQDN }}"
