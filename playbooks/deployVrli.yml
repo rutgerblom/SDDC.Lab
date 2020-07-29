@@ -132,8 +132,8 @@
         - Deploy.vRLI == true
         - vrli_check.status != 200
 
-    - name: Wait 3 minutes for the vRLI API to become available
-      pause: seconds=180
+    - name: Wait 5 minutes for the vRLI API to become available
+      pause: seconds=300
       when:
         - Deploy.vRLI == true
         - vrli_check.status != 200
@@ -173,6 +173,9 @@
       stat: 
         path: "/Software/vrlilicense.txt"
       register: vrlilicensefile
+      when:
+        - Deploy.vRLI == true
+        - vrli_check.status != 200
 
     - name: Add a license to vRLI
       uri:
