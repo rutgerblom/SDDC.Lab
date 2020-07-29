@@ -20,7 +20,8 @@ var_EdgeClusters:
 {% else %}
       - tag: ""
         scope: ""
-{% endif %}{# EdgeTransportNode.Tags is defined #}
+{% endif %}{# EdgeCluster.Tags is defined #}
+    description: "{{ EdgeCluster.Description }}"
     cluster_profile_bindings:
 {% for ClusterProfile in EdgeCluster.ClusterProfiles %}
       - profile_name: "{{ ClusterProfile.Name }}"
