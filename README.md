@@ -21,10 +21,19 @@
 * [Description](#Description)
 * [Requirements](#Requirements)
 * [Preparations](#Preparations)
+* [Usage](#Usage)
+
 
 ## Description
 
-This repository contains Ansible code that performs automated deployments of complete VMware SDDC pods. Each pod contains a router, vCenter, ESXi hosts, NSX-T Manager, and NSX-T Edge nodes. The primary use case is speedy provisioning of consistent nested vSphere/NSX-T lab environments.
+This repository contains Ansible scripts that perform fully automated deployments of complete VMware SDDC Pods. Each Pod contains:
+* A router 
+* vCenter
+* ESXi hosts
+* NSX-T Manager
+* NSX-T Edge nodes
+* vRealize Log Insight
+The primary use case is speedy provisioning of consistent nested vSphere/NSX-T lab environments.
 
 ## Requirements
 
@@ -57,7 +66,7 @@ This repository contains Ansible code that performs automated deployments of com
 * Create the software library directory structure:
   * sudo ansible-playbook utils/util_CreateSoftwareDir.yml
 
-* Add installation ISOs and OVAs to the corresponding directories in the software library (/Software)
+* Add the installation media to the corresponding directories in the software library (/Software)
 
 ## Usage
 
