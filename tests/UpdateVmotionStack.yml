@@ -1,0 +1,71 @@
+---
+- hosts: localhost
+  name: UpdateVmotionStack.yml
+  gather_facts: false
+  tasks:
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    sudo ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+
+                                      Ansible Playbook: {{ ansible_play_name }}
+
+                                     Target.Deployment: {{ Target.Deployment }}
+
+                                   Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN }}
+                                   Nested_vCenter.User: {{ Nested_vCenter.User }}
+                               Nested_vCenter.Password: {{ Nested_vCenter.Password }}
+                             Nested_vCenter.DataCenter: {{ Nested_vCenter.DataCenter }}
+
+                                          vSwitch.Name: {{ Nested_vCenter.Networking.vSwitch.Name }}
+                                    vSwitch.Config.MTU: {{ Nested_vCenter.Networking.vSwitch.Config.MTU }}
+                        vSwitch.Config.NumberOfUplinks: {{ Nested_vCenter.Networking.vSwitch.Config.NumberOfUplinks }}
+                            LinkDiscoveryProtocol.Type: {{ Nested_vCenter.Networking.vSwitch.Config.LinkDiscoveryProtocol.Type }}
+                       LinkDiscoveryProtocol.Operation: {{ Nested_vCenter.Networking.vSwitch.Config.LinkDiscoveryProtocol.Operation }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Update Gateway for vMotion TCPIP Stack (Hosts)
+      vmware_host_tcpip_stacks:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: false
+        esxi_hostname: "{{ item.value.FQDN | lower }}"
+        vmotion:
+          vmkernel_gateway: "{{ item.value.vmk.vmk1.Address.IPv4.Gateway }}"
+      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      when: 
+       - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
