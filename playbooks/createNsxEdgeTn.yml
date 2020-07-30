@@ -3,7 +3,7 @@
   name: createNsxEdgeTn.yml
   gather_facts: false
   vars:
-      EdgeTnTemplate: "{{ Target.TemplateFolder }}/vars_NSXT_EdgeTransportNodes.j2"
+      LOCAL_EdgeTnTemplate: "{{ Target.TemplateFolder }}/vars_NSXT_EdgeTransportNodes.j2"
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -61,7 +61,7 @@
 
     - name: Read the structure from template into a variable
       set_fact:
-        var_EdgeTransportNodes: "{{ lookup('template', EdgeTnTemplate) | from_yaml }}"
+        var_EdgeTransportNodes: "{{ lookup('template', LOCAL_EdgeTnTemplate) | from_yaml }}"
       when:
         - Deploy.NSXT.LocalManager == true
 
