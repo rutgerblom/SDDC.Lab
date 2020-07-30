@@ -33,7 +33,8 @@ This repository contains Ansible scripts that perform fully automated deployment
 * NSX-T Manager
 * NSX-T Edge nodes
 * vRealize Log Insight
-The primary use case is speedy provisioning of consistent nested vSphere/NSX-T lab environments.
+
+The primary use case is consistent and speedy provisioning of nested VMware SDDC lab environments.
 
 ## Requirements
 
