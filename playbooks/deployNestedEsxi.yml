@@ -107,36 +107,4 @@
       when:
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
-    - name: Check if the nested ESXi hosts are ready
-      vmware_guest_info:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: false
-        datacenter: "{{ Target.DataCenter }}"
-        name: "{{ item.value.VMName }}"
-        schema: "vsphere"
-      register: vm_facts
-      until: vm_facts is search(item.value.vmk.vmk0.Address.IPv4.Address)
-      retries: 30
-      delay: 30
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
-
-    - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the datastore
-      vsphere_file:
-        host: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: false
-        datacenter: "{{ Target.DataCenter }}"
-        datastore: "{{ Target.Datastore }}"
-        path: "{{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
-        state: absent
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
-      when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
-        - DEBUG.KeepInstallerFiles != true
-
   tags: nestedESX
