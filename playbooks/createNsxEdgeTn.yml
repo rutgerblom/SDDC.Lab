@@ -3,7 +3,7 @@
   name: createNsxEdgeTn.yml
   gather_facts: false
   vars:
-      LOCAL_EdgeTransportNodes_File: "{{ Target.VarsFolder }}/vars_NSXT_EdgeTransportNodes"
+      EdgeTnTemplate: "{{ Target.TemplateFolder }}/vars_NSXT_EdgeTransportNodes.j2"
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -59,29 +59,9 @@
         - Deploy.NSXT.LocalManager == true
         - Deploy.NSXT.Edge == true
 
-
-    - name: Create 'vars' directory
-      file:
-        path: "{{ Target.VarsFolder }}"
-        state: directory
-      when:
-        - Deploy.NSXT.LocalManager == true
-        - Deploy.NSXT.Edge == true
-
-
-    - name: Create file with Edge Transport Node data structure
-      template:
-        src:  "{{ Target.TemplateFolder }}/vars_NSXT_EdgeTransportNodes.j2"
-        dest: "{{ LOCAL_EdgeTransportNodes_File }}"
-        force: true
-      when:
-        - Deploy.NSXT.LocalManager == true
-        - Deploy.NSXT.Edge == true
-
-    ## Read in var_EdgeTransportNodes variable
-    - name: Read var_EdgeTransportNodes data structure from file
-      include_vars:
-        file: "{{ LOCAL_EdgeTransportNodes_File }}"
+    - name: Read the structure from template into a variable
+      set_fact:
+        var_EdgeTransportNodes: "{{ lookup('template', EdgeTnTemplate) | from_yaml }}"
       when:
         - Deploy.NSXT.LocalManager == true
 
@@ -114,7 +94,7 @@
         node_deployment_info: "{{ item.node_deployment_info }}"
         tags: "{{ item.tags }}"
         state: present 
-      with_list: "{{ var_EdgeTransportNodes }}"
+      loop: "{{ var_EdgeTransportNodes }}"
       when:
         - Deploy.NSXT.LocalManager == true
         - Deploy.NSXT.Edge == true
