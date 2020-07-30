@@ -75,7 +75,7 @@ var_T0Gateways:
               remote_as_num: "{{ Neighbor.RemoteASN }}"
               allow_as_in: {{ Neighbor.AllowASIn }}
 {##### BFD Not supported with IPv6 #####}
-{% if Deploy.IPv6 is false %}
+{% if Deploy.IPv6 is sameas false %}
               bfd:
                 enabled: {{ Neighbor.BFD.Enabled }}
 {% endif %}{# Deploy.IPv6 == false #}
