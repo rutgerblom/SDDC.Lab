@@ -43,6 +43,9 @@ esxcli storage nmp satp rule add -s VMW_SATP_LOCAL -d "$(esxcli storage core dev
 # Reclaim vSAN Flash disk
 esxcli storage core claiming reclaim -d "$(esxcli storage core device capacity list | grep `expr {{ Nested_ESXi.HardwareSettings[item.value.Cluster].vSAN.CacheSize }} \* 1024` | sed 's/.*\(mpx.*L[0-9]\).*/\1/')"
 
+# Mark vSAN capacity disk as Hard Disk Drive (i.e. NOT Flash) in case storage on physical host is Flash/SSD.  Required to ensure auto-claiming of drives for vSAN is handled properly.
+esxcli storage nmp satp rule add -s VMW_SATP_LOCAL -d "$(esxcli storage core device capacity list | grep `expr {{ Nested_ESXi.HardwareSettings[item.value.Cluster].vSAN.CapacitySize }} \* 1024` | sed 's/.*\(mpx.*L[0-9]\).*/\1/')" -o disable_ssd
+
 # Disable CEIP
 esxcli system settings advanced set -o /UserVars/HostClientCEIPOptIn -i 2
 
