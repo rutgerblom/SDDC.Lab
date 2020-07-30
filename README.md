@@ -41,25 +41,28 @@ This repository contains Ansible code that performs automated deployments of com
 
 ## Preparations
 
-On the Ansible controller:
-1. Install the required software:
+* Install the required software on the Ansible controller:
   * sudo apt install python3 python3-pip xorriso
   * pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython
   * git clone https://github.com/rutgerblom/SDDC.Lab.git 
   * git checkout dev-v2
-1. Copy/rename the sample files:
+
+* Copy/rename the sample files:
   * cp config_sample.yml config.yml
   * cp licenses_sample.yml licenses.yml
   * cp software_sample.yml software.yml
-1. Modify **config.yml** and **licenses.yml** according to your needs and your environment
-1. Create the software library directory structure:
+
+* Modify **config.yml** and **licenses.yml** according to your needs and your environment
+
+* Create the software library directory structure:
   * sudo ansible-playbook utils/util_CreateSoftwareDir.yml
-1. Add installation ISOs and OVAs to the directories in the software library (/Software)
+
+* Add installation ISOs and OVAs to the corresponding directory in the software library (/Software)
 
 
 ## Usage
 
 To deploy a Pod:
 1. Generate a Pod configuration:
-  * ansible-playbook playbooks/createPodConfig.yml
+  1.  ansible-playbook playbooks/createPodConfig.yml
 1. Start a Pod deployment as instructed by the createPodConfig Playbook. For example: **sudo ansible-playbook -e "@/home/serbl/Pod-230-Config.yml" deploy.yml**
