@@ -57,12 +57,10 @@ This repository contains Ansible code that performs automated deployments of com
 * Create the software library directory structure:
   * sudo ansible-playbook utils/util_CreateSoftwareDir.yml
 
-* Add installation ISOs and OVAs to the corresponding directory in the software library (/Software)
-
+* Add installation ISOs and OVAs to the corresponding directories in the software library (/Software)
 
 ## Usage
 
 To deploy a Pod:
-1. Generate a Pod configuration:
-  1.  ansible-playbook playbooks/createPodConfig.yml
-1. Start a Pod deployment as instructed by the createPodConfig Playbook. For example: **sudo ansible-playbook -e "@/home/serbl/Pod-230-Config.yml" deploy.yml**
+* Generate a Pod configuration: **ansible-playbook playbooks/createPodConfig.yml**
+* Start a Pod deployment per the instructions. For example: **sudo ansible-playbook -e "@/home/serbl/Pod-230-Config.yml" deploy.yml**
