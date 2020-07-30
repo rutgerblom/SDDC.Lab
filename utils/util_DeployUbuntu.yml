@@ -86,7 +86,7 @@
       args:
         chdir: "{{ LOCAL_WorkingDir }}/isocopy/"
 
-    - name: Upload the custum Ubuntu ISO to the datastore
+    - name: Upload the custom Ubuntu ISO to the datastore
       vsphere_copy: 
         hostname: "{{ LOCAL_ESXiHost }}"
         username: "{{ LOCAL_ESXiUser }}"
@@ -160,7 +160,7 @@
         vm_shell: /usr/bin/sudo
         vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/00-installer-config.yaml /etc/netplan/00-installer-config.yaml"
 
-    - name: Restart the network on Ubuntu VM
+    - name: Apply the network configurarion on Ubuntu VM
       vmware_vm_shell:
         hostname: "{{ LOCAL_ESXiHost }}"
         username: "{{ LOCAL_ESXiUser }}"
