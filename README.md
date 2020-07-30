@@ -73,4 +73,5 @@ The primary use case is consistent and speedy provisioning of nested VMware SDDC
 
 To deploy an SDDC Pod:
 * First generate a Pod configuration: **ansible-playbook playbooks/createPodConfig.yml**
-* Then start a Pod deployment per the instructions. For example: **sudo ansible-playbook -e "@/home/serbl/Pod-230-Config.yml" deploy.yml**
+* Then start a Pod deployment per the instructions. For example:
+**sudo ansible-playbook -e "@/home/serbl/Pod-230-Config.yml" deploy.yml**
