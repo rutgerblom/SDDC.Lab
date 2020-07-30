@@ -3,7 +3,7 @@
   name: createNsxEdgeCluster.yml
   gather_facts: false
   vars:
-      LOCAL_EdgeClusters_File: "{{ Target.VarsFolder }}/vars_NSXT_EdgeClusters"
+      LOCAL_EdgeTnTemplate: "{{ Target.TemplateFolder }}/vars_NSXT_EdgeClusters.j2"
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -56,23 +56,6 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.NSXT.LocalManager == true
-
-
-    - name: Create 'vars' directory
-      file:
-        path: "{{ Target.VarsFolder }}"
-        state: directory
-      when:
-        - Deploy.NSXT.LocalManager == true
-
-
-    - name: Create file with Edge Cluster data structure
-      template:
-        src:  "{{ Target.TemplateFolder }}/vars_NSXT_EdgeClusters.j2"
-        dest: "{{ LOCAL_EdgeClusters_File }}"
-        force: true
-      when:
         - Deploy.NSXT.LocalManager == true
 
     ## Read in var_EdgeClusters variable

@@ -64,6 +64,7 @@
         var_EdgeTransportNodes: "{{ lookup('template', LOCAL_EdgeTnTemplate) | from_yaml }}"
       when:
         - Deploy.NSXT.LocalManager == true
+        - Deploy.NSXT.Edge == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
