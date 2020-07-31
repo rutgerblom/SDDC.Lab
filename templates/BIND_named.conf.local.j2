@@ -6,7 +6,7 @@
 // organization
 //include "/etc/bind/zones.rfc1918";
 
-zone "{{ LOCAL_BINDForwardZoneName }}" {
+zone "{{ Common.DNS.Domain | lower }}" {
   type master;
   allow-update { {{ LOCAL_BINDACLAnsibleController }};};          // The Ansible Controller
   allow-transfer { {{ LOCAL_BINDACLAnsibleController }};};        // The Ansible Controller -- Used for testing

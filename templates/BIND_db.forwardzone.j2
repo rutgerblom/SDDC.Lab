@@ -1,5 +1,5 @@
 $TTL 604800
-@ IN SOA dns.{{ LOCAL_BINDForwardZoneName }}. admin.{{ LOCAL_BINDForwardZoneName }}. (
+@ IN SOA dns.{{ Common.DNS.Domain | lower }}. admin.{{ Common.DNS.Domain | lower }}. (
           10   ; Serial
       604800   ; Refresh
        86400   ; Retry
@@ -8,10 +8,10 @@ $TTL 604800
 ;
 
 ; Name servers
-{{ LOCAL_BINDForwardZoneName }}.    IN   NS   dns.{{ LOCAL_BINDForwardZoneName }}.
+{{ Common.DNS.Domain | lower }}.    IN   NS   dns.{{ Common.DNS.Domain | lower }}.
 
 ; Define Origin
-$ORIGIN  {{ LOCAL_BINDForwardZoneName }}.
+$ORIGIN  {{ Common.DNS.Domain | lower }}.
 
 ; A records for name servers
 {{ LOCAL_UbuntuOSHostname }}            IN   A    {{ LOCAL_BINDIPAddress }}

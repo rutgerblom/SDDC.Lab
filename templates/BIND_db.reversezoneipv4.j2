@@ -1,5 +1,5 @@
 $TTL 604800
-@ IN SOA dns.{{ LOCAL_BINDForwardZoneName }}. admin.{{ LOCAL_BINDForwardZoneName }}. (
+@ IN SOA dns.{{ Common.DNS.Domain | lower }}. admin.{{ Common.DNS.Domain | lower }}. (
           10   ; Serial
       604800   ; Refresh
        86400   ; Retry
@@ -8,7 +8,7 @@ $TTL 604800
 ;
 
 ; Name servers
-{{ LOCAL_BINDReverseZoneNameIPv4 }}.    IN   NS   dns.{{ LOCAL_BINDForwardZoneName }}.
+{{ LOCAL_BINDReverseZoneNameIPv4 }}.    IN   NS   dns.{{ Common.DNS.Domain | lower }}.
 
 ; A records for name servers
 dns            IN   A    {{ LOCAL_BINDIPAddress }}
@@ -17,4 +17,4 @@ dns            IN   A    {{ LOCAL_BINDIPAddress }}
 $ORIGIN {{ LOCAL_BINDReverseZoneNameIPv4 }}.
 
 ; PTR records
-5.0    IN   PTR  dns.{{ LOCAL_BINDForwardZoneName }}.
+5.0    IN   PTR  dns.{{ Common.DNS.Domain | lower }}.
