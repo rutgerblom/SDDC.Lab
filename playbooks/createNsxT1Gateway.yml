@@ -3,7 +3,7 @@
   name: createNsxT1Gateway.yml
   gather_facts: false
   vars:
-    LOCAL_T1Gateways_File: "{{ Target.VarsFolder }}/vars_NSXT_T1Gateways"
+    LOCAL_T1Gateways_Template: "{{ Target.TemplateFolder }}/vars_NSXT_T1Gateways.j2"
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -56,38 +56,24 @@
       when:
         - DEBUG.DisplayVariables == true
 
-    - name: Create 'vars' directory
-      file:
-        path: "{{ Target.VarsFolder }}"
-        state: directory
-      when: Deploy.NSXT.LocalManager == true
-
-    - name: Create file with T1 Gateways data structure
-      template:
-        src:  "{{ Target.TemplateFolder }}/vars_NSXT_T1Gateways.j2"
-        dest: "{{ LOCAL_T1Gateways_File }}"
-        force: true
-      when: Deploy.NSXT.LocalManager == true
-
-    ## Read in var_T1Gateways variable
-    - name: Read var_T1Gateways data structure from file
-      include_vars:
-        file: "{{ LOCAL_T1Gateways_File }}"
+    - name: Get list of Tier-1 Gateways
+      set_fact:
+        T1GatewaysToCreate: "{{ lookup('template', LOCAL_T1Gateways_Template) | from_yaml }}"
       when: Deploy.NSXT.LocalManager == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display var_T1Gateways Variable ===================================
+          ================================ Display T1GatewaysToCreate Variable ===================================
 
-              var_T1Gateways: {{ var_T1Gateways | to_nice_yaml(indent=2) }}
+              T1GatewaysToCreate: {{ T1GatewaysToCreate | to_nice_yaml(indent=2) }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
         - Deploy.NSXT.LocalManager == true
-        - var_T1Gateways != ""
+        - T1GatewaysToCreate != ""
 
     - name: Create NSX-T Tier-1 Gateway
       nsxt_policy_tier1:
@@ -103,15 +89,5 @@
         route_advertisement_types: "{{ item.route_advertisement_types }}"
         tags: "{{ item.tags | default(omit) }}"
         locale_services: "{{ item.locale_services }}"
-      with_items:
-        - "{{ var_T1Gateways }}"
-      when:
-        - Deploy.NSXT.LocalManager == true
-
-    - name: Delete T1Gateways data structure file
-      file: 
-        path: "{{ LOCAL_T1Gateways_File }}"
-        state: absent
-      when: 
-        - Deploy.NSXT.LocalManager == true
-        - DEBUG.KeepConfigFiles != true
+      loop: "{{ T1GatewaysToCreate }}"
+      when: Deploy.NSXT.LocalManager == true
