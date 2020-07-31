@@ -3,7 +3,7 @@
   name: createNsxIpPool.yml
   gather_facts: false
   vars:
-    LOCAL_IPPools_File: "{{ Target.VarsFolder }}/vars_NSXT_IPPools"
+    LOCAL_IPPools_Template: "{{ Target.TemplateFolder }}/vars_NSXT_IPPools.j2"
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -56,7 +56,7 @@
              Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
 
                        Nested_NSXT.Networking.IPPools: {{ Nested_NSXT.Networking.IPPools }}
-                   Pool_Static_Subnets Templated File: {{ LOCAL_IPPools_File }}
+                         Pool_Static_Subnets Template: {{ LOCAL_IPPools_Template }}
 
           =================================================================================================
       when:
@@ -64,30 +64,10 @@
         - Deploy.NSXT.LocalManager == true
 
 
-    - name: Create 'vars' directory
-      file:
-        path: "{{ Target.VarsFolder }}"
-        state: directory
-      when:
-        - Deploy.NSXT.LocalManager == true
-
-
-    - name: Create file with IP Pools data structure
-      template:
-        src:  "{{ Target.TemplateFolder }}/vars_NSXT_IPPools.j2"
-        dest: "{{ LOCAL_IPPools_File }}"
-        force: true
-      when:
-        - Deploy.NSXT.LocalManager == true
-
-
-    ## Read in var_IPPools variable ##
-    - name: Read IP Pools data structure from file
-      include_vars:
-        file: "{{ LOCAL_IPPools_File }}"
-      when:
-        - Deploy.NSXT.LocalManager == true
-
+    - name: Get list of IP Pools
+      set_fact:
+        IPPoolsToCreate: "{{ lookup('template', LOCAL_IPPools_Template) | from_yaml }}"
+      when: Deploy.NSXT.LocalManager == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -95,14 +75,13 @@
         prompt: |
           ================================ Display var_IPPools Variable ===================================
 
-              var_IPPools: {{ var_IPPools | to_nice_yaml(indent=2) }}
+              IPPoolsToCreate: {{ IPPoolsToCreate | to_nice_yaml(indent=2) }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
         - Deploy.NSXT.LocalManager == true
-        - var_IPPools != ""
-
+        - IPPoolsToCreate != ""
 
     - name: Create NSX-T IP Pools using Polcy API
       nsxt_policy_ip_pool:
@@ -116,16 +95,7 @@
         pool_static_subnets: "{{ item.pool_static_subnets }}"
         tags: "{{ item.tags }}"
       with_items:
-        - "{{ var_IPPools }}"
+        - "{{ IPPoolsToCreate }}"
       when:
         - Deploy.NSXT.LocalManager == true
-        - var_IPPools != ""
-
-
-    - name: Delete IP Pools data structure file
-      file: 
-        path: "{{ LOCAL_IPPools_File }}"
-        state: absent
-      when: 
-        - Deploy.NSXT.LocalManager == true
-        - DEBUG.KeepConfigFiles != true
+        - IPPoolsToCreate != ""
