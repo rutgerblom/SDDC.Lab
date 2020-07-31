@@ -42,12 +42,13 @@
     LOCAL_BINDIPAddress: "10.203.0.50"
     LOCAL_BINDACLLabNetwork: "10.0.0.0/8"
     LOCAL_BINDACLAnsibleController: "10.2.129.19"
+    LOCAL_BINDZoneFilePath: "/var/lib/bind"
     LOCAL_BINDForwardZoneName: "sddc.lab"
-    LOCAL_BINDForwardZoneFile: "/var/lib/bind/db.sddc.lab"
+    LOCAL_BINDForwardZoneFile: "db.sddc.lab"
     LOCAL_BINDReverseZoneNameIPv4: "203.10.in-addr.arpa"
-    LOCAL_BINDReverseZoneFileIPv4: "/var/lib/bind/db.10.203"
+    LOCAL_BINDReverseZoneFileIPv4: "db.10.203"
     LOCAL_BINDReverseZoneNameIPv6: "0.0.d.f.ipv6.arpa"
-    LOCAL_BINDReverseZoneFileIPv6: "/var/lib/bind/db.fd00"
+    LOCAL_BINDReverseZoneFileIPv6: "db.fd00"
   
   tasks:
     - name: Create working directory on Ansible Controller
@@ -190,7 +191,194 @@
         vm_shell: /usr/bin/sudo
         vm_shell_args: "netplan apply"
 
-    - name: Delete working directory on Ansible controller
-      file:
-        path: "{{ LOCAL_WorkingDir }}"
-        state: absent
+    - name: Copy BIND named.conf file to Ubuntu VM
+      vmware_guest_file_operation:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        vm_id: "{{ LOCAL_UbuntuVMName }}"
+        vm_username: "{{ LOCAL_UbuntuOSUser }}"
+        vm_password: "VMware1!"
+        copy:
+            src: "./named.conf"
+            dest: "/home/{{ LOCAL_UbuntuOSUser }}/named.conf"
+
+    - name: Move BIND named.conf file to right location on Ubuntu VM
+      vmware_vm_shell:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        vm_id: "{{ LOCAL_UbuntuVMName }}"
+        vm_username: "{{ LOCAL_UbuntuOSUser }}"
+        vm_password: "VMware1!"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/named.conf /etc/bind/named.conf"
+
+    - name: Copy BIND named.conf.options file to working directory
+      template: 
+        src: "./Ubuntu_named.conf.options.j2"
+        dest: "{{ LOCAL_WorkingDir }}/named.conf.options"
+
+    - name: Copy BIND named.conf.options file to Ubuntu VM
+      vmware_guest_file_operation:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        vm_id: "{{ LOCAL_UbuntuVMName }}"
+        vm_username: "{{ LOCAL_UbuntuOSUser }}"
+        vm_password: "VMware1!"
+        copy:
+            src: "{{ LOCAL_WorkingDir }}/named.conf.options"
+            dest: "/home/{{ LOCAL_UbuntuOSUser }}/named.conf.options"
+
+    - name: Move BIND named.conf.options file to right location on Ubuntu VM
+      vmware_vm_shell:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        vm_id: "{{ LOCAL_UbuntuVMName }}"
+        vm_username: "{{ LOCAL_UbuntuOSUser }}"
+        vm_password: "VMware1!"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/named.conf.options /etc/bind/named.conf.options"
+
+    - name: Copy BIND named.conf.local file to working directory
+      template: 
+        src: "./Ubuntu_named.conf.local.j2"
+        dest: "{{ LOCAL_WorkingDir }}/named.conf.local"
+
+    - name: Copy BIND named.conf.local file to Ubuntu VM
+      vmware_guest_file_operation:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        vm_id: "{{ LOCAL_UbuntuVMName }}"
+        vm_username: "{{ LOCAL_UbuntuOSUser }}"
+        vm_password: "VMware1!"
+        copy:
+            src: "{{ LOCAL_WorkingDir }}/named.conf.local"
+            dest: "/home/{{ LOCAL_UbuntuOSUser }}/named.conf.local"
+
+    - name: Move BIND named.conf.local file to right location on Ubuntu VM
+      vmware_vm_shell:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        vm_id: "{{ LOCAL_UbuntuVMName }}"
+        vm_username: "{{ LOCAL_UbuntuOSUser }}"
+        vm_password: "VMware1!"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/named.conf.local /etc/bind/named.conf.local"
+
+    - name: Copy BIND forward zone file to working directory
+      template: 
+        src: "./Ubuntu_db.sddc.lab"
+        dest: "{{ LOCAL_WorkingDir }}/{{ LOCAL_BINDForwardZoneFile }}"
+
+    - name: Copy BIND forward zone file to Ubuntu VM
+      vmware_guest_file_operation:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        vm_id: "{{ LOCAL_UbuntuVMName }}"
+        vm_username: "{{ LOCAL_UbuntuOSUser }}"
+        vm_password: "VMware1!"
+        copy:
+            src: "{{ LOCAL_WorkingDir }}/{{ LOCAL_BINDForwardZoneFile }}"
+            dest: "/home/{{ LOCAL_UbuntuOSUser }}/{{ LOCAL_BINDForwardZoneFile}}"
+
+    - name: Move BIND forward zone file to right location on Ubuntu VM
+      vmware_vm_shell:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        vm_id: "{{ LOCAL_UbuntuVMName }}"
+        vm_username: "{{ LOCAL_UbuntuOSUser }}"
+        vm_password: "VMware1!"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/{{ LOCAL_BINDForwardZoneFile }} {{ LOCAL_BINDZoneFilePath }}/{{ LOCAL_BINDForwardZoneFile }}"
+
+    - name: Copy BIND IPv4 reverse zone file to working directory
+      template: 
+        src: "./Ubuntu_db.10.203.j2"
+        dest: "{{ LOCAL_WorkingDir }}/{{ LOCAL_BINDReverseZoneFileIPv4 }}"
+
+    - name: Copy BIND IPv4 reverse zone file to Ubuntu VM
+      vmware_guest_file_operation:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        vm_id: "{{ LOCAL_UbuntuVMName }}"
+        vm_username: "{{ LOCAL_UbuntuOSUser }}"
+        vm_password: "VMware1!"
+        copy:
+            src: "{{ LOCAL_WorkingDir }}/{{ LOCAL_BINDReverseZoneFileIPv4 }}"
+            dest: "/home/{{ LOCAL_UbuntuOSUser }}/{{ LOCAL_BINDReverseZoneFileIPv4 }}"
+
+    - name: Move BIND IPv4 zone file to right location on Ubuntu VM
+      vmware_vm_shell:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        vm_id: "{{ LOCAL_UbuntuVMName }}"
+        vm_username: "{{ LOCAL_UbuntuOSUser }}"
+        vm_password: "VMware1!"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/{{ LOCAL_BINDReverseZoneFileIPv4 }} {{ LOCAL_BINDZoneFilePath }}/{{ LOCAL_BINDReverseZoneFileIPv4 }}"
+
+    - name: Copy BIND IPv6 reverse zone file to working directory
+      template: 
+        src: "./Ubuntu_db.fd00.j2"
+        dest: "{{ LOCAL_WorkingDir }}/{{ LOCAL_BINDReverseZoneFileIPv6 }}"
+
+    - name: Copy BIND IPv6 reverse zone file to Ubuntu VM
+      vmware_guest_file_operation:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        vm_id: "{{ LOCAL_UbuntuVMName }}"
+        vm_username: "{{ LOCAL_UbuntuOSUser }}"
+        vm_password: "VMware1!"
+        copy:
+            src: "{{ LOCAL_WorkingDir }}/{{ LOCAL_BINDReverseZoneFileIPv6 }}"
+            dest: "/home/{{ LOCAL_UbuntuOSUser }}/{{ LOCAL_BINDReverseZoneFileIPv6 }}"
+
+    - name: Move BIND IPv6 zone file to right location on Ubuntu VM
+      vmware_vm_shell:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        vm_id: "{{ LOCAL_UbuntuVMName }}"
+        vm_username: "{{ LOCAL_UbuntuOSUser }}"
+        vm_password: "VMware1!"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/{{ LOCAL_BINDReverseZoneFileIPv6 }} {{ LOCAL_BINDZoneFilePath }}/{{ LOCAL_BINDReverseZoneFileIPv6 }}"
+
+    - name: Restart BIND on Ubuntu VM
+      vmware_vm_shell:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        vm_id: "{{ LOCAL_UbuntuVMName }}"
+        vm_username: "{{ LOCAL_UbuntuOSUser }}"
+        vm_password: "VMware1!"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "systemctl restart named"
+
+    #- name: Delete working directory on Ansible controller
+    #  file:
+    #    path: "{{ LOCAL_WorkingDir }}"
+    #    state: absent
