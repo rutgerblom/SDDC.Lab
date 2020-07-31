@@ -3,11 +3,14 @@
   name: util_DeployUbuntu.yml
   gather_facts: false
   vars:
+    # Playbook specific settings
     LOCAL_TempDir: "/tmp"
     LOCAL_WorkingDir: "/tmp/ubuntu20"
     LOCAL_UbuntuISO: "ubuntu-20.04-live-server-amd64.iso"
     LOCAL_UbuntuISO_URL: "https://releases.ubuntu.com/20.04/ubuntu-20.04-live-server-amd64.iso"
     LOCAL_New_UbuntuISO: "ubuntu2004.iso"
+
+    # vSphere settings
     LOCAL_ESXiHost: "esxi03.demo.local"
     LOCAL_ESXiUser: "root"
     LOCAL_ESXiPassword: "VMware1!"
@@ -16,6 +19,8 @@
     LOCAL_VMFolder: "ha-datacenter/vm"
     LOCAL_DataStore: "nested_nfs01"
     LOCAL_DataStoreDir: "/Lab-ISO-Folder"
+
+    #Ubuntu VM & OS settings
     LOCAL_UbuntuVMName: "ubuntu-server"
     LOCAL_UbuntuVMDiskSize: "50"           # gigabytes
     LOCAL_UbuntuVMMemorySize: "2048"       # megabytes
@@ -29,8 +34,21 @@
     LOCAL_UbuntuOSIPv4Gateway: "10.203.0.1"
     LOCAL_UbuntuOSIPv4DNS: "10.203.0.5"
     LOCAL_UbuntuOSSearchDomain: "sddc.lab"
-    LOCAL_UbuntuOSHostname: "ubuntu-server"
+    LOCAL_UbuntuOSHostname: "dns"
     LOCAL_UbuntuOSUser: "ubuntu"
+
+    # BIND settings
+    LOCAL_BINDUpstreamDNS: "10.2.129.10"
+    LOCAL_BINDIPAddress: "10.203.0.50"
+    LOCAL_BINDACLLabNetwork: "10.0.0.0/8"
+    LOCAL_BINDACLAnsibleController: "10.2.129.19"
+    LOCAL_BINDForwardZoneName: "sddc.lab"
+    LOCAL_BINDForwardZoneFile: "/var/lib/bind/db.sddc.lab"
+    LOCAL_BINDReverseZoneNameIPv4: "203.10.in-addr.arpa"
+    LOCAL_BINDReverseZoneFileIPv4: "/var/lib/bind/db.10.203"
+    LOCAL_BINDReverseZoneNameIPv6: "0.0.d.f.ipv6.arpa"
+    LOCAL_BINDReverseZoneFileIPv6: "/var/lib/bind/db.fd00"
+  
   tasks:
     - name: Create working directory on Ansible Controller
       file:
