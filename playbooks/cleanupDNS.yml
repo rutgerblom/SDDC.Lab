@@ -103,7 +103,18 @@
         - Deploy.UseDNS == true
         - Deploy.IPv4 == true
 
-
+    - name: Create IPv4 'CNAME' records for Nested_Router
+      nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     "CNAME"
+        protocol: "udp"
+        zone:     "{{ Common.DNS.Domain }}"
+        record:   "{{ Nested_Router.Name }}"
+        value:    "{{ Nested_Router.Name }}-Uplink"
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.UseDNS == true
+        - Deploy.IPv4 == true
 
     - name: DEBUG -- Display IPv4 'PTR' records for Nested_Router
       pause:
