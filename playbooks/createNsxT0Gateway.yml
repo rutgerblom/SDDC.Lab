@@ -3,7 +3,7 @@
   name: createNsxT0Gateway.yml
   gather_facts: false
   vars:
-    LOCAL_T0Gateways_File: "{{ Target.VarsFolder }}/vars_NSXT_T0Gateways"
+    LOCAL_T0Gateways_Template: "{{ Target.TemplateFolder }}/vars_NSXT_T0Gateways.j2"
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -37,7 +37,6 @@
       meta: end_play
       when: Valid_Pod_Config_File is not defined
 
-
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
@@ -56,38 +55,24 @@
       when:
         - DEBUG.DisplayVariables == true
 
-    - name: Create 'vars' directory
-      file:
-        path: "{{ Target.VarsFolder }}"
-        state: directory
-      when: Deploy.NSXT.LocalManager == true
-
-    - name: Create file with T0 Gateways data structure
-      template:
-        src:  "{{ Target.TemplateFolder }}/vars_NSXT_T0Gateways.j2"
-        dest: "{{ LOCAL_T0Gateways_File }}"
-        force: true
-      when: Deploy.NSXT.LocalManager == true
-
-    ## Read in var_T0Gateways variable
-    - name: Read var_T0Gateways data structure from file
-      include_vars:
-        file: "{{ LOCAL_T0Gateways_File }}"
+    - name: Get list of Tier-0 Gateways
+      set_fact:
+        T0GatewaysToCreate: "{{ lookup('template', LOCAL_T0Gateways_Template) | from_yaml }}"
       when: Deploy.NSXT.LocalManager == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display var_T0Gateways Variable ===================================
+          ================================ Display T0GatewaysToCreate Variable ===================================
 
-              var_T0Gateways: {{ var_T0Gateways | to_nice_yaml(indent=2) }}
+              T0GatewaysToCreate: {{ T0GatewaysToCreate | to_nice_yaml(indent=2) }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
         - Deploy.NSXT.LocalManager == true
-        - var_T0Gateways != ""
+        - T0GatewaysToCreate != ""
 
     - name: Create NSX-T Tier-0 Gateway
       nsxt_policy_tier0:
@@ -102,14 +87,6 @@
         tags: "{{ item.tags | default(omit) }}"
         locale_services: "{{ item.locale_services }}"
       with_items:
-        - "{{ var_T0Gateways }}"
+        - "{{ T0GatewaysToCreate }}"
       when:
         - Deploy.NSXT.LocalManager == true
-
-    - name: Delete T0Gateways data structure file
-      file: 
-        path: "{{ LOCAL_T0Gateways_File }}"
-        state: absent
-      when: 
-        - Deploy.NSXT.LocalManager == true
-        - DEBUG.KeepConfigFiles != true

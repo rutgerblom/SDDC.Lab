@@ -3,7 +3,7 @@
   name: createNsxTnp.yml
   gather_facts: false
   vars:
-      LOCAL_TransportNodeProfiles_File: "{{ Target.VarsFolder }}/vars_NSXT_TransportNodeProfiles"
+      LOCAL_TransportNodeProfiles_Template: "{{ Target.TemplateFolder }}/vars_NSXT_TransportNodeProfiles.j2"
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -58,43 +58,24 @@
         - DEBUG.DisplayVariables == true
         - Deploy.NSXT.LocalManager == true
 
-
-    - name: Create 'vars' directory
-      file:
-        path: "{{ Target.VarsFolder }}"
-        state: directory
-      when:
-        - Deploy.NSXT.LocalManager == true
-
-
-    - name: Create file with Transport Node Profile data structure
-      template:
-        src:  "{{ Target.TemplateFolder }}/vars_NSXT_TransportNodeProfiles.j2"
-        dest: "{{ LOCAL_TransportNodeProfiles_File }}"
-        force: true
-      when:
-        - Deploy.NSXT.LocalManager == true
-
-    ## Read in var_TransportNodeProfiles variable
-    - name: Read var_TransportNodeProfiles data structure from file
-      include_vars:
-        file: "{{ LOCAL_TransportNodeProfiles_File }}"
-      when:
-        - Deploy.NSXT.LocalManager == true
+    - name: Get list of Transport Node Profiles
+      set_fact:
+        TNPsToCreate: "{{ lookup('template', LOCAL_TransportNodeProfiles_Template) | from_yaml }}"
+      when: Deploy.NSXT.LocalManager == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display var_TransportNodeProfiles Variable ===================================
+          ================================ Display TNPsToCreate Variable ===================================
 
-              var_TransportNodeProfiles: {{ var_TransportNodeProfiles | to_nice_yaml(indent=2) }}
+              TNPsToCreate: {{ TNPsToCreate | to_nice_yaml(indent=2) }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
         - Deploy.NSXT.LocalManager == true
-        - var_TransportNodeProfiles != ""
+        - TNPsToCreate != ""
 
     - name: Create Transport Node Profiles 
       nsxt_transport_node_profiles:
@@ -109,15 +90,7 @@
           resource_type: StandardHostSwitchSpec
           host_switches: "{{item.host_switches}}"
         state: present
-      with_list: "{{ var_TransportNodeProfiles }}"
+      loop: "{{ TNPsToCreate }}"
       when:
         - Deploy.NSXT.LocalManager == true
-        - var_TransportNodeProfiles != ""
-
-    - name: Delete Transport Node Profiles data structure file
-      file: 
-        path: "{{ LOCAL_TransportNodeProfiles_File }}"
-        state: absent
-      when: 
-        - Deploy.NSXT.LocalManager == true
-        - DEBUG.KeepConfigFiles != true
+        - TNPsToCreate != ""

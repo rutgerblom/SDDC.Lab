@@ -3,7 +3,7 @@
   name: createNsxUplinkProfiles.yml
   gather_facts: false
   vars:
-    LOCAL_UplinkProfiles_File: "{{ Target.VarsFolder }}/vars_NSXT_UplinkProfiles"
+    LOCAL_UplinkProfiles_Template: "{{ Target.TemplateFolder }}/vars_NSXT_UplinkProfiles.j2"
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -58,43 +58,24 @@
         - DEBUG.DisplayVariables == true
         - Deploy.NSXT.LocalManager == true
 
-
-    - name: Create 'vars' directory
-      file:
-        path: "{{ Target.VarsFolder }}"
-        state: directory
-      when:
-        - Deploy.NSXT.LocalManager == true
-
-
-    - name: Create file with Uplink Profile data structure
-      template:
-        src:  "{{ Target.TemplateFolder }}/vars_NSXT_UplinkProfiles.j2"
-        dest: "{{ LOCAL_UplinkProfiles_File }}"
-        force: true
-      when:
-        - Deploy.NSXT.LocalManager == true
-
-    ## Read in var_UplinkProfiles variable
-    - name: Read var_UplinkProfiles data structure from file
-      include_vars:
-        file: "{{ LOCAL_UplinkProfiles_File }}"
-      when:
-        - Deploy.NSXT.LocalManager == true
+    - name: Get list of Uplink Profiles
+      set_fact:
+        UplinkProfilesToCreate: "{{ lookup('template', LOCAL_UplinkProfiles_Template) | from_yaml }}"
+      when: Deploy.NSXT.LocalManager == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display var_UplinkProfiles Variable ===================================
+          ================================ Display UplinkProfilesToCreate Variable ===================================
 
-              var_UplinkProfiles: {{ var_UplinkProfiles | to_nice_yaml(indent=2) }}
+              UplinkProfilesToCreate: {{ UplinkProfilesToCreate | to_nice_yaml(indent=2) }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
         - Deploy.NSXT.LocalManager == true
-        - var_UplinkProfiles != ""
+        - UplinkProfilesToCreate != ""
 
     - name: Create Uplink Profiles
       nsxt_uplink_profiles:
@@ -109,15 +90,7 @@
         teaming: "{{ item.teaming }}"                                      # Default NIC Teaming
         named_teamings: "{{ item.named_teamings | default(omit) }}"        # Named Teaming Policy, but omit it if it does not exist
         state: "present"
-      with_list: "{{ var_UplinkProfiles }}"
+      with_list: "{{ UplinkProfilesToCreate }}"
       when:
         - Deploy.NSXT.LocalManager == true
-        - var_UplinkProfiles != ""
-
-    - name: Delete Uplink Profiles data structure file
-      file: 
-        path: "{{ LOCAL_UplinkProfiles_File }}"
-        state: absent
-      when: 
-        - Deploy.NSXT.LocalManager == true
-        - DEBUG.KeepConfigFiles != true
+        - UplinkProfilesToCreate != ""

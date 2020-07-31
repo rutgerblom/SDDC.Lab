@@ -3,7 +3,7 @@
   name: createNsxVLANSegments.yml
   gather_facts: false
   vars:
-      LOCAL_Segments_File: "{{ Target.VarsFolder }}/vars_NSXT_Segments"
+      LOCAL_Segments_Template: "{{ Target.TemplateFolder }}/vars_NSXT_Segments.j2"
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -57,40 +57,26 @@
       when:
         - DEBUG.DisplayVariables == true
 
-    - name: Create 'vars' directory
-      file:
-        path: "{{ Target.VarsFolder }}"
-        state: directory
-      when: Deploy.NSXT.LocalManager == true
-
-    - name: Create file with Segments data structure
-      template:
-        src:  "{{ Target.TemplateFolder }}/vars_NSXT_Segments.j2"
-        dest: "{{ LOCAL_Segments_File }}"
-        force: true
-      when: Deploy.NSXT.LocalManager == true
-
-    ## Read in var_Segments variable
-    - name: Read var_Segments data structure from file
-      include_vars:
-        file: "{{ LOCAL_Segments_File }}"
+    - name: Get list of Segments
+      set_fact:
+        SegmentsToCreate: "{{ lookup('template', LOCAL_Segments_Template) | from_yaml }}"
       when: Deploy.NSXT.LocalManager == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display var_Segments Variable ===================================
+          ================================ Display SegmentsToCreate Variable ===================================
 
-              var_Segments: {{ var_Segments | to_nice_yaml(indent=2) }}
+              SegmentsToCreate: {{ SegmentsToCreate | to_nice_yaml(indent=2) }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
         - Deploy.NSXT.LocalManager == true
-        - var_Segments != ""
+        - SegmentsToCreate != ""
 
-    ## Create only VLAN-backed Segments in var_Segments  ##
+    ## Create only VLAN-backed Segments in SegmentsToCreate  ##
     - name: Create NSX-T Segments
       nsxt_policy_segment:
         hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
@@ -105,15 +91,7 @@
         tags: "{{ item.tags }}"
         vlan_ids: "{{ item.vlan_ids }}"
         state: "present"
-      loop: "{{ var_Segments }}"
+      loop: "{{ SegmentsToCreate }}"
       when: 
       - Deploy.NSXT.LocalManager == true
       - Nested_NSXT.System.Fabric.TransportZone[item.transport_zone_display_name].Type == "VLAN"
-
-    - name: Delete Segments data structure file
-      file: 
-        path: "{{ LOCAL_Segments_File }}"
-        state: absent
-      when: 
-        - Deploy.NSXT.LocalManager == true
-        - DEBUG.KeepConfigFiles != true
