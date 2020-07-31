@@ -40,9 +40,9 @@
     LOCAL_UbuntuOSLocale: "en_US"
     LOCAL_UbuntuOSKeyboardLayout: "en"
     LOCAL_UbuntuOSKeyboardVariant: "us"
-    LOCAL_UbuntuOSIPv4Address: "10.203.0.50/24"
+    LOCAL_UbuntuOSIPv4Address: "10.203.0.5/24"
     LOCAL_UbuntuOSIPv4Gateway: "10.203.0.1"
-    LOCAL_UbuntuOSIPv4DNS: "10.203.0.5"
+    LOCAL_UbuntuOSIPv4DNS: "10.2.129.10"
     LOCAL_UbuntuOSSearchDomain: "sddc.lab"
     LOCAL_UbuntuOSHostname: "dns"
     LOCAL_UbuntuOSUser: "ubuntu"
@@ -59,6 +59,14 @@
     LOCAL_BINDReverseZoneFileIPv4: "db.10.203"
     LOCAL_BINDReverseZoneNameIPv6: "0.0.d.f.ipv6.arpa"
     LOCAL_BINDReverseZoneFileIPv6: "db.fd00"
+
+  vars_prompt:
+
+    - name: SkipUbuntuISO
+      prompt: "Is {{ LOCAL_New_UbuntuISO }} already available on {{ LOCAL_DataStoreDir }}/{{ LOCAL_New_UbuntuISO }}?"
+      unsafe: yes
+      private: no
+      default: "yes"
   
   tasks:
     - name: Create working directory on Ansible Controller
@@ -70,6 +78,8 @@
       stat:
         path: "{{ LOCAL_TempDir }}/{{ LOCAL_UbuntuISO }}"
       register: InstallerFileCheck
+      when:
+        - SkipUbuntuISO != yes
 
     - name: Download Ubuntu ISO (if ISO file doesn't exist locally)
       get_url:
@@ -77,14 +87,19 @@
         dest: "{{ LOCAL_TempDir }}/{{ LOCAL_UbuntuISO }}"
       when:
         - InstallerFileCheck.stat.exists != true
+        - SkipUbuntuISO != yes
         
     - name: Mount Ubuntu ISO
       action: mount name="{{ LOCAL_WorkingDir }}/iso" src="{{ LOCAL_TempDir }}/{{ LOCAL_UbuntuISO }}" opts=loop fstype=iso9660 state=mounted
+      when:
+        - SkipUbuntuISO != yes
 
     - name: Copy Ubuntu ISO contents to working directory
       copy: 
         src: "{{ LOCAL_WorkingDir }}/iso/"
         dest: "{{ LOCAL_WorkingDir }}/isocopy/"
+      when:
+        - SkipUbuntuISO != yes
 
     - name: Unmount Ubuntu ISO
       action: mount name="{{ LOCAL_WorkingDir }}/iso" src="{{ LOCAL_TempDir }}/{{ LOCAL_UbuntuISO }}" fstype=iso9660 state=absent
@@ -94,26 +109,36 @@
         dest: "{{ LOCAL_WorkingDir }}/isocopy/isolinux/txt.cfg"
         regexp: 'append   initrd=/casper/initrd quiet  ---'
         replace: 'append   initrd=/casper/initrd quiet --- autoinstall ds=nocloud;s=/cdrom/SDDC.Lab/'
+      when:
+        - SkipUbuntuISO != yes
 
     - name: Create directory to store user-data and meta-data
       file:
         path: "{{ LOCAL_WorkingDir }}/isocopy/SDDC.Lab"
         state: directory
+      when:
+        - SkipUbuntuISO != yes
 
     - name: Copy user-data file to directory
       template: 
         src: "{{ LOCAL_UbuntuTemplateUserData }}"
         dest: "{{ LOCAL_WorkingDir }}/isocopy/SDDC.Lab/user-data"
+      when:
+        - SkipUbuntuISO != yes
 
     - name: Create empty meta-data file in directory
       file:
         path: "{{ LOCAL_WorkingDir }}/isocopy/SDDC.Lab/meta-data"
         state: touch
+      when:
+        - SkipUbuntuISO != yes
 
     - name: Create custom Ubuntu ISO
       command: "xorrisofs -relaxed-filenames -J -R -o {{ LOCAL_TempDir }}/{{ LOCAL_New_UbuntuISO }} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ LOCAL_WorkingDir }}/isocopy/"
       args:
         chdir: "{{ LOCAL_WorkingDir }}/isocopy/"
+      when:
+        - SkipUbuntuISO != yes
 
     - name: Upload the custom Ubuntu ISO to the datastore
       vsphere_copy: 
@@ -125,6 +150,8 @@
         src: "{{ LOCAL_TempDir }}/{{ LOCAL_New_UbuntuISO }}" 
         datastore: "{{ LOCAL_DataStore }}"
         path: "{{ LOCAL_DataStoreDir }}/{{ LOCAL_New_UbuntuISO }}"
+      when:
+        - SkipUbuntuISO != yes
 
     - name: Deploy Ubuntu VM
       vmware_guest:
