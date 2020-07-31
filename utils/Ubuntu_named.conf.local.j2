@@ -1,0 +1,29 @@
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+
+zone "{{ LOCAL_BINDForwardZoneName }}" {
+  type master;
+  allow-update { {{ LOCAL_BINDACLAnsibleController }};};          // The Ansible Controller
+  allow-transfer { {{ LOCAL_BINDACLAnsibleController }};};        // The Ansible Controller -- Used for testing
+  file "{{ LOCAL_BINDForwardZoneFile }}";
+};
+
+zone "{{ LOCAL_BINDReverseZoneNameIPv4 }}" {
+  type master;
+  allow-update { {{ LOCAL_BINDACLAnsibleController }};};          // The Ansible Controller
+  allow-transfer { {{ LOCAL_BINDACLAnsibleController }};};        // The Ansible Controller -- Used for testing
+  file "{{ LOCAL_BINDReverseZoneFileIPv4 }}";
+};
+
+zone "{{ LOCAL_BINDReverseZoneNameIPv6 }}" {
+  type master;
+  allow-update { {{ LOCAL_BINDACLAnsibleController }};};          // The Ansible Controller
+  allow-transfer { {{ LOCAL_BINDACLAnsibleController }};};        // The Ansible Controller -- Used for testing
+  file "{{ LOCAL_BINDReverseZoneFileIPv6 }}";
+  notify yes;
+};

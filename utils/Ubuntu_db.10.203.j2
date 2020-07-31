@@ -1,0 +1,20 @@
+$TTL 604800
+@ IN SOA dns.{{ LOCAL_BINDForwardZoneName }}. admin.{{ LOCAL_BINDForwardZoneName }}. (
+          10   ; Serial
+      604800   ; Refresh
+       86400   ; Retry
+     2419200   ; Expire
+      604800 ) ; Negative Cache TTL
+;
+
+; Name servers
+{{ LOCAL_BINDReverseZoneNameIPv4 }}.    IN   NS   dns.{{ LOCAL_BINDForwardZoneName }}.
+
+; A records for name servers
+dns            IN   A    {{ LOCAL_BINDIPAddress }}
+
+;Define origin
+$ORIGIN {{ LOCAL_BINDReverseZoneNameIPv4 }}.
+
+; PTR records
+5.0    IN   PTR  dns.{{ LOCAL_BINDForwardZoneName }}.

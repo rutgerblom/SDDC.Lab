@@ -1,0 +1,19 @@
+$TTL 604800
+@ IN SOA dns.{{ LOCAL_BINDForwardZoneName }}. admin.{{ LOCAL_BINDForwardZoneName }}. (
+          10   ; Serial
+      604800   ; Refresh
+       86400   ; Retry
+     2419200   ; Expire
+      604800 ) ; Negative Cache TTL
+;
+
+; Name servers
+{{ LOCAL_BINDForwardZoneName }}.    IN   NS   dns.{{ LOCAL_BINDForwardZoneName }}.
+
+; Define Origin
+$ORIGIN  {{ LOCAL_BINDForwardZoneName }}.
+
+; A records for name servers
+{{ LOCAL_UbuntuOSHostname }}            IN   A    {{ LOCAL_BINDIPAddress }}
+
+; Other A records

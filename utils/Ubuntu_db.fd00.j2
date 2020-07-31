@@ -1,0 +1,13 @@
+$ORIGIN .
+$TTL 604800     ; 1 week
+{{ LOCAL_BINDReverseZoneNameIPv6 }}      IN SOA  dns.{{ LOCAL_BINDForwardZoneName }}. admin.{{ LOCAL_BINDForwardZoneName }}. (
+                                361        ; serial
+                                604800     ; refresh (1 week)
+                                86400      ; retry (1 day)
+                                2419200    ; expire (4 weeks)
+                                604800     ; minimum (1 week)
+                                )
+{{ LOCAL_BINDReverseZoneNameIPv6 }}.     IN NS    dns.{{ LOCAL_BINDForwardZoneName }}.
+$ORIGIN {{ LOCAL_BINDReverseZoneNameIPv6 }}.
+$TTL 604800     ; 1 week
+dns.{{ LOCAL_BINDForwardZoneName }}.           A       {{ LOCAL_BINDIPAddress }}
