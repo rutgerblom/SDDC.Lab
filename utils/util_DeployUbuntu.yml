@@ -10,6 +10,16 @@
     LOCAL_UbuntuISO_URL: "https://releases.ubuntu.com/20.04/ubuntu-20.04-live-server-amd64.iso"
     LOCAL_New_UbuntuISO: "ubuntu2004.iso"
 
+    # Templates and files
+    LOCAL_UbuntuTemplateUserData: "./Ubuntu_user-data.j2"
+    LOCAL_UbuntuTemplateNetplan: "./Ubuntu_00-installer-config.j2"
+    LOCAL_BINDTemplateNamedConf: "./Ubuntu_named.conf"
+    LOCAL_BINDTemplateNamedConfOptions: "./Ubuntu_named.conf.options.j2"
+    LOCAL_BINDTemplateNamedConfLocal: "./Ubuntu_named.conf.local.j2"
+    LOCAL_BINDTemplateForwardZone: "./Ubuntu_db.forwardzone.j2"
+    LOCAL_BINDTemplateReverseZoneIPv4: "./Ubuntu_db.reversezoneipv4.j2"
+    LOCAL_BINDTemplateReverseZoneIPv6: "./Ubuntu_db.reversezoneipv6.j2"
+
     # vSphere settings
     LOCAL_ESXiHost: "esxi03.demo.local"
     LOCAL_ESXiUser: "root"
@@ -38,9 +48,6 @@
     LOCAL_UbuntuOSUser: "ubuntu"
 
     # BIND settings
-    LOCAL_BINDTemplateForwardZone: "./Ubuntu_db.forwardzone.j2"
-    LOCAL_BINDTemplateReverseZoneIPv4: "./Ubuntu_db.reversezoneipv4.j2"
-    LOCAL_BINDTemplateReverseZoneIPv6: "./Ubuntu_db.reversezoneipv6.j2"
     LOCAL_BINDUpstreamDNS: "10.2.129.10"
     LOCAL_BINDIPAddress: "10.203.0.50"
     LOCAL_BINDACLLabNetwork: "10.0.0.0/8"
@@ -95,7 +102,7 @@
 
     - name: Copy user-data file to directory
       template: 
-        src: "./Ubuntu_user-data.j2"
+        src: "{{ LOCAL_UbuntuTemplateUserData }}"
         dest: "{{ LOCAL_WorkingDir }}/isocopy/SDDC.Lab/user-data"
 
     - name: Create empty meta-data file in directory
@@ -154,7 +161,7 @@
 
     - name: Copy network configuration file to working directory
       template: 
-        src: "./Ubuntu_00-installer-config.j2"
+        src: "{{ LOCAL_UbuntuTemplateNetplan }}"
         dest: "{{ LOCAL_WorkingDir }}/00-installer-config.yaml"
 
     - name: Copy network configuration file to Ubuntu VM
@@ -204,7 +211,7 @@
         vm_username: "{{ LOCAL_UbuntuOSUser }}"
         vm_password: "VMware1!"
         copy:
-            src: "./Ubuntu_named.conf"
+            src: "{{ LOCAL_BINDTemplateNamedConf }}"
             dest: "/home/{{ LOCAL_UbuntuOSUser }}/named.conf"
 
     - name: Move BIND named.conf file to right location on Ubuntu VM
@@ -221,7 +228,7 @@
 
     - name: Copy BIND named.conf.options file to working directory
       template: 
-        src: "./Ubuntu_named.conf.options.j2"
+        src: "{{ LOCAL_BINDTemplateNamedConfOptions }}"
         dest: "{{ LOCAL_WorkingDir }}/named.conf.options"
 
     - name: Copy BIND named.conf.options file to Ubuntu VM
@@ -251,7 +258,7 @@
 
     - name: Copy BIND named.conf.local file to working directory
       template: 
-        src: "./Ubuntu_named.conf.local.j2"
+        src: "{{ LOCAL_BINDTemplateNamedConfLocal }}"
         dest: "{{ LOCAL_WorkingDir }}/named.conf.local"
 
     - name: Copy BIND named.conf.local file to Ubuntu VM
