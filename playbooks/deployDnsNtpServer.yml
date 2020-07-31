@@ -43,9 +43,7 @@
     LOCAL_BINDACLLabNetwork: "10.0.0.0/8"
     LOCAL_BINDACLAnsibleController: "10.2.129.19"
     LOCAL_BINDZoneFilePath: "/var/lib/bind"
-    LOCAL_BINDForwardZoneFile: "db.{{ Common.DNS.Domain | lower }}"
     LOCAL_BINDReverseZoneNameIPv4: "203.10.in-addr.arpa"
-    LOCAL_BINDReverseZoneFileIPv4: "db.10.203"
     LOCAL_BINDReverseZoneNameIPv6: "0.0.d.f.ipv6.arpa"
     LOCAL_BINDReverseZoneFileIPv6: "db.fd00"
   
@@ -197,8 +195,8 @@
         vm_username: "{{ LOCAL_UbuntuOSUser }}"
         vm_password: "VMware1!"
         copy:
-            src: "{{ LOCAL_WorkingDir }}/00-installer-config.yaml"
-            dest: "/home/{{ LOCAL_UbuntuOSUser }}/00-installer-config.yaml"
+          src: "{{ LOCAL_WorkingDir }}/00-installer-config.yaml"
+          dest: "/home/{{ LOCAL_UbuntuOSUser }}/00-installer-config.yaml"
 
     - name: Move network configuration file to correct location on Ubuntu VM
       vmware_vm_shell:
@@ -234,8 +232,8 @@
         vm_username: "{{ LOCAL_UbuntuOSUser }}"
         vm_password: "VMware1!"
         copy:
-            src: "{{ LOCAL_BINDTemplateNamedConf }}"
-            dest: "/home/{{ LOCAL_UbuntuOSUser }}/named.conf"
+          src: "{{ LOCAL_BINDTemplateNamedConf }}"
+          dest: "/home/{{ LOCAL_UbuntuOSUser }}/named.conf"
 
     - name: Move BIND named.conf file to correct location on Ubuntu VM
       vmware_vm_shell:
@@ -264,8 +262,8 @@
         vm_username: "{{ LOCAL_UbuntuOSUser }}"
         vm_password: "VMware1!"
         copy:
-            src: "{{ LOCAL_WorkingDir }}/named.conf.options"
-            dest: "/home/{{ LOCAL_UbuntuOSUser }}/named.conf.options"
+          src: "{{ LOCAL_WorkingDir }}/named.conf.options"
+          dest: "/home/{{ LOCAL_UbuntuOSUser }}/named.conf.options"
 
     - name: Move BIND named.conf.options file to correct location on Ubuntu VM
       vmware_vm_shell:
@@ -294,8 +292,8 @@
         vm_username: "{{ LOCAL_UbuntuOSUser }}"
         vm_password: "VMware1!"
         copy:
-            src: "{{ LOCAL_WorkingDir }}/named.conf.local"
-            dest: "/home/{{ LOCAL_UbuntuOSUser }}/named.conf.local"
+          src: "{{ LOCAL_WorkingDir }}/named.conf.local"
+          dest: "/home/{{ LOCAL_UbuntuOSUser }}/named.conf.local"
 
     - name: Move BIND named.conf.local file to correct location on Ubuntu VM
       vmware_vm_shell:
@@ -312,7 +310,7 @@
     - name: Copy BIND forward zone file to working directory
       template: 
         src: "{{ LOCAL_BINDTemplateForwardZone }}"
-        dest: "{{ LOCAL_WorkingDir }}/{{ LOCAL_BINDForwardZoneFile }}"
+        dest: "{{ LOCAL_WorkingDir }}/db.{{ Common.DNS.Domain | lower }}"
 
     - name: Copy BIND forward zone file to Ubuntu VM
       vmware_guest_file_operation:
@@ -324,8 +322,8 @@
         vm_username: "{{ LOCAL_UbuntuOSUser }}"
         vm_password: "VMware1!"
         copy:
-            src: "{{ LOCAL_WorkingDir }}/{{ LOCAL_BINDForwardZoneFile }}"
-            dest: "/home/{{ LOCAL_UbuntuOSUser }}/{{ LOCAL_BINDForwardZoneFile}}"
+          src: "{{ LOCAL_WorkingDir }}/db.{{ Common.DNS.Domain | lower }}"
+          dest: "/home/{{ LOCAL_UbuntuOSUser }}/db.{{ Common.DNS.Domain | lower }}"
 
     - name: Move BIND forward zone file to correct location on Ubuntu VM
       vmware_vm_shell:
@@ -342,7 +340,7 @@
     - name: Copy BIND IPv4 reverse zone file to working directory
       template: 
         src: "{{ LOCAL_BINDTemplateReverseZoneIPv4 }}"
-        dest: "{{ LOCAL_WorkingDir }}/{{ LOCAL_BINDReverseZoneFileIPv4 }}"
+        dest: "{{ LOCAL_WorkingDir }}/db.{{ Pod.BaseNetwork.IPv4 }}"
 
     - name: Copy BIND IPv4 reverse zone file to Ubuntu VM
       vmware_guest_file_operation:
@@ -354,8 +352,8 @@
         vm_username: "{{ LOCAL_UbuntuOSUser }}"
         vm_password: "VMware1!"
         copy:
-            src: "{{ LOCAL_WorkingDir }}/{{ LOCAL_BINDReverseZoneFileIPv4 }}"
-            dest: "/home/{{ LOCAL_UbuntuOSUser }}/{{ LOCAL_BINDReverseZoneFileIPv4 }}"
+          src: "{{ LOCAL_WorkingDir }}/db.{{ Pod.BaseNetwork.IPv4 }}"
+          dest: "/home/{{ LOCAL_UbuntuOSUser }}/db.{{ Pod.BaseNetwork.IPv4 }}"
 
     - name: Move BIND IPv4 zone file to correct location on Ubuntu VM
       vmware_vm_shell:
@@ -384,8 +382,8 @@
         vm_username: "{{ LOCAL_UbuntuOSUser }}"
         vm_password: "VMware1!"
         copy:
-            src: "{{ LOCAL_WorkingDir }}/{{ LOCAL_BINDReverseZoneFileIPv6 }}"
-            dest: "/home/{{ LOCAL_UbuntuOSUser }}/{{ LOCAL_BINDReverseZoneFileIPv6 }}"
+          src: "{{ LOCAL_WorkingDir }}/{{ LOCAL_BINDReverseZoneFileIPv6 }}"
+          dest: "/home/{{ LOCAL_UbuntuOSUser }}/{{ LOCAL_BINDReverseZoneFileIPv6 }}"
 
     - name: Move BIND IPv6 zone file to correct location on Ubuntu VM
       vmware_vm_shell:
