@@ -333,6 +333,10 @@ service {
             }
         }
     }
+    lldp {
+        interface all {
+        }
+    }
 {# If IPv6 is enabled, and using Latest VyOS version, enable IPv6 Router Advertisements on all interfaces #}
 {% if Deploy.IPv6 and Deploy.Software.Router.Version == "Latest" %}
     router-advert {
