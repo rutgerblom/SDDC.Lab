@@ -381,6 +381,18 @@
         vm_shell: /usr/bin/sudo
         vm_shell_args: "mkdir /var/log/named"
 
+    - name: Set correct owner on BIND log directory on Ubuntu VM
+      vmware_vm_shell:
+        hostname: "{{ LOCAL_ESXiHost }}"
+        username: "{{ LOCAL_ESXiUser }}"
+        password: "{{ LOCAL_ESXiPassword }}"
+        validate_certs: no
+        vm_id: "{{ LOCAL_UbuntuVMName }}"
+        vm_username: "{{ LOCAL_UbuntuOSUser }}"
+        vm_password: "VMware1!"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "chown bind:bind /var/log/named"
+
     - name: Restart BIND on Ubuntu VM
       vmware_vm_shell:
         hostname: "{{ LOCAL_ESXiHost }}"
