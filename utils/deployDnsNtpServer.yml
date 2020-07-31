@@ -1,6 +1,6 @@
 ---
 - hosts: localhost
-  name: util_DeployUbuntu.yml
+  name: deployDnsNtpServer.yml
   gather_facts: false
   vars:
     # Playbook specific settings
@@ -13,12 +13,12 @@
     # Templates and files
     LOCAL_UbuntuTemplateUserData: "./Ubuntu_user-data.j2"
     LOCAL_UbuntuTemplateNetplan: "./Ubuntu_00-installer-config.j2"
-    LOCAL_BINDTemplateNamedConf: "./Ubuntu_named.conf"
-    LOCAL_BINDTemplateNamedConfOptions: "./Ubuntu_named.conf.options.j2"
-    LOCAL_BINDTemplateNamedConfLocal: "./Ubuntu_named.conf.local.j2"
-    LOCAL_BINDTemplateForwardZone: "./Ubuntu_db.forwardzone.j2"
-    LOCAL_BINDTemplateReverseZoneIPv4: "./Ubuntu_db.reversezoneipv4.j2"
-    LOCAL_BINDTemplateReverseZoneIPv6: "./Ubuntu_db.reversezoneipv6.j2"
+    LOCAL_BINDTemplateNamedConf: "./BIND_named.conf"
+    LOCAL_BINDTemplateNamedConfOptions: "./BIND_named.conf.options.j2"
+    LOCAL_BINDTemplateNamedConfLocal: "./BIND_named.conf.local.j2"
+    LOCAL_BINDTemplateForwardZone: "./BIND_db.forwardzone.j2"
+    LOCAL_BINDTemplateReverseZoneIPv4: "./BIND_db.reversezoneipv4.j2"
+    LOCAL_BINDTemplateReverseZoneIPv6: "./BIND_db.reversezoneipv6.j2"
 
     # vSphere settings
     LOCAL_ESXiHost: "esxi03.demo.local"
