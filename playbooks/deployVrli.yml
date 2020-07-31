@@ -2,8 +2,10 @@
 - hosts: localhost
   name: deployVrli.yml
   gather_facts: false
-  vars:
-    LOCAL_vRLILicenseKey: "{{ lookup('file', '/Software/vrlilicense.txt') }}"
+  vars_files:
+    - ../licenses.yml
+#  vars:
+#    LOCAL_vRLILicenseKey: "{{ lookup('file', '/Software/vrlilicense.txt') }}"
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -118,7 +120,10 @@
         wait_for_ip_address: true
         inject_ovf_env: true
         properties:
-          vm.vmname: "VMware_vCenter_Log_Insight"
+          ## vm.vmname appears to be used as the 'cn' in the X.509 Cert.  So, why not set it to "Nested_vRLI.FQDN"?
+#          vm.vmname: "VMware_vCenter_Log_Insight"
+#          vm.vmname: "{{ Nested_vRLI.FQDN }}"  <<-- Putting this in results in the VM _NOT_ having an IPv4 address..only IPv6.  Maybe try just putting in Nested_vRLI.VMName.
+          vm.vmname: "{{ Nested_vRLI.VMName }}"
           preferipv6: "False"
           rootpw: "{{ Nested_vRLI.Credentials.root.Password }}"
           hostname: "{{ Nested_vRLI.FQDN }}"
@@ -132,6 +137,7 @@
         - Deploy.vRLI == true
         - vrli_check.status != 200
 
+    ## Instead of waiting for 5 minutes (which wasn't enouh for me), why not loop until you get a response from the main page https://{{ Nested_vRLI.FQDN }} ?   Make the check every 1 minute, and have it last for max of 10 minutes.
     - name: Wait 5 minutes for the vRLI API to become available
       pause: seconds=300
       when:
@@ -169,15 +175,15 @@
         - Deploy.vRLI == true
         - vrli_check.status != 200
 
-    - name: Check if the vRLI license file exists
-      stat: 
-        path: "/Software/vrlilicense.txt"
-      register: vrlilicensefile
-      when:
-        - Deploy.vRLI == true
-        - vrli_check.status != 200
+#    - name: Check if the vRLI license file exists
+#      stat: 
+#        path: "/Software/vrlilicense.txt"
+#      register: vrlilicensefile
+#      when:
+#        - Deploy.vRLI == true
+#        - vrli_check.status != 200
 
-    - name: Add a license to vRLI
+    - name: Add all licenses to vRLI
       uri:
         url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/licenses
         validate_certs: no
@@ -185,13 +191,15 @@
         headers:
           Authorization: "Bearer {{ vrli_session.json.sessionId }}"
         body:
-          key: "{{ LOCAL_vRLILicenseKey }}" 
+          key: "{{ item.KeyCode }}" 
         body_format: json
         status_code: 201
+      loop: "{{ License.VMware.vRLI.Licenses }}"
       when:
         - Deploy.vRLI == true
         - vrli_check.status != 200
-        - vrlilicensefile.stat.exists == true
+        - Deploy.Software.vRLI.Version is match(item.Version)
+#        - vrlilicensefile.stat.exists == true
 
     - name: Add vSphere to vRLI
       uri:
