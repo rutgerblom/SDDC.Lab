@@ -38,6 +38,9 @@
     LOCAL_UbuntuOSUser: "ubuntu"
 
     # BIND settings
+    LOCAL_BINDTemplateForwardZone: "./Ubuntu_db.forwardzone.j2"
+    LOCAL_BINDTemplateReverseZoneIPv4: "./Ubuntu_db.reversezoneipv4.j2"
+    LOCAL_BINDTemplateReverseZoneIPv6: "./Ubuntu_db.reversezoneipv6.j2"
     LOCAL_BINDUpstreamDNS: "10.2.129.10"
     LOCAL_BINDIPAddress: "10.203.0.50"
     LOCAL_BINDACLLabNetwork: "10.0.0.0/8"
@@ -278,7 +281,7 @@
 
     - name: Copy BIND forward zone file to working directory
       template: 
-        src: "./Ubuntu_db.sddc.lab"
+        src: "{{ LOCAL_BINDTemplateForwardZone }}"
         dest: "{{ LOCAL_WorkingDir }}/{{ LOCAL_BINDForwardZoneFile }}"
 
     - name: Copy BIND forward zone file to Ubuntu VM
@@ -308,7 +311,7 @@
 
     - name: Copy BIND IPv4 reverse zone file to working directory
       template: 
-        src: "./Ubuntu_db.10.203.j2"
+        src: "{{ LOCAL_BINDTemplateReverseZoneIPv4 }}"
         dest: "{{ LOCAL_WorkingDir }}/{{ LOCAL_BINDReverseZoneFileIPv4 }}"
 
     - name: Copy BIND IPv4 reverse zone file to Ubuntu VM
@@ -338,7 +341,7 @@
 
     - name: Copy BIND IPv6 reverse zone file to working directory
       template: 
-        src: "./Ubuntu_db.fd00.j2"
+        src: "{{ LOCAL_BINDTemplateReverseZoneIPv6 }}"
         dest: "{{ LOCAL_WorkingDir }}/{{ LOCAL_BINDReverseZoneFileIPv6 }}"
 
     - name: Copy BIND IPv6 reverse zone file to Ubuntu VM
