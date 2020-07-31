@@ -417,7 +417,7 @@
         vm_shell: /usr/bin/sudo
         vm_shell_args: "systemctl restart named"
 
-    #- name: Delete working directory on Ansible controller
-    #  file:
-    #    path: "{{ LOCAL_WorkingDir }}"
-    #    state: absent
+    - name: Delete working directory on Ansible controller
+      file:
+        path: "{{ LOCAL_WorkingDir }}"
+        state: absent
