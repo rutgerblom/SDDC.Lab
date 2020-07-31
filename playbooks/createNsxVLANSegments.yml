@@ -74,9 +74,9 @@
       when:
         - DEBUG.DisplayVariables == true
         - Deploy.NSXT.LocalManager == true
-        - var_Segments != ""
+        - SegmentsToCreate != ""
 
-    ## Create only VLAN-backed Segments in var_Segments  ##
+    ## Create only VLAN-backed Segments in SegmentsToCreate  ##
     - name: Create NSX-T Segments
       nsxt_policy_segment:
         hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
