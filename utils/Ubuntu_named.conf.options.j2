@@ -1,0 +1,20 @@
+acl lab-networks {
+  {{ LOCAL_BINDLabNetwork }};
+  localhost;
+  localnets;
+};
+
+options {
+  directory "/var/cache/bind";
+  recursion yes;
+  notify yes;
+  allow-query { any; };
+  allow-query-cache { any; };
+  allow-recursion { lab-networks; };
+  forwarders { {{ LOCAL_BINDUpstreamDNS }}; }; 
+  dnssec-validation no;
+  auth-nxdomain no; # conform to RFC1035
+  listen-on { localhost; any; };
+  listen-on-v6 { localhost; any; };
+  allow-transfer { lab-networks; };
+};
