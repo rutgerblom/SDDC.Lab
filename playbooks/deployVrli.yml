@@ -120,10 +120,8 @@
         wait_for_ip_address: true
         inject_ovf_env: true
         properties:
-          ## vm.vmname appears to be used as the 'cn' in the X.509 Cert.  So, why not set it to "Nested_vRLI.FQDN"?
-#          vm.vmname: "VMware_vCenter_Log_Insight"
-#          vm.vmname: "{{ Nested_vRLI.FQDN }}"  <<-- Putting this in results in the VM _NOT_ having an IPv4 address..only IPv6.  Maybe try just putting in Nested_vRLI.VMName.
-          vm.vmname: "{{ Nested_vRLI.VMName }}"
+          ## vm.vmname is hard-coded in the OVF file and referenced by several OVF properties and must be 'VMware_vCenter_Log_Insight'
+          vm.vmname: "VMware_vCenter_Log_Insight"
           preferipv6: "False"
           rootpw: "{{ Nested_vRLI.Credentials.root.Password }}"
           hostname: "{{ Nested_vRLI.FQDN }}"
@@ -137,12 +135,18 @@
         - Deploy.vRLI == true
         - vrli_check.status != 200
 
-    ## Instead of waiting for 5 minutes (which wasn't enouh for me), why not loop until you get a response from the main page https://{{ Nested_vRLI.FQDN }} ?   Make the check every 1 minute, and have it last for max of 10 minutes.
-    - name: Wait 5 minutes for the vRLI API to become available
-      pause: seconds=300
+    - name: Start checking if the vRLI Web UI is available
+      uri:
+        url: https://{{ Nested_vRLI.FQDN }}
+        validate_certs: false
+        timeout: 5
+      register: vrli_webui_check
+      until: vrli_webui_check.status == 200
       when:
         - Deploy.vRLI == true
         - vrli_check.status != 200
+      retries: 10
+      delay: 60
 
     - name: Perform vRLI bootstrap
       uri:
