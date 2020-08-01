@@ -335,7 +335,7 @@
         vm_username: "{{ LOCAL_UbuntuOSUser }}"
         vm_password: "VMware1!"
         vm_shell: /usr/bin/sudo
-        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/{{ LOCAL_BINDForwardZoneFile }} {{ LOCAL_BINDZoneFilePath }}/{{ LOCAL_BINDForwardZoneFile }}"
+        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/db.{{ Common.DNS.Domain | lower }} {{ LOCAL_BINDZoneFilePath }}/db.{{ Common.DNS.Domain | lower }}"
 
     - name: Copy BIND IPv4 reverse zone file to working directory
       template: 
@@ -365,7 +365,7 @@
         vm_username: "{{ LOCAL_UbuntuOSUser }}"
         vm_password: "VMware1!"
         vm_shell: /usr/bin/sudo
-        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/{{ LOCAL_BINDReverseZoneFileIPv4 }} {{ LOCAL_BINDZoneFilePath }}/{{ LOCAL_BINDReverseZoneFileIPv4 }}"
+        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/db.{{ Pod.BaseNetwork.IPv4 }} {{ LOCAL_BINDZoneFilePath }}/db.{{ Pod.BaseNetwork.IPv4 }}"
 
     - name: Copy BIND IPv6 reverse zone file to working directory
       template: 
