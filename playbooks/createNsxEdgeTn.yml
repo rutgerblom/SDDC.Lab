@@ -130,6 +130,7 @@
         - Deploy.NSXT.LocalManager == true
         - Deploy.NSXT.Edge == true
         - var_EdgeTransportNodes != ""
+        - result.json is defined
 
     - name: Wait until the NSX-T API reports that no Edge transport nodes are in "IN_PROGRESS" state (wait max 90 minutes)
       uri:
@@ -151,3 +152,4 @@
         - Deploy.NSXT.LocalManager == true
         - Deploy.NSXT.Edge == true
         - var_EdgeTransportNodes != ""
+        - result.json is defined
