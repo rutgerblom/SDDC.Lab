@@ -5,7 +5,6 @@ $TTL 604800
        86400   ; Retry
      2419200   ; Expire
       604800 ) ; Negative Cache TTL
-;
 
 ; Name servers
 {{ Common.DNS.Domain | lower }}.    IN   NS   dns.{{ Common.DNS.Domain | lower }}.
@@ -14,6 +13,4 @@ $TTL 604800
 $ORIGIN  {{ Common.DNS.Domain | lower }}.
 
 ; A records for name servers
-{{ LOCAL_UbuntuOSHostname }}            IN   A    {{ LOCAL_BINDIPAddress }}
-
-; Other A records
+{{ Nested_Ubuntu.Hostname | lower }}            IN   A    {{ Nested_Ubuntu.Network.IPv4.Address }}
