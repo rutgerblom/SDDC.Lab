@@ -459,7 +459,7 @@ Nested_vRLI:
 Nested_Ubuntu:
   FQDN: DNS.{{ Common.DNS.Domain }}
   VM:
-    VMName: DNS
+    VMName: SDDC-Lab-DNS
     HardwareSettings:
       CPU: 1
       CoresPerSocket: 1
@@ -475,9 +475,11 @@ Nested_Ubuntu:
         Address: "{{ Pod.BaseNetwork.IPv4 }}.0.5" 
         Prefix:  24
         Gateway: "{{ Pod.BaseNetwork.IPv4 }}.0.1"
+        DNS: 8.8.8.8
       IPv6:
         Address: "{{ Pod.BaseNetwork.IPv6 }}:0::{{ '%04d'|format(5) }}" 
         Prefix:  64
+        DNS: 2001:4860:4860::8888
     Locale: en_US
     Keyboard:
       Layout: en
