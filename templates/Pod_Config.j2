@@ -111,7 +111,15 @@ Deploy:
       Installer: "{{ Deploy.Software.vRLI.Installer }}"
       Directory: "{{ Software[Deploy.Software.vRLI.Vendor][Deploy.Software.vRLI.Product]['Installers'][Deploy.Software.vRLI.Version]['Location'].Local }}"
       File:      "{{ Software[Deploy.Software.vRLI.Vendor][Deploy.Software.vRLI.Product]['Installers'][Deploy.Software.vRLI.Version].File }}"
-
+    Ubuntu:
+      Vendor:    "{{ Deploy.Software.Ubuntu.Vendor }}"
+      Product:   "{{ Deploy.Software.Ubuntu.Product }}"
+      Version:   "{{ Deploy.Software.Ubuntu.Version }}"
+      Patch:     {{ Deploy.Software.Ubuntu.Patch }}
+      Config:    "{{ Deploy.Software.Ubuntu.Config }}"
+      Installer: "{{ Deploy.Software.Ubuntu.Installer }}"
+      Directory: "{{ Software[Deploy.Software.Ubuntu.Vendor][Deploy.Software.Ubuntu.Product]['Installers'][Deploy.Software.Ubuntu.Version]['Location'].Local }}"
+      File:      "{{ Software[Deploy.Software.Ubuntu.Vendor][Deploy.Software.Ubuntu.Product]['Installers'][Deploy.Software.Ubuntu.Version].File }}"
 
 
 Common:
