@@ -118,6 +118,15 @@ Deploy:
       Patch:     {{ Deploy.Software.Ubuntu.Patch }}
       Config:    "{{ Deploy.Software.Ubuntu.Config }}"
       Installer: "{{ Deploy.Software.Ubuntu.Installer }}"
+      Template:
+        UserData: "{{ Software[Deploy.Software.Ubuntu.Vendor][Deploy.Software.Ubuntu.Product]['Installers'][Deploy.Software.Ubuntu.Version]['Template'].UserData }}"
+        NetPlan:   "{{ Software[Deploy.Software.Ubuntu.Vendor][Deploy.Software.Ubuntu.Product]['Installers'][Deploy.Software.Ubuntu.Version]['Template'].NetPlan }}"
+        BINDNamedConf: "{{ Software[Deploy.Software.Ubuntu.Vendor][Deploy.Software.Ubuntu.Product]['Installers'][Deploy.Software.Ubuntu.Version]['Template'].BINDNamedConf }}"
+        BINDNamedConfOptions: "{{ Software[Deploy.Software.Ubuntu.Vendor][Deploy.Software.Ubuntu.Product]['Installers'][Deploy.Software.Ubuntu.Version]['Template'].BINDNamedConfOptions }}"
+        BINDNamedConfLocal:   "{{ Software[Deploy.Software.Ubuntu.Vendor][Deploy.Software.Ubuntu.Product]['Installers'][Deploy.Software.Ubuntu.Version]['Template'].BINDNamedConfLocal }}"
+        BINDForwardZone:      "{{ Software[Deploy.Software.Ubuntu.Vendor][Deploy.Software.Ubuntu.Product]['Installers'][Deploy.Software.Ubuntu.Version]['Template'].BINDForwardZone }}"
+        BINDReverseZoneIPv4:  "{{ Software[Deploy.Software.Ubuntu.Vendor][Deploy.Software.Ubuntu.Product]['Installers'][Deploy.Software.Ubuntu.Version]['Template'].BINDReverseZoneIPv4 }}"
+        BINDReverseZoneIPv6:  "{{ Software[Deploy.Software.Ubuntu.Vendor][Deploy.Software.Ubuntu.Product]['Installers'][Deploy.Software.Ubuntu.Version]['Template'].BINDReverseZoneIPv6 }}"
       Directory: "{{ Software[Deploy.Software.Ubuntu.Vendor][Deploy.Software.Ubuntu.Product]['Installers'][Deploy.Software.Ubuntu.Version]['Location'].Local }}"
       File:      "{{ Software[Deploy.Software.Ubuntu.Vendor][Deploy.Software.Ubuntu.Product]['Installers'][Deploy.Software.Ubuntu.Version].File }}"
       URL:       "{{ Software[Deploy.Software.Ubuntu.Vendor][Deploy.Software.Ubuntu.Product]['Installers'][Deploy.Software.Ubuntu.Version]['Location'].URL }}"
