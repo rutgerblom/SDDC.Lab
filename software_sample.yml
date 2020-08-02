@@ -616,7 +616,15 @@ Software:
           Location:
             Local: "{{ RootDirectory }}/Ubuntu/Server/v20.04"
             URL: "https://releases.ubuntu.com/20.04"
-          Template: ""
+          Template:
+            UserData: Ubuntu_user-data.j2
+            NetPlan:  Ubuntu_00-installer-config.j2
+            BINDNamedConf:        BIND_named.conf
+            BINDNamedConfOptions: BIND_named.conf.options.j2
+            BINDNamedConfLocal:   BIND_named.conf.local.j2
+            BINDForwardZone:      BIND_db.forwardzone.j2
+            BINDReverseZoneIPv4:  BIND_db.reversezoneipv4.j2
+            BINDReverseZoneIPv6:  BIND_db.reversezoneipv6.j2
           Version: "20.04"
           FileExt: iso
       Patches: []
