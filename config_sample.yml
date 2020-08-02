@@ -455,6 +455,21 @@ Nested_vRLI:
       Address: "{{ Net.Management.IPv6.Network }}::6"
       Prefix:  "{{ Net.Management.IPv6.Prefix }}"
 
+Nested_Ubuntu:
+  VMName: DNS
+  FQDN: DNS.{{ Common.DNS.Domain }}
+  Credentials:
+    ubuntu:
+      Name: ubuntu
+  Address:
+    IPv4:
+      Address: "{{ Pod.BaseNetwork.IPv4 }}.0.5" 
+      Prefix:  24
+      Gateway: "{{ Pod.BaseNetwork.IPv4 }}.0.1"
+    IPv6:
+      Address: "{{ Pod.BaseNetwork.IPv6 }}:0::{{ '%04d'|format(5) }}" 
+      Prefix:  64
+
 
 Nested_Clusters:
   Management:
