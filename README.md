@@ -28,7 +28,7 @@
 
 This repository contains Ansible scripts that perform fully automated deployments of complete VMware SDDC Pods. Each Pod contains:
 * A router 
-* vCenter
+* vCenter Server
 * ESXi hosts
 * NSX-T Manager
 * NSX-T Edge nodes
@@ -47,7 +47,11 @@ The primary use case is consistent and speedy provisioning of nested VMware SDDC
 * If IPv6 deployment is enabled:
   * The Ansible controller must be IPv6 enabled
   * DNS server must be IPv6 enabled
-  * DNS server must have IPv6 reverse zone
+  * DNS server must have IPv6 forward and reverse zones
+  * Within the Pod, only the following components are currently configured with IPv6:
+    * Router (All interfaces)
+    * NSX-T Segments
+    * NSX-T eBGP Peering with the Router
 
 ## Preparations
 

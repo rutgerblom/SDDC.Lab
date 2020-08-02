@@ -1,8 +1,8 @@
 ---
 - hosts: localhost
   name: license_NSXT-LM.yml
-  vars_files:
-    - ../licenses.yml
+  vars:
+    - LOCAL_LicenseFile: ../licenses.yml
   gather_facts: false
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
@@ -50,6 +50,8 @@
                              Deploy.NSXT.LocalManager: {{ Deploy.NSXT.LocalManager }}
              Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
 
+                                         License File: {{ LOCAL_LicenseFile }}
+
                                                NSX-T Deployed
                                                ==============
                                                Vendor: {{ Deploy.Software.NSXT.Vendor }}
@@ -60,6 +62,54 @@
       when:
         - DEBUG.DisplayVariables == true
         - Deploy.NSXT.LocalManager == true
+
+
+###
+### GOAL: If License file does not exist, then skip all licensing, and leave the components in Evauation state.
+###
+
+    - name: Check for existance of license file
+      stat:
+        path: "{{ LOCAL_LicenseFile }}"
+        get_checksum: no
+      register: stat_results
+
+    - name: Assume file does not exist, so set flag to skip licensing products
+      set_fact:
+        LicenseProducts: False
+
+    - name: If License file does exist and is a regular file, then set flag to license products
+      set_fact:
+        LicenseProducts: True
+      when:
+        - stat_results.stat.exists == True
+        - stat_results.stat.isreg == True
+
+    - name: If not licensing products, notify user
+      pause:
+        seconds: 20
+        prompt: |
+          =========================================================================
+          =========================== Licensing Notice  ===========================
+          =========================================================================
+
+             The following licensing file does not appear to exist:
+                                 {{ LOCAL_LicenseFile }}
+
+             For that reason, the following products will NOT be licensed, and
+             will operate with their respective default license(s):
+
+                                 NSX-T
+
+          =========================================================================
+      when:
+        - LicenseProducts != True
+
+    - name: If we are licensing products, read in license information
+      include_vars:
+        file: "{{ LOCAL_LicenseFile }}"
+      when: LicenseProducts == True
+
 
 ##
 ## License NSX-T
@@ -72,7 +122,8 @@
         validate_certs: no
         license_key: "{{ item.KeyCode }}"
         state: present
-      loop: "{{ License.VMware.NSXT.Licenses }}"
+      loop: "{{ License.VMware.NSXT.Licenses | default([]) }}"
       when:
         - Deploy.NSXT.LocalManager == true
         - Deploy.Software.NSXT.Version is match(item.Version)
+        - LicenseProducts == True
