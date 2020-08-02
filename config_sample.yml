@@ -457,28 +457,38 @@ Nested_vRLI:
 
 
 Nested_Ubuntu:
-  HardwareSettings:
-    CPU: 1
-    CoresPerSocket: 1
-    Memory: 2048
-    DiskSize: 20
-  VMName: DNS
   FQDN: DNS.{{ Common.DNS.Domain }}
-  Credentials:
-    ubuntu:
-      Name: ubuntu
+  VM:
+    VMName: DNS
+    HardwareSettings:
+      CPU: 1
+      CoresPerSocket: 1
+      Memory: 2048
+      DiskSize: 20
+      PortGroup: "{{ Target.PortGroup.RouterUplink }}"
+  OS:
+    Credentials:
+      User: ubuntu
       Password: "{{ Common.Password.Nested }}"
-  Network:
-    PortGroup: "{{ Target.PortGroup.RouterUplink }}"      
-    IPv4:
-      Address: "{{ Pod.BaseNetwork.IPv4 }}.0.5" 
-      Prefix:  24
-      Gateway: "{{ Pod.BaseNetwork.IPv4 }}.0.1"
-    IPv6:
-      Address: "{{ Pod.BaseNetwork.IPv6 }}:0::{{ '%04d'|format(5) }}" 
-      Prefix:  64
-
-
+    Network:    
+      IPv4:
+        Address: "{{ Pod.BaseNetwork.IPv4 }}.0.5" 
+        Prefix:  24
+        Gateway: "{{ Pod.BaseNetwork.IPv4 }}.0.1"
+      IPv6:
+        Address: "{{ Pod.BaseNetwork.IPv6 }}:0::{{ '%04d'|format(5) }}" 
+        Prefix:  64
+    Locale: en_US
+    Keyboard:
+      Layout: en
+      Variant: us
+    Packages:
+      BIND:
+        Forwarder:
+          IPv4: 8.8.8.8
+          IPv6: 2001:4860:4860::8888
+      
+      
 Nested_Clusters:
   Management:
     DRS: true
