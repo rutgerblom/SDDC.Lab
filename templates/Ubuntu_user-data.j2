@@ -13,7 +13,7 @@ autoinstall:
           addresses: [{{ Nested_Ubuntu.OS.Network.IPv4.Address }}/{{ Nested_Ubuntu.OS.Network.IPv4.Prefix }}]
           gateway4: {{ Nested_Ubuntu.OS.Network.IPv4.Address }}
           nameservers:
-            addresses: [8.8.8.8]
+            addresses: [{{ Nested_Ubuntu.OS.Network.IPv4.DNS }}]
             search: [{{ Common.DNS.Domain }}]
   identity:
     hostname: {{ Nested_Ubuntu.FQDN }}
