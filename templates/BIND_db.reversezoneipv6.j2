@@ -1,13 +1,10 @@
 $ORIGIN .
 $TTL 604800     ; 1 week
-{{ LOCAL_BINDReverseZoneNameIPv6 }}      IN SOA  dns.{{ Common.DNS.Domain | lower }}. admin.{{ Common.DNS.Domain | lower }}. (
+0.0.d.f.ip6.arpa        IN SOA  dns.{{ Common.DNS.Domain | lower }}. admin.{{ Common.DNS.Domain | lower }}. (
                                 361        ; serial
                                 604800     ; refresh (1 week)
                                 86400      ; retry (1 day)
                                 2419200    ; expire (4 weeks)
                                 604800     ; minimum (1 week)
                                 )
-{{ LOCAL_BINDReverseZoneNameIPv6 }}.     IN NS    dns.{{ Common.DNS.Domain | lower }}.
-$ORIGIN {{ LOCAL_BINDReverseZoneNameIPv6 }}.
-$TTL 604800     ; 1 week
-dns.{{ Common.DNS.Domain | lower }}.           A       {{ LOCAL_BINDIPAddress }}
+0.0.d.f.ip6.arpa.       IN NS    dns.{{ Common.DNS.Domain | lower }}.
