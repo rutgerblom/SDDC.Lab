@@ -11,7 +11,7 @@ $TTL 604800
 {{ LOCAL_BINDReverseZoneNameIPv4 }}.    IN   NS   dns.{{ Common.DNS.Domain | lower }}.
 
 ; A records for name servers
-dns            IN   A    {{ LOCAL_BINDIPAddress }}
+dns            IN   A    {{ Nested_Ubuntu.OS.Network.IPv4.Address }}
 
 ;Define origin
 $ORIGIN {{ LOCAL_BINDReverseZoneNameIPv4 }}.
