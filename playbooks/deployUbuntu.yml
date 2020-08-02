@@ -3,51 +3,17 @@
   name: deployUbuntu.yml
   gather_facts: false
   vars:
-    # Playbook specific settings
-    LOCAL_TempDir: "/tmp"
-    LOCAL_WorkingDir: "/tmp/ubuntu20"
-    LOCAL_UbuntuISO: "ubuntu-20.04-live-server-amd64.iso"
-    LOCAL_UbuntuISO_URL: "https://releases.ubuntu.com/20.04/ubuntu-20.04-live-server-amd64.iso"
-    LOCAL_New_UbuntuISO: "Ubuntu2004.iso"
-
-    # Templates and files
-    LOCAL_UbuntuTemplateUserData: "../templates/Ubuntu_user-data.j2"
-    LOCAL_UbuntuTemplateNetplan: "../templates/Ubuntu_00-installer-config.j2"
-    LOCAL_BINDTemplateNamedConf: "../templates/BIND_named.conf"
-    LOCAL_BINDTemplateNamedConfOptions: "../templates/BIND_named.conf.options.j2"
-    LOCAL_BINDTemplateNamedConfLocal: "../templates/BIND_named.conf.local.j2"
-    LOCAL_BINDTemplateForwardZone: "../templates/BIND_db.forwardzone.j2"
-    LOCAL_BINDTemplateReverseZoneIPv4: "../templates/BIND_db.reversezoneipv4.j2"
-    LOCAL_BINDTemplateReverseZoneIPv6: "../templates/BIND_db.reversezoneipv6.j2"
-
-    # Ubuntu VM settings
-    LOCAL_UbuntuVMName: "dns"
-    LOCAL_UbuntuVMDiskSize: "50"           # gigabytes
-    LOCAL_UbuntuVMMemorySize: "2048"       # megabytes
-    LOCAL_UbuntuVMCPUs: "1"
-    LOCAL_UbuntuVMCPUCores: "1"
-
     # Ubuntu OS settings
-    LOCAL_UbuntuOSLocale: "en_US"
-    LOCAL_UbuntuOSKeyboardLayout: "en"
-    LOCAL_UbuntuOSKeyboardVariant: "us"
-    LOCAL_UbuntuOSIPv4Address: "10.203.0.5/24"
     LOCAL_UbuntuOSIPv6Address: "fd00:0:0:0:0:0:0:5/64"
-    LOCAL_UbuntuOSIPv4Gateway: "10.203.0.1"
     LOCAL_UbuntuOSIPv6Gateway: "fd00:0:0:0:0:0:0:1"
     LOCAL_UbuntuOSIPv4DNS: "8.8.8.8"
-    LOCAL_UbuntuOSHostname: "dns"
     LOCAL_UbuntuOSUser: "ubuntu"
 
     # BIND settings
-    LOCAL_BINDForwarder: "8.8.8.8"
-    LOCAL_BINDIPAddress: "10.203.0.5"
     LOCAL_BINDACLLabNetwork: "10.0.0.0/8"
     LOCAL_BINDACLAnsibleController: "10.2.129.19"
-    LOCAL_BINDZoneFilePath: "/var/lib/bind"
     LOCAL_BINDReverseZoneNameIPv4: "203.10.in-addr.arpa"
     LOCAL_BINDReverseZoneNameIPv6: "0.0.d.f.ipv6.arpa"
-    LOCAL_BINDReverseZoneFileIPv6: "db.fd00"
   
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
@@ -78,65 +44,65 @@
       when:
         - Valid_Pod_Config_File is not defined
 
+    - name: Create temp directory
+      file:
+        path: "{{ Target.TempFolder }}"
+        state: directory
+
     - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
       meta: end_play
       when: Valid_Pod_Config_File is not defined
 
-
-    - name: Create working directory on Ansible Controller
-      file:
-        path: "{{ LOCAL_WorkingDir }}"
-        state: directory
-
-    - name: Check if Ubuntu ISO exists locally on Ansible Controller
+    - name: Check if Ubuntu ISO file exists locally exists locally in the software repository
       stat:
-        path: "{{ LOCAL_TempDir }}/{{ LOCAL_UbuntuISO }}"
+        path: "{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}"
       register: InstallerFileCheck
 
-    - name: Download Ubuntu ISO (if ISO file doesn't exist locally)
+    - name: Update Ubuntu ISO file in the local software repository (overwrite if exists)
       get_url:
-        url:  "{{ LOCAL_UbuntuISO_URL }}"
-        dest: "{{ LOCAL_TempDir }}/{{ LOCAL_UbuntuISO }}"
-      when:
-        - InstallerFileCheck.stat.exists != true
+        url:  "{{ Deploy.Software.Ubuntu.URL }}/{{ Deploy.Software.Ubuntu.File }}"
+        dest: "{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}"
+        force: yes
+      when: 
+        - (InstallerFileCheck.stat.exists != true) or (Deploy.Software.Options.UseLocalInstaller != true)
+        - Deploy.Software.Options.KeepNewInstallers == true
         
-    - name: Mount Ubuntu ISO
-      action: mount name="{{ LOCAL_WorkingDir }}/iso" src="{{ LOCAL_TempDir }}/{{ LOCAL_UbuntuISO }}" opts=loop fstype=iso9660 state=mounted
-      when:
+    - name: Mount Ubuntu ISO file
+      action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}" opts=loop fstype=iso9660 state=mounted
 
-    - name: Copy Ubuntu ISO contents to working directory
+    - name: Copy Ubuntu ISO file contents
       copy: 
-        src: "{{ LOCAL_WorkingDir }}/iso/"
-        dest: "{{ LOCAL_WorkingDir }}/isocopy/"
+        src: "{{ Target.ISOMount }}/"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
 
     - name: Unmount Ubuntu ISO
-      action: mount name="{{ LOCAL_WorkingDir }}/iso" src="{{ LOCAL_TempDir }}/{{ LOCAL_UbuntuISO }}" fstype=iso9660 state=absent
+      action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}" fstype=iso9660 state=absent
 
     - name: Edit txt.cfg to modify append line 
       replace:
-        dest: "{{ LOCAL_WorkingDir }}/isocopy/isolinux/txt.cfg"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/isolinux/txt.cfg"
         regexp: 'append   initrd=/casper/initrd quiet  ---'
         replace: 'append   initrd=/casper/initrd quiet --- autoinstall ds=nocloud;s=/cdrom/SDDC.Lab/'
 
     - name: Create directory to store user-data and meta-data
       file:
-        path: "{{ LOCAL_WorkingDir }}/isocopy/SDDC.Lab"
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/SDDC.Lab"
         state: directory
 
     - name: Copy user-data file to directory
       template: 
-        src: "{{ LOCAL_UbuntuTemplateUserData }}"
-        dest: "{{ LOCAL_WorkingDir }}/isocopy/SDDC.Lab/user-data"
+        src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.UserData }}"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/SDDC.Lab/user-data"
 
     - name: Create empty meta-data file in directory
       file:
-        path: "{{ LOCAL_WorkingDir }}/isocopy/SDDC.Lab/meta-data"
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/SDDC.Lab/user-data"
         state: touch
 
     - name: Create custom Ubuntu ISO
-      command: "xorrisofs -relaxed-filenames -J -R -o {{ LOCAL_TempDir }}/{{ LOCAL_New_UbuntuISO }} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ LOCAL_WorkingDir }}/isocopy/"
+      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.File }} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
       args:
-        chdir: "{{ LOCAL_WorkingDir }}/isocopy/"
+        chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
 
     - name: Upload the custom Ubuntu ISO to the datastore
       vsphere_copy: 
@@ -145,9 +111,9 @@
         password: "{{ Target.Password }}"
         validate_certs: no
         datacenter: "{{ Target.DataCenter }}"
-        src: "{{ LOCAL_TempDir }}/{{ LOCAL_New_UbuntuISO }}" 
+        src: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.File }}" 
         datastore: "{{ Target.Datastore }}"
-        path: "{{ Target.ISOFolder }}/{{ LOCAL_New_UbuntuISO }}"
+        path: "{{ Target.ISOFolder }}/{{ Deploy.Software.Ubuntu.File }}"
 
     - name: Deploy Ubuntu VM
       vmware_guest:
@@ -155,37 +121,37 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ LOCAL_UbuntuVMName }}"
+        name: "{{ Nested_Ubuntu.VM.VMname }}"
         state: poweredon
         guest_id: ubuntu64Guest
         cluster: "{{ Target.Cluster }}"
         datacenter: "{{ Target.DataCenter }}"
         folder: "{{ Target.VMFolder }}"
         disk:
-        - size_gb: "{{ LOCAL_UbuntuVMDiskSize }}"
+        - size_gb: "{{ Nested_Ubuntu.VM.HardwareSettings.DiskSize }}"
           type: "{{ Common.DiskProvisioning }}"
           datastore: "{{ Target.Datastore }}"
         hardware:
-          memory_mb: "{{ LOCAL_UbuntuVMMemorySize }}"
-          num_cpus: "{{ LOCAL_UbuntuVMCPUs }}"
-          num_cpu_cores_per_socket: "{{ LOCAL_UbuntuVMCPUCores }}"
+          memory_mb: "{{ Nested_Ubuntu.VM.HardwareSettings.Memory }}"
+          num_cpus: "{{ Nested_Ubuntu.VM.HardwareSettings.CPU }}"
+          num_cpu_cores_per_socket: "{{ Nested_Ubuntu.VM.HardwareSettings.CoresPerSocket }}"
           scsi: paravirtual
         networks:
-          - name: "{{ Target.PortGroup.RouterUplink }}"
+          - name: "{{ Nested_Ubuntu.VM.Network.PortGroup }}"
             device_type: vmxnet3
         cdrom:
           type: "iso"
-          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ LOCAL_New_UbuntuISO }}"
-        annotation: "Username: {{ LOCAL_UbuntuOSUser }} Password: VMware1!"
+          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Ubuntu.File }}"
+        annotation: "Username: {{ Nested_Ubuntu.OS.Credentials.User }} Password: {{ Nested_Ubuntu.OS.Credentials.Password }}"
 
     - name: Wait 15 minutes for the Ubuntu installation to complete
       pause:
         seconds: 900
 
-    - name: Copy network configuration file to working directory
+    - name: Copy network configuration file to temp directory
       template: 
-        src: "{{ LOCAL_UbuntuTemplateNetplan }}"
-        dest: "{{ LOCAL_WorkingDir }}/00-installer-config.yaml"
+        src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.NetPlan }}"
+        dest: "{{ Target.TempFolder }}/00-installer-config.yaml"
 
     - name: Copy network configuration file to Ubuntu VM
       vmware_guest_file_operation:
@@ -193,12 +159,12 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         copy:
-          src: "{{ LOCAL_WorkingDir }}/00-installer-config.yaml"
-          dest: "/home/{{ LOCAL_UbuntuOSUser }}/00-installer-config.yaml"
+          src: "{{ Target.TempFolder }}/00-installer-config.yaml"
+          dest: "/home/{{ Nested_Ubuntu.OS.Credentials.User }}/00-installer-config.yaml"
 
     - name: Move network configuration file to correct location on Ubuntu VM
       vmware_vm_shell:
@@ -206,21 +172,21 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         vm_shell: /usr/bin/sudo
-        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/00-installer-config.yaml /etc/netplan/00-installer-config.yaml"
+        vm_shell_args: "mv /home/{{ Nested_Ubuntu.OS.Credentials.User }}/00-installer-config.yaml /etc/netplan/00-installer-config.yaml"
 
-    - name: Apply the network configurarion on Ubuntu VM
+    - name: Apply the network configuration on Ubuntu VM
       vmware_vm_shell:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "netplan apply"
 
@@ -230,12 +196,12 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         copy:
-          src: "{{ LOCAL_BINDTemplateNamedConf }}"
-          dest: "/home/{{ LOCAL_UbuntuOSUser }}/named.conf"
+          src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.BINDNamedConf }}"
+          dest: "/home/{{ Nested_Ubuntu.OS.Credentials.User }}/named.conf"
 
     - name: Move BIND named.conf file to correct location on Ubuntu VM
       vmware_vm_shell:
@@ -243,16 +209,16 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         vm_shell: /usr/bin/sudo
-        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/named.conf /etc/bind/named.conf"
+        vm_shell_args: "mv /home/{{ Nested_Ubuntu.OS.Credentials.User }}/named.conf /etc/bind/named.conf"
 
-    - name: Copy BIND named.conf.options file to working directory
+    - name: Copy BIND named.conf.options file to temp directory
       template: 
-        src: "{{ LOCAL_BINDTemplateNamedConfOptions }}"
-        dest: "{{ LOCAL_WorkingDir }}/named.conf.options"
+        src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.BINDNamedOptions }}"
+        dest: "{{ Target.TempFolder }}/named.conf.options"
 
     - name: Copy BIND named.conf.options file to Ubuntu VM
       vmware_guest_file_operation:
@@ -260,12 +226,12 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         copy:
-          src: "{{ LOCAL_WorkingDir }}/named.conf.options"
-          dest: "/home/{{ LOCAL_UbuntuOSUser }}/named.conf.options"
+          src: "{{ Target.TempFolder }}/named.conf.options"
+          dest: "/home/{{ Nested_Ubuntu.OS.Credentials.User }}/named.conf.options"
 
     - name: Move BIND named.conf.options file to correct location on Ubuntu VM
       vmware_vm_shell:
@@ -273,16 +239,16 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         vm_shell: /usr/bin/sudo
-        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/named.conf.options /etc/bind/named.conf.options"
+        vm_shell_args: "mv /home/{{ Nested_Ubuntu.OS.Credentials.User }}/named.conf.options /etc/bind/named.conf.options"
 
-    - name: Copy BIND named.conf.local file to working directory
+    - name: Copy BIND named.conf.local file to temp directory
       template: 
-        src: "{{ LOCAL_BINDTemplateNamedConfLocal }}"
-        dest: "{{ LOCAL_WorkingDir }}/named.conf.local"
+        src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.BINDNamedLocal }}"
+        dest: "{{ Target.TempFolder }}/named.conf.local"
 
     - name: Copy BIND named.conf.local file to Ubuntu VM
       vmware_guest_file_operation:
@@ -290,12 +256,12 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         copy:
-          src: "{{ LOCAL_WorkingDir }}/named.conf.local"
-          dest: "/home/{{ LOCAL_UbuntuOSUser }}/named.conf.local"
+          src: "{{ Target.TempFolder }}/named.conf.local"
+          dest: "/home/{{ Nested_Ubuntu.OS.Credentials.User }}/named.conf.local"
 
     - name: Move BIND named.conf.local file to correct location on Ubuntu VM
       vmware_vm_shell:
@@ -303,16 +269,16 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         vm_shell: /usr/bin/sudo
-        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/named.conf.local /etc/bind/named.conf.local"
+        vm_shell_args: "mv /home/{{ Nested_Ubuntu.OS.Credentials.User }}/named.conf.local /etc/bind/named.conf.local"
 
-    - name: Copy BIND forward zone file to working directory
+    - name: Copy BIND forward zone file to temp directory
       template: 
-        src: "{{ LOCAL_BINDTemplateForwardZone }}"
-        dest: "{{ LOCAL_WorkingDir }}/db.{{ Common.DNS.Domain | lower }}"
+        src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.BINDForwardZone }}"
+        dest: "{{ Target.TempFolder }}/db.{{ Common.DNS.Domain | lower }}"
 
     - name: Copy BIND forward zone file to Ubuntu VM
       vmware_guest_file_operation:
@@ -320,12 +286,12 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         copy:
-          src: "{{ LOCAL_WorkingDir }}/db.{{ Common.DNS.Domain | lower }}"
-          dest: "/home/{{ LOCAL_UbuntuOSUser }}/db.{{ Common.DNS.Domain | lower }}"
+          src: "{{ Target.TempFolder }}/db.{{ Common.DNS.Domain | lower }}"
+          dest: "/home/{{ Nested_Ubuntu.OS.Credentials.User }}/db.{{ Common.DNS.Domain | lower }}"
 
     - name: Move BIND forward zone file to correct location on Ubuntu VM
       vmware_vm_shell:
@@ -333,16 +299,16 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         vm_shell: /usr/bin/sudo
-        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/db.{{ Common.DNS.Domain | lower }} {{ LOCAL_BINDZoneFilePath }}/db.{{ Common.DNS.Domain | lower }}"
+        vm_shell_args: "mv /home/{{ Nested_Ubuntu.OS.Credentials.User }}/db.{{ Common.DNS.Domain | lower }} /var/lib/bind/db.{{ Common.DNS.Domain | lower }}"
 
-    - name: Copy BIND IPv4 reverse zone file to working directory
+    - name: Copy BIND IPv4 reverse zone file to temp directory
       template: 
-        src: "{{ LOCAL_BINDTemplateReverseZoneIPv4 }}"
-        dest: "{{ LOCAL_WorkingDir }}/db.{{ Pod.BaseNetwork.IPv4 }}"
+        src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.BINDReverseZoneIPv4 }}"
+        dest: "{{ Target.TempFolder }}/db.{{ Pod.BaseNetwork.IPv4 }}"
 
     - name: Copy BIND IPv4 reverse zone file to Ubuntu VM
       vmware_guest_file_operation:
@@ -350,12 +316,12 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         copy:
-          src: "{{ LOCAL_WorkingDir }}/db.{{ Pod.BaseNetwork.IPv4 }}"
-          dest: "/home/{{ LOCAL_UbuntuOSUser }}/db.{{ Pod.BaseNetwork.IPv4 }}"
+          src: "{{ Target.TempFolder }}/db.{{ Pod.BaseNetwork.IPv4 }}"
+          dest: "/home/{{ Nested_Ubuntu.OS.Credentials.User }}/db.{{ Pod.BaseNetwork.IPv4 }}"
 
     - name: Move BIND IPv4 zone file to correct location on Ubuntu VM
       vmware_vm_shell:
@@ -363,16 +329,16 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         vm_shell: /usr/bin/sudo
-        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/db.{{ Pod.BaseNetwork.IPv4 }} {{ LOCAL_BINDZoneFilePath }}/db.{{ Pod.BaseNetwork.IPv4 }}"
+        vm_shell_args: "mv /home/{{ Nested_Ubuntu.OS.Credentials.User }}/db.{{ Pod.BaseNetwork.IPv4 }} /var/lib/bind/db.{{ Pod.BaseNetwork.IPv4 }}"
 
-    - name: Copy BIND IPv6 reverse zone file to working directory
+    - name: Copy BIND IPv6 reverse zone file to temp directory
       template: 
-        src: "{{ LOCAL_BINDTemplateReverseZoneIPv6 }}"
-        dest: "{{ LOCAL_WorkingDir }}/{{ LOCAL_BINDReverseZoneFileIPv6 }}"
+        src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.BINDReverseZoneIPv6 }}"
+        dest: "{{ Target.TempFolder }}/db.{{ Pod.BaseNetwork.IPv4 }}"
 
     - name: Copy BIND IPv6 reverse zone file to Ubuntu VM
       vmware_guest_file_operation:
@@ -380,12 +346,12 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         copy:
-          src: "{{ LOCAL_WorkingDir }}/{{ LOCAL_BINDReverseZoneFileIPv6 }}"
-          dest: "/home/{{ LOCAL_UbuntuOSUser }}/{{ LOCAL_BINDReverseZoneFileIPv6 }}"
+          src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.BINDReverseZoneIPv6 }}"
+          dest: "/home/{{ Nested_Ubuntu.OS.Credentials.User }}/db.fd00"
 
     - name: Move BIND IPv6 zone file to correct location on Ubuntu VM
       vmware_vm_shell:
@@ -393,11 +359,11 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         vm_shell: /usr/bin/sudo
-        vm_shell_args: "mv /home/{{ LOCAL_UbuntuOSUser }}/{{ LOCAL_BINDReverseZoneFileIPv6 }} {{ LOCAL_BINDZoneFilePath }}/{{ LOCAL_BINDReverseZoneFileIPv6 }}"
+        vm_shell_args: "mv /home/{{ Nested_Ubuntu.OS.Credentials.User }}/db.fd00 /var/lib/bind/db.fd00"
 
     - name: Set correct owner on BIND zone file directory on Ubuntu VM
       vmware_vm_shell:
@@ -405,9 +371,9 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "chown bind:bind /var/lib/named/ -R"
 
@@ -417,9 +383,9 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "mkdir /var/log/named"
 
@@ -429,9 +395,9 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "chown bind:bind /var/log/named"
 
@@ -441,13 +407,20 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ LOCAL_UbuntuVMName }}"
-        vm_username: "{{ LOCAL_UbuntuOSUser }}"
-        vm_password: "VMware1!"
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "systemctl restart named"
 
-    - name: Delete working directory on Ansible controller
+    - name: Delete local ISO content directory
       file:
-        path: "{{ LOCAL_WorkingDir }}"
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}"
         state: absent
+      when: DEBUG.KeepInstallerFiles != true
+
+    - name: Delete the custom Ubuntu ISO file
+      file:
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.File }}" 
+        state: absent
+      when: DEBUG.KeepInstallerFiles != true
