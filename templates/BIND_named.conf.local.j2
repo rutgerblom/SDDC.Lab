@@ -8,22 +8,22 @@
 
 zone "{{ Common.DNS.Domain | lower }}" {
   type master;
-  allow-update { {{ LOCAL_BINDACLAnsibleController }};};          // The Ansible Controller
-  allow-transfer { {{ LOCAL_BINDACLAnsibleController }};};        // The Ansible Controller -- Used for testing
-  file "{{ LOCAL_BINDZoneFilePath }}/db.{{ Common.DNS.Domain | lower }}";
+  allow-update {any;};          // The Ansible Controller
+  allow-transfer {any;};        // The Ansible Controller -- Used for testing
+  file "/var/lib/bind/db.{{ Common.DNS.Domain | lower }}";
 };
 
 zone "{{ LOCAL_BINDReverseZoneNameIPv4 }}" {
   type master;
-  allow-update { {{ LOCAL_BINDACLAnsibleController }};};          // The Ansible Controller
-  allow-transfer { {{ LOCAL_BINDACLAnsibleController }};};        // The Ansible Controller -- Used for testing
-  file "{{ LOCAL_BINDZoneFilePath }}/db.{{ Pod.BaseNetwork.IPv4 }}";
+  allow-update {any;};          // The Ansible Controller
+  allow-transfer {any;};        // The Ansible Controller -- Used for testing
+  file "/var/lib/bind/db.{{ Pod.BaseNetwork.IPv4 }}";
 };
 
 zone "{{ LOCAL_BINDReverseZoneNameIPv6 }}" {
   type master;
-  allow-update { {{ LOCAL_BINDACLAnsibleController }};};          // The Ansible Controller
-  allow-transfer { {{ LOCAL_BINDACLAnsibleController }};};        // The Ansible Controller -- Used for testing
-  file "{{ LOCAL_BINDZoneFilePath }}/{{ LOCAL_BINDReverseZoneFileIPv6 }}";
+  allow-update { any;};          // The Ansible Controller
+  allow-transfer { any;};        // The Ansible Controller -- Used for testing
+  file "/var/lib/bind/db.fd00"";
   notify yes;
 };
