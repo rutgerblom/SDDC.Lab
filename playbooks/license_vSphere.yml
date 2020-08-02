@@ -1,8 +1,10 @@
 ---
 - hosts: localhost
   name: license_vSphere.yml
-  vars_files:
-    - ../licenses.yml
+  vars:
+    - LOCAL_LicenseFile: ../licenses.yml
+#  vars_files:
+#    - ../licenses.yml
   gather_facts: false
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
@@ -53,6 +55,8 @@
                                        Target.Cluster: {{ Target.Cluster }}
                                     Target.DataCenter: {{ Target.DataCenter }}
 
+                                         License File: {{ LOCAL_LicenseFile }}
+
                                                vCenter Server
                                                ==============
                                                Vendor: {{ Deploy.Software.vCenter.Vendor }}
@@ -62,6 +66,55 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
+
+###
+### GOAL: If License file does not exist, then skip all licensing, and leave the components in Evauation Mode.
+###
+
+    - name: Check for existance of license file
+      stat:
+        path: "{{ LOCAL_LicenseFile }}"
+        get_checksum: no
+      register: stat_results
+
+    - name: Assume file does not exist, so set flag to skip licensing products
+      set_fact:
+        LicenseProducts: False
+
+    - name: If License file does exist and is a regular file, then set flag to license products
+      set_fact:
+        LicenseProducts: True
+      when:
+        - stat_results.stat.exists == True
+        - stat_results.stat.isreg == True
+
+    - name: If not licensing products, notify user
+      pause:
+        seconds: 20
+        prompt: |
+          =========================================================================
+          =========================== Licensing Notice  ===========================
+          =========================================================================
+
+             The following licensing file does not appear to exist:
+                                 {{ LOCAL_LicenseFile }}
+
+             For that reason, the following products will NOT be licensed, and
+             will operate with their respective default EVALUATION LICENSE:
+
+                                 vCenter Server
+                                 ESXi Hosts
+                                 vSAN
+
+          =========================================================================
+      when:
+        - LicenseProducts != True
+
+    - name: If we are licensing products, read in license information
+      include_vars:
+        file: "{{ LOCAL_LicenseFile }}"
+      when: LicenseProducts == True
+
 
 ##
 ## License vCenter Server
@@ -74,9 +127,10 @@
         validate_certs: no
         license: "{{ item.KeyCode }}"
         state: present
-      loop: "{{ License.VMware.vCenter.Licenses }}"
+      loop: "{{ License.VMware.vCenter.Licenses | default([]) }}"
       when:
         - Deploy.Software.vCenter.Version is match( item.Version )
+        - LicenseProducts == True
 
 ##
 ## License ESXi Hosts
@@ -84,13 +138,15 @@
     - name: Create list of all applicable ESXi licenses
       set_fact:
         ESXi_Licenses: "{{ (ESXi_Licenses | default([])) + [ item ] }}"
-      loop: "{{ License.VMware.ESXi.Licenses }}"
+      loop: "{{ License.VMware.ESXi.Licenses | default([]) }}"
       when:
         - Deploy.Software.ESXi.Version is match( item.Version )
+        - LicenseProducts == True
 
     - name: Assign an ESXi license to each deployed ESXi host
       set_fact:
         HostsToLicense: "{{ lookup('template', '{{ Target.TemplateFolder }}/vars_License_ESXi.j2') | from_yaml }}"
+      when: LicenseProducts == True
 
     - name: DEBUG -- Display ESXi Hosts and assigned Licenses (Pause)
       pause:
@@ -103,6 +159,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
+        - LicenseProducts == True
 
     - name: License ESXi Hosts
       vcenter_license:
@@ -114,6 +171,7 @@
         license: "{{ item.License }}"
         state: present
       loop: "{{ HostsToLicense }}"
+      when: LicenseProducts == True
 
 
 ##
@@ -123,13 +181,16 @@
     - name: Create list of all applicable vSAN licenses
       set_fact:
         vSAN_Licenses: "{{ (vSAN_Licenses | default([])) + [ item ] }}"
-      loop: "{{ License.VMware.vSAN.Licenses }}"
+      loop: "{{ License.VMware.vSAN.Licenses | default([]) }}"
       when:
         - Deploy.Software.ESXi.Version is match( item.Version )
+        - LicenseProducts == True
 
     - name: Assign a vSAN license to each deployed vSAN Cluster
       set_fact:
         ClustersToLicense: "{{ lookup('template', '{{ Target.TemplateFolder }}/vars_License_vSAN.j2') | from_yaml }}"
+      when:
+        - LicenseProducts == True
 
     - name: DEBUG - Display vSAN Clusters and assigned Licenses (Pause)
       pause:
@@ -142,6 +203,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
+        - LicenseProducts == True
 
     - name: License each vSAN Cluster
       vcenter_license:
@@ -153,4 +215,6 @@
         license: "{{ item.License }}"
         state: present
       loop: "{{ ClustersToLicense }}"
+      when:
+        - LicenseProducts == True
 
