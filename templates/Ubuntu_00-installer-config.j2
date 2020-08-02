@@ -2,11 +2,11 @@ network:
   ethernets:
     ens192:
       addresses:
-      - {{ LOCAL_UbuntuOSIPv4Address }} 
-      gateway4: {{ LOCAL_UbuntuOSIPv4Gateway }}
+      - {{ Nested_Ubuntu.OS.Network.IPv4.Address }}/{{ Nested_Ubuntu.OS.Network.IPv4.Prefix }}
+      gateway4: {{ Nested_Ubuntu.OS.Network.IPv4.Address }}
       nameservers:
         addresses:
-        - {{ LOCAL_UbuntuOSIPv4DNS }}
+        - 8.8.8.8
         search:
         - {{ Common.DNS.Domain }}
   version: 2
