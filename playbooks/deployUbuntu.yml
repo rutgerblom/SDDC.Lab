@@ -199,7 +199,12 @@
         cdrom:
           type: "iso"
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Ubuntu.File }}"
-        annotation: "Username: {{ Nested_Ubuntu.OS.Credentials.User }} Password: {{ Nested_Ubuntu.OS.Credentials.Password }}"
+        annotation: |
+          **********************************
+          *** Auto-Deployed by SDDC.Lab ****
+          **********************************
+          Username: {{ Nested_Ubuntu.OS.Credentials.User }} 
+          Password: {{ Nested_Ubuntu.OS.Credentials.Password }}
       when: ubuntu_status is failed
 
     - name: Wait 15 minutes for the Ubuntu installation to complete
@@ -295,7 +300,7 @@
 
     - name: Copy BIND named.conf.options file to temp directory
       template: 
-        src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.BINDNamedOptions }}"
+        src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.BINDNamedConfOptions }}"
         dest: "{{ Target.TempFolder }}/named.conf.options"
       when: ubuntu_status is failed
 
