@@ -1,0 +1,145 @@
+---
+- hosts: localhost
+  name: license_vRLI.yml
+  vars:
+    - LOCAL_LicenseFile: ../licenses.yml
+  gather_facts: false
+  tasks:
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Deploy.vRLI: {{ Deploy.vRLI }}
+                                     Nested_vRLI.FQDN: {{ Nested_vRLI.FQDN }}
+
+                                         License File: {{ LOCAL_LicenseFile }}
+
+                                               vRLI Deployed
+                                               ==============
+                                               Vendor: {{ Deploy.Software.vRLI.Vendor }}
+                                              Product: {{ Deploy.Software.vRLI.Product }}
+                                              Version: {{ Deploy.Software.vRLI.Version }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.vRLI == true
+
+
+###
+### GOAL: If License file does not exist, then skip all licensing, and leave the components in Evaluation state.
+###
+
+    - name: Check for existance of license file
+      stat:
+        path: "{{ LOCAL_LicenseFile }}"
+        get_checksum: no
+      register: stat_results
+
+    - name: Assume file does not exist, so set flag to skip licensing products
+      set_fact:
+        LicenseProducts: False
+
+    - name: If License file does exist and is a regular file, then set flag to license products
+      set_fact:
+        LicenseProducts: True
+      when:
+        - stat_results.stat.exists == True
+        - stat_results.stat.isreg == True
+
+    - name: If not licensing products, notify user
+      pause:
+        seconds: 20
+        prompt: |
+          =========================================================================
+          =========================== Licensing Notice  ===========================
+          =========================================================================
+
+             The following licensing file does not appear to exist:
+                                 {{ LOCAL_LicenseFile }}
+
+             For that reason, the following products will NOT be licensed, and
+             will operate with their respective default license(s):
+
+                                 vRealize Log Insight 
+
+          =========================================================================
+      when:
+        - LicenseProducts != True
+
+    - name: If we are licensing products, read in license information
+      include_vars:
+        file: "{{ LOCAL_LicenseFile }}"
+      when: LicenseProducts == True
+
+
+##
+## License vRealize Log Insight
+##
+    - name: Obtain a session ID from the vRLI API 
+      uri:
+        url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/sessions
+        validate_certs: no
+        method: POST
+        body:
+          username: "{{ Nested_vRLI.Credentials.admin.Name }}"
+          password: "{{ Nested_vRLI.Credentials.admin.Password }}"
+          provider: "Local"
+        body_format: json
+      register: vrli_session
+      when:
+        - Deploy.vRLI == true
+
+    - name: Add all licenses to vRLI
+      uri:
+        url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/licenses
+        validate_certs: no
+        method: POST
+        headers:
+          Authorization: "Bearer {{ vrli_session.json.sessionId }}"
+        body:
+          key: "{{ item.KeyCode }}" 
+        body_format: json
+        status_code: 201
+      loop: "{{ License.VMware.vRLI.Licenses }}"
+      when:
+        - Deploy.vRLI == true
+        - Deploy.Software.vRLI.Version is match(item.Version)
