@@ -103,7 +103,8 @@
     - name: Check if Ubuntu ISO file exists locally exists locally in the software repository
       stat:
         path: "{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}"
-      register: InstallerFileCheck     
+      register: InstallerFileCheck
+      tags: install-media     
 
     - name: Update Ubuntu ISO file in the local software repository (overwrite if exists)
       get_url:
@@ -114,20 +115,24 @@
         - (InstallerFileCheck.stat.exists != true) or (Deploy.Software.Options.UseLocalInstaller != true)
         - Deploy.Software.Options.KeepNewInstallers == true
         - ubuntu_status is failed
+      tags: install-media
         
     - name: Mount Ubuntu ISO file
       action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}" opts=loop fstype=iso9660 state=mounted
       when: ubuntu_status is failed
+      tags: install-media
 
     - name: Copy Ubuntu ISO file contents
       copy: 
         src: "{{ Target.ISOMount }}/"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
       when: ubuntu_status is failed
+      tags: install-media
 
     - name: Unmount Ubuntu ISO
       action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}" fstype=iso9660 state=absent
       when: ubuntu_status is failed
+      tags: install-media
 
     - name: Edit txt.cfg to modify append line 
       replace:
@@ -135,30 +140,35 @@
         regexp: 'append   initrd=/casper/initrd quiet  ---'
         replace: 'append   initrd=/casper/initrd quiet --- autoinstall ds=nocloud;s=/cdrom/SDDC.Lab/'
       when: ubuntu_status is failed
+      tags: install-media
 
     - name: Create directory to store user-data and meta-data
       file:
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/SDDC.Lab"
         state: directory
       when: ubuntu_status is failed
+      tags: install-media
 
     - name: Copy user-data file to directory
       template: 
         src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.UserData }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/SDDC.Lab/user-data"
       when: ubuntu_status is failed
+      tags: install-media
 
     - name: Create empty meta-data file in directory
       file:
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/SDDC.Lab/meta-data"
         state: touch
       when: ubuntu_status is failed
+      tags: install-media
 
     - name: Create custom Ubuntu ISO
       command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.File }} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
       args:
         chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
       when: ubuntu_status is failed
+      tags: install-media
 
     - name: Upload the custom Ubuntu ISO to the datastore
       vsphere_copy: 
@@ -171,6 +181,7 @@
         datastore: "{{ Target.Datastore }}"
         path: "{{ Target.ISOFolder }}/{{ Deploy.Software.Ubuntu.File }}"
       when: ubuntu_status is failed
+      tags: install-media
 
     - name: Deploy Ubuntu VM
       vmware_guest:
@@ -199,7 +210,10 @@
         cdrom:
           type: "iso"
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Ubuntu.File }}"
-        annotation: "{{ Nested_Ubuntu.VM.Annotation }}"
+        annotation: | 
+                    "{{ Nested_Ubuntu.VM.Annotation }}
+                    Username: {{ Nested_Ubuntu.OS.Credentials.User }}
+                    Password: {{ Nested_Ubuntu.OS.Credentials.Password }}"
       when: ubuntu_status is failed
 
     - name: Wait 15 minutes for the Ubuntu installation to complete
