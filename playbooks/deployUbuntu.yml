@@ -207,6 +207,19 @@
         seconds: 900
       when: ubuntu_status is failed
 
+    - name: Set password for the Ubuntu user
+      vmware_vm_shell:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        vm_id: "{{ Nested_Ubuntu.VM.VMName }}"
+        vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
+        vm_password: VMware1!
+        vm_shell: /usr/bin/echo
+        vm_shell_args: "'{{ Nested_Ubuntu.OS.Credentials.User }}:{{ Nested_Ubuntu.OS.Credentials.Password }}' | sudo chpasswd"
+      when: ubuntu_status is failed
+
     - name: Copy network configuration file to temp directory
       template: 
         src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.NetPlan }}"
