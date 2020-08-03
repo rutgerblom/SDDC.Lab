@@ -68,20 +68,24 @@
         
     - name: Mount ESXi ISO
       action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }}" opts=loop fstype=iso9660 state=mounted
+      tags: esxi-install-media
 
     - name: Copy ISO contents
       copy: 
         src: "{{ Target.ISOMount }}/"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
+      tags: esxi-install-media
 
     - name: Unmount ESXi ISO
       action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }}" fstype=iso9660 state=absent
+      tags: esxi-install-media
 
     - name: Edit boot.cfg
       replace:
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/boot.cfg"
         regexp: 'kernelopt=cdromBoot runweasel'
         replace: 'kernelopt=ks=cdrom:/KS.CFG'
+      tags: esxi-install-media
 
     - name: Create directory with modified ISO contents for each nested ESXi host
       copy:
@@ -89,6 +93,7 @@
         dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+      tags: esxi-install-media
 
     - name: Create KS.CFG for each nested ESXi host
       template: 
@@ -96,6 +101,7 @@
         dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}/KS.CFG"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+      tags: esxi-install-media
 
     - name: Create custom ESXi ISO for each nested ESXi host
       command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }} -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ item.value.VMName }}/"
@@ -103,6 +109,7 @@
         chdir: "{{ Target.TempFolder }}/{{ item.value.VMName }}/"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+      tags: esxi-install-media
 
     - name: Upload the ESXi ISO to the datastore
       vsphere_copy: 
@@ -116,13 +123,14 @@
         path: "{{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
-      tags: upload
+      tags: esxi-install-media
       
     - name: Delete local ISO content directory
       file:
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}"
         state: absent
       when: DEBUG.KeepInstallerFiles != true
+      tags: esxi-install-media
 
     - name: Delete copies of ISO content directory
       file:
@@ -132,6 +140,7 @@
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
         - DEBUG.KeepInstallerFiles != true
+      tags: esxi-install-media
 
     - name: Delete the ESXi ISO files
       file:
@@ -141,3 +150,4 @@
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
         - DEBUG.KeepInstallerFiles != true
+      tags: esxi-install-media
