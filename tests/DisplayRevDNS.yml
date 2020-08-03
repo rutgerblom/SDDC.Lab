@@ -7,9 +7,13 @@
       debug:
         msg: "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') }}"
 
-    - name: Display IPv4 Reverse DNS for 10.203
+    - name: Display IPv4 Reverse DNS for 10.203 (Without DNS root '.')
       debug:
         msg: "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
+
+    - name: Display IPv4 Reverse DNS for 10.203 (Absolute path with DNS root '.')
+      debug:
+        msg: "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*)$', '\\1') }}"
 
 ##
 ## "lower" filter not required, but added for safety in case ipaddr ever changes
@@ -21,6 +25,10 @@
 ##
 ## IMPORTANT: Notice final '.' indicating root is removed, too.
 ##
-    - name: Display IPv6 Reverse DNS for fd00:0000:0000::/48
+    - name: Display IPv6 Reverse DNS for fd00:0000:0000::/48 (Without DNS root '.')
       debug:
         msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{40}(.*).$', '\\1') }}"
+
+    - name: Display IPv6 Reverse DNS for fd00:0000:0000::/48 (Absolute path with DNS root '.')
+      debug:
+        msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{40}(.*)$', '\\1') }}"
