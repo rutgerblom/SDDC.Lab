@@ -1,6 +1,11 @@
+;;
+;; Suggested Filenames:
+;;        Template: BIND_db.10.203.j2
+;;       On Target: db.10.203
+;;
 $TTL 604800
-@ IN SOA dns.{{ Common.DNS.Domain | lower }}. admin.{{ Common.DNS.Domain | lower }}. (
-          10   ; Serial
+{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*)$', '\\1') }}  IN SOA dns.{{ Common.DNS.Domain | lower }}. admin.{{ Common.DNS.Domain | lower }}. (
+           1   ; Serial
       604800   ; Refresh
        86400   ; Retry
      2419200   ; Expire
@@ -8,13 +13,13 @@ $TTL 604800
 ;
 
 ; Name servers
-{{ LOCAL_BINDReverseZoneNameIPv4 }}.    IN   NS   dns.{{ Common.DNS.Domain | lower }}.
+               NS   dns.{{ Common.DNS.Domain | lower }}.
 
 ; A records for name servers
 dns            IN   A    {{ Nested_Ubuntu.OS.Network.IPv4.Address }}
 
 ;Define origin
-$ORIGIN {{ LOCAL_BINDReverseZoneNameIPv4 }}.
+$ORIGIN {{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*)$', '\\1') }}
 
 ; PTR records
-5.0    IN   PTR  dns.{{ Common.DNS.Domain | lower }}.
+{{ Nested_Ubuntu.OS.Network.IPv4.Address | ipaddr('revdns') | regex_replace('(^[0-9]+.[0-9]+)..+$', '\\1') }}    IN   PTR  dns.{{ Common.DNS.Domain | lower }}.

@@ -1,5 +1,10 @@
+;;
+;; Suggested Filenames:
+;;        Template: BIND_db.sddc.lab.j2
+;;       On Target: db.sddc.lab
+;;
 $TTL 604800
-@ IN SOA dns.{{ Common.DNS.Domain | lower }}. admin.{{ Common.DNS.Domain | lower }}. (
+{{ Common.DNS.Domain | lower }}.  IN SOA dns.{{ Common.DNS.Domain | lower }}. admin.{{ Common.DNS.Domain | lower }}. (
           10   ; Serial
       604800   ; Refresh
        86400   ; Retry
@@ -7,7 +12,7 @@ $TTL 604800
       604800 ) ; Negative Cache TTL
 
 ; Name servers
-{{ Common.DNS.Domain | lower }}.    IN   NS   dns.{{ Common.DNS.Domain | lower }}.
+                NS   dns.{{ Common.DNS.Domain | lower }}.
 
 ; Define Origin
 $ORIGIN  {{ Common.DNS.Domain | lower }}.
