@@ -1,8 +1,3 @@
-;;
-;; Suggested Filenames:
-;;        Template: BIND_db.df00:0000:0000.j2
-;;       On Target: db.df00:0000:0000
-;;
 $TTL 604800     ; 1 week
 {{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{40}(.*)$', '\\1') }}  IN SOA  dns.{{ Common.DNS.Domain | lower }}. admin.{{ Common.DNS.Domain | lower }}. (
                 1          ; serial
