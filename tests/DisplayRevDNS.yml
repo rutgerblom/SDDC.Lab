@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  gather_facts: false
+  tasks:
+
+    - name: Display IPv4 Reverse DNS for 10.203
+      debug:
+        msg: "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') }}"
+
+    - name: Display IPv4 Reverse DNS for 10.203
+      debug:
+        msg: "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*)$', '\\1') }}"
+
+    - name: Display IPv6 Reverse DNS for fd00:0000:0000...
+      debug:
+        msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | ipaddr('revdns') }}"
+
+    - name: Display IPv6 Reverse DNS for fd00:0000:0000::/48
+      debug:
+        msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | ipaddr('revdns') | regex_replace('^.{40}(.*)$', '\\1') }}"
