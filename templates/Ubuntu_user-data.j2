@@ -11,7 +11,7 @@ autoinstall:
       ethernets:
         ens192:
           addresses: [{{ Nested_Ubuntu.OS.Network.IPv4.Address }}/{{ Nested_Ubuntu.OS.Network.IPv4.Prefix }}]
-          gateway4: {{ Nested_Ubuntu.OS.Network.IPv4.Address }}
+          gateway4: {{ Nested_Ubuntu.OS.Network.IPv4.Gateway }}
           nameservers:
             addresses: [{{ Nested_Ubuntu.OS.Network.IPv4.DNS }}]
             search: [{{ Common.DNS.Domain }}]
