@@ -103,8 +103,7 @@
     - name: Check if Ubuntu ISO file exists locally exists locally in the software repository
       stat:
         path: "{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}"
-      register: InstallerFileCheck
-      when: ubuntu_status is failed      
+      register: InstallerFileCheck     
 
     - name: Update Ubuntu ISO file in the local software repository (overwrite if exists)
       get_url:
