@@ -2,11 +2,19 @@ network:
   ethernets:
     ens192:
       addresses:
+{% if Deploy.IPv4 %}
       - {{ Nested_Ubuntu.OS.Network.IPv4.Address }}/{{ Nested_Ubuntu.OS.Network.IPv4.Prefix }}
       gateway4: {{ Nested_Ubuntu.OS.Network.IPv4.Address }}
       nameservers:
         addresses:
         - {{ Nested_Ubuntu.OS.Network.IPv4.DNS }}
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
+      - {{ Nested_Ubuntu.OS.Network.IPv6.Address }}/{{ Nested_Ubuntu.OS.Network.IPv6.Prefix }}
+      nameservers:
+        addresses:
+        - {{ Nested_Ubuntu.OS.Network.IPv6.DNS }}
+{% endif %}{# Deploy.IPv6 #}
         search:
         - {{ Common.DNS.Domain }}
   version: 2
