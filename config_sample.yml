@@ -463,6 +463,12 @@ Nested_Ubuntu:
       Memory: 2048
       DiskSize: 20
       PortGroup: "{{ Target.PortGroup.RouterUplink }}"
+    Annotation: |
+      **********************************
+      *** Auto-Deployed by SDDC.Lab ****
+      **********************************
+      Username: {{ Nested_Ubuntu.OS.Credentials.User }} 
+      Password: {{ Nested_Ubuntu.OS.Credentials.Password }}
   OS:
     Credentials:
       User: ubuntu

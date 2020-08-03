@@ -199,12 +199,7 @@
         cdrom:
           type: "iso"
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Ubuntu.File }}"
-        annotation: |
-          **********************************
-          *** Auto-Deployed by SDDC.Lab ****
-          **********************************
-          Username: {{ Nested_Ubuntu.OS.Credentials.User }} 
-          Password: {{ Nested_Ubuntu.OS.Credentials.Password }}
+        annotation: "{{ Nested_Ubuntu.VM.Annotation }}"
       when: ubuntu_status is failed
 
     - name: Wait 15 minutes for the Ubuntu installation to complete
@@ -333,7 +328,7 @@
 
     - name: Copy BIND named.conf.local file to temp directory
       template: 
-        src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.BINDNamedLocal }}"
+        src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.BINDNamedConfLocal }}"
         dest: "{{ Target.TempFolder }}/named.conf.local"
       when: ubuntu_status is failed
 
