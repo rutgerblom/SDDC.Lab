@@ -33,5 +33,4 @@ autoinstall:
     - ntp
     - net-tools
   late-commands:
-    - echo '{{ Nested_Ubuntu.OS.Credentials.User }}:{{ Nested_Ubuntu.OS.Credentials.Password }}' | chpasswd
     - echo '{{ Nested_Ubuntu.OS.Credentials.User }} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu # Allow user to run sudo without password
