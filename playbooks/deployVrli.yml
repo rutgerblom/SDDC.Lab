@@ -2,8 +2,6 @@
 - hosts: localhost
   name: deployVrli.yml
   gather_facts: false
-  vars_files:
-    - ../licenses.yml
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -176,23 +174,6 @@
       when:
         - Deploy.vRLI == true
         - vrli_check.status != 200
-
-    - name: Add all licenses to vRLI
-      uri:
-        url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/licenses
-        validate_certs: no
-        method: POST
-        headers:
-          Authorization: "Bearer {{ vrli_session.json.sessionId }}"
-        body:
-          key: "{{ item.KeyCode }}" 
-        body_format: json
-        status_code: 201
-      loop: "{{ License.VMware.vRLI.Licenses }}"
-      when:
-        - Deploy.vRLI == true
-        - vrli_check.status != 200
-        - Deploy.Software.vRLI.Version is match(item.Version)
 
     - name: Add vSphere to vRLI
       uri:
