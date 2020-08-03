@@ -1,4 +1,8 @@
 //
+// File: /etc/bind/named.conf.local
+//
+
+//
 // Do any local configuration here
 //
 
@@ -8,22 +12,22 @@
 
 zone "{{ Common.DNS.Domain | lower }}" {
   type master;
-  allow-update { any; };          // The Ansible Controller
-  allow-transfer { any; };        // The Ansible Controller -- Used for testing
+  allow-update { any; };         // Needs to include the IP address of the Ansible control station
+  allow-transfer { any; };       // Needs to include the IP address of the Ansible control station for utils/showdns
   file "/var/lib/bind/db.{{ Common.DNS.Domain | lower }}";
 };
 
-zone "{{ LOCAL_BINDReverseZoneNameIPv4 }}" {
+zone "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}" {
   type master;
-  allow-update { any; };          // The Ansible Controller
-  allow-transfer { any; };        // The Ansible Controller -- Used for testing
+  allow-update { any; };         // Needs to include the IP address of the Ansible control station
+  allow-transfer { any; };       // Needs to include the IP address of the Ansible control station for utils/showdns
   file "/var/lib/bind/db.{{ Pod.BaseNetwork.IPv4 }}";
 };
 
-zone "0.0.d.f.ipv6.arpa" {
+zone "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{40}(.*).$', '\\1') }}" {
   type master;
-  allow-update { any; };          // The Ansible Controller
-  allow-transfer { any; };        // The Ansible Controller -- Used for testing
-  file "/var/lib/bind/db.fd00"";
+  allow-update { any; };         // Needs to include the IP address of the Ansible control station
+  allow-transfer { any; };       // Needs to include the IP address of the Ansible control station for utils/showdns
+  file "/var/lib/bind/db.{{ Pod.BaseNetwork.IPv6 }}";
   notify yes;
 };

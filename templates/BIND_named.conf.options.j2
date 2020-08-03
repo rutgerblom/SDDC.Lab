@@ -1,3 +1,7 @@
+//
+// File: /etc/bind/named.conf.options
+//
+
 options {
   directory "/var/cache/bind";
   recursion yes;
@@ -8,7 +12,7 @@ options {
   forwarders { {{ Nested_Ubuntu.OS.Packages.BIND.Forwarder.IPv4 }}; }; 
   dnssec-validation no;
   auth-nxdomain no; # conform to RFC1035
-  listen-on { any; };
-  listen-on-v6 { any; };
+  listen-on { localhost; any; };
+  listen-on-v6 { localhost; any; };
   allow-transfer { any; };
 };
