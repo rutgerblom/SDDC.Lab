@@ -13,7 +13,7 @@
       prompt: "In which directory would you like to save {{ PodDocFile }}?"
       unsafe: yes
       private: no
-      default: "{{ lookup('env','HOME') }}"
+      default: "/home/{{ lookup('env','SUDO_USER') }}"
 
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
@@ -87,4 +87,5 @@
       template: 
         src: "{{ Target.TemplateFolder }}/{{ PodDocTemplate }}"
         dest: "{{ DestinationPodDocPath }}/{{ PodDocFile }}"
+        mode: 0666
       ignore_errors: true
