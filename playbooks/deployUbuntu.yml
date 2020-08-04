@@ -448,7 +448,7 @@
     - name: Copy BIND IPv6 reverse zone file to temp directory
       template: 
         src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.BINDReverseZoneIPv6 }}"
-        dest: "{{ Target.TempFolder }}/db.fd00"
+        dest: "{{ Target.TempFolder }}/db.{{ Pod.BaseNetwork.IPv6 }}"
       when: 
         - ubuntu_status is failed
         - Deploy.IPv6 == true
@@ -463,8 +463,8 @@
         vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
         vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         copy:
-          src: "{{ Target.TempFolder }}/db.fd00"
-          dest: "/home/{{ Nested_Ubuntu.OS.Credentials.User }}/db.fd00"
+          src: "{{ Target.TempFolder }}/db.{{ Pod.BaseNetwork.IPv6 }}"
+          dest: "/home/{{ Nested_Ubuntu.OS.Credentials.User }}/db.{{ Pod.BaseNetwork.IPv6 }}"
       when: 
         - ubuntu_status is failed
         - Deploy.IPv6 == true
@@ -479,7 +479,7 @@
         vm_username: "{{ Nested_Ubuntu.OS.Credentials.User }}"
         vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         vm_shell: /usr/bin/sudo
-        vm_shell_args: "mv /home/{{ Nested_Ubuntu.OS.Credentials.User }}/db.fd00 /var/lib/bind/db.fd00"
+        vm_shell_args: "mv /home/{{ Nested_Ubuntu.OS.Credentials.User }}/db.{{ Pod.BaseNetwork.IPv6 }} /var/lib/bind/db.{{ Pod.BaseNetwork.IPv6 }}"
       when: 
         - ubuntu_status is failed
         - Deploy.IPv6 == true
