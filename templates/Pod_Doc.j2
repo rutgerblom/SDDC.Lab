@@ -285,41 +285,66 @@ Deploy target: {{ Target.FQDN }}</p>
   </tr>
   <tr>
     <td>{{ Nested_vCenter.FQDN }}</td>
+{% if Deploy.IPv4 %}
     <td>{{ Nested_vCenter.Address.IPv4.Address }}</td>
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
+    <td>{{ Nested_vCenter.Address.IPv6.Address }}</td>
+{% endif %}{# Deploy.IPv6 #}
   </tr>
 {% for item in Nested_ESXi.Hosts %}
   <tr>
     <td>{{ Nested_ESXi.Hosts[item].FQDN }}</td>
+{% if Deploy.IPv4 %}
     <td>{{ Nested_ESXi.Hosts[item].vmk.vmk0.Address.IPv4.Address }}</td>
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
     <td>{{ Nested_ESXi.Hosts[item].vmk.vmk0.Address.IPv6.Address }}</td>
+{% endif %}{# Deploy.IPv6 #}
   </tr>
 {% endfor %}
 {% if Deploy.NSXT.GlobalManager == True %}
   <tr>
     <td>{{ Nested_NSXT.Components.GlobalManager.FQDN }}</td>
+{% if Deploy.IPv4 %}
     <td>{{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Address }}</td>
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
     <td>{{ Nested_NSXT.Components.GlobalManager.Address.IPv6.Address }}</td>
+{% endif %}{# Deploy.IPv6 #}
   </tr>
 {% endif %}{# Deploy.NSXT.GlobalManager #}
 {% if Deploy.NSXT.LocalManager == True %}
   <tr>
     <td>{{ Nested_NSXT.Components.LocalManager.FQDN }}</td>
+{% if Deploy.IPv4 %}
     <td>{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Address }}</td>
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
     <td>{{ Nested_NSXT.Components.LocalManager.Address.IPv6.Address }}</td>
+{% endif %}{# Deploy.IPv6 #}
   </tr>
 {% endif %}{# Deploy.NSXT.LocalManager #}
 {% if Deploy.NSXT.CloudServicesManager == True %}
   <tr>
     <td>{{ Nested_NSXT.Components.CloudServicesManager.FQDN }}</td>
+{% if Deploy.IPv4 %}
     <td>{{ Nested_NSXT.Components.CloudServicesManager.Address.IPv4.Address }}</td>
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
     <td>{{ Nested_NSXT.Components.CloudServicesManager.Address.IPv6.Address }}</td>
+{% endif %}{# Deploy.IPv6 #}
   </tr>
 {% endif %}{# Deploy.NSXT.CloudServicesManager #}
 {% if Deploy.vRLI == True %}
   <tr>
     <td>{{ Nested_vRLI.FQDN }}</td>
+{% if Deploy.IPv4 %}
     <td>{{ Nested_vRLI.Address.IPv4.Address }}</td>
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
     <td>{{ Nested_vRLI.Address.IPv6.Address }}</td>
+{% endif %}{# Deploy.IPv6 #}
   </tr>
 {% endif %}{# Deploy.vRLI #}
 </table>
