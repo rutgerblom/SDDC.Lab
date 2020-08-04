@@ -151,6 +151,18 @@
         - vcenter_check.status != 200
         - DEBUG.KeepConfigFiles != true
 
+    - name: Write annotation on the vCenter VM
+      vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_vCenter.VMName }}"
+        annotation: | 
+                    "{{ Common.Annotation }}
+                    Username: {{ Nested_vCenter.User }}
+                    Password: {{ Nested_vCenter.Password }}"
+
     - name: Create Datacenter
       vmware_datacenter:
         hostname: "{{ Nested_vCenter.FQDN | lower }}"
