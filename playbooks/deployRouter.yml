@@ -290,6 +290,10 @@
         cdrom:
           type: "iso"
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
+        annotation: | 
+                    "{{ Common.Annotation }}
+                    Username: vyos
+                    Password: {{ Common.Password.Nested }}"
       when: 
         - Deploy.Router == true
         - status is failed
@@ -624,10 +628,14 @@
         password: "{{ Target.Password }}"
         validate_certs: no
         name: "{{ Nested_Router.Name }}"
-        annotation: "The password for the vyos user is {{ Common.Password.Nested }}"
+        annotation: | 
+                    "{{ Common.Annotation }}
+                    Username: vyos
+                    Password: {{ Common.Password.Nested }}"
       when: 
         - Deploy.Router == true
         - status is failed
+        - Deploy.Software.Router.Version == "Legacy"
 
     - name: Add static route on the Ansible control node
       command: ./ip route add "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}" via "{{ Nested_Router.Uplink.IPv4.Address }}"
