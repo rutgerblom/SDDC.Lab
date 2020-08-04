@@ -88,15 +88,14 @@ Common:
     Domain: "SDDC.Lab"
     Server1:
       IPv4: "{{ Pod.BaseNetwork.IPv4 }}.0.5"                          # Replace this IP if using a different DNS server than the suggested .5  server in the Router Uplink segment (MUST support Dynamic DNS Updates)
-      IPv6: "{{ Pod.BaseNetwork.IPv6 }}:0::{{ '%04d'|format(5) }}"    # Replace this IP if using a different DNS server than the suggested ::5 server in the Router Uplink segment (MUST support Dynamic DNS Updates)
+      IPv6: "{{ Pod.BaseNetwork.IPv6 }}:0::5"                         # Replace this IP if using a different DNS server than the suggested ::5 server in the Router Uplink segment (MUST support Dynamic DNS Updates)
     Server2:
       IPv4: 
       IPv6: 
   NTP:
     Server1:
-      IPv4: "10.203.0.5"
-#      IPv4: "{{ Net.Management.IPv4.Network }}.1"                     # Replace with your IP address if Nested_Router.Version == "Legacy"
-      IPv6: "{{ Net.Management.IPv6.Network }}::1"                    # Replace with your IP address if Nested_Router.Version == "Legacy"
+      IPv4: "{{ Pod.BaseNetwork.IPv4 }}.0.5"                          # Replace this IP if using a different NTP server than the suggested .5  server in the Router Uplink segment
+      IPv6: "{{ Pod.BaseNetwork.IPv6 }}:0::5"                         # Replace this IP if using a different NTP server than the suggested ::5 server in the Router Uplink segment
     Server2:
       IPv4: "{{ Net.Management.IPv4.Network }}.1"                     # Replace with your IP address if Nested_Router.Version == "Legacy"
       IPv6: "{{ Net.Management.IPv6.Network }}::1"                    # Replace with your IP address if Nested_Router.Version == "Legacy"
@@ -147,12 +146,12 @@ TargetConfig:
     FQDN: "NetLab-vCenter.NetLab.Home"
     User: "administrator@vsphere.local"
     Password: "{{ Common.Password.Physical }}"
-    vSwitch: "Lab-vDS"
+    vSwitch: "SDDCLab-vDS"
     vSwitchVersion: 6.6.0
-    DataCenter: "NetLab"
-    Cluster: "Pod-Cluster"
+    DataCenter: "SDDCLab-DataCenter"
+    Cluster: "Lab-Cluster"
     Datastore: "vsanDatastore"
-    VMFolder: "Nested Labs/Pod-{{ '%03d'|format(Pod.Number|int) }}"
+    VMFolder: "SDDC Labs/Pod-{{ '%03d'|format(Pod.Number|int) }}"
     ISOFolder: "/Lab-ISO-Folder"
     ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"
     TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"
