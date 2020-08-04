@@ -203,8 +203,11 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
         name: "{{ Nested_vRLI.VMName }}"
         annotation: | 
-                    "{{ Common.Annotation }}
+                    {{ Common.Annotation }}
                     Username: {{ Nested_vRLI.Credentials.admin.Name }}
-                    Password: {{ Nested_vRLI.Credentials.admin.Password }}"
+                    Password: {{ Nested_vRLI.Credentials.admin.Password }}

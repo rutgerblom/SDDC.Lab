@@ -256,6 +256,10 @@
         cdrom:
           type: "iso"
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
+        annotation: | 
+                    {{ Common.Annotation }}
+                    Username: vyos
+                    Password: {{ Common.Password.Nested }}
       when: 
         - Deploy.Router == true
         - status is failed
@@ -291,9 +295,9 @@
           type: "iso"
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
         annotation: | 
-                    "{{ Common.Annotation }}
+                    {{ Common.Annotation }}
                     Username: vyos
-                    Password: {{ Common.Password.Nested }}"
+                    Password: {{ Common.Password.Nested }}
       when: 
         - Deploy.Router == true
         - status is failed
@@ -627,11 +631,14 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
         name: "{{ Nested_Router.Name }}"
         annotation: | 
-                    "{{ Common.Annotation }}
+                    {{ Common.Annotation }}
                     Username: vyos
-                    Password: {{ Common.Password.Nested }}"
+                    Password: {{ Common.Password.Nested }}
       when: 
         - Deploy.Router == true
         - status is failed

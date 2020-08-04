@@ -211,9 +211,9 @@
           type: "iso"
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Ubuntu.File }}"
         annotation: | 
-                    "{{ Common.Annotation }}
+                    {{ Common.Annotation }}
                     Username: {{ Nested_Ubuntu.OS.Credentials.User }}
-                    Password: {{ Nested_Ubuntu.OS.Credentials.Password }}"
+                    Password: {{ Nested_Ubuntu.OS.Credentials.Password }}
       when: ubuntu_status is failed
 
     - name: Wait 15 minutes for the Ubuntu installation to complete

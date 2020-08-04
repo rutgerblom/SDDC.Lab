@@ -185,6 +185,21 @@
       when: 
         - Deploy.NSXT.LocalManager == true
 
+    - name: Write annotation on the NSX-T Local Manager VM
+      vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
+        name: "{{ Nested_NSXT.Components.LocalManager.VMName }}"
+        annotation: | 
+                    {{ Common.Annotation }}
+                    Username: {{ Nested_NSXT.Credentials.admin.Name }}
+                    Password: {{ Nested_NSXT.Credentials.admin.Password }}
+
 
 ##
 ## Disable Password Expiration for all users except for root (API does not permit disabling for 'root' user)

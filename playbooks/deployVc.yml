@@ -157,11 +157,14 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
         name: "{{ Nested_vCenter.VMName }}"
         annotation: | 
-                    "{{ Common.Annotation }}
+                    {{ Common.Annotation }}
                     Username: {{ Nested_vCenter.User }}
-                    Password: {{ Nested_vCenter.Password }}"
+                    Password: {{ Nested_vCenter.Password }}
 
     - name: Create Datacenter
       vmware_datacenter:
