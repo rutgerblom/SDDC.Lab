@@ -410,7 +410,9 @@
       template: 
         src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.BINDReverseZoneIPv4 }}"
         dest: "{{ Target.TempFolder }}/db.{{ Pod.BaseNetwork.IPv4 }}"
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.IPv4 == true
 
     - name: Copy BIND IPv4 reverse zone file to Ubuntu VM
       vmware_guest_file_operation:
@@ -424,7 +426,9 @@
         copy:
           src: "{{ Target.TempFolder }}/db.{{ Pod.BaseNetwork.IPv4 }}"
           dest: "/home/{{ Nested_Ubuntu.OS.Credentials.User }}/db.{{ Pod.BaseNetwork.IPv4 }}"
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.IPv4 == true
 
     - name: Move BIND IPv4 zone file to correct location on Ubuntu VM
       vmware_vm_shell:
@@ -437,13 +441,17 @@
         vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "mv /home/{{ Nested_Ubuntu.OS.Credentials.User }}/db.{{ Pod.BaseNetwork.IPv4 }} /var/lib/bind/db.{{ Pod.BaseNetwork.IPv4 }}"
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.IPv4 == true
 
     - name: Copy BIND IPv6 reverse zone file to temp directory
       template: 
         src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template.BINDReverseZoneIPv6 }}"
         dest: "{{ Target.TempFolder }}/db.fd00"
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.IPv6 == true
 
     - name: Copy BIND IPv6 reverse zone file to Ubuntu VM
       vmware_guest_file_operation:
@@ -457,7 +465,9 @@
         copy:
           src: "{{ Target.TempFolder }}/db.fd00"
           dest: "/home/{{ Nested_Ubuntu.OS.Credentials.User }}/db.fd00"
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.IPv6 == true
 
     - name: Move BIND IPv6 zone file to correct location on Ubuntu VM
       vmware_vm_shell:
@@ -470,7 +480,9 @@
         vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "mv /home/{{ Nested_Ubuntu.OS.Credentials.User }}/db.fd00 /var/lib/bind/db.fd00"
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.IPv6 == true
 
     - name: Set correct owner on BIND zone file directory on Ubuntu VM
       vmware_vm_shell:
