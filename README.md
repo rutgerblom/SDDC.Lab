@@ -42,6 +42,7 @@ The primary use case is consistent and speedy provisioning of nested VMware SDDC
 * The physical standalone ESXi host hostname must be resolvable by DNS.
 * An Ubuntu 18.04/20.04 VM (Ansible Controller)
 * For deploying NSX-T you need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval)).
+* Access to VMware product installation media
 * A layer-3 switch with an appropriate OSPFv2 configuration matching the OSPFv2 settings in your config.yml file (for dynamic routing between Pods and your physical network).
 * The default settings require DNS name resolution. A pre-configured DNS server can be installed as part of the deployment.
 * If IPv6 deployment is enabled:
