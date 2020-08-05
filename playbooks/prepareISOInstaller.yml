@@ -87,10 +87,10 @@
         replace: 'kernelopt=ks=cdrom:/KS.CFG'
       tags: esxi-install-media
 
-    - name: Create directory with modified ISO contents for each nested ESXi host
-      copy:
-        src: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
-        dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
+    - name: Create a directory for each nested ESXi host
+      file:
+        path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
+        state: directory
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
       tags: esxi-install-media
@@ -104,7 +104,7 @@
       tags: esxi-install-media
 
     - name: Create custom ESXi ISO for each nested ESXi host
-      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }} -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ item.value.VMName }}/"
+      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }} -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/ {{ Target.TempFolder }}/{{ item.value.VMName }}/KS.CFG"
       args:
         chdir: "{{ Target.TempFolder }}/{{ item.value.VMName }}/"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
@@ -132,7 +132,7 @@
       when: DEBUG.KeepInstallerFiles != true
       tags: esxi-install-media
 
-    - name: Delete copies of ISO content directory
+    - name: Delete nested ESXi host directories
       file:
         path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
         state: absent
