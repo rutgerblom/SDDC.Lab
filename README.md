@@ -27,11 +27,11 @@
 ## Description
 
 This repository contains Ansible scripts that perform fully automated deployments of complete VMware SDDC Pods. Each Pod contains:
-* A router 
+* A Router 
 * vCenter Server
-* ESXi hosts
+* ESXi Hosts
 * NSX-T Manager
-* NSX-T Edge nodes
+* NSX-T Edge Nodes
 * vRealize Log Insight
 
 The primary use case is consistent and speedy provisioning of nested VMware SDDC lab environments.
@@ -40,12 +40,12 @@ The primary use case is consistent and speedy provisioning of nested VMware SDDC
 
 * A physical standalone ESXi host running version 6.7 or higher
 * The physical standalone ESXi host hostname must be resolvable by DNS.
-* An Ubuntu 18.04/20.04 VM (Ansible controller)
+* An Ubuntu 18.04/20.04 VM (Ansible Controller)
 * For deploying NSX-T you need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval)).
-* A layer-3 switch with an appropriate OSPFv2 configuration matching the OSPFv2 settings in your config.yml file (for dynamic routing between your pods and the physical network).
-* The default settings require DNS name resolution.
+* A layer-3 switch with an appropriate OSPFv2 configuration matching the OSPFv2 settings in your config.yml file (for dynamic routing between Pods and your physical network).
+* The default settings require DNS name resolution. A pre-configured DNS server can be installed as part of the deployment.
 * If IPv6 deployment is enabled:
-  * The Ansible controller must be IPv6 enabled
+  * The Ansible Controller must be IPv6 enabled
   * DNS server must be IPv6 enabled
   * DNS server must have IPv6 forward and reverse zones
   * Within the Pod, only the following components are currently configured with IPv6:
@@ -55,7 +55,7 @@ The primary use case is consistent and speedy provisioning of nested VMware SDDC
 
 ## Preparations
 
-* Install the required software on the Ansible controller:
+* Install the required software on your Ansible Controller:
   * sudo apt install python3 python3-pip xorriso
   * pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython
   * git clone https://github.com/rutgerblom/SDDC.Lab.git 
@@ -68,14 +68,18 @@ The primary use case is consistent and speedy provisioning of nested VMware SDDC
 
 * Modify **config.yml** and **licenses.yml** according to your needs and your environment
 
-* Create the software library directory structure:
+* Create the Software Library directory structure:
   * sudo ansible-playbook utils/util_CreateSoftwareDir.yml
 
-* Add the installation media to the corresponding directories in the software library (/Software)
+* Add installation media to the corresponding directories in the Software Library (/Software)
 
 ## Usage
 
 To deploy an SDDC Pod:
-* First generate a Pod configuration: **ansible-playbook playbooks/createPodConfig.yml**
-* Then start a Pod deployment per the instructions. For example:  
-**sudo ansible-playbook -e "@/home/serbl/Pod-230-Config.yml" deploy.yml**
+1. Generate a Pod configuration with:  
+**ansible-playbook playbooks/createPodConfig.yml**
+
+1. Start a Pod deployment per the instructions. For example:  
+**sudo ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" deploy.yml**
+
+Deploying an SDDC Pod will take somewhere between 1 and 1.5 hours depending on your environment a Pod configuration. 
