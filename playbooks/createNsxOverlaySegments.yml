@@ -74,6 +74,7 @@
       when:
         - DEBUG.DisplayVariables == true
         - Deploy.NSXT.LocalManager == true
+        - Deploy.NSXT.Edge == true
         - SegmentsToCreate != ""
 
     ## Create only OVERLAY Segments in var_Segments  ##
@@ -96,4 +97,5 @@
       loop: "{{ SegmentsToCreate }}"
       when: 
       - Deploy.NSXT.LocalManager == true
+      - Deploy.NSXT.Edge == true
       - Nested_NSXT.System.Fabric.TransportZone[item.transport_zone_display_name].Type == "OVERLAY"

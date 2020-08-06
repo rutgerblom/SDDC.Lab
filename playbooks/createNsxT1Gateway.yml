@@ -90,4 +90,6 @@
         tags: "{{ item.tags | default(omit) }}"
         locale_services: "{{ item.locale_services }}"
       loop: "{{ T1GatewaysToCreate }}"
-      when: Deploy.NSXT.LocalManager == true
+      when: 
+        - Deploy.NSXT.LocalManager == true
+        - Deploy.NSXT.Edge == true

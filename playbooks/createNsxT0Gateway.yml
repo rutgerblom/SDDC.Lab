@@ -72,6 +72,7 @@
       when:
         - DEBUG.DisplayVariables == true
         - Deploy.NSXT.LocalManager == true
+        - Deploy.NSXT.Edge == true
         - T0GatewaysToCreate != ""
 
     - name: Create NSX-T Tier-0 Gateway
@@ -90,3 +91,4 @@
         - "{{ T0GatewaysToCreate }}"
       when:
         - Deploy.NSXT.LocalManager == true
+        - Deploy.NSXT.Edge == true
