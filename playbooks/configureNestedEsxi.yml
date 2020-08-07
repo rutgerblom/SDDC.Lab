@@ -65,8 +65,8 @@
         schema: "vsphere"
       register: vm_facts
       until: vm_facts is search(item.value.vmk.vmk0.Address.IPv4.Address)
-      retries: 30
-      delay: 30
+      retries: 15
+      delay: 60
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
