@@ -152,7 +152,7 @@
       action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}" fstype=iso9660 state=absent
       when: ubuntu_status is failed
 
-    - name: Edit txt.cfg to ebable autoinstaller 
+    - name: Edit txt.cfg to enable autoinstaller 
       replace:
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/isolinux/txt.cfg"
         regexp: 'append   initrd=/casper/initrd quiet  ---'
