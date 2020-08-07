@@ -29,8 +29,8 @@ autoinstall:
   ssh:
     install-server: yes
   packages:
-    - dns-server^
-    - ntp
-    - net-tools
+{% for Package in var_UbuntuConfiguration.Configuration.Packages %}
+    - {{ Package.Name }}
+{% endfor %}{# Package #}
   late-commands:
     - echo '{{ Nested_Ubuntu.OS.Credentials.User }} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu # Allow user to run sudo without password
