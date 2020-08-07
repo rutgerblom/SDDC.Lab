@@ -72,11 +72,6 @@
       when:
         - DEBUG.DisplayVariables == true
 
-    - name: Create temp directory
-      file:
-        path: "{{ Target.TempFolder }}"
-        state: directory
-
     - name: Check if the VyOS router is already deployed
       vmware_guest_info:
         hostname: "{{ Target.FQDN }}"
@@ -94,6 +89,14 @@
       no_log: true
       when: 
         - Deploy.Router == true
+
+    - name: Create temp directory
+      file:
+        path: "{{ Target.TempFolder }}"
+        state: directory
+      when: 
+        - Deploy.Router == true
+        - status is failed
 
     - name: Check if VyOS installation file exists locally in the software repository (Legacy and Latest)
       stat:
