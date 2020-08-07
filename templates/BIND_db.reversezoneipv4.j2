@@ -11,10 +11,10 @@ $TTL 604800
                NS   dns.{{ Common.DNS.Domain | lower }}.
 
 ; A records for name servers
-dns            IN   A    {{ Nested_Ubuntu.OS.Network.IPv4.Address }}
+dns            IN   A    {{ Nested_DNS.OS.Network.IPv4.Address }}
 
 ;Define origin
 $ORIGIN {{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*)$', '\\1') }}
 
 ; PTR records
-{{ Nested_Ubuntu.OS.Network.IPv4.Address | ipaddr('revdns') | regex_replace('(^[0-9]+.[0-9]+)..+$', '\\1') }}    IN   PTR  dns.{{ Common.DNS.Domain | lower }}.
+{{ Nested_DNS.OS.Network.IPv4.Address | ipaddr('revdns') | regex_replace('(^[0-9]+.[0-9]+)..+$', '\\1') }}    IN   PTR  dns.{{ Common.DNS.Domain | lower }}.
