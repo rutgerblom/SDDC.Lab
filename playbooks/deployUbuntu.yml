@@ -1,6 +1,6 @@
 ---
 - hosts: localhost
-  name: deployUbuntu.yml
+  name: deployDNS.yml
   gather_facts: false
   vars:
       LOCAL_Ubuntu_Template: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template }}"
@@ -95,12 +95,15 @@
       register: ubuntu_status
       ignore_errors: true
       no_log: true
+      when:
+        - Deploy.DNS == true
 
     - name: Read the structure from template into a variable
       set_fact:
         var_UbuntuConfiguration: "{{ lookup('template', LOCAL_Ubuntu_Template) | from_yaml }}"
       when:
         - ubuntu_status is failed
+        - Deploy.DNS == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -115,18 +118,24 @@
         - DEBUG.DisplayVariables == true
         - var_UbuntuConfiguration != ""
         - ubuntu_status is failed
+        - Deploy.DNS == true
 
     - name: Create temp directory
       file:
         path: "{{ Target.TempFolder }}"
         state: directory
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.DNS == true
+    
 
     - name: Check if Ubuntu ISO file exists locally exists locally in the software repository
       stat:
         path: "{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}"
       register: InstallerFileCheck
-      when: ubuntu_status is failed   
+      when: 
+        - ubuntu_status is failed
+        - Deploy.DNS == true  
 
     - name: Update Ubuntu ISO file in the local software repository (overwrite if exists)
       get_url:
@@ -137,46 +146,61 @@
         - (InstallerFileCheck.stat.exists != true) or (Deploy.Software.Options.UseLocalInstaller != true)
         - Deploy.Software.Options.KeepNewInstallers == true
         - ubuntu_status is failed
+        - Deploy.DNS == true 
         
     - name: Mount Ubuntu ISO file
       action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}" opts=loop fstype=iso9660 state=mounted
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.DNS == true  
 
     - name: Copy Ubuntu ISO file contents
       copy: 
         src: "{{ Target.ISOMount }}/"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.DNS == true  
 
     - name: Unmount Ubuntu ISO
       action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}" fstype=iso9660 state=absent
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.DNS == true  
 
     - name: Edit txt.cfg to enable autoinstaller 
       replace:
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/isolinux/txt.cfg"
         regexp: 'append   initrd=/casper/initrd quiet  ---'
         replace: 'append   initrd=/casper/initrd quiet --- autoinstall ds=nocloud;s=/cdrom/{{ Common.DNS.Domain }}/'
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.DNS == true  
 
     - name: Create directory to store user-data and meta-data
       file:
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/{{ Common.DNS.Domain }}"
         state: directory
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.DNS == true  
 
     - name: Create autoinstaller files
       template: 
         src: "{{ item.Source }}"
         dest: "{{ item.FinalDestination }}"
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AutoInstall }}"
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.DNS == true  
 
     - name: Create custom Ubuntu ISO
       command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.File }} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
       args:
         chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.DNS == true  
 
     - name: Upload the custom Ubuntu ISO to the datastore
       vsphere_copy: 
@@ -188,7 +212,9 @@
         src: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.File }}" 
         datastore: "{{ Target.Datastore }}"
         path: "{{ Target.ISOFolder }}/{{ Deploy.Software.Ubuntu.File }}"
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.DNS == true  
 
     - name: Deploy Ubuntu VM
       vmware_guest:
@@ -221,12 +247,16 @@
                     {{ Common.Annotation }}
                     Username: {{ Nested_Ubuntu.OS.Credentials.User }}
                     Password: {{ Nested_Ubuntu.OS.Credentials.Password }}
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.DNS == true
 
     - name: Wait 15 minutes for the Ubuntu installation to complete
       pause:
         seconds: 900
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.DNS == true
 
     - name: Set password for the Ubuntu user
       vmware_vm_shell:
@@ -239,7 +269,9 @@
         vm_password: VMware1!
         vm_shell: /usr/bin/echo
         vm_shell_args: "'{{ Nested_Ubuntu.OS.Credentials.User }}:{{ Nested_Ubuntu.OS.Credentials.Password }}' | sudo chpasswd"
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.DNS == true
 
     - name: Create configuration files
       template: 
@@ -248,6 +280,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
       when: 
         - ubuntu_status is failed
+        - Deploy.DNS == true
         - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
 
     - name: Copy configuration files to the Ubuntu VM
@@ -265,6 +298,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
       when: 
         - ubuntu_status is failed
+        - Deploy.DNS == true
         - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
 
     - name: Move configuration files to their final location on the Ubuntu VM
@@ -281,6 +315,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
       when: 
         - ubuntu_status is failed
+        - Deploy.DNS == true
         - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
 
     - name: Create directories on Ubuntu VM
@@ -297,6 +332,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Directories }}"
       when: 
         - ubuntu_status is failed
+        - Deploy.DNS == true
         - var_UbuntuConfiguration.Configuration.Directories != ""
 
     - name: Set owner on directories on Ubuntu VM
@@ -313,6 +349,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Directories }}"
       when: 
         - ubuntu_status is failed
+        - Deploy.DNS == true
         - var_UbuntuConfiguration.Configuration.Directories != ""
 
     - name: Apply the network configuration on Ubuntu VM
@@ -326,7 +363,9 @@
         vm_password: "{{ Nested_Ubuntu.OS.Credentials.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "netplan apply"
-      when: ubuntu_status is failed
+      when: 
+        - ubuntu_status is failed
+        - Deploy.DNS == true
 
     - name: Restart daemons on Ubuntu VM
       vmware_vm_shell:
@@ -342,6 +381,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Packages }}"
       when: 
         - ubuntu_status is failed
+        - Deploy.DNS == true
         - var_UbuntuConfiguration.Configuration.Packages != ""
 
     - name: Delete local ISO content directory
@@ -350,6 +390,7 @@
         state: absent
       when: 
         - DEBUG.KeepInstallerFiles != true
+        - Deploy.DNS == true
         - ubuntu_status is failed
 
     - name: Delete the custom Ubuntu ISO file
@@ -358,6 +399,7 @@
         state: absent
       when: 
         - DEBUG.KeepInstallerFiles != true
+        - Deploy.DNS == true
         - ubuntu_status is failed
 
     - name: Delete configuration files
@@ -368,4 +410,5 @@
       when: 
         - DEBUG.KeepConfigFiles != true
         - ubuntu_status is failed
+        - Deploy.DNS == true
         - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
