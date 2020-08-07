@@ -55,6 +55,10 @@ Deploy target: {{ Target.FQDN }}</p>
     <td>vRealize Log Insight</td>
     <td><a href="https://{{ Nested_vRLI.FQDN }}">https://{{ Nested_vRLI.FQDN }}</a>/</td>
   </tr>
+  <tr>
+    <td>vCenter VAMI</td>
+    <td><a href="https://{{ Nested_vCenter.FQDN }}:5480">https://{{ Nested_vCenter.FQDN }}:5480</a></td>
+  </tr>
 {% endif %}{# Deploy.vRLI #}
 {% if Deploy.NSXT.GlobalManager == True %}
   <tr>
@@ -68,17 +72,21 @@ Deploy target: {{ Target.FQDN }}</p>
     <td><a href="ssh://{{ Nested_NSXT.Components.LocalManager.FQDN }}">ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ Nested_NSXT.Components.LocalManager.FQDN }}</a>/</td>
   </tr>
 {% endif %}{# Deploy.NSXT.LocalManager #}
+{% if Deploy.NSXT.Edge %}
+{% for EdgeTransportNode in Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes %}
   <tr>
-    <td>vCenter VAMI</td>
-    <td><a href="https://{{ Nested_vCenter.FQDN }}:5480">https://{{ Nested_vCenter.FQDN }}:5480</a></td>
+    <td>{{ EdgeTransportNode.Name }} CLI</td>
+    <td><a href="ssh://{{ EdgeTransportNode.Deployment.Hostname }}">ssh://{{ Nested_NSXT.Credentials.admin.Name }}@{{ EdgeTransportNode.Deployment.Hostname }}</a>/</td>
   </tr>
+{% endfor %}{# EdgeTransportNode #}
+{% endif %}{# Deploy.NSXT.Edge #}
   <tr>
     <td>vCenter CLI</td>
     <td><a href="ssh://root@{{ Nested_vCenter.FQDN }}">ssh://root@{{ Nested_vCenter.FQDN }}</a></td>
   </tr>
 {% if Deploy.Router == True %}
   <tr>
-    <td>VyOS Router</td>
+    <td>VyOS Router CLI</td>
 {% if Deploy.IPv4 %}
     <td><a href="ssh://vyos@{{ Nested_Router.Interface.Management.IPv4.Address }}">ssh://vyos@{{ Nested_Router.Interface.Management.IPv4.Address }}</a></td>
 {% endif %}{# Deploy.IPv4 #}
@@ -142,6 +150,7 @@ Deploy target: {{ Target.FQDN }}</p>
     <td>{{ Nested_vCenter.Password }}</td>
   </tr>
 {% if Deploy.Router == True %}
+  <tr>
     <td>VyOS Router CLI</td>
     <td>vyos</td>
     <td>{{ Common.Password.Nested }}</td>
@@ -281,7 +290,9 @@ Deploy target: {{ Target.FQDN }}</p>
   <tr>
     <th>FQDN</th>
     <th>IPv4 address</th>
+{% if Deploy.IPv6 %}
     <th>IPv6 address</th>
+{% endif %}{# Deploy.IPv6 #}
   </tr>
   <tr>
     <td>{{ Nested_vCenter.FQDN }}</td>
@@ -336,6 +347,14 @@ Deploy target: {{ Target.FQDN }}</p>
 {% endif %}{# Deploy.IPv6 #}
   </tr>
 {% endif %}{# Deploy.NSXT.CloudServicesManager #}
+{% if Deploy.NSXT.Edge %}
+{% for EdgeTransportNode in Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes %}
+  <tr>
+    <td>{{ EdgeTransportNode.Deployment.Hostname }}</td>
+    <td>{{ EdgeTransportNode.Deployment.ManagementIPAddress }}</td>
+  </tr>
+{% endfor %}{# EdgeTransportNode #}
+{% endif %}{# Deploy.NSXT.Edge #}
 {% if Deploy.vRLI == True %}
   <tr>
     <td>{{ Nested_vRLI.FQDN }}</td>
