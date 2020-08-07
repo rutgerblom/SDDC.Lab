@@ -208,11 +208,11 @@ Deploy target: {{ Target.FQDN }}</p>
     <td>{{ Nested_Router.Interface.IPStorage.VLAN }}</td>
 {% if Deploy.IPv4 %}
     <td>{{ "{}/{}".format(Nested_Router.Interface.IPStorage.IPv4.Address, Nested_Router.Interface.IPStorage.IPv4.Prefix) | ipaddr('network/prefix') }}</td>
-    <td>{{ Nested_Router.Interface.vSAN.IPv4.Address }}</td>
+    <td>{{ Nested_Router.Interface.IPStorage.IPv4.Address }}</td>
 {% endif %}{# Deploy.IPv4 #}
 {% if Deploy.IPv6 %}
     <td>{{ "{}/{}".format(Nested_Router.Interface.IPStorage.IPv6.Address, Nested_Router.Interface.IPStorage.IPv6.Prefix) | ipaddr('network/prefix') }}</td>
-    <td>{{ Nested_Router.Interface.vSAN.IPv6.Address }}</td>
+    <td>{{ Nested_Router.Interface.IPStorage.IPv6.Address }}</td>
 {% endif %}{# Deploy.IPv6 #}
   </tr>
   <tr>
@@ -303,17 +303,17 @@ Deploy target: {{ Target.FQDN }}</p>
     <td>{{ Nested_vCenter.Address.IPv6.Address }}</td>
 {% endif %}{# Deploy.IPv6 #}
   </tr>
-{% for item in Nested_ESXi.Hosts %}
+{% if Deploy.vRLI == True %}
   <tr>
-    <td>{{ Nested_ESXi.Hosts[item].FQDN }}</td>
+    <td>{{ Nested_vRLI.FQDN }}</td>
 {% if Deploy.IPv4 %}
-    <td>{{ Nested_ESXi.Hosts[item].vmk.vmk0.Address.IPv4.Address }}</td>
+    <td>{{ Nested_vRLI.Address.IPv4.Address }}</td>
 {% endif %}{# Deploy.IPv4 #}
 {% if Deploy.IPv6 %}
-    <td>{{ Nested_ESXi.Hosts[item].vmk.vmk0.Address.IPv6.Address }}</td>
+    <td>{{ Nested_vRLI.Address.IPv6.Address }}</td>
 {% endif %}{# Deploy.IPv6 #}
   </tr>
-{% endfor %}
+{% endif %}{# Deploy.vRLI #}
 {% if Deploy.NSXT.GlobalManager == True %}
   <tr>
     <td>{{ Nested_NSXT.Components.GlobalManager.FQDN }}</td>
@@ -347,6 +347,17 @@ Deploy target: {{ Target.FQDN }}</p>
 {% endif %}{# Deploy.IPv6 #}
   </tr>
 {% endif %}{# Deploy.NSXT.CloudServicesManager #}
+{% for item in Nested_ESXi.Hosts %}
+  <tr>
+    <td>{{ Nested_ESXi.Hosts[item].FQDN }}</td>
+{% if Deploy.IPv4 %}
+    <td>{{ Nested_ESXi.Hosts[item].vmk.vmk0.Address.IPv4.Address }}</td>
+{% endif %}{# Deploy.IPv4 #}
+{% if Deploy.IPv6 %}
+    <td>{{ Nested_ESXi.Hosts[item].vmk.vmk0.Address.IPv6.Address }}</td>
+{% endif %}{# Deploy.IPv6 #}
+  </tr>
+{% endfor %}
 {% if Deploy.NSXT.Edge %}
 {% for EdgeTransportNode in Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes %}
   <tr>
@@ -355,17 +366,6 @@ Deploy target: {{ Target.FQDN }}</p>
   </tr>
 {% endfor %}{# EdgeTransportNode #}
 {% endif %}{# Deploy.NSXT.Edge #}
-{% if Deploy.vRLI == True %}
-  <tr>
-    <td>{{ Nested_vRLI.FQDN }}</td>
-{% if Deploy.IPv4 %}
-    <td>{{ Nested_vRLI.Address.IPv4.Address }}</td>
-{% endif %}{# Deploy.IPv4 #}
-{% if Deploy.IPv6 %}
-    <td>{{ Nested_vRLI.Address.IPv6.Address }}</td>
-{% endif %}{# Deploy.IPv6 #}
-  </tr>
-{% endif %}{# Deploy.vRLI #}
 </table>
 
 </body>
