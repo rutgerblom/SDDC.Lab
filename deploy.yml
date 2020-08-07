@@ -3,6 +3,12 @@
 - import_playbook: playbooks/createPodDoc.yml
 
 
+# Deploy DNS server
+- import_playbook: playbooks/deployDNS.yml
+  when: 
+    - Deploy.DNS == true
+
+
 # Populate DNS with forward and reverse DNS records
 - import_playbook: playbooks/updateDNS.yml
   when:
