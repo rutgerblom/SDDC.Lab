@@ -251,9 +251,19 @@
         - ubuntu_status is failed
         - Deploy.DNS == true
 
-    - name: Wait 15 minutes for the Ubuntu installation to complete
-      pause:
-        seconds: 900
+    - name: Start checking if the Ubuntu VM is ready
+      vmware_guest_info:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        datacenter: "{{ Target.DataCenter }}"
+        name: "{{ Nested_DNS.VM.VMName }}"
+        schema: "vsphere"
+      register: vm_facts
+      until: vm_facts.instance.guest.hostName is search(Nested_DNS.FQDN)
+      retries: 30
+      delay: 60
       when: 
         - ubuntu_status is failed
         - Deploy.DNS == true
