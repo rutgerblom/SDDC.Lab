@@ -26,14 +26,14 @@ tr:nth-child(even) {
 </style>
 </head>
 <body>
-<h1>SDDC.Lab Version {{ SDDCLab.Version }}</h1>
+<h1>SDDC.Lab version {{ SDDCLab.Version }}</h1>
 
 <h2>Documentation for Pod-{{Pod.Number}}</h2>
 
 <p>Deployed by: {{ lookup('env','SUDO_USER') }}<br>
 Deployed at: {{ time }}<br>
 Deploy target: {{ Target.FQDN }}<br>
-IP stacks:{% if Deploy.IPv4 %}IPv4{% endif %}{# Deploy.IPv4 #}{% if Deploy.IPv6 %} IPv6{% endif %}{# Deploy.IPv6 #}</p>
+IP stacks used:{% if Deploy.IPv4 %}IPv4{% endif %}{# Deploy.IPv4 #}{% if Deploy.IPv6 %} IPv6{% endif %}{# Deploy.IPv6 #}</p>
   
 <h3>Links</h3>
 <table>
