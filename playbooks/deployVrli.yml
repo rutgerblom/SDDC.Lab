@@ -58,8 +58,8 @@
                                          vRLI Version: {{ Deploy.Software.vRLI.Version }}
                                             vRLI FQDN: {{ Nested_vRLI.FQDN }}
                                           vRLI VMName: {{ Nested_vRLI.VMName }}
-                                      vRLI Admin User: {{ Nested_vRLI.Credentials.admin.Name }}
-                                  vRLI Admin Password: {{ Nested_vRLI.Credentials.admin.Password }}
+                                      vRLI Admin User: {{ Nested_vRLI.Credential.admin.Name }}
+                                  vRLI Admin Password: {{ Nested_vRLI.Credential.admin.Password }}
 
 
                                                 OVF Variables
@@ -75,7 +75,7 @@
                                    Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                    Network DNS Domain: {{ Common.DNS.Domain }}
 
-                                   vRLI Root Password: {{ Nested_vRLI.Credentials.root.Password }}
+                                   vRLI Root Password: {{ Nested_vRLI.Credential.root.Password }}
 
                                       vRLI Media Path: {{ Deploy.Software.vRLI.Directory }}
                                       vRLI Media File: {{ Deploy.Software.vRLI.File }}
@@ -119,7 +119,7 @@
           ## vm.vmname is hard-coded in the OVF file and referenced by several OVF properties and must be 'VMware_vCenter_Log_Insight' it seems. Deployment fails if setting something else.
           vm.vmname: "VMware_vCenter_Log_Insight"
           preferipv6: "False"
-          rootpw: "{{ Nested_vRLI.Credentials.root.Password }}"
+          rootpw: "{{ Nested_vRLI.Credential.root.Password }}"
           hostname: "{{ Nested_vRLI.FQDN }}"
           vami.DNS.VMware_vCenter_Log_Insight: "{{ Common.DNS.Server1.IPv4 }}"
           vami.domain.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
@@ -152,9 +152,9 @@
         timeout: 240
         body:
           user:
-            userName: "{{ Nested_vRLI.Credentials.admin.Name }}"
-            password: "{{ Nested_vRLI.Credentials.admin.Password }}"
-            email: "{{ (Nested_vRLI.Credentials.admin.Name + '@' + Common.DNS.Domain) }}"
+            userName: "{{ Nested_vRLI.Credential.admin.Name }}"
+            password: "{{ Nested_vRLI.Credential.admin.Password }}"
+            email: "{{ (Nested_vRLI.Credential.admin.Name + '@' + Common.DNS.Domain) }}"
         body_format: json
       when:
         - Deploy.vRLI == true
@@ -166,8 +166,8 @@
         validate_certs: no
         method: POST
         body:
-          username: "{{ Nested_vRLI.Credentials.admin.Name }}"
-          password: "{{ Nested_vRLI.Credentials.admin.Password }}"
+          username: "{{ Nested_vRLI.Credential.admin.Name }}"
+          password: "{{ Nested_vRLI.Credential.admin.Password }}"
           provider: "Local"
         body_format: json
       register: vrli_session
@@ -210,5 +210,5 @@
         name: "{{ Nested_vRLI.VMName }}"
         annotation: | 
                     {{ Common.Annotation }}
-                    Username: {{ Nested_vRLI.Credentials.admin.Name }}
-                    Password: {{ Nested_vRLI.Credentials.admin.Password }}
+                    Username: {{ Nested_vRLI.Credential.admin.Name }}
+                    Password: {{ Nested_vRLI.Credential.admin.Password }}

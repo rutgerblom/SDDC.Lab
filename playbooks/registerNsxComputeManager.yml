@@ -70,8 +70,8 @@
     - name: Register NSX-T Compute Manager
       nsxt_fabric_compute_managers:
           hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
-          username: "{{ Nested_NSXT.Credentials.admin.Name }}"
-          password: "{{ Nested_NSXT.Credentials.admin.Password }}"
+          username: "{{ Nested_NSXT.Credential.admin.Name }}"
+          password: "{{ Nested_NSXT.Credential.admin.Password }}"
           validate_certs: False
           display_name: "{{ Nested_vCenter.VMName }}"                 # Using VMName as no need for full domain
           server: "{{ Nested_vCenter.FQDN }}"

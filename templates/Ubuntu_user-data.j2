@@ -24,7 +24,7 @@ autoinstall:
             search: [{{ Common.DNS.Domain }}]
   identity:
     hostname: {{ Nested_DNS.FQDN }}
-    username: {{ Nested_DNS.OS.Credentials.User }}
+    username: {{ Nested_DNS.OS.Credential.User }}
     password: "$6$ryx4qBcSL3V1qKaU$UVKN5KO0gwjUqha0OQkGX8CL/Dbp3NCPo52vEvXO1/2s3NkFcvw540HPWc1g6/7UFEmYEbeRXFdttuguFsvj00" # VMware1!
   ssh:
     install-server: yes
@@ -33,4 +33,4 @@ autoinstall:
     - {{ Package.Name }}
 {% endfor %}{# Package #}
   late-commands:
-    - echo '{{ Nested_DNS.OS.Credentials.User }} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu # Allow user to run sudo without password
+    - echo '{{ Nested_DNS.OS.Credential.User }} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu # Allow user to run sudo without password

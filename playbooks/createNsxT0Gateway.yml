@@ -78,8 +78,8 @@
     - name: Create NSX-T Tier-0 Gateway
       nsxt_policy_tier0:
         hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
-        username: "{{ Nested_NSXT.Credentials.admin.Name }}"
-        password: "{{ Nested_NSXT.Credentials.admin.Password }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: False
         state: present
         display_name: "{{ item.display_name }}"

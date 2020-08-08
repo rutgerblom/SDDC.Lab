@@ -60,8 +60,8 @@
                                        Ubuntu Version: {{ Deploy.Software.Ubuntu.Version }}
                                           Ubuntu FQDN: {{ Nested_DNS.FQDN }}
                                         Ubuntu VMName: {{ Nested_DNS.VM.VMName }}
-                                          Ubuntu User: {{ Nested_DNS.OS.Credentials.User }}
-                                      Ubuntu Password: {{ {{ Nested_DNS.OS.Credentials.Password }} }}
+                                          Ubuntu User: {{ Nested_DNS.OS.Credential.User }}
+                                      Ubuntu Password: {{ {{ Nested_DNS.OS.Credential.Password }} }}
 
                                         Ubuntu VM CPU: {{ Nested_DNS.VM.HardwareSettings.CPU }}
                            Ubuntu VM Cores per Socket: {{ Nested_DNS.VM.HardwareSettings.CoresPerSocket }}
@@ -242,8 +242,8 @@
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Ubuntu.File }}"
         annotation: | 
                     {{ Common.Annotation }}
-                    Username: {{ Nested_DNS.OS.Credentials.User }}
-                    Password: {{ Nested_DNS.OS.Credentials.Password }}
+                    Username: {{ Nested_DNS.OS.Credential.User }}
+                    Password: {{ Nested_DNS.OS.Credential.Password }}
       when: 
         - ubuntu_status is failed
         - Deploy.DNS == true
@@ -272,10 +272,10 @@
         password: "{{ Target.Password }}"
         validate_certs: no
         vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credentials.User }}"
+        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
         vm_password: VMware1!
         vm_shell: /usr/bin/echo
-        vm_shell_args: "'{{ Nested_DNS.OS.Credentials.User }}:{{ Nested_DNS.OS.Credentials.Password }}' | sudo chpasswd"
+        vm_shell_args: "'{{ Nested_DNS.OS.Credential.User }}:{{ Nested_DNS.OS.Credential.Password }}' | sudo chpasswd"
       when: 
         - ubuntu_status is failed
         - Deploy.DNS == true
@@ -297,8 +297,8 @@
         password: "{{ Target.Password }}"
         validate_certs: no
         vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credentials.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credentials.Password }}"
+        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
         copy:
           src: "{{ item.LocalDestination }}"
           dest: "{{ item.StageDestination }}"
@@ -315,8 +315,8 @@
         password: "{{ Target.Password }}"
         validate_certs: no
         vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credentials.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credentials.Password }}"
+        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "mv {{ item.StageDestination }} {{ item.FinalDestination }}"
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
@@ -332,8 +332,8 @@
         password: "{{ Target.Password }}"
         validate_certs: no
         vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credentials.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credentials.Password }}"
+        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "mkdir {{ item.Path }}"
       loop: "{{ var_UbuntuConfiguration.Configuration.Directories }}"
@@ -349,8 +349,8 @@
         password: "{{ Target.Password }}"
         validate_certs: no
         vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credentials.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credentials.Password }}"
+        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "chown {{ item.Owner }} {{ item.Path }} "
       loop: "{{ var_UbuntuConfiguration.Configuration.Directories }}"
@@ -366,8 +366,8 @@
         password: "{{ Target.Password }}"
         validate_certs: no
         vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credentials.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credentials.Password }}"
+        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "netplan apply"
       when: 
@@ -381,8 +381,8 @@
         password: "{{ Target.Password }}"
         validate_certs: no
         vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credentials.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credentials.Password }}"
+        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "systemctl restart {{ item.Daemon }}"
       loop: "{{ var_UbuntuConfiguration.Configuration.Packages }}"
