@@ -57,7 +57,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.LocalManager == true
 
     - name: Add NSX-T license
       nsxt_licenses:
@@ -68,4 +68,4 @@
         license_key: "{{ LOCAL_NSXLicenseKey }}"
         state: "present"
       when: 
-        - Deploy.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.LocalManager == true

@@ -60,7 +60,7 @@
     - name: Get list of Segments
       set_fact:
         SegmentsToCreate: "{{ lookup('template', LOCAL_Segments_Template) | from_yaml }}"
-      when: Deploy.NSXT.LocalManager == true
+      when: Deploy.Products.NSXT.LocalManager == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -73,7 +73,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.LocalManager == true
         - SegmentsToCreate != ""
 
     ## Create only VLAN-backed Segments in SegmentsToCreate  ##
@@ -93,5 +93,5 @@
         state: "present"
       loop: "{{ SegmentsToCreate }}"
       when: 
-      - Deploy.NSXT.LocalManager == true
+      - Deploy.Products.NSXT.LocalManager == true
       - Nested_NSXT.System.Fabric.TransportZone[item.transport_zone_display_name].Type == "VLAN"

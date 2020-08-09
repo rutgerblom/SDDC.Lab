@@ -47,7 +47,7 @@
 
                                     Target.Deployment: {{ Target.Deployment }}
 
-                             Deploy.NSXT.LocalManager: {{ Deploy.NSXT.LocalManager }}
+                             Deploy.Products.NSXT.LocalManager: {{ Deploy.Products.NSXT.LocalManager }}
              Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
 
                                          License File: {{ LOCAL_LicenseFile }}
@@ -61,7 +61,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.LocalManager == true
 
 
 ###
@@ -124,6 +124,6 @@
         state: present
       loop: "{{ License.VMware.NSXT.Licenses | default([]) }}"
       when:
-        - Deploy.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.LocalManager == true
         - Deploy.Software.NSXT.Version is match(item.Version)
         - LicenseProducts == True

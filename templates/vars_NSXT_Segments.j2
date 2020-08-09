@@ -48,9 +48,9 @@
 {% if (Segment.Subnets is defined) and (Segment.Subnets|length) > 0 %}
     subnets:
 {% for Subnet in Segment.Subnets %}
-{% if ((Deploy.IPv4 and Subnet.GatewayCIDR | ipv4) or (Deploy.IPv6 and Subnet.GatewayCIDR | ipv6)) %}
+{% if ((Deploy.Settings.IPv4 and Subnet.GatewayCIDR | ipv4) or (Deploy.Settings.IPv6 and Subnet.GatewayCIDR | ipv6)) %}
       - gateway_address: "{{ Subnet.GatewayCIDR }}"
-{% endif %}{# Deploy.IPv4 or Deploy.IPv6 #}
+{% endif %}{# Deploy.Settings.IPv4 or Deploy.Settings.IPv6 #}
 {% endfor %}{# Subnet #}
 {% endif %}{# Segment.Subnets is defined #}
 {% endif %}{# OVERLAY #}

@@ -10,17 +10,17 @@ autoinstall:
       version: 2
       ethernets:
         ens192:
-{% if Deploy.IPv4 %}
+{% if Deploy.Settings.IPv4 %}
           addresses: [{{ Nested_DNS.OS.Network.IPv4.Address }}/{{ Nested_DNS.OS.Network.IPv4.Prefix }}]
           gateway4: {{ Nested_DNS.OS.Network.IPv4.Gateway }}
           nameservers:
             addresses: [{{ Nested_DNS.OS.Network.IPv4.DNS }}]
-{% endif %}{# Deploy.IPv4 #}
-{% if Deploy.IPv6 %}
+{% endif %}{# Deploy.Settings.IPv4 #}
+{% if Deploy.Settings.IPv6 %}
           addresses: [{{ Nested_DNS.OS.Network.IPv6.Address }}/{{ Nested_DNS.OS.Network.IPv6.Prefix }}]
           nameservers:
             addresses: [{{ Nested_DNS.OS.Network.IPv6.DNS }}
-{% endif %}{# Deploy.IPv6 #}
+{% endif %}{# Deploy.Settings.IPv6 #}
             search: [{{ Common.DNS.Domain }}]
   identity:
     hostname: {{ Nested_DNS.FQDN }}

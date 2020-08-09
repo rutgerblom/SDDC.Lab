@@ -40,19 +40,21 @@ Pod:
 
 {# Added additional fields to Deploy for templates and software, so unable to use 'to_nice_yaml' #}
 Deploy:
-  Router: {{ Deploy.Router }}
-  NSXT:
-    GlobalManager: {{ Deploy.NSXT.GlobalManager }}
-    LocalManager: {{ Deploy.NSXT.LocalManager }}
-    CloudServicesManager: {{ Deploy.NSXT.CloudServicesManager }}
-    Edge: {{ Deploy.NSXT.Edge }}
-  vRLI: {{ Deploy.vRLI }}
-  DNS: {{ Deploy.DNS }}
-  IPv4: {{ Deploy.IPv4 }}
-  IPv6: {{ Deploy.IPv6 }}
-  UseNFS: {{ Deploy.UseNFS }}
-  UseDNS: {{ Deploy.UseDNS }}
-  EnableSSH: {{ Deploy.EnableSSH }}
+  Products:
+    Router: {{ Deploy.Products.Router }}
+    NSXT:
+      GlobalManager: {{ Deploy.Products.NSXT.GlobalManager }}
+      LocalManager: {{ Deploy.Products.NSXT.LocalManager }}
+      CloudServicesManager: {{ Deploy.Products.NSXT.CloudServicesManager }}
+      Edge: {{ Deploy.Products.NSXT.Edge }}
+    vRLI: {{ Deploy.Products.vRLI }}
+    DNS: {{ Deploy.Products.DNS }}
+  Settings:
+    IPv4: {{ Deploy.Settings.IPv4 }}
+    IPv6: {{ Deploy.Settings.IPv6 }}
+    UseNFS: {{ Deploy.Settings.UseNFS }}
+    UseDNS: {{ Deploy.Settings.UseDNS }}
+  EnableSSH: {{ Deploy.Settings.EnableSSH }}
   Software:
     Options:
       UseLocalInstaller: {{ Deploy.Software.Options.UseLocalInstaller }}

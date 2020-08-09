@@ -56,15 +56,15 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.NSXT.LocalManager == true
-        - Deploy.NSXT.Edge == true
+        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.Edge == true
 
     - name: Read the structure from template into a variable
       set_fact:
         var_EdgeTransportNodes: "{{ lookup('template', LOCAL_EdgeTnTemplate) | from_yaml }}"
       when:
-        - Deploy.NSXT.LocalManager == true
-        - Deploy.NSXT.Edge == true
+        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.Edge == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -77,8 +77,8 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.NSXT.LocalManager == true
-        - Deploy.NSXT.Edge == true
+        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.Edge == true
         - var_EdgeTransportNodes != ""
 
     - name: Deploy and configure Edge Transport Nodes
@@ -97,8 +97,8 @@
         state: present 
       loop: "{{ var_EdgeTransportNodes }}"
       when:
-        - Deploy.NSXT.LocalManager == true
-        - Deploy.NSXT.Edge == true
+        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.Edge == true
         - var_EdgeTransportNodes != ""
       async: 1800
       poll: 0
@@ -106,8 +106,8 @@
     - name: Wait 1 minute for the NSX-T API to process Edge transport node deployment information
       pause: minutes=1
       when: 
-        - Deploy.NSXT.LocalManager == true
-        - Deploy.NSXT.Edge == true
+        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.Edge == true
         - var_EdgeTransportNodes != ""
 
     - name: Wait until the NSX-T API reports that no Edge transport nodes are in "PENDING" state
@@ -127,8 +127,8 @@
       retries: 90
       delay: 60
       when: 
-        - Deploy.NSXT.LocalManager == true
-        - Deploy.NSXT.Edge == true
+        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.Edge == true
         - var_EdgeTransportNodes != ""
 
     - name: Wait until the NSX-T API reports that no Edge transport nodes are in "IN_PROGRESS" state
@@ -148,6 +148,6 @@
       retries: 90
       delay: 60
       when: 
-        - Deploy.NSXT.LocalManager == true
-        - Deploy.NSXT.Edge == true
+        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.Edge == true
         - var_EdgeTransportNodes != ""

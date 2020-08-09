@@ -61,13 +61,13 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.LocalManager == true
 
 
     - name: Get list of IP Pools
       set_fact:
         IPPoolsToCreate: "{{ lookup('template', LOCAL_IPPools_Template) | from_yaml }}"
-      when: Deploy.NSXT.LocalManager == true
+      when: Deploy.Products.NSXT.LocalManager == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -80,7 +80,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.LocalManager == true
         - IPPoolsToCreate != ""
 
     - name: Create NSX-T IP Pools using Polcy API
@@ -97,5 +97,5 @@
       with_items:
         - "{{ IPPoolsToCreate }}"
       when:
-        - Deploy.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.LocalManager == true
         - IPPoolsToCreate != ""

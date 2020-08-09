@@ -56,12 +56,12 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.LocalManager == true
 
     - name: Get list of Transport Node Profiles
       set_fact:
         TNPsToCreate: "{{ lookup('template', LOCAL_TransportNodeProfiles_Template) | from_yaml }}"
-      when: Deploy.NSXT.LocalManager == true
+      when: Deploy.Products.NSXT.LocalManager == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -74,7 +74,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.LocalManager == true
         - TNPsToCreate != ""
 
     - name: Create Transport Node Profiles 
@@ -92,5 +92,5 @@
         state: present
       loop: "{{ TNPsToCreate }}"
       when:
-        - Deploy.NSXT.LocalManager == true
+        - Deploy.Products.NSXT.LocalManager == true
         - TNPsToCreate != ""

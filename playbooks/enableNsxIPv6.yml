@@ -44,7 +44,7 @@
                                      Ansible Playbook: {{ ansible_play_name }}
 
                              NSX-T Local Manager FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
-                                          Deploy.IPv6: {{ Deploy.IPv6 }}
+                                          Deploy.Settings.IPv6: {{ Deploy.Settings.IPv6 }}
 
           =================================================================================================
       when:
@@ -64,5 +64,5 @@
         return_content: yes
         status_code: 200
       when: 
-        - Deploy.NSXT.LocalManager == true
-        - Deploy.IPv6 == true
+        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Settings.IPv6 == true

@@ -106,7 +106,7 @@
       poll: 0
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
-        - Deploy.UseNFS == true
+        - Deploy.Settings.UseNFS == true
 
     - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the datastore
       vsphere_file:

@@ -9,13 +9,13 @@ options {
   allow-query { any; };
   allow-query-cache { any; };
   allow-recursion { any; };
-  {% if Deploy.IPv4 == true and Deploy.IPv6 != true %}
+  {% if Deploy.Settings.IPv4 == true and Deploy.Settings.IPv6 != true %}
   forwarders { {{ Nested_DNS.OS.Packages.BIND.Forwarder.IPv4 }}; }; 
   {% endif %}
-  {% if Deploy.IPv4 == true and Deploy.IPv6 == true %}
+  {% if Deploy.Settings.IPv4 == true and Deploy.Settings.IPv6 == true %}
   forwarders { {{ Nested_DNS.OS.Packages.BIND.Forwarder.IPv4 }}; {{ Nested_DNS.OS.Packages.BIND.Forwarder.IPv6 }}; };
   {% endif %}
-  {% if Deploy.IPv4 != true and Deploy.IPv6 == true %}
+  {% if Deploy.Settings.IPv4 != true and Deploy.Settings.IPv6 == true %}
   forwarders { {{ Nested_DNS.OS.Packages.BIND.Forwarder.IPv6 }}; };
   {% endif %}
   dnssec-validation no;
