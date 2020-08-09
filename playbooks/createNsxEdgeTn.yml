@@ -103,14 +103,14 @@
       async: 1800
       poll: 0
 
-    - name: Wait 1 minute for the NSX-T API to process Edge transport node deployment information
+    - name: Wait 1 minute for the NSX-T API to process Edge Transport Node deployment information
       pause: minutes=1
       when: 
         - Deploy.Products.NSXT.LocalManager == true
         - Deploy.Products.NSXT.Edge == true
         - var_EdgeTransportNodes != ""
 
-    - name: Wait until the NSX-T API reports that no Edge transport nodes are in "PENDING" state
+    - name: Wait until the NSX-T API reports that no Edge Transport Nodes are in "PENDING" state
       uri:
         url: https://{{ Nested_NSXT.Components.LocalManager.FQDN }}/api/v1/transport-nodes/state?status=PENDING
         validate_certs: no
@@ -131,7 +131,7 @@
         - Deploy.Products.NSXT.Edge == true
         - var_EdgeTransportNodes != ""
 
-    - name: Wait until the NSX-T API reports that no Edge transport nodes are in "IN_PROGRESS" state
+    - name: Wait until the NSX-T API reports that no Edge Transport Nodes are in "IN_PROGRESS" state
       uri:
         url: https://{{ Nested_NSXT.Components.LocalManager.FQDN }}/api/v1/transport-nodes/state?status=IN_PROGRESS
         validate_certs: no
