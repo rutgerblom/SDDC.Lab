@@ -84,4 +84,8 @@ To deploy a Pod:
 1. Start a Pod deployment per the instructions. For example:  
 **sudo ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" deploy.yml**
 
-Deploying an SDDC Pod will take somewhere between 1 and 1.5 hours depending on your environment a Pod configuration. 
+Deploying an SDDC Pod will take somewhere between 1 and 1.5 hours depending on your environment a Pod configuration.
+
+Similary you remove a Pod with:  
+**sudo ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" undeploy.yml**
+
