@@ -46,7 +46,7 @@
 
                                     Target.Deployment: {{ Target.Deployment }}
 
-                                          Deploy.Products.vRLI: {{ Deploy.Products.vRLI }}
+                                          Deploy.Product.vRLI: {{ Deploy.Product.vRLI }}
                                      Nested_vRLI.FQDN: {{ Nested_vRLI.FQDN }}
 
                                          License File: {{ LOCAL_LicenseFile }}
@@ -60,7 +60,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Products.vRLI == true
+        - Deploy.Product.vRLI == true
 
 
 ###
@@ -125,7 +125,7 @@
         body_format: json
       register: vrli_session
       when:
-        - Deploy.Products.vRLI == true
+        - Deploy.Product.vRLI == true
 
     - name: Add all licenses to vRLI
       uri:
@@ -140,5 +140,5 @@
         status_code: 201
       loop: "{{ License.VMware.vRLI.Licenses }}"
       when:
-        - Deploy.Products.vRLI == true
+        - Deploy.Product.vRLI == true
         - Deploy.Software.vRLI.Version is match(item.Version)

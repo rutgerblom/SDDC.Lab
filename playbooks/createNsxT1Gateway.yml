@@ -58,7 +58,7 @@
     - name: Get list of Tier-1 Gateways
       set_fact:
         T1GatewaysToCreate: "{{ lookup('template', LOCAL_T1Gateways_Template) | from_yaml }}"
-      when: Deploy.Products.NSXT.LocalManager == true
+      when: Deploy.Product.NSXT.LocalManager == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -71,7 +71,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
         - T1GatewaysToCreate != ""
 
     - name: Create NSX-T Tier-1 Gateway
@@ -90,5 +90,5 @@
         locale_services: "{{ item.locale_services }}"
       loop: "{{ T1GatewaysToCreate }}"
       when: 
-        - Deploy.Products.NSXT.LocalManager == true
-        - Deploy.Products.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.Edge == true

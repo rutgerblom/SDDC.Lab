@@ -50,9 +50,9 @@
 
                                     Target.Deployment: {{ Target.Deployment }}
 
-                                          Deploy.Settings.IPv4: {{ Deploy.Settings.IPv4 }}
-                                          Deploy.Settings.IPv6: {{ Deploy.Settings.IPv6 }}
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                          Deploy.Setting.IPv4: {{ Deploy.Setting.IPv4 }}
+                                          Deploy.Setting.IPv6: {{ Deploy.Setting.IPv6 }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
                                     Common.DNS.Domain: {{ Common.DNS.Domain }}
                               Common.DNS.Server1.IPv4: {{ Common.DNS.Server1.IPv4 }}
@@ -75,7 +75,7 @@
         prompt: |
           ========================== Display Nested_Router DNS "A" Records ================================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
@@ -88,8 +88,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
     - name: Create IPv4 'A' records for Nested_Router
       nsupdate:
@@ -102,8 +102,8 @@
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_Router.Interface | dict2items }}"
       when:
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
     - name: Create IPv4 'CNAME' records for Nested_Router
       nsupdate:
@@ -115,8 +115,8 @@
         value:    "{{ Nested_Router.Name }}-Uplink"
         state:    "{{ LOCAL_RecordState }}"
       when:
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
     - name: DEBUG -- Display IPv4 'PTR' records for Nested_Router
       pause:
@@ -124,7 +124,7 @@
         prompt: |
           ========================== Display Nested_Router DNS IPv4 "PTR" Records =========================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
@@ -137,8 +137,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
     - name: Create IPv4 'PTR' records for Nested_Router
       nsupdate:
@@ -150,8 +150,8 @@
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_Router.Interface | dict2items }}"
       when:
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
 
 
@@ -161,7 +161,7 @@
         prompt: |
           ========================== Display Nested_Router DNS IPv6 "AAAA" Records ========================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
@@ -174,8 +174,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
 
     - name: Create IPv6 'AAAA' records for Nested_Router
       nsupdate:
@@ -188,8 +188,8 @@
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_Router.Interface | dict2items }}"
       when:
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
 
 
     - name: DEBUG -- Display IPv6 'PTR' records for Nested_Router
@@ -198,7 +198,7 @@
         prompt: |
           ========================== Display Nested_Router DNS IPv6 "PTR" Records =========================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
@@ -211,8 +211,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
 
     - name: Create IPv6 'PTR' records for Nested_Router
       nsupdate:
@@ -224,8 +224,8 @@
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_Router.Interface | dict2items }}"
       when:
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
 
 
 
@@ -238,7 +238,7 @@
         prompt: |
           ======================== Display Nested_vRLI DNS IPv4 "A" Record =============================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
@@ -250,8 +250,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
     - name: Create IPv4 'A' records for Nested_vRLI
       nsupdate:
@@ -263,8 +263,8 @@
         value:    "{{ Nested_vRLI.Address.IPv4.Address }}"
         state:    "{{ LOCAL_RecordState }}"
       when:
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
 
     - name: DEBUG -- Display IPv4 'PTR' record for Nested_vRLI
@@ -273,7 +273,7 @@
         prompt: |
           ======================== Display Nested_vRLI DNS IPv4 "PTR" Record ===========================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
@@ -284,8 +284,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
     - name: Create IPv4 'PTR' records for Nested_vRLI
       nsupdate:
@@ -296,8 +296,8 @@
         value:    "{{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
       when:
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
 
 
@@ -308,7 +308,7 @@
         prompt: |
           ======================= Display Nested_vRLI DNS IPv6 "AAAA" Record ===========================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
@@ -320,8 +320,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
         - False
 
     - name: Create IPv6 'AAAA' records for Nested_vRLI
@@ -334,8 +334,8 @@
         value:    "{{ Nested_vRLI.Address.IPv6.Address }}"
         state:    "{{ LOCAL_RecordState }}"
       when:
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
         - False
 
     - name: DEBUG -- Display IPv6 'PTR' record for Nested_vRLI
@@ -344,7 +344,7 @@
         prompt: |
           ======================== Display Nested_vRLI DNS IPv6 "PTR" Record ===========================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
@@ -355,8 +355,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
         - False
 
     - name: Create IPv6 'PTR' records for Nested_vRLI
@@ -368,8 +368,8 @@
         value:    "{{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
       when:
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
         - False
 
 
@@ -383,7 +383,7 @@
         prompt: |
           =========================== Display Nested_ESXi DNS "A" Records =================================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
@@ -396,8 +396,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
     - name: Create IPv4 'A' records for Nested_ESXi hosts
       nsupdate:
@@ -410,8 +410,8 @@
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
 
     - name: DEBUG -- Display IPv4 'PTR' records for Nested_ESXi Hosts
@@ -420,7 +420,7 @@
         prompt: |
           ========================== Display Nested_ESXi DNS IPv4 "PTR" Records ===========================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
@@ -433,8 +433,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
 
     - name: Create IPv4 'PTR' records for Nested_ESXi hosts
@@ -447,8 +447,8 @@
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
 
 
@@ -458,7 +458,7 @@
         prompt: |
           =========================== Display Nested_ESXi DNS "AAAA" Records ==============================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
@@ -471,8 +471,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
         - False
 
     - name: Create IPv6 'AAAA' records for Nested_ESXi hosts
@@ -486,8 +486,8 @@
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
         - False
 
 
@@ -499,7 +499,7 @@
         prompt: |
           ========================== Display Nested_ESXi DNS IPv6 "PTR" Records ===========================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
@@ -512,8 +512,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
         - False
 
     - name: Create IPv6 'PTR' records for Nested_ESXi hosts
@@ -526,8 +526,8 @@
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
         - False
 
 
@@ -541,7 +541,7 @@
         prompt: |
           ======================== Display Nested_vCenter DNS IPv4 "A" Record =============================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
@@ -553,8 +553,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
     - name: Create IPv4 'A' records for Nested_vCenter
       nsupdate:
@@ -566,8 +566,8 @@
         value:    "{{ Nested_vCenter.Address.IPv4.Address }}"
         state:    "{{ LOCAL_RecordState }}"
       when:
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
 
 
@@ -578,7 +578,7 @@
         prompt: |
           ======================== Display Nested_vCenter DNS IPv4 "PTR" Record ===========================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
@@ -589,8 +589,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
     - name: Create IPv4 'PTR' records for Nested_vCenter
       nsupdate:
@@ -601,8 +601,8 @@
         value:    "{{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
       when:
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
 
 
@@ -613,7 +613,7 @@
         prompt: |
           ======================= Display Nested_vCenter DNS IPv6 "AAAA" Record ===========================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
@@ -625,8 +625,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
         - False
 
     - name: Create IPv6 'AAAA' records for Nested_vCenter
@@ -639,8 +639,8 @@
         value:    "{{ Nested_vCenter.Address.IPv6.Address }}"
         state:    "{{ LOCAL_RecordState }}"
       when:
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
         - False
 
 
@@ -653,7 +653,7 @@
         prompt: |
           ======================== Display Nested_vCenter DNS IPv6 "PTR" Record ===========================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
@@ -664,8 +664,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
         - False
 
 
@@ -678,8 +678,8 @@
         value:    "{{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
       when:
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
         - False
 
 
@@ -692,7 +692,7 @@
         prompt: |
           ============================ Display Nested_NSXT DNS "A" Records ================================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
@@ -705,8 +705,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
     - name: Create IPv4 'A' records for Nested_NSXT Components
       nsupdate:
@@ -719,8 +719,8 @@
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_NSXT.Components | dict2items }}"
       when:
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
 
 
@@ -730,7 +730,7 @@
         prompt: |
           ========================== Display Nested_NSXT DNS IPv4 "PTR" Records ===========================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
@@ -742,8 +742,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
     - name: Create IPv4 'PTR' records for Nested_NSXT Components
       nsupdate:
@@ -755,8 +755,8 @@
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_NSXT.Components | dict2items }}"
       when:
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv4 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
 
 
 
@@ -766,7 +766,7 @@
         prompt: |
           ========================== Display Nested_NSXT DNS "AAAA" Records ===============================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
@@ -779,8 +779,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
         - False
 
     - name: Create IPv6 'AAAA' records for Nested_NSXT Components
@@ -794,8 +794,8 @@
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_NSXT.Components | dict2items }}"
       when:
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
         - False
 
 
@@ -806,7 +806,7 @@
         prompt: |
           ========================== Display Nested_NSXT DNS IPv6 "PTR" Records ===========================
 
-                                        Deploy.Settings.UseDNS: {{ Deploy.Settings.UseDNS }}
+                                        Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
@@ -818,8 +818,8 @@
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
         - False
 
     - name: Create IPv6 'PTR' records for Nested_NSXT Components
@@ -832,6 +832,6 @@
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_NSXT.Components | dict2items }}"
       when:
-        - Deploy.Settings.UseDNS == true
-        - Deploy.Settings.IPv6 == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
         - False

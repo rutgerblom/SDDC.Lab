@@ -52,7 +52,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
       
     - name: Attach NSX-T transport node profile to vSphere cluster
       nsxt_transport_node_collections:
@@ -69,7 +69,7 @@
         state: present
       loop: "{{ Nested_Clusters | dict2items }}"
       when: 
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
         - item.value.Prep_NSX == true
         - item.value.DeployHosts == true
         - item.value.NSXT_TransportNodeProfile != ""
