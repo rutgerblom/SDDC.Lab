@@ -1,7 +1,6 @@
 ---
 - hosts: localhost
   name: deployRouter.yml
-  gather_facts: false
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -88,14 +87,14 @@
       ignore_errors: true
       no_log: true
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
 
     - name: Create temp directory
       file:
         path: "{{ Target.TempFolder }}"
         state: directory
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
 
     - name: Check if VyOS installation file exists locally in the software repository (Legacy and Latest)
@@ -116,7 +115,7 @@
       when:
         - InstallerFileCheck.stat.exists == true
         - Deploy.Software.Options.UseLocalInstaller == true
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
 
     - name: Download VyOS installation media (overwrite if exists)
@@ -126,7 +125,7 @@
         force: yes
       when: 
         - (InstallerFileCheck.stat.exists != true) or (Deploy.Software.Options.UseLocalInstaller != true)
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
 
     - name: Update VyOS installation file in the local software repository (overwrite if exists)
@@ -137,7 +136,7 @@
       when:
         - InstallerFileCheck.stat.exists != true
         - Deploy.Software.Options.KeepNewInstallers == true
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
 
     - name: Create configuration template file for VyOS router
@@ -145,7 +144,7 @@
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
 
 
@@ -175,7 +174,7 @@
         wait_for_ip_address: yes
       delegate_to: localhost
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Legacy"
 
@@ -193,7 +192,7 @@
             dest: "/config/config.boot"
             overwrite: true
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Legacy"
 
@@ -206,7 +205,7 @@
         name: "{{ Nested_Router.Name }}"
         state: reboot-guest
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Legacy"
 
@@ -226,7 +225,7 @@
         path: "{{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
       tags: upload
       when: 
-        - Deploy.Products.Router  == true
+        - Deploy.Product.Router  == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -264,7 +263,7 @@
                     Username: vyos
                     Password: {{ Common.Password.Nested }}
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -272,7 +271,7 @@
       pause:
         minutes: 1
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -285,7 +284,7 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "vyos"
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -293,7 +292,7 @@
       pause:
         seconds: 5
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -307,7 +306,7 @@
         keys_send:
           - ENTER
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -315,7 +314,7 @@
       pause:
         seconds: 5
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -328,7 +327,7 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "vyos"
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -336,7 +335,7 @@
       pause:
         seconds: 5
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -352,7 +351,7 @@
           - ENTER
         string_send: "install image"
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -360,7 +359,7 @@
       pause:
         seconds: 5
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -378,7 +377,7 @@
           - ENTER
         string_send: "yes"
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -386,7 +385,7 @@
       pause:
         seconds: 5
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -404,7 +403,7 @@
           - ENTER
         string_send: "vyos"
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -412,7 +411,7 @@
       pause: 
         seconds: 5
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -427,7 +426,7 @@
           - ENTER
         string_send: "vyos"
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -435,7 +434,7 @@
       pause: 
         seconds: 5
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -450,7 +449,7 @@
           - ENTER
           - ENTER
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -458,7 +457,7 @@
       pause: 
         seconds: 30
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -471,7 +470,7 @@
         name: "{{ Nested_Router.Name }}"
         state: reboot-guest
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -479,7 +478,7 @@
       pause: 
         minutes: 1
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -497,7 +496,7 @@
             dest: "/config/config.boot"
             overwrite: true
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -510,7 +509,7 @@
         name: "{{ Nested_Router.Name }}"
         state: shutdown-guest
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -518,7 +517,7 @@
       pause: 
         seconds: 10
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -532,7 +531,7 @@
         cdrom:
           type: "none"
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -545,7 +544,7 @@
         name: "{{ Nested_Router.Name }}"
         state: powered-on
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -561,7 +560,7 @@
         state: absent
       tags: upload
       when:
-        - Deploy.Products.Router  == true
+        - Deploy.Product.Router  == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
         - DEBUG.KeepInstallerFiles != true
@@ -576,7 +575,7 @@
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
         state: absent
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - DEBUG.KeepConfigFiles != true
 
@@ -585,7 +584,7 @@
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         state: absent
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - DEBUG.KeepInstallerFiles != true
 
@@ -604,7 +603,7 @@
                     Username: vyos
                     Password: {{ Common.Password.Nested }}
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Legacy"
 
@@ -615,12 +614,12 @@
       register: iproute
       ignore_errors: true
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - Nested_Router.Protocol == "Static"
         - status is failed
 
     - name: Wait 10 seconds
       pause: seconds=10
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - status is failed

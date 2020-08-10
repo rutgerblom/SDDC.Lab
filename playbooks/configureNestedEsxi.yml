@@ -1,7 +1,6 @@
 ---
 - hosts: localhost
   name: configureNestedEsxi.yml
-  gather_facts: false
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -106,7 +105,7 @@
       poll: 0
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
-        - Deploy.Settings.UseNFS == true
+        - Deploy.Setting.UseNFS == true
 
     - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the datastore
       vsphere_file:

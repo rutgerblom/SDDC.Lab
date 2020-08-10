@@ -1,7 +1,6 @@
 ---
 - hosts: localhost
   name: createNsxOverlaySegments.yml
-  gather_facts: false
   vars:
       LOCAL_Segments_Template: "{{ Target.TemplateFolder }}/vars_NSXT_Segments.j2"
   tasks:
@@ -60,7 +59,7 @@
     - name: Get list of Segments
       set_fact:
         SegmentsToCreate: "{{ lookup('template', LOCAL_Segments_Template) | from_yaml }}"
-      when: Deploy.Products.NSXT.LocalManager == true
+      when: Deploy.Product.NSXT.LocalManager == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -73,8 +72,8 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Products.NSXT.LocalManager == true
-        - Deploy.Products.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.Edge == true
         - SegmentsToCreate != ""
 
     ## Create only OVERLAY Segments in var_Segments  ##
@@ -96,6 +95,6 @@
         state: "present"
       loop: "{{ SegmentsToCreate }}"
       when: 
-      - Deploy.Products.NSXT.LocalManager == true
-      - Deploy.Products.NSXT.Edge == true
+      - Deploy.Product.NSXT.LocalManager == true
+      - Deploy.Product.NSXT.Edge == true
       - Nested_NSXT.System.Fabric.TransportZone[item.transport_zone_display_name].Type == "OVERLAY"

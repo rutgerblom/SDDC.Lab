@@ -6,13 +6,13 @@
 # Deploy DNS server
 - import_playbook: playbooks/deployDNS.yml
   when: 
-    - Deploy.Products.DNS == true
+    - Deploy.Product.DNS == true
 
 
 # Populate DNS with forward and reverse DNS records
 - import_playbook: playbooks/updateDNS.yml
   when:
-    - Deploy.Settings.UseDNS == true
+    - Deploy.Setting.UseDNS == true
 
 
 # Prepare the physical environment
@@ -22,7 +22,7 @@
 # Deploy router
 - import_playbook: playbooks/deployRouter.yml
   when: 
-    - Deploy.Products.Router == true
+    - Deploy.Product.Router == true
 
 
 # Deploy nested vSphere
@@ -44,79 +44,79 @@
 # Deploy NSX-T
 - import_playbook: playbooks/deployNsxManager.yml
   when: 
-    - Deploy.Products.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager == true
  
 - import_playbook: playbooks/license_NSXT-LM.yml
   when: 
-    - Deploy.Products.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager == true
 
 - import_playbook: playbooks/registerNsxComputeManager.yml
   when: 
-    - Deploy.Products.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager == true
 
 - import_playbook: playbooks/createNsxTz.yml
   when: 
-    - Deploy.Products.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager == true
 
 - import_playbook: playbooks/createNsxIpPool.yml
   when: 
-    - Deploy.Products.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager == true
 
 - import_playbook: playbooks/createNsxUplinkProfiles.yml
   when: 
-    - Deploy.Products.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager == true
 
 - import_playbook: playbooks/createNsxTnp.yml
   when: 
-    - Deploy.Products.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager == true
 
 - import_playbook: playbooks/attachNsxTnp.yml
   when: 
-    - Deploy.Products.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager == true
 
 - import_playbook: playbooks/createNsxEdgeTn.yml
   when: 
-    - Deploy.Products.NSXT.LocalManager == true
-    - Deploy.Products.NSXT.Edge == true
+    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.Edge == true
 
 - import_playbook: playbooks/createNsxEdgeCluster.yml
   when: 
-    - Deploy.Products.NSXT.LocalManager == true
-    - Deploy.Products.NSXT.Edge == true
+    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.Edge == true
 
 
 # Provision NSX-T logical networking
 - import_playbook: playbooks/enableNsxIPv6.yml
   when: 
-    - Deploy.Products.NSXT.LocalManager == true
-    - Deploy.Settings.IPv6 == true
+    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Setting.IPv6 == true
 
 - import_playbook: playbooks/createNsxVLANSegments.yml
   when: 
-    - Deploy.Products.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager == true
 
 - import_playbook: playbooks/createNsxT0Gateway.yml
   when: 
-    - Deploy.Products.NSXT.LocalManager == true
-    - Deploy.Products.NSXT.Edge == true
+    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.Edge == true
 
 - import_playbook: playbooks/createNsxT1Gateway.yml
   when: 
-    - Deploy.Products.NSXT.LocalManager == true
-    - Deploy.Products.NSXT.Edge == true
+    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.Edge == true
 
 - import_playbook: playbooks/createNsxOverlaySegments.yml
   when: 
-    - Deploy.Products.NSXT.LocalManager == true
-    - Deploy.Products.NSXT.Edge == true
+    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.Edge == true
 
 
 # Deploy vRealize products
 - import_playbook: playbooks/deployVrli.yml
   when: 
-    - Deploy.Products.vRLI == true
+    - Deploy.Product.vRLI == true
 
 - import_playbook: playbooks/license_vRLI.yml
   when: 
-    - Deploy.Products.vRLI == true
+    - Deploy.Product.vRLI == true
 

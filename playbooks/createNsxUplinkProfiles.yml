@@ -1,7 +1,6 @@
 ---
 - hosts: localhost
   name: createNsxUplinkProfiles.yml
-  gather_facts: false
   vars:
     LOCAL_UplinkProfiles_Template: "{{ Target.TemplateFolder }}/vars_NSXT_UplinkProfiles.j2"
   tasks:
@@ -56,12 +55,12 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
 
     - name: Get list of Uplink Profiles
       set_fact:
         UplinkProfilesToCreate: "{{ lookup('template', LOCAL_UplinkProfiles_Template) | from_yaml }}"
-      when: Deploy.Products.NSXT.LocalManager == true
+      when: Deploy.Product.NSXT.LocalManager == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -74,7 +73,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
         - UplinkProfilesToCreate != ""
 
     - name: Create Uplink Profiles
@@ -92,5 +91,5 @@
         state: "present"
       with_list: "{{ UplinkProfilesToCreate }}"
       when:
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
         - UplinkProfilesToCreate != ""

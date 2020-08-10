@@ -5,7 +5,6 @@
 ---
 - hosts: localhost
   name: deployNsxManager.yml
-  gather_facts: false
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -102,7 +101,7 @@
       ignore_errors: true
       failed_when: false
       no_log: true
-      when: Deploy.Products.NSXT.LocalManager == true
+      when: Deploy.Product.NSXT.LocalManager == true
 
     - name: Deploy NSX-T Local Manager from OVA
       vmware_deploy_ovf:
@@ -144,7 +143,7 @@
           nsx_role:      "{{ Nested_NSXT.Components.LocalManager.Deployment.Role }}"
       delegate_to: localhost
       when:
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
         - nsxman_check.status != 200
       async: 7200
       poll: 0
@@ -153,7 +152,7 @@
     - name: Wait 3 seconds before start checking whether the NSX-T Manager node is ready
       pause: seconds=3
       when: 
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
         - deployment.changed == true
 
     - name: Result check for NSX-T Manager node deployment
@@ -162,7 +161,7 @@
       register: job_result
       with_items: "{{ deployment.results }}"
       when:
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
         - deployment.changed == true
         - item.started is defined
 
@@ -183,7 +182,7 @@
       retries: 60
       delay: 60
       when: 
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
 
     - name: Write annotation on the NSX-T Local Manager VM
       vmware_guest:
@@ -200,7 +199,7 @@
                     Username: {{ Nested_NSXT.Credential.admin.Name }}
                     Password: {{ Nested_NSXT.Credential.admin.Password }}
       when: 
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
 
 
 ##
@@ -220,7 +219,7 @@
         status_code: 200
       register: UserList
       when: 
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
 
     - name: Disable Password Expiration Of All NSX-T Users (except for 'root')
       uri:
@@ -237,5 +236,5 @@
         status_code: 200
       loop: "{{ UserList.json.results }}"
       when: 
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
         - item.userid > 0

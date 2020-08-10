@@ -3,7 +3,6 @@
 ---
 - hosts: localhost
   name: addNsxLicense.yml
-  gather_facts: false
   vars:
     LOCAL_NSXLicenseKey: "{{ lookup('file', '/Software/nsxlicense.txt') }}"
   tasks:
@@ -57,7 +56,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
 
     - name: Add NSX-T license
       nsxt_licenses:
@@ -68,4 +67,4 @@
         license_key: "{{ LOCAL_NSXLicenseKey }}"
         state: "present"
       when: 
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
