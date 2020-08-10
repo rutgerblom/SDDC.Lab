@@ -33,6 +33,7 @@ This repository contains Ansible scripts that perform fully automated deployment
 * NSX-T Manager
 * NSX-T Edge Nodes
 * vRealize Log Insight
+* A DNS Server (multi-Pod)
 
 The primary use case is consistent and speedy provisioning of nested VMware SDDC lab environments.
 
@@ -40,11 +41,11 @@ The primary use case is consistent and speedy provisioning of nested VMware SDDC
 
 * A physical standalone ESXi host running version 6.7 or higher
 * The physical standalone ESXi host hostname must be resolvable by DNS.
-* An Ubuntu 18.04/20.04 VM (Ansible Controller)
+* A virtual machine with a modern version of Ubuntu (used as the Ansible Controller)
 * For deploying NSX-T you need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval)).
 * Access to VMware product installation media
-* A layer-3 switch with an appropriate OSPFv2 configuration matching the OSPFv2 settings in your config.yml file (for dynamic routing between Pods and your physical network).
-* The default settings require DNS name resolution. A pre-configured DNS server can be installed as part of the deployment.
+* A layer-3 switch with an appropriate OSPFv2 configuration matching the OSPFv2 settings in your config.yml file. This is used for dynamic routing between Pods and your physical network.
+* The default settings require DNS name resolution. It's recommended to deploy the pre-configured DNS server for this purpose.
 * If IPv6 deployment is enabled:
   * The Ansible Controller must be IPv6 enabled
   * DNS server must be IPv6 enabled
@@ -69,14 +70,14 @@ The primary use case is consistent and speedy provisioning of nested VMware SDDC
 
 * Modify **config.yml** and **licenses.yml** according to your needs and your environment
 
-* Create the Software Library directory structure:
+* Create the Software Library directory structure using:
   * sudo ansible-playbook utils/util_CreateSoftwareDir.yml
 
 * Add installation media to the corresponding directories in the Software Library (/Software)
 
 ## Usage
 
-To deploy an SDDC Pod:
+To deploy a Pod:
 1. Generate a Pod configuration with:  
 **ansible-playbook playbooks/createPodConfig.yml**
 
