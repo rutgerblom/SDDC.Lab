@@ -16,7 +16,7 @@ table {
   table-layout: auto;
   font-family: arial, sans-serif;
   border-collapse: collapse;
-  width: 75%;
+  width: 100%;
 }
 
 td, th {
@@ -34,8 +34,9 @@ tr:nth-child(even) {
 <h1 style="text-align:center">SDDC.Lab v{{ SDDCLab.Version }}</h1>
 
 <p style="text-align:center">Created by <a href="https://www.linkedin.com/in/rutgerblom/">Rutger Blom (VCIX-DCV/NV)</a> & <a href="https://www.linkedin.com/in/luischanu/">Luis Chanu (VCDX #246)</a></p>
+<br>
 
-<h2>Documentation for Pod-{{Pod.Number}}</h2>
+<h2>Documentation for Pod {{Pod.Number}}</h2>
 
 <h3>Deployment Information</h3>
 <table>
@@ -82,8 +83,34 @@ tr:nth-child(even) {
     <th>Link (FQDN)</th>
     <th>Link (IP)</th>
   </tr>
+{% if Deploy.Product.DNS == True %}
   <tr>
-    <td>{{ Deploy.Software.vCenter.Product }}</td>
+    <td>{{ Deploy.Software.Ubuntu.Vendor }} {{ Deploy.Software.Ubuntu.Product }}</td>
+    <td>{{ Deploy.Software.Ubuntu.Version }}</td>
+    <td><a href="ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.FQDN }}">ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.FQDN }}</a></td>
+{% if Deploy.Setting.IPv4 %}
+    <td><a href="ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv4.Address }}">ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv4.Address }}</a></td>
+{% endif %}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 %}
+    <td><a href="ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv6.Address }}">ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv6.Address }}</a></td>
+{% endif %}{# Deploy.Setting.IPv6 #}
+  </tr>
+{% endif %}{# Deploy.Product.DNS #}
+{% if Deploy.Product.Router == True %}
+  <tr>
+    <td>{{ Deploy.Software.Router.Vendor }} {{ Deploy.Software.Router.Product }}</td>
+    <td>{{ Deploy.Software.Router.Version }}</td>
+    <td><a href="ssh://vyos@{{ Nested_Router.Name }}-Management.{{ Common.DNS.Domain }}">ssh://vyos@{{ Nested_Router.Name }}-Management.{{ Common.DNS.Domain }}</a></td>
+{% if Deploy.Setting.IPv4 %}
+    <td><a href="ssh://vyos@{{ Nested_Router.Interface.Management.IPv4.Address }}">ssh://vyos@{{ Nested_Router.Interface.Management.IPv4.Address }}</a></td>
+{% endif %}{# Deploy.Setting.IPv4 #}  
+{% if Deploy.Setting.IPv6 %}
+    <td><a href="ssh://vyos@{{ Nested_Router.Interface.Management.IPv6.Address }}">ssh://vyos@{{ Nested_Router.Interface.Management.IPv6.Address }}</a></td>
+{% endif %}{# Deploy.Setting.IPv6 #}  
+  </tr>
+{% endif %}{# Deploy.Product.Router #}
+  <tr>
+    <td>vSphere Client</td>
     <td>{{ Deploy.Software.vCenter.Version }}</td>
     <td><a href="https://{{ Nested_vCenter.FQDN }}">https://{{ Nested_vCenter.FQDN }}</a></td>
 {% if Deploy.Setting.IPv4 %}
@@ -93,9 +120,31 @@ tr:nth-child(even) {
     <td><a href="https://{{ Nested_vCenter.Address.IPv6.Address }}">https://{{ Nested_vCenter.Address.IPv6.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
+  <tr>
+    <td>{{ Deploy.Software.vCenter.Product }} VAMI</td>
+    <td>{{ Deploy.Software.vCenter.Version }}</td>
+    <td><a href="https://{{ Nested_vCenter.FQDN }}:5480">https://{{ Nested_vCenter.FQDN }}:5480</a></td>
+{% if Deploy.Setting.IPv4 %}
+    <td><a href="https://{{ Nested_vCenter.Address.IPv4.Address }}:5480">https://{{ Nested_vCenter.Address.IPv4.Address }}:5480</a></td>
+{% endif %}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 %}
+    <td><a href="https://{{ Nested_vCenter.Address.IPv6.Address }}:5480">https://{{ Nested_vCenter.Address.IPv6.Address }}:5480</a></td>
+{% endif %}{# Deploy.Setting.IPv6 #}    
+  </tr>
+  <tr>
+    <td>{{ Deploy.Software.vCenter.Product }} CLI</td>
+    <td>{{ Deploy.Software.vCenter.Version }}</td>
+    <td><a href="ssh://root@{{ Nested_vCenter.FQDN }}">ssh://root@{{ Nested_vCenter.FQDN }}</a></td>
+{% if Deploy.Setting.IPv4 %}
+    <td><a href="ssh://root@{{ Nested_vCenter.Address.IPv4.Address }}:5480">ssh://root@{{ Nested_vCenter.Address.IPv4.Address }}:5480</a></td>
+{% endif %}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 %}
+    <td><a href="ssh://root@{{ Nested_vCenter.Address.IPv6.Address }}:5480">ssh://root@{{ Nested_vCenter.Address.IPv6.Address }}:5480</a></td>
+{% endif %}{# Deploy.Setting.IPv6 #}  
+  </tr>
 {% for item in Nested_ESXi.Hosts %}
   <tr>
-    <td>ESXi Host {{ Nested_ESXi.Hosts[item].VMName }}</td>
+    <td>ESXi Host Client {{ Nested_ESXi.Hosts[item].VMName }}</td>
     <td>{{ Deploy.Software.ESXi.Version }}</td>
     <td><a href="https://{{ Nested_ESXi.Hosts[item].FQDN }}">https://{{ Nested_ESXi.Hosts[item].FQDN }}</a></td>
 {% if Deploy.Setting.IPv4 %}
@@ -119,56 +168,6 @@ tr:nth-child(even) {
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
 {% endif %}{# Deploy.Product.NSXT.GlobalManager #}
-{% if Deploy.Product.NSXT.LocalManager == True %}
-  <tr>
-    <td>NSX-T Local Manager</td>
-    <td>{{ Deploy.Software.NSXT.Version }}</td>
-    <td><a href="https://{{ Nested_NSXT.Components.LocalManager.FQDN }}">https://{{ Nested_NSXT.Components.LocalManager.FQDN }}</a></td>
-{% if Deploy.Setting.IPv4 %}
-    <td><a href="https://{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Address }}">https://{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Address }}</a></td>
-{% endif %}{# Deploy.Setting.IPv4 #}
-{% if Deploy.Setting.IPv6 %}
-    <td><a href="https://{{ Nested_NSXT.Components.LocalManager.Address.IPv6.Address }}">https://{{ Nested_NSXT.Components.LocalManager.Address.IPv6.Address }}</a></td>
-{% endif %}{# Deploy.Setting.IPv6 #}
-  </tr>
-{% endif %}{# Deploy.Product.NSXT.LocalManager #}
-{% if Deploy.Product.vRLI == True %}
-  <tr>
-    <td>{{ Deploy.Software.vRLI.Product }}</td>
-    <td>{{ Deploy.Software.vRLI.Version }}</td>
-    <td><a href="https://{{ Nested_vRLI.FQDN }}">https://{{ Nested_vRLI.FQDN }}</a></td>
-{% if Deploy.Setting.IPv4 %}
-    <td><a href="https://{{ Nested_vRLI.Address.IPv4.Address }}">https://{{ Nested_vRLI.Address.IPv4.Address }}</a></td>
-{% endif %}{# Deploy.Setting.IPv4 #}
-{% if Deploy.Setting.IPv6 %}
-    <td><a href="https://{{ Nested_vRLI.Address.IPv6.Address }}">https://{{ Nested_vRLI.Address.IPv6.Address }}</a></td>
-{% endif %}{# Deploy.Setting.IPv6 #}
-  </tr>
-{% endif %}{# Deploy.Product.vRLI #}
-{% if Deploy.Product.DNS == True %}
-  <tr>
-    <td>{{ Deploy.Software.Ubuntu.Vendor }} {{ Deploy.Software.Ubuntu.Product }}</td>
-    <td>{{ Deploy.Software.Ubuntu.Version }}</td>
-    <td><a href="ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.FQDN }}">ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.FQDN }}</a></td>
-{% if Deploy.Setting.IPv4 %}
-    <td><a href="ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv4.Address }}">ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv4.Address }}</a></td>
-{% endif %}{# Deploy.Setting.IPv4 #}
-{% if Deploy.Setting.IPv6 %}
-    <td><a href="ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv6.Address }}">ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv6.Address }}</a></td>
-{% endif %}{# Deploy.Setting.IPv6 #}
-  </tr>
-{% endif %}{# Deploy.Product.DNS #}
-  <tr>
-    <td>{{ Deploy.Software.vCenter.Product }} VAMI</td>
-    <td>{{ Deploy.Software.vCenter.Version }}</td>
-    <td><a href="https://{{ Nested_vCenter.FQDN }}:5480">https://{{ Nested_vCenter.FQDN }}:5480</a></td>
-{% if Deploy.Setting.IPv4 %}
-    <td><a href="https://{{ Nested_vCenter.Address.IPv4.Address }}:5480">https://{{ Nested_vCenter.Address.IPv4.Address }}:5480</a></td>
-{% endif %}{# Deploy.Setting.IPv4 #}
-{% if Deploy.Setting.IPv6 %}
-    <td><a href="https://{{ Nested_vCenter.Address.IPv6.Address }}:5480">https://{{ Nested_vCenter.Address.IPv6.Address }}:5480</a></td>
-{% endif %}{# Deploy.Setting.IPv6 #}    
-  </tr>
 {% if Deploy.Product.NSXT.GlobalManager == True %}
   <tr>
     <td>NSX-T Global Manager CLI</td>
@@ -182,6 +181,19 @@ tr:nth-child(even) {
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
 {% endif %}{# Deploy.Product.NSXT.GlobalManager #}
+{% if Deploy.Product.NSXT.LocalManager == True %}
+  <tr>
+    <td>NSX-T Local Manager</td>
+    <td>{{ Deploy.Software.NSXT.Version }}</td>
+    <td><a href="https://{{ Nested_NSXT.Components.LocalManager.FQDN }}">https://{{ Nested_NSXT.Components.LocalManager.FQDN }}</a></td>
+{% if Deploy.Setting.IPv4 %}
+    <td><a href="https://{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Address }}">https://{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Address }}</a></td>
+{% endif %}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 %}
+    <td><a href="https://{{ Nested_NSXT.Components.LocalManager.Address.IPv6.Address }}">https://{{ Nested_NSXT.Components.LocalManager.Address.IPv6.Address }}</a></td>
+{% endif %}{# Deploy.Setting.IPv6 #}
+  </tr>
+{% endif %}{# Deploy.Product.NSXT.LocalManager #}
 {% if Deploy.Product.NSXT.LocalManager == True %}
   <tr>
     <td>NSX-T Local Manager CLI</td>
@@ -205,30 +217,19 @@ tr:nth-child(even) {
   </tr>
 {% endfor %}{# EdgeTransportNode #}
 {% endif %}{# Deploy.Product.NSXT.Edge #}
+{% if Deploy.Product.vRLI == True %}
   <tr>
-    <td>{{ Deploy.Software.vCenter.Product }} CLI</td>
-    <td>{{ Deploy.Software.vCenter.Version }}</td>
-    <td><a href="ssh://root@{{ Nested_vCenter.FQDN }}">ssh://root@{{ Nested_vCenter.FQDN }}</a></td>
+    <td>{{ Deploy.Software.vRLI.Product }}</td>
+    <td>{{ Deploy.Software.vRLI.Version }}</td>
+    <td><a href="https://{{ Nested_vRLI.FQDN }}">https://{{ Nested_vRLI.FQDN }}</a></td>
 {% if Deploy.Setting.IPv4 %}
-    <td><a href="ssh://root@{{ Nested_vCenter.Address.IPv4.Address }}:5480">ssh://root@{{ Nested_vCenter.Address.IPv4.Address }}:5480</a></td>
+    <td><a href="https://{{ Nested_vRLI.Address.IPv4.Address }}">https://{{ Nested_vRLI.Address.IPv4.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
-    <td><a href="ssh://root@{{ Nested_vCenter.Address.IPv6.Address }}:5480">ssh://root@{{ Nested_vCenter.Address.IPv6.Address }}:5480</a></td>
-{% endif %}{# Deploy.Setting.IPv6 #}  
+    <td><a href="https://{{ Nested_vRLI.Address.IPv6.Address }}">https://{{ Nested_vRLI.Address.IPv6.Address }}</a></td>
+{% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
-{% if Deploy.Product.Router == True %}
-  <tr>
-    <td>{{ Deploy.Software.Router.Vendor }} {{ Deploy.Software.Router.Product }} CLI</td>
-    <td>{{ Deploy.Software.Router.Version }}</td>
-    <td><a href="ssh://vyos@{{ Nested_Router.Name }}-Management.{{ Common.DNS.Domain }}">ssh://vyos@{{ Nested_Router.Name }}-Management.{{ Common.DNS.Domain }}</a></td>
-{% if Deploy.Setting.IPv4 %}
-    <td><a href="ssh://vyos@{{ Nested_Router.Interface.Management.IPv4.Address }}">ssh://vyos@{{ Nested_Router.Interface.Management.IPv4.Address }}</a></td>
-{% endif %}{# Deploy.Setting.IPv4 #}  
-{% if Deploy.Setting.IPv6 %}
-    <td><a href="ssh://vyos@{{ Nested_Router.Interface.Management.IPv6.Address }}">ssh://vyos@{{ Nested_Router.Interface.Management.IPv6.Address }}</a></td>
-{% endif %}{# Deploy.Setting.IPv6 #}  
-  </tr>
-{% endif %}{# Deploy.Product.Router #}
+{% endif %}{# Deploy.Product.vRLI #}
 </table>
 <br>
 
@@ -239,13 +240,27 @@ tr:nth-child(even) {
     <th>Username</th>
     <th>Password</th>
   </tr>
+{% if Deploy.Product.DNS == True %}
   <tr>
-    <td>vCenter</td>
+    <td>{{ Deploy.Software.Ubuntu.Vendor }} {{ Deploy.Software.Ubuntu.Product }}</td>
+    <td>{{ Nested_DNS.OS.Credential.User }}</td>
+    <td>{{ Nested_DNS.OS.Credential.Password }}</td>
+  </tr>
+{% endif %}{# Deploy.Product.DNS #}
+{% if Deploy.Product.Router == True %}
+  <tr>
+    <td>{{ Deploy.Software.Router.Vendor }} {{ Deploy.Software.Router.Product }}</td>
+    <td>vyos</td>
+    <td>{{ Common.Password.Nested }}</td>
+  </tr>
+{% endif %}{# Deploy.Product.Router #}
+  <tr>
+    <td>vCenter SSO</td>
     <td>{{ Nested_vCenter.User }}</td>
     <td>{{ Nested_vCenter.Password }}</td>
   </tr>
   <tr>
-    <td>vCenter VAMI and CLI</td>
+    <td>{{ Deploy.Software.vCenter.Product }} VAMI and CLI</td>
     <td>root</td>
     <td>{{ Nested_vCenter.Password }}</td>
   </tr>
@@ -256,47 +271,33 @@ tr:nth-child(even) {
   </tr>
 {% if Deploy.Product.NSXT.LocalManager == True %}
   <tr>
-    <td>NSX-T admin</td>
+    <td>NSX-T (admin)</td>
     <td>{{ Nested_NSXT.Credential.admin.Name }}</td>
     <td>{{ Nested_NSXT.Credential.admin.Password }}</td>
   </tr>
   <tr>
-    <td>NSX-T audit</td>
+    <td>NSX-T (audit)</td>
     <td>{{ Nested_NSXT.Credential.audit.Name }}</td>
     <td>{{ Nested_NSXT.Credential.audit.Password }}</td>
   </tr>
   <tr>
-    <td>NSX-T root</td>
+    <td>NSX-T (root)</td>
     <td>{{ Nested_NSXT.Credential.root.Name }}</td>
     <td>{{ Nested_NSXT.Credential.root.Password }}</td>
   </tr>
 {% endif %}{# Deploy.Product.NSXT.LocalManager #}
 {% if Deploy.Product.vRLI == True %}
   <tr>
-    <td>vRealize Log Insight admin</td>
+    <td>vRealize Log Insight (admin)</td>
     <td>{{ Nested_vRLI.Credential.admin.Name }}</td>
     <td>{{ Nested_vRLI.Credential.admin.Password }}</td>
   </tr>
   <tr>
-    <td>vRealize Log Insight root</td>
+    <td>vRealize Log Insight (root)</td>
     <td>{{ Nested_vRLI.Credential.root.Name }}</td>
     <td>{{ Nested_vRLI.Credential.root.Password }}</td>
   </tr>
 {% endif %}{# Deploy.Product.vRLI #}
-{% if Deploy.Product.Router == True %}
-  <tr>
-    <td>VyOS Router CLI</td>
-    <td>vyos</td>
-    <td>{{ Common.Password.Nested }}</td>
-  </tr>
-{% endif %}{# Deploy.Product.Router #}
-{% if Deploy.Product.DNS == True %}
-  <tr>
-    <td>{{ Deploy.Software.Ubuntu.Vendor }} {{ Deploy.Software.Ubuntu.Product }}</td>
-    <td>{{ Nested_DNS.OS.Credential.User }}</td>
-    <td>{{ Nested_DNS.OS.Credential.Password }}</td>
-  </tr>
-{% endif %}{# Deploy.Product.DNS #}
 </table>
 <br>
 
