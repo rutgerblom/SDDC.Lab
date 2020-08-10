@@ -88,4 +88,3 @@ Deploying an SDDC Pod will take somewhere between 1 and 1.5 hours depending on y
 
 Similary you remove a Pod with:  
 **sudo ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" undeploy.yml**
-
