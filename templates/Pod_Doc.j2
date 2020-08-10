@@ -16,7 +16,7 @@ table {
   table-layout: auto;
   font-family: arial, sans-serif;
   border-collapse: collapse;
-  width: 60%;
+  width: 75%;
 }
 
 td, th {
@@ -33,7 +33,7 @@ tr:nth-child(even) {
 <body>
 <h1 style="text-align:center">SDDC.Lab v{{ SDDCLab.Version }}</h1>
 
-<p style="text-align:center">Created by Luis Chanu (VCDX #246) & Rutger Blom (VCIX-DCV/NV)</p>
+<p style="text-align:center">Created by <a href="https://www.linkedin.com/in/rutgerblom/">Rutger Blom (VCIX-DCV/NV)</a> & <a href="https://www.linkedin.com/in/luischanu/">Luis Chanu (VCDX #246)</a></p>
 
 <h2>Documentation for Pod-{{Pod.Number}}</h2>
 
@@ -99,10 +99,10 @@ tr:nth-child(even) {
     <td>{{ Deploy.Software.ESXi.Version }}</td>
     <td><a href="https://{{ Nested_ESXi.Hosts[item].FQDN }}">https://{{ Nested_ESXi.Hosts[item].FQDN }}</a></td>
 {% if Deploy.Setting.IPv4 %}
-    td><a href="https://{{ Nested_ESXi.Hosts[item].vmk.vmk0.Address.IPv4.Address }}">https://{{ Nested_ESXi.Hosts[item].vmk.vmk0.Address.IPv4.Address }}</a></td>
+    <td><a href="https://{{ Nested_ESXi.Hosts[item].vmk.vmk0.Address.IPv4.Address }}">https://{{ Nested_ESXi.Hosts[item].vmk.vmk0.Address.IPv4.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
-    td><a href="https://{{ Nested_ESXi.Hosts[item].vmk.vmk0.Address.IPv6.Address }}">https://{{ Nested_ESXi.Hosts[item].vmk.vmk0.Address.IPv6.Address }}</a></td>
+    <td><a href="https://{{ Nested_ESXi.Hosts[item].vmk.vmk0.Address.IPv6.Address }}">https://{{ Nested_ESXi.Hosts[item].vmk.vmk0.Address.IPv6.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
 {% endfor %}{# Nested_ESXi.Hosts #}
@@ -139,7 +139,7 @@ tr:nth-child(even) {
     <td><a href="https://{{ Nested_vRLI.FQDN }}">https://{{ Nested_vRLI.FQDN }}</a></td>
 {% if Deploy.Setting.IPv4 %}
     <td><a href="https://{{ Nested_vRLI.Address.IPv4.Address }}">https://{{ Nested_vRLI.Address.IPv4.Address }}</a></td>
-    {% endif %}{# Deploy.Setting.IPv4 #}
+{% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
     <td><a href="https://{{ Nested_vRLI.Address.IPv6.Address }}">https://{{ Nested_vRLI.Address.IPv6.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv6 #}
@@ -149,12 +149,12 @@ tr:nth-child(even) {
   <tr>
     <td>{{ Deploy.Software.Ubuntu.Vendor }} {{ Deploy.Software.Ubuntu.Product }}</td>
     <td>{{ Deploy.Software.Ubuntu.Version }}</td>
-    <td><a href="ssh://{{ Nested_DNS.FQDN }}">ssh://{{ Nested_DNS.FQDN }}</a></td>
+    <td><a href="ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.FQDN }}">ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.FQDN }}</a></td>
 {% if Deploy.Setting.IPv4 %}
-    <td><a href="ssh://{{ Nested_DNS.OS.Network.IPv4.Address }}">ssh://{{ Nested_DNS.OS.Network.IPv4.Address }}</a></td>
+    <td><a href="ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv4.Address }}">ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv4.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
-    <td><a href="ssh://{{ Nested_DNS.OS.Network.IPv6.Address }}">ssh://{{ Nested_DNS.OS.Network.IPv6.Address }}</a></td>
+    <td><a href="ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv6.Address }}">ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv6.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
 {% endif %}{# Deploy.Product.DNS #}
@@ -222,10 +222,10 @@ tr:nth-child(even) {
     <td>{{ Deploy.Software.Router.Version }}</td>
     <td><a href="ssh://vyos@{{ Nested_Router.Name }}-Management.{{ Common.DNS.Domain }}">ssh://vyos@{{ Nested_Router.Name }}-Management.{{ Common.DNS.Domain }}</a></td>
 {% if Deploy.Setting.IPv4 %}
-    <td><a href="ssh://vyos@{{ Nested_Router.Interface.Management.IPv4.Address }}">ssh://vyos@{{{ Nested_Router.Interface.Management.IPv4.Address }}</a></td>
+    <td><a href="ssh://vyos@{{ Nested_Router.Interface.Management.IPv4.Address }}">ssh://vyos@{{ Nested_Router.Interface.Management.IPv4.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv4 #}  
 {% if Deploy.Setting.IPv6 %}
-    <td><a href="ssh://vyos@{{ Nested_Router.Interface.Management.IPv6.Address }}">ssh://vyos@{{{ Nested_Router.Interface.Management.IPv6.Address }}</a></td>
+    <td><a href="ssh://vyos@{{ Nested_Router.Interface.Management.IPv6.Address }}">ssh://vyos@{{ Nested_Router.Interface.Management.IPv6.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv6 #}  
   </tr>
 {% endif %}{# Deploy.Product.Router #}
