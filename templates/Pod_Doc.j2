@@ -94,12 +94,12 @@ tr:nth-child(even) {
   <tr>
     <td>{{ Deploy.Software.Ubuntu.Vendor }} {{ Deploy.Software.Ubuntu.Product }}</td>
     <td>{{ Deploy.Software.Ubuntu.Version }}</td>
-    <td><a href="ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.FQDN }}">ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.FQDN }}</a></td>
+    <td><a href="ssh://{{ Nested_DNSServer.OS.Credential.User }}@{{ Nested_DNSServer.FQDN }}">ssh://{{ Nested_DNSServer.OS.Credential.User }}@{{ Nested_DNSServer.FQDN }}</a></td>
 {% if Deploy.Setting.IPv4 %}
-    <td><a href="ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv4.Address }}">ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv4.Address }}</a></td>
+    <td><a href="ssh://{{ Nested_DNSServer.OS.Credential.User }}@{{ Nested_DNSServer.OS.Network.IPv4.Address }}">ssh://{{ Nested_DNSServer.OS.Credential.User }}@{{ Nested_DNSServer.OS.Network.IPv4.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
-    <td><a href="ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv6.Address }}">ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv6.Address }}</a></td>
+    <td><a href="ssh://{{ Nested_DNSServer.OS.Credential.User }}@{{ Nested_DNSServer.OS.Network.IPv6.Address }}">ssh://{{ Nested_DNSServer.OS.Credential.User }}@{{ Nested_DNSServer.OS.Network.IPv6.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
 {% endif %}{# Deploy.Product.DNSServer #}
@@ -250,8 +250,8 @@ tr:nth-child(even) {
 {% if Deploy.Product.DNSServer == True %}
   <tr>
     <td>{{ Deploy.Software.Ubuntu.Vendor }} {{ Deploy.Software.Ubuntu.Product }}</td>
-    <td>{{ Nested_DNS.OS.Credential.User }}</td>
-    <td>{{ Nested_DNS.OS.Credential.Password }}</td>
+    <td>{{ Nested_DNSServer.OS.Credential.User }}</td>
+    <td>{{ Nested_DNSServer.OS.Credential.Password }}</td>
   </tr>
 {% endif %}{# Deploy.Product.DNSServer #}
 {% if Deploy.Product.Router == True %}

@@ -57,20 +57,20 @@
                                     Target.TempFolder: {{ Target.TempFolder }}
 
                                        Ubuntu Version: {{ Deploy.Software.Ubuntu.Version }}
-                                          Ubuntu FQDN: {{ Nested_DNS.FQDN }}
-                                        Ubuntu VMName: {{ Nested_DNS.VM.VMName }}
-                                          Ubuntu User: {{ Nested_DNS.OS.Credential.User }}
-                                      Ubuntu Password: {{ {{ Nested_DNS.OS.Credential.Password }} }}
+                                          Ubuntu FQDN: {{ Nested_DNSServer.FQDN }}
+                                        Ubuntu VMName: {{ Nested_DNSServer.VM.VMName }}
+                                          Ubuntu User: {{ Nested_DNSServer.OS.Credential.User }}
+                                      Ubuntu Password: {{ {{ Nested_DNSServer.OS.Credential.Password }} }}
 
-                                        Ubuntu VM CPU: {{ Nested_DNS.VM.HardwareSettings.CPU }}
-                           Ubuntu VM Cores per Socket: {{ Nested_DNS.VM.HardwareSettings.CoresPerSocket }}
-                                     Ubuntu VM Memory: {{ Nested_DNS.VM.HardwareSettings.Memory }}
-                                  Ubuntu VM Disk Size: {{ Nested_DNS.VM.HardwareSettings.DiskSize }}
-                          Ubuntu VM Network PortGroup: {{ Nested_DNS.VM.HardwareSettings.PortGroup }}
+                                        Ubuntu VM CPU: {{ Nested_DNSServer.VM.HardwareSettings.CPU }}
+                           Ubuntu VM Cores per Socket: {{ Nested_DNSServer.VM.HardwareSettings.CoresPerSocket }}
+                                     Ubuntu VM Memory: {{ Nested_DNSServer.VM.HardwareSettings.Memory }}
+                                  Ubuntu VM Disk Size: {{ Nested_DNSServer.VM.HardwareSettings.DiskSize }}
+                          Ubuntu VM Network PortGroup: {{ Nested_DNSServer.VM.HardwareSettings.PortGroup }}
 
-                                  Ubuntu IPv4 Address: {{ Nested_DNS.OS.Network.IPv4.Address }}
-                               Ubuntu Network Netmask: {{ (Nested_DNS.OS.Network.IPv4.Address + '/' + Nested_DNS.OS.Network.IPv4.Prefix) | ipaddr('netmask') }}
-                          Ubuntu Network IPv4 Gateway: {{ Nested_DNS.OS.Network.IPv4.Gateway }}
+                                  Ubuntu IPv4 Address: {{ Nested_DNSServer.OS.Network.IPv4.Address }}
+                               Ubuntu Network Netmask: {{ (Nested_DNSServer.OS.Network.IPv4.Address + '/' + Nested_DNSServer.OS.Network.IPv4.Prefix) | ipaddr('netmask') }}
+                          Ubuntu Network IPv4 Gateway: {{ Nested_DNSServer.OS.Network.IPv4.Gateway }}
 
                                     Ubuntu Media Path: {{ Deploy.Software.Ubuntu.Directory }}
                                     Ubuntu Media File: {{ Deploy.Software.Ubuntu.File }}
@@ -88,7 +88,7 @@
         validate_certs: no
         datacenter: "{{ Target.DataCenter }}"
         folder: "{{ Target.VMFolder }}"
-        name: "{{ Nested_DNS.VM.VMName }}"
+        name: "{{ Nested_DNSServer.VM.VMName }}"
         schema: "vsphere"
         properties: ["overallStatus"]
       register: ubuntu_status
@@ -218,31 +218,31 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested_DNS.VM.VMName }}"
+        name: "{{ Nested_DNSServer.VM.VMName }}"
         state: poweredon
         guest_id: ubuntu64Guest
         cluster: "{{ Target.Cluster }}"
         datacenter: "{{ Target.DataCenter }}"
         folder: "{{ Target.VMFolder }}"
         disk:
-        - size_gb: "{{ Nested_DNS.VM.HardwareSettings.DiskSize }}"
+        - size_gb: "{{ Nested_DNSServer.VM.HardwareSettings.DiskSize }}"
           type: "{{ Common.DiskProvisioning }}"
           datastore: "{{ Target.Datastore }}"
         hardware:
-          memory_mb: "{{ Nested_DNS.VM.HardwareSettings.Memory }}"
-          num_cpus: "{{ Nested_DNS.VM.HardwareSettings.CPU }}"
-          num_cpu_cores_per_socket: "{{ Nested_DNS.VM.HardwareSettings.CoresPerSocket }}"
+          memory_mb: "{{ Nested_DNSServer.VM.HardwareSettings.Memory }}"
+          num_cpus: "{{ Nested_DNSServer.VM.HardwareSettings.CPU }}"
+          num_cpu_cores_per_socket: "{{ Nested_DNSServer.VM.HardwareSettings.CoresPerSocket }}"
           scsi: paravirtual
         networks:
-          - name: "{{ Nested_DNS.VM.HardwareSettings.PortGroup }}"
+          - name: "{{ Nested_DNSServer.VM.HardwareSettings.PortGroup }}"
             device_type: vmxnet3
         cdrom:
           type: "iso"
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Ubuntu.File }}"
         annotation: | 
-                    {{ Nested_DNS.VM.Annotation }}
-                    Username: {{ Nested_DNS.OS.Credential.User }}
-                    Password: {{ Nested_DNS.OS.Credential.Password }}
+                    {{ Nested_DNSServer.VM.Annotation }}
+                    Username: {{ Nested_DNSServer.OS.Credential.User }}
+                    Password: {{ Nested_DNSServer.OS.Credential.Password }}
       when: 
         - ubuntu_status is failed
         - Deploy.Product.DNSServer == true
@@ -254,10 +254,10 @@
         password: "{{ Target.Password }}"
         validate_certs: no
         datacenter: "{{ Target.DataCenter }}"
-        name: "{{ Nested_DNS.VM.VMName }}"
+        name: "{{ Nested_DNSServer.VM.VMName }}"
         schema: "vsphere"
       register: vm_facts
-      until: vm_facts.instance.guest.hostName is search(Nested_DNS.FQDN)
+      until: vm_facts.instance.guest.hostName is search(Nested_DNSServer.FQDN)
       retries: 30
       delay: 60
       when: 
@@ -270,11 +270,11 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
         vm_password: VMware1!
         vm_shell: /usr/bin/echo
-        vm_shell_args: "'{{ Nested_DNS.OS.Credential.User }}:{{ Nested_DNS.OS.Credential.Password }}' | sudo chpasswd"
+        vm_shell_args: "'{{ Nested_DNSServer.OS.Credential.User }}:{{ Nested_DNSServer.OS.Credential.Password }}' | sudo chpasswd"
       when: 
         - ubuntu_status is failed
         - Deploy.Product.DNSServer == true
@@ -295,9 +295,9 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
         copy:
           src: "{{ item.LocalDestination }}"
           dest: "{{ item.StageDestination }}"
@@ -313,9 +313,9 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "mv {{ item.StageDestination }} {{ item.FinalDestination }}"
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
@@ -330,9 +330,9 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "mkdir {{ item.Path }}"
       loop: "{{ var_UbuntuConfiguration.Configuration.Directories }}"
@@ -347,9 +347,9 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "chown {{ item.Owner }} {{ item.Path }} "
       loop: "{{ var_UbuntuConfiguration.Configuration.Directories }}"
@@ -364,9 +364,9 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "netplan apply"
       when: 
@@ -379,9 +379,9 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "systemctl restart {{ item.Daemon }}"
       loop: "{{ var_UbuntuConfiguration.Configuration.Packages }}"
