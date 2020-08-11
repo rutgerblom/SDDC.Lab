@@ -1,7 +1,6 @@
 ---
 - hosts: localhost
   name: createNsxTnp.yml
-  gather_facts: false
   vars:
       LOCAL_TransportNodeProfiles_Template: "{{ Target.TemplateFolder }}/vars_NSXT_TransportNodeProfiles.j2"
   tasks:
@@ -56,12 +55,12 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
 
     - name: Get list of Transport Node Profiles
       set_fact:
         TNPsToCreate: "{{ lookup('template', LOCAL_TransportNodeProfiles_Template) | from_yaml }}"
-      when: Deploy.Products.NSXT.LocalManager == true
+      when: Deploy.Product.NSXT.LocalManager == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -74,7 +73,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
         - TNPsToCreate != ""
 
     - name: Create Transport Node Profiles 
@@ -92,5 +91,5 @@
         state: present
       loop: "{{ TNPsToCreate }}"
       when:
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true
         - TNPsToCreate != ""

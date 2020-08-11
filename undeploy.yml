@@ -3,7 +3,6 @@
 ---
 - hosts: localhost
   name: undeploy.yml
-  gather_facts: false
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -237,7 +236,7 @@
       register: iproute
       ignore_errors: true
       when: 
-        - Deploy.Products.Router == true
+        - Deploy.Product.Router == true
         - Nested_Router.Protocol == "Static"
 
 - name: Remove DNS records for the Pod

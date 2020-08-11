@@ -4,7 +4,6 @@
 ---
 - hosts: localhost
   name: createNsxTz.yml
-  gather_facts: false
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -84,4 +83,4 @@
       register: result
       loop: "{{ Nested_NSXT.System.Fabric.TransportZone | dict2items }}"
       when:
-        - Deploy.Products.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager == true

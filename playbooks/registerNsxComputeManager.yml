@@ -1,7 +1,6 @@
 ---
 - hosts: localhost
   name: registerNsxComputeManager.yml
-  gather_facts: false
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -81,4 +80,4 @@
             username: "{{ Nested_vCenter.User }}"
             password: "{{ Nested_vCenter.Password }}"
           state: present
-      when: Deploy.Products.NSXT.LocalManager == true
+      when: Deploy.Product.NSXT.LocalManager == true

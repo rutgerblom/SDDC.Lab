@@ -1,7 +1,6 @@
 ---
 - hosts: localhost
   name: createNsxT0Gateway.yml
-  gather_facts: false
   vars:
     LOCAL_T0Gateways_Template: "{{ Target.TemplateFolder }}/vars_NSXT_T0Gateways.j2"
   tasks:
@@ -58,7 +57,7 @@
     - name: Get list of Tier-0 Gateways
       set_fact:
         T0GatewaysToCreate: "{{ lookup('template', LOCAL_T0Gateways_Template) | from_yaml }}"
-      when: Deploy.Products.NSXT.LocalManager == true
+      when: Deploy.Product.NSXT.LocalManager == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -71,8 +70,8 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Products.NSXT.LocalManager == true
-        - Deploy.Products.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.Edge == true
         - T0GatewaysToCreate != ""
 
     - name: Create NSX-T Tier-0 Gateway
@@ -90,5 +89,5 @@
       with_items:
         - "{{ T0GatewaysToCreate }}"
       when:
-        - Deploy.Products.NSXT.LocalManager == true
-        - Deploy.Products.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.Edge == true
