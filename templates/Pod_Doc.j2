@@ -81,7 +81,10 @@ tr:nth-child(even) {
     <th>Description</th>
     <th>Version</th>
     <th>Link (FQDN)</th>
-    <th>Link (IP)</th>
+    <th>Link (IPv4)</th>
+{% if Deploy.Setting.IPv6 %}  
+    <th>Link (IPv6)</th>
+{% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
 {% if Deploy.Product.DNS == True %}
   <tr>
@@ -100,12 +103,12 @@ tr:nth-child(even) {
   <tr>
     <td>{{ Deploy.Software.Router.Vendor }} {{ Deploy.Software.Router.Product }}</td>
     <td>{{ Deploy.Software.Router.Version }}</td>
-    <td><a href="ssh://vyos@{{ Nested_Router.Name }}-Management.{{ Common.DNS.Domain }}">ssh://vyos@{{ Nested_Router.Name }}-Management.{{ Common.DNS.Domain }}</a></td>
+    <td><a href="ssh://vyos@{{ Nested_Router.Name }}-Uplink.{{ Common.DNS.Domain }}">ssh://vyos@{{ Nested_Router.Name }}-Uplink.{{ Common.DNS.Domain }}</a></td>
 {% if Deploy.Setting.IPv4 %}
-    <td><a href="ssh://vyos@{{ Nested_Router.Interface.Management.IPv4.Address }}">ssh://vyos@{{ Nested_Router.Interface.Management.IPv4.Address }}</a></td>
+    <td><a href="ssh://vyos@{{ Nested_Router.Interface.Uplink.IPv4.Address }}">ssh://vyos@{{ Nested_Router.Interface.Uplink.IPv4.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv4 #}  
 {% if Deploy.Setting.IPv6 %}
-    <td><a href="ssh://vyos@{{ Nested_Router.Interface.Management.IPv6.Address }}">ssh://vyos@{{ Nested_Router.Interface.Management.IPv6.Address }}</a></td>
+    <td><a href="ssh://vyos@{{ Nested_Router.Interface.Uplink.IPv6.Address }}">ssh://vyos@{{ Nested_Router.Interface.Uplink.IPv6.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv6 #}  
   </tr>
 {% endif %}{# Deploy.Product.Router #}
