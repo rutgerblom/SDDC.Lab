@@ -65,11 +65,11 @@ tr:nth-child(even) {
     <td>{{ Deploy.Product.NSXT.LocalManager }}</td>
   </tr>
   <tr>
-    <td>vRLI deployed</td>
+    <td>vRealize Log Insight deployed</td>
     <td>{{ Deploy.Product.vRLI }}</td>
   </tr>
   <tr>
-    <td>DNS deployed</td>
+    <td>DNS Server deployed</td>
     <td>{{ Deploy.Product.DNS }}</td>
   </tr>
 </table>
@@ -310,11 +310,12 @@ tr:nth-child(even) {
   <tr>
     <th>VLAN Description</th>
     <th>VLAN ID</th>
-    <th>CIDR</th>
 {% if Deploy.Setting.IPv4 %}
+    <th>IPv4 CIDR</th>
     <th>Gateway4</th>
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
+    <th>IPv6 CIDR</th>
     <th>Gateway6</th>
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
@@ -405,8 +406,14 @@ tr:nth-child(even) {
   <tr>
     <td>NSX Edge Uplink 2</td>
     <td>{{ Nested_Router.Interface.NSXEdgeUplink2.VLAN }}</td>
+{% if Deploy.Setting.IPv4 %}
     <td>{{ "{}/{}".format(Nested_Router.Interface.NSXEdgeUplink2.IPv4.Address, Nested_Router.Interface.NSXEdgeUplink2.IPv4.Prefix) | ipaddr('network/prefix') }}</td>
-    <td>{{ Nested_Router.Interface.NSXEdgeUplink2.IPv4.Address }}</td>
+    <td>{{ Nested_Router.Interface.NSXEdgeUplink2.IPv4.Address}}</td>
+{% endif %}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 %}
+    <td>{{ "{}/{}".format(Nested_Router.Interface.NSXEdgeUplink2.IPv6.Address, Nested_Router.Interface.NSXEdgeUplink2.IPv6.Prefix) | ipaddr('network/prefix') }}</td>
+    <td>{{ Nested_Router.Interface.NSXEdgeUplink2.IPv6.Address}}</td>
+{% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
   <tr>
     <td>RTEP</td>
