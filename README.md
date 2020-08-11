@@ -63,7 +63,7 @@ The primary use case is consistent and speedy provisioning of nested VMware SDDC
 
 * Install the required software on your Ansible Controller:
   * sudo apt install python3 python3-pip xorriso
-  * pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython
+  * pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython weasyprint
   * git clone https://github.com/rutgerblom/SDDC.Lab.git 
   * git checkout dev-v2
 
