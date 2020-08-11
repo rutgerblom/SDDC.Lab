@@ -95,14 +95,14 @@
       ignore_errors: true
       no_log: true
       when:
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
 
     - name: Read the structure from template into a variable
       set_fact:
         var_UbuntuConfiguration: "{{ lookup('template', LOCAL_Ubuntu_Template) | from_yaml }}"
       when:
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -117,7 +117,7 @@
         - DEBUG.DisplayVariables == true
         - var_UbuntuConfiguration != ""
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
 
     - name: Create temp directory
       file:
@@ -125,7 +125,7 @@
         state: directory
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
     
 
     - name: Check if Ubuntu ISO file exists locally exists locally in the software repository
@@ -142,13 +142,13 @@
         - (InstallerFileCheck.stat.exists != true) or (Deploy.Software.Options.UseLocalInstaller != true)
         - Deploy.Software.Options.KeepNewInstallers == true
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true 
+        - Deploy.Product.DNSServer == true 
         
     - name: Mount Ubuntu ISO file
       action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}" opts=loop fstype=iso9660 state=mounted
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true  
+        - Deploy.Product.DNSServer == true  
 
     - name: Copy Ubuntu ISO file contents
       copy: 
@@ -156,13 +156,13 @@
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true  
+        - Deploy.Product.DNSServer == true  
 
     - name: Unmount Ubuntu ISO
       action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}" fstype=iso9660 state=absent
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true  
+        - Deploy.Product.DNSServer == true  
 
     - name: Edit txt.cfg to enable autoinstaller 
       replace:
@@ -171,7 +171,7 @@
         replace: 'append   initrd=/casper/initrd quiet --- autoinstall ds=nocloud;s=/cdrom/{{ Common.DNS.Domain }}/'
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true  
+        - Deploy.Product.DNSServer == true  
 
     - name: Create directory to store user-data and meta-data
       file:
@@ -179,7 +179,7 @@
         state: directory
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true  
+        - Deploy.Product.DNSServer == true  
 
     - name: Create autoinstaller files
       template: 
@@ -188,7 +188,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AutoInstall }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true  
+        - Deploy.Product.DNSServer == true  
 
     - name: Create custom Ubuntu ISO
       command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.File }} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
@@ -196,7 +196,7 @@
         chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true  
+        - Deploy.Product.DNSServer == true  
 
     - name: Upload the custom Ubuntu ISO to the datastore
       vsphere_copy: 
@@ -210,7 +210,7 @@
         path: "{{ Target.ISOFolder }}/{{ Deploy.Software.Ubuntu.File }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true  
+        - Deploy.Product.DNSServer == true  
 
     - name: Deploy Ubuntu VM
       vmware_guest:
@@ -245,7 +245,7 @@
                     Password: {{ Nested_DNS.OS.Credential.Password }}
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
 
     - name: Start checking if the Ubuntu VM is ready
       vmware_guest_info:
@@ -262,7 +262,7 @@
       delay: 60
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
 
     - name: Set password for the Ubuntu user
       vmware_vm_shell:
@@ -277,7 +277,7 @@
         vm_shell_args: "'{{ Nested_DNS.OS.Credential.User }}:{{ Nested_DNS.OS.Credential.Password }}' | sudo chpasswd"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
 
     - name: Create configuration files
       template: 
@@ -286,7 +286,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
 
     - name: Copy configuration files to the Ubuntu VM
@@ -304,7 +304,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
 
     - name: Move configuration files to their final location on the Ubuntu VM
@@ -321,7 +321,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
 
     - name: Create directories on Ubuntu VM
@@ -338,7 +338,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Directories }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - var_UbuntuConfiguration.Configuration.Directories != ""
 
     - name: Set owner on directories on Ubuntu VM
@@ -355,7 +355,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Directories }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - var_UbuntuConfiguration.Configuration.Directories != ""
 
     - name: Apply the network configuration on Ubuntu VM
@@ -371,7 +371,7 @@
         vm_shell_args: "netplan apply"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
 
     - name: Restart daemons on Ubuntu VM
       vmware_vm_shell:
@@ -387,7 +387,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Packages }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - var_UbuntuConfiguration.Configuration.Packages != ""
 
     - name: Delete local ISO content directory
@@ -396,7 +396,7 @@
         state: absent
       when: 
         - DEBUG.KeepInstallerFiles != true
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - ubuntu_status is failed
 
     - name: Delete the custom Ubuntu ISO file
@@ -405,7 +405,7 @@
         state: absent
       when: 
         - DEBUG.KeepInstallerFiles != true
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - ubuntu_status is failed
 
     - name: Delete configuration files
@@ -416,5 +416,5 @@
       when: 
         - DEBUG.KeepConfigFiles != true
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""

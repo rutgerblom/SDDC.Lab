@@ -74,7 +74,7 @@ tr:nth-child(even) {
   </tr>
   <tr>
     <td>DNS Server deployed</td>
-    <td>{{ Deploy.Product.DNS }}</td>
+    <td>{{ Deploy.Product.DNSServer }}</td>
   </tr>
 </table>
 <br>
@@ -90,7 +90,7 @@ tr:nth-child(even) {
     <th>Link (IPv6)</th>
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
-{% if Deploy.Product.DNS == True %}
+{% if Deploy.Product.DNSServer == True %}
   <tr>
     <td>{{ Deploy.Software.Ubuntu.Vendor }} {{ Deploy.Software.Ubuntu.Product }}</td>
     <td>{{ Deploy.Software.Ubuntu.Version }}</td>
@@ -102,7 +102,7 @@ tr:nth-child(even) {
     <td><a href="ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv6.Address }}">ssh://{{ Nested_DNS.OS.Credential.User }}@{{ Nested_DNS.OS.Network.IPv6.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
-{% endif %}{# Deploy.Product.DNS #}
+{% endif %}{# Deploy.Product.DNSServer #}
 {% if Deploy.Product.Router == True %}
   <tr>
     <td>{{ Deploy.Software.Router.Vendor }} {{ Deploy.Software.Router.Product }}</td>
@@ -247,13 +247,13 @@ tr:nth-child(even) {
     <th>Username</th>
     <th>Password</th>
   </tr>
-{% if Deploy.Product.DNS == True %}
+{% if Deploy.Product.DNSServer == True %}
   <tr>
     <td>{{ Deploy.Software.Ubuntu.Vendor }} {{ Deploy.Software.Ubuntu.Product }}</td>
     <td>{{ Nested_DNS.OS.Credential.User }}</td>
     <td>{{ Nested_DNS.OS.Credential.Password }}</td>
   </tr>
-{% endif %}{# Deploy.Product.DNS #}
+{% endif %}{# Deploy.Product.DNSServer #}
 {% if Deploy.Product.Router == True %}
   <tr>
     <td>{{ Deploy.Software.Router.Vendor }} {{ Deploy.Software.Router.Product }}</td>
