@@ -8,6 +8,9 @@
 <html>
 <head>
 <style>
+@page {
+      size: 420mm 594mm;
+}
 body {
     font-family: arial, sans-serif;
 }
@@ -17,6 +20,7 @@ table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
   width: 100%;
+  page-break-inside: avoid;
 }
 
 td, th {
@@ -65,11 +69,11 @@ tr:nth-child(even) {
     <td>{{ Deploy.Product.NSXT.LocalManager }}</td>
   </tr>
   <tr>
-    <td>vRLI deployed</td>
+    <td>vRealize Log Insight deployed</td>
     <td>{{ Deploy.Product.vRLI }}</td>
   </tr>
   <tr>
-    <td>DNS deployed</td>
+    <td>DNS Server deployed</td>
     <td>{{ Deploy.Product.DNS }}</td>
   </tr>
 </table>
@@ -81,7 +85,10 @@ tr:nth-child(even) {
     <th>Description</th>
     <th>Version</th>
     <th>Link (FQDN)</th>
-    <th>Link (IP)</th>
+    <th>Link (IPv4)</th>
+{% if Deploy.Setting.IPv6 %}  
+    <th>Link (IPv6)</th>
+{% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
 {% if Deploy.Product.DNS == True %}
   <tr>
@@ -100,12 +107,12 @@ tr:nth-child(even) {
   <tr>
     <td>{{ Deploy.Software.Router.Vendor }} {{ Deploy.Software.Router.Product }}</td>
     <td>{{ Deploy.Software.Router.Version }}</td>
-    <td><a href="ssh://vyos@{{ Nested_Router.Name }}-Management.{{ Common.DNS.Domain }}">ssh://vyos@{{ Nested_Router.Name }}-Management.{{ Common.DNS.Domain }}</a></td>
+    <td><a href="ssh://vyos@{{ Nested_Router.Name }}-Uplink.{{ Common.DNS.Domain }}">ssh://vyos@{{ Nested_Router.Name }}-Uplink.{{ Common.DNS.Domain }}</a></td>
 {% if Deploy.Setting.IPv4 %}
-    <td><a href="ssh://vyos@{{ Nested_Router.Interface.Management.IPv4.Address }}">ssh://vyos@{{ Nested_Router.Interface.Management.IPv4.Address }}</a></td>
+    <td><a href="ssh://vyos@{{ Nested_Router.Interface.Uplink.IPv4.Address }}">ssh://vyos@{{ Nested_Router.Interface.Uplink.IPv4.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv4 #}  
 {% if Deploy.Setting.IPv6 %}
-    <td><a href="ssh://vyos@{{ Nested_Router.Interface.Management.IPv6.Address }}">ssh://vyos@{{ Nested_Router.Interface.Management.IPv6.Address }}</a></td>
+    <td><a href="ssh://vyos@{{ Nested_Router.Interface.Uplink.IPv6.Address }}">ssh://vyos@{{ Nested_Router.Interface.Uplink.IPv6.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv6 #}  
   </tr>
 {% endif %}{# Deploy.Product.Router #}
@@ -307,11 +314,12 @@ tr:nth-child(even) {
   <tr>
     <th>VLAN Description</th>
     <th>VLAN ID</th>
-    <th>CIDR</th>
 {% if Deploy.Setting.IPv4 %}
+    <th>IPv4 CIDR</th>
     <th>Gateway4</th>
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
+    <th>IPv6 CIDR</th>
     <th>Gateway6</th>
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
@@ -402,8 +410,14 @@ tr:nth-child(even) {
   <tr>
     <td>NSX Edge Uplink 2</td>
     <td>{{ Nested_Router.Interface.NSXEdgeUplink2.VLAN }}</td>
+{% if Deploy.Setting.IPv4 %}
     <td>{{ "{}/{}".format(Nested_Router.Interface.NSXEdgeUplink2.IPv4.Address, Nested_Router.Interface.NSXEdgeUplink2.IPv4.Prefix) | ipaddr('network/prefix') }}</td>
-    <td>{{ Nested_Router.Interface.NSXEdgeUplink2.IPv4.Address }}</td>
+    <td>{{ Nested_Router.Interface.NSXEdgeUplink2.IPv4.Address}}</td>
+{% endif %}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 %}
+    <td>{{ "{}/{}".format(Nested_Router.Interface.NSXEdgeUplink2.IPv6.Address, Nested_Router.Interface.NSXEdgeUplink2.IPv6.Prefix) | ipaddr('network/prefix') }}</td>
+    <td>{{ Nested_Router.Interface.NSXEdgeUplink2.IPv6.Address}}</td>
+{% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
   <tr>
     <td>RTEP</td>

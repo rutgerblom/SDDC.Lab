@@ -20,7 +20,7 @@ Configuration:
         FinalDestination: {{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/{{ Common.DNS.Domain }}/meta-data
     AfterBoot:
       - Name: NetPlan
-        Source: {{ Target.TemplateFolder }}/Ubuntu_00-installer-config.j2
+        Source: {{ Target.TemplateFolder }}/Ubuntu_Netplan.j2
         LocalDestination: {{ Target.TempFolder }}/00-installer-config.yaml
         StageDestination: /home/{{ Nested_DNS.OS.Credential.User }}/00-installer-config.yaml
         FinalDestination: /etc/netplan/00-installer-config.yaml
