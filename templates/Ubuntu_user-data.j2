@@ -10,18 +10,26 @@ autoinstall:
       version: 2
       ethernets:
         ens192:
+          addresses:
 {% if Deploy.Setting.IPv4 %}
-          addresses: [{{ Nested_DNS.OS.Network.IPv4.Address }}/{{ Nested_DNS.OS.Network.IPv4.Prefix }}]
-          gateway4: {{ Nested_DNS.OS.Network.IPv4.Gateway }}
-          nameservers:
-            addresses: [{{ Nested_DNS.OS.Network.IPv4.DNS }}]
+            - {{ Nested_DNS.OS.Network.IPv4.Address }}/{{ Nested_DNS.OS.Network.IPv4.Prefix }}
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
-          addresses: [{{ Nested_DNS.OS.Network.IPv6.Address }}/{{ Nested_DNS.OS.Network.IPv6.Prefix }}]
-          nameservers:
-            addresses: [{{ Nested_DNS.OS.Network.IPv6.DNS }}
+            - "{{ Nested_DNS.OS.Network.IPv6.Address }}/{{ Nested_DNS.OS.Network.IPv6.Prefix }}"
 {% endif %}{# Deploy.Setting.IPv6 #}
-            search: [{{ Common.DNS.Domain }}]
+{% if Deploy.Setting.IPv4 %}
+          gateway4: {{ Nested_DNS.OS.Network.IPv4.Gateway }}
+{% endif %}{# Deploy.Setting.IPv4 #}
+          nameservers:
+            addresses:
+{% if Deploy.Setting.IPv4 %}
+              - {{ Nested_DNS.OS.Network.IPv4.DNS }}
+{% endif %}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 %}
+              - "{{ Nested_DNS.OS.Network.IPv6.DNS }}"
+{% endif %}{# Deploy.Setting.IPv6 #}
+            search: 
+              - {{ Common.DNS.Domain }}
   identity:
     hostname: {{ Nested_DNS.FQDN }}
     username: {{ Nested_DNS.OS.Credential.User }}
