@@ -9,6 +9,7 @@ DEBUG:
 
 Pod:
   Number: 240                                             # Number - The number of the Pod to be deployed must be between 10-240.
+  VLANOffset: 0                                           # VLANOffset - This number added to Net.<SegmentName>.VLAN variable, which will move the POD VLAN up by this amount (Not Yet Tested -- Future)
   BaseNetwork:
     IPv4: '10.203'
     IPv6: "FD00:0000:0000"
@@ -202,7 +203,7 @@ Target:
 Net:
   Management:
     Offset: 0
-    VLAN: "{{ Pod.Number + 0 }}"
+    VLAN: "{{ Pod.Number + 0 + Pod.VLANOffset }}"
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 0 }}"
@@ -211,7 +212,7 @@ Net:
       Network: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+0|int) }}"
   vMotion:
     Offset: 1
-    VLAN: "{{ Pod.Number + 1 }}"
+    VLAN: "{{ Pod.Number + 1 + Pod.VLANOffset }}"
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 1 }}"
@@ -220,7 +221,7 @@ Net:
       Network: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+1|int) }}"
   vSAN:
     Offset: 2
-    VLAN: "{{ Pod.Number + 2 }}"
+    VLAN: "{{ Pod.Number + 2 + Pod.VLANOffset }}"
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 2 }}"
@@ -229,7 +230,7 @@ Net:
       Network: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+2|int) }}"
   IPStorage:
     Offset: 3
-    VLAN: "{{ Pod.Number + 3 }}"
+    VLAN: "{{ Pod.Number + 3 + Pod.VLANOffset }}"
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 3 }}"
@@ -238,7 +239,7 @@ Net:
       Network: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+3|int) }}"
   Transport:
     Offset: 4
-    VLAN: "{{ Pod.Number + 4 }}"
+    VLAN: "{{ Pod.Number + 4 + Pod.VLANOffset }}"
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 4 }}"
@@ -247,7 +248,7 @@ Net:
       Network: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+4|int) }}"
   ServiceVM:
     Offset: 5
-    VLAN: "{{ Pod.Number + 5 }}"
+    VLAN: "{{ Pod.Number + 5 + Pod.VLANOffset }}"
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 5 }}"
@@ -256,7 +257,7 @@ Net:
       Network: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+5|int) }}"
   NSXEdgeUplink1:
     Offset: 6
-    VLAN: "{{ Pod.Number + 6 }}"
+    VLAN: "{{ Pod.Number + 6 + Pod.VLANOffset }}"
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 6 }}"
@@ -265,7 +266,7 @@ Net:
       Network: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+6|int) }}"
   NSXEdgeUplink2:
     Offset: 7
-    VLAN: "{{ Pod.Number + 7 }}"
+    VLAN: "{{ Pod.Number + 7 + Pod.VLANOffset }}"
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 7 }}"
@@ -274,7 +275,7 @@ Net:
       Network: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+7|int) }}"
   RTEP:
     Offset: 8
-    VLAN: "{{ Pod.Number + 8 }}"
+    VLAN: "{{ Pod.Number + 8 + Pod.VLANOffset }}"
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 8 }}"
@@ -283,7 +284,7 @@ Net:
       Network: "{{ Pod.BaseNetwork.IPv6 }}:{{ '%04d'|format(Pod.Number+8|int) }}"
   VMNetwork:
     Offset: 9
-    VLAN: "{{ Pod.Number + 9 }}"
+    VLAN: "{{ Pod.Number + 9 + Pod.VLANOffset }}"
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 9 }}"
@@ -457,7 +458,7 @@ Nested_vRLI:
 
 
 Nested_DNS:
-  FQDN: DNS.{{ Common.DNS.Domain }}
+  FQDN: "DNS.{{ Common.DNS.Domain }}"
   VM:
     VMName: SDDC-Lab-DNS
     HardwareSettings:
