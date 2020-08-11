@@ -3,13 +3,14 @@
   name: createPodDoc.yml
 
   vars:
-    - PodDocFile: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Doc.html"
+    - PodDocHTML: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Doc.html"
+    - PodDocPDF: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Doc.pdf"
     - PodDocTemplate: "Pod_Doc.j2"
 
   vars_prompt:
 
     - name: DestinationPodDocPath
-      prompt: "In which directory would you like to save {{ PodDocFile }}?"
+      prompt: "In which directory would you like to save the Pod documentation?"
       unsafe: yes
       private: no
       default: "/home/{{ lookup('env','SUDO_USER') }}"
@@ -56,9 +57,9 @@
 
                                            Pod.Number: {{ Pod.Number }}
 
-                               Pod Documentation Path: {{ DestinationPodDocPath }}/{{ PodDocFile }}
+                               Pod Documentation Path: {{ DestinationPodDocPath }}/{{ PodDocHTML }}
+                                Pod Documentation PDF: {{ PodDocPDF }}
                                Configuration Template: {{ Target.TemplateFolder }}/{{ PodDocTemplate }}
-                            Target Documentation File: {{ PodDocFile }}
 
           =================================================================================================
       when:
@@ -72,9 +73,9 @@
           =============================================  NOTICE  ==============================================
           =====================================================================================================
 
-          Generating the Pod documentation file for Pod {{ Pod.Number }}.
+          Generating the Pod documentation for Pod {{ Pod.Number }}.
 
-               Once generated, it will be saved to this file: {{ DestinationPodDocPath }}/{{ PodDocFile }}
+               Once generated, it will be saved to {{ DestinationPodDocPath }}/{{ PodDocHTML }} and {{ DestinationPodDocPath }}/{{ PodDocPDF }}
 
           =====================================================================================================
 
@@ -82,9 +83,13 @@
       set_fact: 
         time: "{{lookup('pipe','date \"+%d-%B-%Y %H:%M\"')}}"
 
-    - name: Write Pod Documentation
+    - name: Write Pod Documentation in HTML format
       template: 
         src: "{{ Target.TemplateFolder }}/{{ PodDocTemplate }}"
-        dest: "{{ DestinationPodDocPath }}/{{ PodDocFile }}"
+        dest: "{{ DestinationPodDocPath }}/{{ PodDocHTML }}"
         mode: 0666
+      ignore_errors: true
+
+    - name: Print Pod Documentation to PDF
+      shell: "weasyprint {{ DestinationPodDocPath }}/{{ PodDocHTML }} {{ DestinationPodDocPath }}/{{ PodDocPDF }}"
       ignore_errors: true
