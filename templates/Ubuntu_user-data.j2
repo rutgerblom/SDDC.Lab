@@ -41,4 +41,4 @@ autoinstall:
     - {{ Package.Name }}
 {% endfor %}{# Package #}
   late-commands:
-    - echo '{{ Nested_DNS.OS.Credential.User }} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu # Allow user to run sudo without password
+    - echo '{{ Nested_DNS.OS.Credential.User }} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu # Allow user to run sudo without password. Required for successfull post configuration.
