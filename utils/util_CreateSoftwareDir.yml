@@ -45,13 +45,6 @@
         mode: "0775"
       with_dict: "{{ Software.VMware.ESXi.Installers }}"
 
-    - name: Create VMware NSXv directories
-      file:
-        path: "{{ item.value.Location.Local }}"
-        state: directory
-        mode: "0775"
-      with_dict: "{{ Software.VMware.NSXv.Installers }}"
-
     - name: Create VMware NSXT directories
       file:
         path: "{{ item.value.Location.Local }}"
