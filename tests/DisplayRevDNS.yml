@@ -47,8 +47,8 @@
         msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{40}(.*)$', '\\1') }}"
 
 ##
-## Obtain last two octets in proper order for Reverse DNS entry for Nested_DNS host
+## Obtain last two octets in proper order for Reverse DNS entry for Nested_DNSServer host
 ##
     - name: Display PTR IP of Ubuntu  host
       debug:
-        msg: "{{ Nested_DNS.OS.Network.IPv4.Address | ipaddr('revdns') | regex_replace('(^[0-9]+.[0-9]+)..+$', '\\1') }}"
+        msg: "{{ Nested_DNSServer.OS.Network.IPv4.Address | ipaddr('revdns') | regex_replace('(^[0-9]+.[0-9]+)..+$', '\\1') }}"

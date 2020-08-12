@@ -45,6 +45,19 @@ Software:
             Repl_ESXi:    vCenter_v6.7.0_embedded_vCSA_replication_on_ESXi.j2
             vCenter: vCenter_v6.7.0_embedded_vCSA_on_VC.j2
             ESXi:    vCenter_v6.7.0_embedded_vCSA_on_ESXi.j2
+        "6.70U3G":
+          Name: vCenter Server v6.70 Update 3G
+          File: VMware-VCSA-all-6.7.0-16046470.iso
+          Location:
+            Local: "{{ RootDirectory }}/VMware/vCenter/v6.7.0U3G"
+            URL:
+          Version: "6.7"
+          FileExt: iso
+          Template:
+            Repl_vCenter: vCenter_v6.7.0_embedded_vCSA_replication_on_VC.j2
+            Repl_ESXi:    vCenter_v6.7.0_embedded_vCSA_replication_on_ESXi.j2
+            vCenter: vCenter_v6.7.0_embedded_vCSA_on_VC.j2
+            ESXi:    vCenter_v6.7.0_embedded_vCSA_on_ESXi.j2
         "7.00":
           Name: vCenter Server v7.00
           File: VMware-VCSA-all-7.0.0-15952498.iso
@@ -329,7 +342,7 @@ Software:
       Patches: []
 
   Ubuntu:
-    DNS:
+    DNSServer:
       Installers:
         "20.04.1":
           Name: Ubuntu Server Live CD v20.04.1
@@ -337,7 +350,7 @@ Software:
           Location:
             Local: "{{ RootDirectory }}/Ubuntu/Server/v20.04.1"
             URL: "http://releases.ubuntu.com/20.04.1"
-          Template: Ubuntu_DNS.j2
+          Template: Ubuntu_DNSServer.j2
           Version: "20.04"
           FileExt: iso
       Patches: []

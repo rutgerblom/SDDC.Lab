@@ -57,20 +57,20 @@
                                     Target.TempFolder: {{ Target.TempFolder }}
 
                                        Ubuntu Version: {{ Deploy.Software.Ubuntu.Version }}
-                                          Ubuntu FQDN: {{ Nested_DNS.FQDN }}
-                                        Ubuntu VMName: {{ Nested_DNS.VM.VMName }}
-                                          Ubuntu User: {{ Nested_DNS.OS.Credential.User }}
-                                      Ubuntu Password: {{ {{ Nested_DNS.OS.Credential.Password }} }}
+                                          Ubuntu FQDN: {{ Nested_DNSServer.FQDN }}
+                                        Ubuntu VMName: {{ Nested_DNSServer.VM.VMName }}
+                                          Ubuntu User: {{ Nested_DNSServer.OS.Credential.User }}
+                                      Ubuntu Password: {{ {{ Nested_DNSServer.OS.Credential.Password }} }}
 
-                                        Ubuntu VM CPU: {{ Nested_DNS.VM.HardwareSettings.CPU }}
-                           Ubuntu VM Cores per Socket: {{ Nested_DNS.VM.HardwareSettings.CoresPerSocket }}
-                                     Ubuntu VM Memory: {{ Nested_DNS.VM.HardwareSettings.Memory }}
-                                  Ubuntu VM Disk Size: {{ Nested_DNS.VM.HardwareSettings.DiskSize }}
-                          Ubuntu VM Network PortGroup: {{ Nested_DNS.VM.HardwareSettings.PortGroup }}
+                                        Ubuntu VM CPU: {{ Nested_DNSServer.VM.HardwareSettings.CPU }}
+                           Ubuntu VM Cores per Socket: {{ Nested_DNSServer.VM.HardwareSettings.CoresPerSocket }}
+                                     Ubuntu VM Memory: {{ Nested_DNSServer.VM.HardwareSettings.Memory }}
+                                  Ubuntu VM Disk Size: {{ Nested_DNSServer.VM.HardwareSettings.DiskSize }}
+                          Ubuntu VM Network PortGroup: {{ Nested_DNSServer.VM.HardwareSettings.PortGroup }}
 
-                                  Ubuntu IPv4 Address: {{ Nested_DNS.OS.Network.IPv4.Address }}
-                               Ubuntu Network Netmask: {{ (Nested_DNS.OS.Network.IPv4.Address + '/' + Nested_DNS.OS.Network.IPv4.Prefix) | ipaddr('netmask') }}
-                          Ubuntu Network IPv4 Gateway: {{ Nested_DNS.OS.Network.IPv4.Gateway }}
+                                  Ubuntu IPv4 Address: {{ Nested_DNSServer.OS.Network.IPv4.Address }}
+                               Ubuntu Network Netmask: {{ (Nested_DNSServer.OS.Network.IPv4.Address + '/' + Nested_DNSServer.OS.Network.IPv4.Prefix) | ipaddr('netmask') }}
+                          Ubuntu Network IPv4 Gateway: {{ Nested_DNSServer.OS.Network.IPv4.Gateway }}
 
                                     Ubuntu Media Path: {{ Deploy.Software.Ubuntu.Directory }}
                                     Ubuntu Media File: {{ Deploy.Software.Ubuntu.File }}
@@ -88,21 +88,21 @@
         validate_certs: no
         datacenter: "{{ Target.DataCenter }}"
         folder: "{{ Target.VMFolder }}"
-        name: "{{ Nested_DNS.VM.VMName }}"
+        name: "{{ Nested_DNSServer.VM.VMName }}"
         schema: "vsphere"
         properties: ["overallStatus"]
       register: ubuntu_status
       ignore_errors: true
       no_log: true
       when:
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
 
     - name: Read the structure from template into a variable
       set_fact:
         var_UbuntuConfiguration: "{{ lookup('template', LOCAL_Ubuntu_Template) | from_yaml }}"
       when:
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
@@ -117,7 +117,7 @@
         - DEBUG.DisplayVariables == true
         - var_UbuntuConfiguration != ""
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
 
     - name: Create temp directory
       file:
@@ -125,7 +125,7 @@
         state: directory
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
     
 
     - name: Check if Ubuntu ISO file exists locally exists locally in the software repository
@@ -142,13 +142,13 @@
         - (InstallerFileCheck.stat.exists != true) or (Deploy.Software.Options.UseLocalInstaller != true)
         - Deploy.Software.Options.KeepNewInstallers == true
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true 
+        - Deploy.Product.DNSServer == true 
         
     - name: Mount Ubuntu ISO file
       action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}" opts=loop fstype=iso9660 state=mounted
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true  
+        - Deploy.Product.DNSServer == true  
 
     - name: Copy Ubuntu ISO file contents
       copy: 
@@ -156,13 +156,13 @@
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true  
+        - Deploy.Product.DNSServer == true  
 
     - name: Unmount Ubuntu ISO
       action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}" fstype=iso9660 state=absent
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true  
+        - Deploy.Product.DNSServer == true  
 
     - name: Edit txt.cfg to enable autoinstaller 
       replace:
@@ -171,7 +171,7 @@
         replace: 'append   initrd=/casper/initrd quiet --- autoinstall ds=nocloud;s=/cdrom/{{ Common.DNS.Domain }}/'
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true  
+        - Deploy.Product.DNSServer == true  
 
     - name: Create directory to store user-data and meta-data
       file:
@@ -179,7 +179,7 @@
         state: directory
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true  
+        - Deploy.Product.DNSServer == true  
 
     - name: Create autoinstaller files
       template: 
@@ -188,7 +188,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AutoInstall }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true  
+        - Deploy.Product.DNSServer == true  
 
     - name: Create custom Ubuntu ISO
       command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.File }} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
@@ -196,7 +196,7 @@
         chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true  
+        - Deploy.Product.DNSServer == true  
 
     - name: Upload the custom Ubuntu ISO to the datastore
       vsphere_copy: 
@@ -210,7 +210,7 @@
         path: "{{ Target.ISOFolder }}/{{ Deploy.Software.Ubuntu.File }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true  
+        - Deploy.Product.DNSServer == true  
 
     - name: Deploy Ubuntu VM
       vmware_guest:
@@ -218,34 +218,34 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested_DNS.VM.VMName }}"
+        name: "{{ Nested_DNSServer.VM.VMName }}"
         state: poweredon
         guest_id: ubuntu64Guest
         cluster: "{{ Target.Cluster }}"
         datacenter: "{{ Target.DataCenter }}"
         folder: "{{ Target.VMFolder }}"
         disk:
-        - size_gb: "{{ Nested_DNS.VM.HardwareSettings.DiskSize }}"
+        - size_gb: "{{ Nested_DNSServer.VM.HardwareSettings.DiskSize }}"
           type: "{{ Common.DiskProvisioning }}"
           datastore: "{{ Target.Datastore }}"
         hardware:
-          memory_mb: "{{ Nested_DNS.VM.HardwareSettings.Memory }}"
-          num_cpus: "{{ Nested_DNS.VM.HardwareSettings.CPU }}"
-          num_cpu_cores_per_socket: "{{ Nested_DNS.VM.HardwareSettings.CoresPerSocket }}"
+          memory_mb: "{{ Nested_DNSServer.VM.HardwareSettings.Memory }}"
+          num_cpus: "{{ Nested_DNSServer.VM.HardwareSettings.CPU }}"
+          num_cpu_cores_per_socket: "{{ Nested_DNSServer.VM.HardwareSettings.CoresPerSocket }}"
           scsi: paravirtual
         networks:
-          - name: "{{ Nested_DNS.VM.HardwareSettings.PortGroup }}"
+          - name: "{{ Nested_DNSServer.VM.HardwareSettings.PortGroup }}"
             device_type: vmxnet3
         cdrom:
           type: "iso"
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Ubuntu.File }}"
         annotation: | 
-                    {{ Nested_DNS.VM.Annotation }}
-                    Username: {{ Nested_DNS.OS.Credential.User }}
-                    Password: {{ Nested_DNS.OS.Credential.Password }}
+                    {{ Nested_DNSServer.VM.Annotation }}
+                    Username: {{ Nested_DNSServer.OS.Credential.User }}
+                    Password: {{ Nested_DNSServer.OS.Credential.Password }}
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
 
     - name: Start checking if the Ubuntu VM is ready
       vmware_guest_info:
@@ -254,15 +254,15 @@
         password: "{{ Target.Password }}"
         validate_certs: no
         datacenter: "{{ Target.DataCenter }}"
-        name: "{{ Nested_DNS.VM.VMName }}"
+        name: "{{ Nested_DNSServer.VM.VMName }}"
         schema: "vsphere"
       register: vm_facts
-      until: vm_facts.instance.guest.hostName is search(Nested_DNS.FQDN)
+      until: vm_facts.instance.guest.hostName is search(Nested_DNSServer.FQDN)
       retries: 30
       delay: 60
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
 
     - name: Set password for the Ubuntu user
       vmware_vm_shell:
@@ -270,14 +270,14 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
         vm_password: VMware1!
         vm_shell: /usr/bin/echo
-        vm_shell_args: "'{{ Nested_DNS.OS.Credential.User }}:{{ Nested_DNS.OS.Credential.Password }}' | sudo chpasswd"
+        vm_shell_args: "'{{ Nested_DNSServer.OS.Credential.User }}:{{ Nested_DNSServer.OS.Credential.Password }}' | sudo chpasswd"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
 
     - name: Create configuration files
       template: 
@@ -286,7 +286,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
 
     - name: Copy configuration files to the Ubuntu VM
@@ -295,16 +295,16 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
         copy:
           src: "{{ item.LocalDestination }}"
           dest: "{{ item.StageDestination }}"
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
 
     - name: Move configuration files to their final location on the Ubuntu VM
@@ -313,15 +313,15 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "mv {{ item.StageDestination }} {{ item.FinalDestination }}"
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
 
     - name: Create directories on Ubuntu VM
@@ -330,15 +330,15 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "mkdir {{ item.Path }}"
       loop: "{{ var_UbuntuConfiguration.Configuration.Directories }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - var_UbuntuConfiguration.Configuration.Directories != ""
 
     - name: Set owner on directories on Ubuntu VM
@@ -347,15 +347,15 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "chown {{ item.Owner }} {{ item.Path }} "
       loop: "{{ var_UbuntuConfiguration.Configuration.Directories }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - var_UbuntuConfiguration.Configuration.Directories != ""
 
     - name: Apply the network configuration on Ubuntu VM
@@ -364,14 +364,14 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "netplan apply"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
 
     - name: Restart daemons on Ubuntu VM
       vmware_vm_shell:
@@ -379,15 +379,15 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        vm_id: "{{ Nested_DNS.VM.VMName }}"
-        vm_username: "{{ Nested_DNS.OS.Credential.User }}"
-        vm_password: "{{ Nested_DNS.OS.Credential.Password }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "systemctl restart {{ item.Daemon }}"
       loop: "{{ var_UbuntuConfiguration.Configuration.Packages }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - var_UbuntuConfiguration.Configuration.Packages != ""
 
     - name: Delete local ISO content directory
@@ -396,7 +396,7 @@
         state: absent
       when: 
         - DEBUG.KeepInstallerFiles != true
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - ubuntu_status is failed
 
     - name: Delete the custom Ubuntu ISO file
@@ -405,7 +405,7 @@
         state: absent
       when: 
         - DEBUG.KeepInstallerFiles != true
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - ubuntu_status is failed
 
     - name: Delete configuration files
@@ -416,5 +416,5 @@
       when: 
         - DEBUG.KeepConfigFiles != true
         - ubuntu_status is failed
-        - Deploy.Product.DNS == true
+        - Deploy.Product.DNSServer == true
         - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
