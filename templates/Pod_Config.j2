@@ -42,13 +42,13 @@ Pod:
 Deploy:
   Product:
     Router: {{ Deploy.Product.Router }}
+    vRLI: {{ Deploy.Product.vRLI }}
+    DNSServer: {{ Deploy.Product.DNSServer }}
     NSXT:
       GlobalManager: {{ Deploy.Product.NSXT.GlobalManager }}
       LocalManager: {{ Deploy.Product.NSXT.LocalManager }}
       CloudServicesManager: {{ Deploy.Product.NSXT.CloudServicesManager }}
       Edge: {{ Deploy.Product.NSXT.Edge }}
-    vRLI: {{ Deploy.Product.vRLI }}
-    DNS: {{ Deploy.Product.DNS }}
   Setting:
     IPv4: {{ Deploy.Setting.IPv4 }}
     IPv6: {{ Deploy.Setting.IPv6 }}
@@ -147,8 +147,8 @@ Nested_vRLI:
   {{ Nested_vRLI | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
 
-Nested_DNS:
-  {{ Nested_DNS | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+Nested_DNSServer:
+  {{ Nested_DNSServer | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
 
 Nested_Clusters:

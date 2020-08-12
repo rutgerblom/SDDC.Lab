@@ -19,7 +19,7 @@ Deploy:
   Product:
     Router: true                                          # Router - Deploy a router as part of the Pod deployment (recommended).
     vRLI: true                                            # vRLI - Deploy vRealize Log Insight as part of the Pod deployment.
-    DNS: false                                            # DNS - Deploy a pre-configured DNS/NTP server as part of the Pod deployment. This DNS/NTP server is not Pod specific and can serve multiple Pods.
+    DNSServer: false                                      # DNSServer - Deploy a pre-configured DNS/NTP server as part of the Pod deployment. This DNS/NTP server is not Pod specific and can serve multiple Pods.
     NSXT:
       GlobalManager: false                                # GlobalManager - TBD
       LocalManager: true                                  # LocalManager - Deploy NSX-T Local Manager as part of the Pod deployment.
@@ -29,7 +29,7 @@ Deploy:
     IPv4: true                                            # IPv4 - All components are configured with IPv4 addresses.
     IPv6: false                                           # IPv6 - Make sure your environment (i.e. Ansible control station, DNS, etc.) are all configured with IPv6 else the installation will fail.
     UseNFS: false                                         # UseNFS - Set to "True" if you want to connect an existing NFS datstore to the nested ESXi hosts. NFS datstore details are configured the under "Common.NFS" section.
-    UseDNS: true                                          # UseDNS - Use DNS name resolution within the Pod (recommended). This requires that either "Deploy.Product.DNS" is set to "True" (recommended) or that a pre-existing, pre-configured DNS server is available.
+    UseDNS: true                                          # UseDNS - Use DNS name resolution within the Pod (recommended). This requires that either "Deploy.Product.DNSServer" is set to "True" (recommended) or that a pre-existing, pre-configured DNS server is available.
     EnableSSH: true                                       # EnableSSH - Allow SSH access to the deployed components.
   Software:
     Options:
@@ -72,7 +72,7 @@ Deploy:
       Installer: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Installer-vRLI"
     Ubuntu:
       Vendor:  Ubuntu
-      Product: DNS
+      Product: DNSServer
       Version: '20.04.1'
       Patch:   false
       Config:  "Pod-{{ '%03d'|format(Pod.Number|int) }}-Ubuntu.conf"
@@ -457,7 +457,7 @@ Nested_vRLI:
       Prefix:  "{{ Net.Management.IPv6.Prefix }}"
 
 
-Nested_DNS:
+Nested_DNSServer:
   FQDN: "DNS.{{ Common.DNS.Domain }}"
   VM:
     VMName: SDDC-Lab-DNS
