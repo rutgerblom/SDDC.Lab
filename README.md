@@ -61,6 +61,10 @@ The primary use case is consistent and speedy provisioning of nested VMware SDDC
 
 ## Preparations
 
+* Configure your physical network:
+  * Create an Lab-Routers VLAN used as transit segment between your layer-3 switch and the Pod router
+  * Configure OSPFv2/OSPFv3 on the Lab-Routers segment
+
 * Install the required software on your Ansible Controller:
   * sudo apt install python3 python3-pip xorriso
   * pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython
