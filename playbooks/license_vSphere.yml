@@ -140,6 +140,7 @@
       when:
         - Deploy.Software.ESXi.Version is match( item.Version )
         - LicenseProducts == True
+        - item.KeyCode != "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
 
     - name: Assign an ESXi license to each deployed ESXi host
       set_fact:
@@ -183,6 +184,7 @@
       when:
         - Deploy.Software.ESXi.Version is match( item.Version )
         - LicenseProducts == True
+        - item.KeyCode != "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
 
     - name: Assign a vSAN license to each deployed vSAN Cluster
       set_fact:

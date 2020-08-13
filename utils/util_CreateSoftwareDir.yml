@@ -29,56 +29,42 @@
 
 
 ##
-## vMware
+## VMware
 ##
     - name: Create VMware vCenter directories
       file:
         path: "{{ item.value.Location.Local }}"
         state: directory
-        mode: "0775"
-      with_dict: "{{ Software.VMware.vCenter.Installers }}"
+        mode: "0777"
+      loop: "{{ Software.VMware.vCenter.Installers | dict2items }}"
 
     - name: Create VMware ESXi directories
       file:
         path: "{{ item.value.Location.Local }}"
         state: directory
-        mode: "0775"
-      with_dict: "{{ Software.VMware.ESXi.Installers }}"
+        mode: "0777"
+      loop: "{{ Software.VMware.ESXi.Installers | dict2items }}"
 
     - name: Create VMware NSXT directories
       file:
         path: "{{ item.value.Location.Local }}"
         state: directory
-        mode: "0775"
-      with_dict: "{{ Software.VMware.NSXT.Installers }}"
+        mode: "0777"
+      loop: "{{ Software.VMware.NSXT.Installers | dict2items }}"
 
-    - name: Create VMware NSX Intelligence directories
+    - name: Create VMware vRLI directories
       file:
         path: "{{ item.value.Location.Local }}"
         state: directory
-        mode: "0775"
-      with_dict: "{{ Software.VMware.NSXIntelligence.Installers }}"
+        mode: "0777"
+      loop: "{{ Software.VMware.vRLI.Installers | dict2items }}"
 
-    - name: Create VMware vRNI
+    - name: Create Ubuntu directories
       file:
         path: "{{ item.value.Location.Local }}"
         state: directory
-        mode: "0775"
-      with_dict: "{{ Software.VMware.vRNI.Installers }}"
-
-    - name: Create VMware vRLI
-      file:
-        path: "{{ item.value.Location.Local }}"
-        state: directory
-        mode: "0775"
-      with_dict: "{{ Software.VMware.vRLI.Installers }}"
-
-    - name: Create Ubuntu
-      file:
-        path: "{{ item.value.Location.Local }}"
-        state: directory
-        mode: "0775"
-      with_dict: "{{ Software.Ubuntu.DNSServer.Installers }}"
+        mode: "0777"
+      loop: "{{ Software.Ubuntu.DNSServer.Installers | dict2items }}"
 
 
 ##
@@ -88,8 +74,8 @@
       file:
         path: "{{ item.value.Location.Local }}"
         state: directory
-        mode: "0775"
-      with_dict: "{{ Software.VyOS.Router.Installers }}"
+        mode: "0777"
+      loop: "{{ Software.VyOS.Router.Installers | dict2items }}"
 
 
 
