@@ -39,12 +39,21 @@ The primary use case is consistent and speedy provisioning of nested VMware SDDC
 
 ## Requirements
 
-* A physical standalone ESXi host running version 6.7 or higher
-* The physical standalone ESXi host hostname must be resolvable by DNS.
-* A virtual machine with a modern version of Ubuntu (used as the Ansible Controller)
-* For deploying NSX-T you need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval)).
+* A layer-3 switch with an appropriate OSPFv2 configuration matching the OSPFv2 settings in your config.yml file. This is used for dynamic routing between Pods and your physical network. 
+* A physical standalone ESXi host running version 6.7 or higher. The recommended hardware configuration for this host is as follows:
+  * 2 CPUs (10 cores per CPU)
+  * 320 GB RAM
+  * 10 Gbit network connectivity
+  * 1 TB storage capacity (preferably SSD). Either DAS or 10 Gbit NFS/iSCSI
+* The physical standalone ESXi host hostname must be resolvable by DNS and must be able to resolve its own name via DNS.
+* A virtual machine with a modern version of Ubuntu (used as the Ansible Controller). The recommended hardware configuration of this virtual machine is as follows:
+  * 2 CPUs
+  * 16 GB RAM
+  * 150 GB hard disk
+  * VMware Paravirtual SCSI controller
+  * VMXNET 3 network adapter
 * Access to VMware product installation media
-* A layer-3 switch with an appropriate OSPFv2 configuration matching the OSPFv2 settings in your config.yml file. This is used for dynamic routing between Pods and your physical network.
+* For deploying NSX-T you will need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval)).
 * The default settings require DNS name resolution. It's recommended to deploy the pre-configured DNS server for this purpose.
 * If IPv6 deployment is enabled (Deploy.Setting.IPv6 = True):
   * Pod.BaseNetwork.IPv6 must be a fully expanded /48 IPv6 network prefix.  By default, [RFC4193](https://tools.ietf.org/html/rfc4193) ULA fd00::/48 prefix is used.

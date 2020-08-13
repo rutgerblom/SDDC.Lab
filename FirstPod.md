@@ -16,6 +16,14 @@
 ## Configure the physical network
 
 ## Configure the physical ESXi host
+The current scripts supports deploying Pods on a standalone ESXi host. The host should be installed with ESXi 6.7 or higher.
+
+### Hardware
+The recommended hardware configuration for the physical ESXi host is as follows:
+* 2 CPUs (10 cores per CPU)
+* 320 GB RAM
+* 10 Gbit network connectivity
+* 1 TB storage capacity (preferably SSD). Either DAS or 10 Gbit NFS/iSCSI
 
 ## Install the Ansible controller
 
@@ -47,7 +55,6 @@ After installing the Ubuntu OS and the latest updates, some additional software 
 
 
 ## Prepare the configuration files
-
 After cloning the repository you will end up with a directory called "SDDC.Lab" with the following contents:
 
     drwxrwxr-x 2  4096 Aug 13 16:26 hosts
@@ -69,8 +76,8 @@ After cloning the repository you will end up with a directory called "SDDC.Lab" 
     -rw-rw-r-- 1 11215 Aug 13 16:38 software_sample.yml
     -rw-rw-r-- 1  9355 Aug 13 16:38 undeploy.yml
 
-The **_sample.yml** files in the root of the SDDC.Lab directory need to be copied and modified by you.
-   
+The **_sample.yml** configurations files in the root of the SDDC.Lab directory need to be copied and modified by you.
+
 ### config.yml
 
 ### licenses.yml
