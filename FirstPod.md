@@ -48,6 +48,28 @@ After installing the Ubuntu OS and the latest updates, some additional software 
 
 ## Prepare the configuration files
 
+After cloning the repository you will end up with a directory called "SDDC.Lab" with the following contents:
+
+    drwxrwxr-x 2  4096 Aug 13 16:26 hosts
+    drwxrwxr-x 2  4096 Aug 13 16:26 images
+    drwxrwxr-x 2  4096 Aug 13 16:38 library
+    drwxrwxr-x 2  4096 Aug 13 16:26 module_utils
+    drwxrwxr-x 2  4096 Aug 13 16:38 playbooks
+    drwxrwxr-x 3  4096 Aug 13 16:26 plugins
+    drwxrwxr-x 2  4096 Aug 13 16:38 templates
+    drwxrwxr-x 2  4096 Aug 13 16:38 tests
+    drwxrwxr-x 2  4096 Aug 13 16:38 utils
+    -rwxrwxr-x 1   250 Aug 13 16:38 ansible.cfg
+    -rw-rw-r-- 1  5500 Aug 13 16:38 CHANGELOG.md
+    -rw-rw-r-- 1  2192 Aug 13 16:38 FirstPod.md
+    -rwxrwxr-x 1  4506 Aug 13 16:38 README.md
+    -rw-rw-r-- 1 77237 Aug 13 16:38 config_sample.yml
+    -rwxrwxr-x 1  3015 Aug 13 16:38 deploy.yml
+    -rw-rw-r-- 1  3912 Aug 13 16:38 licenses_sample.yml
+    -rw-rw-r-- 1 11215 Aug 13 16:38 software_sample.yml
+    -rw-rw-r-- 1  9355 Aug 13 16:38 undeploy.yml
+
+The **_sample.yml** files in the root of the SDDC.Lab directory need to be copied and modified.   
 ### config.yml
 
 ### licenses.yml
