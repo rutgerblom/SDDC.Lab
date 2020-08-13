@@ -59,7 +59,7 @@ The following are requirements and recommendations for successful Pod deployment
   * VMXNET 3 network adapter
 * Access to VMware product installation media
 * For deploying NSX-T you will need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval)).
-* The default settings require DNS name resolution. It's recommended to deploy the pre-configured DNS server for this purpose.
+* The default settings require DNS name resolution. It's recommended to deploy the pre-configured DNS server for this purpose, but you can use a pre-existing DNS server provided that it's configured with the required forward and reverse zones and allows dymanic updates.
 * If IPv6 deployment is enabled (Deploy.Setting.IPv6 = True):
   * Pod.BaseNetwork.IPv6 must be a fully expanded /48 IPv6 network prefix.  By default, [RFC4193](https://tools.ietf.org/html/rfc4193) ULA fd00::/48 prefix is used.
   * Router Version should be set to "Latest" (default)
