@@ -29,42 +29,42 @@
 
 
 ##
-## vMware
+## VMware
 ##
     - name: Create VMware vCenter directories
       file:
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
-      with_dict: "{{ Software.VMware.vCenter.Installers }}"
+      loop: "{{ Software.VMware.vCenter.Installers | dict2items }}"
 
     - name: Create VMware ESXi directories
       file:
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
-      with_dict: "{{ Software.VMware.ESXi.Installers }}"
+      loop: "{{ Software.VMware.ESXi.Installers | dict2items }}"
 
     - name: Create VMware NSXT directories
       file:
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
-      with_dict: "{{ Software.VMware.NSXT.Installers }}"
+      loop: "{{ Software.VMware.NSXT.Installers | dict2items }}"
 
     - name: Create VMware vRLI directories
       file:
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
-      with_dict: "{{ Software.VMware.vRLI.Installers }}"
+      loop: "{{ Software.VMware.vRLI.Installers | dict2items }}"
 
     - name: Create Ubuntu directories
       file:
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
-      with_dict: "{{ Software.Ubuntu.DNSServer.Installers }}"
+      loop: "{{ Software.Ubuntu.DNSServer.Installers | dict2items }}"
 
 
 ##
@@ -75,7 +75,7 @@
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
-      with_dict: "{{ Software.VyOS.Router.Installers }}"
+      loop: "{{ Software.VyOS.Router.Installers | dict2items }}"
 
 
 
