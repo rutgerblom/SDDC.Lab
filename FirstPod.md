@@ -16,7 +16,7 @@
 ## Configure the physical network
 
 ## Configure the physical ESXi host
-The current scripts supports deploying Pods on a standalone ESXi host. The host should be installed with ESXi 6.7 or higher.
+Currently the scripts supports deploying Pods on a standalone ESXi host. This host should be installed with ESXi version 6.7 or higher.
 
 ### Hardware
 The recommended hardware configuration for the physical ESXi host is as follows:
