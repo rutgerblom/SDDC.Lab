@@ -52,8 +52,6 @@ After installing the Ubuntu OS and the latest updates, some additional software 
 1. And finally, clone this repository to an appropriate location on your Ubuntu machine (e.g. $HOME) with:  
 **git clone https://github.com/rutgerblom/SDDC.Lab.git**
 
-
-
 ## Prepare the configuration files
 After cloning the repository you will end up with a directory called "SDDC.Lab" with the following contents:
 
@@ -78,11 +76,17 @@ After cloning the repository you will end up with a directory called "SDDC.Lab" 
 
 The **_sample.yml** configurations files in the root of the SDDC.Lab directory need to be copied and modified by you.
 
-### config.yml
+### config.yml (TBD)
+In config.yml you define the configuration and settings of your Pod.   
+cp config_sample.yml config.yml
 
-### licenses.yml
+### licenses.yml (TBD)
+In licenses.yml you store your license keys for the different products. 
+cp licenses_sample.yml config.yml
 
-### software.yml
+### software.yml (TBD)
+In software.yml we've defined the poducts and versions that can be deployed with the scripts.
+cp software_sample.yml config.yml
 
 ## Create the Pod configuration
 
