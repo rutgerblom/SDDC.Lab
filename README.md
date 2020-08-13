@@ -38,6 +38,9 @@ This repository contains Ansible scripts that perform fully automated deployment
 The primary use case is consistent and speedy provisioning of nested VMware SDDC lab environments.
 
 ## Requirements
+The following are requirements and recommendations for successful Pod deployments:
+
+### Hardware
 
 * A layer-3 switch with an appropriate OSPFv2 configuration matching the OSPFv2 settings in your config.yml file. This is used for dynamic routing between Pods and your physical network. 
 * A physical standalone ESXi host running version 6.7 or higher. The recommended hardware configuration for this host is as follows:
@@ -46,6 +49,8 @@ The primary use case is consistent and speedy provisioning of nested VMware SDDC
   * 10 Gbit network connectivity
   * 1 TB storage capacity (preferably SSD). Either DAS or 10 Gbit NFS/iSCSI
 * The physical standalone ESXi host hostname must be resolvable by DNS and must be able to resolve its own name via DNS.
+
+### Software
 * A virtual machine with a modern version of Ubuntu (used as the Ansible Controller). The recommended hardware configuration of this virtual machine is as follows:
   * 2 CPUs
   * 16 GB RAM
