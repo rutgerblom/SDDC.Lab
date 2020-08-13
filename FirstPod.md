@@ -22,7 +22,7 @@
 The Ansible controller is the machine from which you run the Ansible scripts. We recommend installing a modern version of [Ubuntu](#https://ubuntu.com/download) on a dedicated virtual machine for this purpose. Although not required, we recommended that you deploy the Ansible controller virtual machine on the same ESXi host as where you will deploy your Pod. Consider connecting this VM to the Lab-Routers port group. Internet access from this VM is recommended.
 
 ### Hardware
-The recommended hardware configuration for the Ansible controller virtual machine:
+The recommended hardware configuration for the Ansible controller virtual machine is as follows:
 * 2 CPUs
 * 16 GB RAM
 * 150 GB hard disk
