@@ -35,49 +35,35 @@
       file:
         path: "{{ item.value.Location.Local }}"
         state: directory
-        mode: "0775"
+        mode: "0777"
       with_dict: "{{ Software.VMware.vCenter.Installers }}"
 
     - name: Create VMware ESXi directories
       file:
         path: "{{ item.value.Location.Local }}"
         state: directory
-        mode: "0775"
+        mode: "0777"
       with_dict: "{{ Software.VMware.ESXi.Installers }}"
 
     - name: Create VMware NSXT directories
       file:
         path: "{{ item.value.Location.Local }}"
         state: directory
-        mode: "0775"
+        mode: "0777"
       with_dict: "{{ Software.VMware.NSXT.Installers }}"
 
-    - name: Create VMware NSX Intelligence directories
+    - name: Create VMware vRLI directories
       file:
         path: "{{ item.value.Location.Local }}"
         state: directory
-        mode: "0775"
-      with_dict: "{{ Software.VMware.NSXIntelligence.Installers }}"
-
-    - name: Create VMware vRNI
-      file:
-        path: "{{ item.value.Location.Local }}"
-        state: directory
-        mode: "0775"
-      with_dict: "{{ Software.VMware.vRNI.Installers }}"
-
-    - name: Create VMware vRLI
-      file:
-        path: "{{ item.value.Location.Local }}"
-        state: directory
-        mode: "0775"
+        mode: "0777"
       with_dict: "{{ Software.VMware.vRLI.Installers }}"
 
-    - name: Create Ubuntu
+    - name: Create Ubuntu directories
       file:
         path: "{{ item.value.Location.Local }}"
         state: directory
-        mode: "0775"
+        mode: "0777"
       with_dict: "{{ Software.Ubuntu.DNSServer.Installers }}"
 
 
@@ -88,7 +74,7 @@
       file:
         path: "{{ item.value.Location.Local }}"
         state: directory
-        mode: "0775"
+        mode: "0777"
       with_dict: "{{ Software.VyOS.Router.Installers }}"
 
 
