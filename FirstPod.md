@@ -1,4 +1,4 @@
-# Deploying Your First SDDC Pod
+# Deploying your first SDDC.Lab Pod
 
 ## Table of Contents
 * [Configure the physical network](#Configure-your-physical-network)
