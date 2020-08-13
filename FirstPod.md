@@ -19,7 +19,7 @@
 
 ## Install the Ansible controller
 
-The Ansible controller is the machine from which you run the Ansible scripts. We recommend installing a modern version of [Ubuntu](#https://ubuntu.com/download) on a dedicated virtual machine for this purpose. Although not required, we recommended that you deploy the Ansible controller virtual machine on the same ESXi host as where you will deploy your Pod. Consider connecting this VM to the Lab-Routers port group.
+The Ansible controller is the machine from which you run the Ansible scripts. We recommend installing a modern version of [Ubuntu](#https://ubuntu.com/download) on a dedicated virtual machine for this purpose. Although not required, we recommended that you deploy the Ansible controller virtual machine on the same ESXi host as where you will deploy your Pod. Consider connecting this VM to the Lab-Routers port group. Internet access from this VM is recommended.
 
 ### Hardware
 The recommended hardware configuration for the Ansible controller virtual machine:
@@ -30,7 +30,7 @@ The recommended hardware configuration for the Ansible controller virtual machin
 * VMXNET 3 network adapter
 
 ### Software
-After installing the Ubuntu OS and the latest updates, some additional software is required.
+After installing the Ubuntu OS and the latest updates, some additional software is required. You can simply copy and paste the commands below. Installation of the additional software will only take some minutes.
 
 1. Python, pip, and xorriso are installed with:  
 **sudo apt install python3 python3-pip xorriso**
@@ -41,7 +41,7 @@ After installing the Ubuntu OS and the latest updates, some additional software 
 1. Another Python module weasyprint needs to be installed using "sudo":  
 **sudo pip3 install weasyprint**
 
-1. Clone this repository to an appropriate location on your Ubuntu machine (e.g. $HOME) with:  
+1. And finally, clone this repository to an appropriate location on your Ubuntu machine (e.g. $HOME) with:  
 **git clone https://github.com/rutgerblom/SDDC.Lab.git**
 
 
