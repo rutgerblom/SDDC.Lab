@@ -69,7 +69,8 @@ After cloning the repository you will end up with a directory called "SDDC.Lab" 
     -rw-rw-r-- 1 11215 Aug 13 16:38 software_sample.yml
     -rw-rw-r-- 1  9355 Aug 13 16:38 undeploy.yml
 
-The **_sample.yml** files in the root of the SDDC.Lab directory need to be copied and modified.   
+The **_sample.yml** files in the root of the SDDC.Lab directory need to be copied and modified by you.
+   
 ### config.yml
 
 ### licenses.yml
