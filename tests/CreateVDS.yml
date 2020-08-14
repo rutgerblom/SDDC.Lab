@@ -290,3 +290,47 @@
           mac_changes: false
       when:
         - Target.Deployment == "vCenter"
+
+
+
+
+    - name: Wait 10 seconds to see Port Groups
+      pause: seconds=10
+
+
+##
+## Delete the vDS Port-Groups
+##
+
+
+    - name: Remove a Management Distributed Port-Group in vCenter
+      vmware_dvs_portgroup:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        switch_name: "{{ Target.vSwitch }}"
+        portgroup_type: lateBinding
+        portgroup_name: "{{ Target.PortGroup.Management.Name }}"
+        vlan_id: "{{ Target.PortGroup.Management.VLAN }}"
+        num_ports: 32
+        state: absent
+      ignore_errors: true
+      when:
+        - Target.Deployment == "vCenter"
+
+    - name: Remove a Trunk Distributed Port-Group in vCenter
+      vmware_dvs_portgroup:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        switch_name: "{{ Target.vSwitch }}"
+        portgroup_type: lateBinding
+        portgroup_name: "{{ Target.PortGroup.Trunk.Name }}"
+        vlan_id: "{{ Target.PortGroup.Trunk.VLAN }}"
+        num_ports: 32
+        state: absent
+      ignore_errors: true
+      when:
+        - Target.Deployment == "vCenter"

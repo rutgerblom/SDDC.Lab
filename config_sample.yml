@@ -148,14 +148,14 @@ TargetConfig:
         Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Trunk"
         VLAN: 4095
   vCenter:
-    FQDN: "NetLab-vCenter.NetLab.Home"
-    User: "administrator@vsphere.local"
+    FQDN: "NetLab-vCenter.NetLab.Local"
+    User: "SDDCLab@vsphere.local"
     Password: "{{ Common.Password.Physical }}"
-    vSwitch: "SDDCLab-vDS"
+    vSwitch: "SDDCLab_vDS"
     vSwitchVersion: 6.6.0
-    DataCenter: "SDDCLab-DataCenter"
+    DataCenter: "SDDC"
     Cluster: "Lab-Cluster"
-    Datastore: "vsanDatastore"
+    Datastore: "Shared_VMs"
     VMFolder: "SDDC Labs/Pod-{{ '%03d'|format(Pod.Number|int) }}"
     ISOFolder: "/Lab-ISO-Folder"
     ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"
