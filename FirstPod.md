@@ -23,14 +23,21 @@
 ## Configure the physical network
 
 ## Configure the physical ESXi host
-Currently the scripts supports deploying Pods on a standalone ESXi host. This host must be running ESXi version 6.7 or higher.
+Currently the scripts supports deploying Pods on a standalone ESXi host. This host must be running ESXi version 6.7 or later. After installing ESXi make sure that you configure the following:
+
+* DNS name resolution. The ESXi host should be able to resolve its own hostname via DNS and the Ansible controller must be able to resolve the ESXi hostname via DNS.
+* A datastore.
+* A portgroup configured with the VLAN ID of the Lab-Routers segment. In the default Pod configuration this portgroup is actually called "Lab-Routers" so giving it that name means you have one thing less to think about later on. 
 
 ## Install the Ansible controller
 
-The Ansible controller is the machine from which you run the Ansible scripts. We recommend installing a modern version of [Ubuntu](https://ubuntu.com/download) on a dedicated virtual machine for this purpose. Although not required, we recommended that you deploy the Ansible controller virtual machine on the same ESXi host as where you will deploy your Pod. Consider connecting this VM to the Lab-Routers port group. Internet access from this VM is recommended.
+The Ansible controller is the machine from which you will run the Ansible scripts. We recommend installing a modern version of [Ubuntu](https://ubuntu.com/download) on a dedicated virtual machine. Although not required, we also recommended that you place the Ansible controller virtual machine on the same ESXi host as where you will deploy your Pod. This VM can be connected to any VLAN as long as it:
+
+* Can Reach the Lab-Routers segment and the Pod networks behind the [VyOS](https://www.vyos.io/) router.
+* Has Internet access.
 
 ### Software
-After installing the Ubuntu OS and the latest updates, some additional software is required. You can simply copy and paste the commands below. Installation of the additional software will only take some minutes.
+After you've installed the Ubuntu OS and applied the latest updates, some additional software is required to turn this machine into an Ansible controller for your SDDC.Lab Pods. You can simply copy and paste the commands below. Installation of the additional software will only take some minutes.
 
 1. Python, pip, and xorriso:  
 **sudo apt install python3 python3-pip xorriso**
@@ -41,10 +48,10 @@ After installing the Ubuntu OS and the latest updates, some additional software 
 1. Python module weasyprint needs to be installed using "sudo":  
 **sudo pip3 install weasyprint**
 
-1. And finally, clone this repository to an appropriate location on your Ubuntu machine (e.g. $HOME) with:  
+1. And finally you clone the SDDC.Lab repository to an appropriate location on your Ubuntu machine (e.g. $HOME) with:  
 **git clone https://github.com/rutgerblom/SDDC.Lab.git**
 
-## Prepare the configuration files
+## Prepare the Pod configuration files
 After cloning the repository you will end up with a directory called "SDDC.Lab" with the following contents:
 
     hosts
@@ -66,7 +73,11 @@ After cloning the repository you will end up with a directory called "SDDC.Lab" 
     software_sample.yml
     undeploy.yml
 
-The **_sample.yml** configurations files in the root of the SDDC.Lab directory need to be copied and modified by you before you can start deploying your first Pod.
+Three files in the root of the SDDC.Lab directory require your attention:
+* config_sample.yml
+* licenses_sample.yml
+* software_sample.yml
+
 
 ### config.yml (TBD)
 In config.yml you define the configuration and settings of your Pod.   
