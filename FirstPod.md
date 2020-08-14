@@ -32,13 +32,13 @@ The Ansible controller is the machine from which you run the Ansible scripts. We
 ### Software
 After installing the Ubuntu OS and the latest updates, some additional software is required. You can simply copy and paste the commands below. Installation of the additional software will only take some minutes.
 
-1. Python, pip, and xorriso are installed with:  
+1. Python, pip, and xorriso:  
 **sudo apt install python3 python3-pip xorriso**
 
-1. Install Ansible and the required Python modules using pip:  
+1. Ansible and the required Python modules:  
 **pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython**
 
-1. Another Python module weasyprint needs to be installed using "sudo":  
+1. Python module weasyprint needs to be installed using "sudo":  
 **sudo pip3 install weasyprint**
 
 1. And finally, clone this repository to an appropriate location on your Ubuntu machine (e.g. $HOME) with:  
