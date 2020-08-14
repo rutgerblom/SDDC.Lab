@@ -182,7 +182,7 @@
         vSAN_Licenses: "{{ (vSAN_Licenses | default([])) + [ item ] }}"
       loop: "{{ License.VMware.vSAN.Licenses | default([]) }}"
       when:
-        - Deploy.Software.ESXi.Version is match( item.Version )
+        - Deploy.Software.vCenter.Version is match( item.Version )
         - LicenseProducts == True
         - item.KeyCode != "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
 
