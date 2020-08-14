@@ -292,7 +292,7 @@
 
     - name: If vDS created, display Action Notice
       pause:
-        seconds: 10
+        minutes: 60
         prompt: |
           =================================================================================================
           =======================================  ACTION REQUIRED  =======================================
@@ -302,21 +302,10 @@
 
                                                    {{ Target.vSwitch }}
 
-            The script will now exit so that you can associate a vmnic interface to the vDS's uplink.  Once
-            you have assocated a vmnic to the uplink of the vDS, please re-run the deploy.yml script.
-
-            IMPORTANT: When you re-run the script, it will NOT verify that you have connected a vmnic as
-                       an uplink to the vDS, or that you have configured it correctly.  If you do not
-                       connect a vmnic as an uplink, or have an issue with it's configuration, the script
-                       may eventually fail when you re-run it at some point during its execution.
+            The script will now wait so that you can associate a vmnic interface to the vDS's uplink.  Once
+            you have assocated a vmnic to the uplink of the vDS, please press CTRL-C, then C, to continue.
 
           =================================================================================================
-      when:
-        - Target.Deployment == "vCenter"
-        - vds_result.result == "DVS created"
-
-    - name: Exit Ansible playbook so user can perform their required actons
-      meta: end_play
       when:
         - Target.Deployment == "vCenter"
         - vds_result.result == "DVS created"
