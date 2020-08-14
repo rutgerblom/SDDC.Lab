@@ -44,7 +44,7 @@ The following are the requirements for successful Pod deployments:
   * Router Version should be set to "Latest" (default)
   * Nested_Router.Protocol must be set to "OSPF" (default), as "Static" is not supported
   * It is recommended that the physical layer-3 switch be configured with OSPFv3 enabed on the Lab-Routers segment
-  * The Ansible Controller must be IPv6 enabled
+  * The Ansible controller must be IPv6 enabled
   * DNS server must be IPv6 enabled
   * DNS server must have IPv6 forward and reverse zones
   * Within each Pod, only the following components are currently configured with IPv6:
@@ -75,7 +75,7 @@ The following are recommendations based on our experience with deploying Pods:
   * Create an Lab-Routers VLAN used as transit segment between your layer-3 switch and the Pod [VyOS](https://www.vyos.io/) router.
   * Configure OSPFv2/OSPFv3 on the Lab-Routers segment.
 
-* Install the required software on your Ansible Controller:
+* Install the required software on your Ansible controller:
   * sudo apt install python3 python3-pip xorriso
   * pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython
   * sudo pip3 install weasyprint
