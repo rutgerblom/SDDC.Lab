@@ -16,7 +16,7 @@
 ## Configure the physical network
 
 ## Configure the physical ESXi host
-Currently the scripts supports deploying Pods on a standalone ESXi host. This host should be installed with ESXi version 6.7 or higher.
+Currently the scripts supports deploying Pods on a standalone ESXi host. This host must be running ESXi version 6.7 or higher.
 
 ## Install the Ansible controller
 
