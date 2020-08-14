@@ -2,22 +2,18 @@
 # Create Pod documentation
 - import_playbook: playbooks/createPodDoc.yml
 
+# Prepare the physical environment
+- import_playbook: playbooks/preparePhysical.yml
 
 # Deploy DNS server
 - import_playbook: playbooks/deployDNSServer.yml
   when: 
     - Deploy.Product.DNSServer == true
 
-
 # Populate DNS with forward and reverse DNS records
 - import_playbook: playbooks/updateDNS.yml
   when:
     - Deploy.Setting.UseDNS == true
-
-
-# Prepare the physical environment
-- import_playbook: playbooks/preparePhysical.yml
-
 
 # Deploy router
 - import_playbook: playbooks/deployRouter.yml
@@ -27,17 +23,11 @@
 
 # Deploy nested vSphere
 - import_playbook: playbooks/prepareISOInstaller.yml
-
 - import_playbook: playbooks/deployNestedEsxi.yml
-
 - import_playbook: playbooks/deployVc.yml
-
 - import_playbook: playbooks/configureNestedEsxi.yml
-
 - import_playbook: playbooks/createVds.yml
-
 - import_playbook: playbooks/configureVsan.yml
-
 - import_playbook: playbooks/license_vSphere.yml
 
 
@@ -119,4 +109,3 @@
 - import_playbook: playbooks/license_vRLI.yml
   when: 
     - Deploy.Product.vRLI == true
-
