@@ -31,7 +31,7 @@ Currently the scripts supports deploying Pods on a standalone ESXi host. This ho
 
 ## Install the Ansible controller
 
-The Ansible controller is the machine from which you will run the Ansible scripts. We recommend installing a modern version of [Ubuntu](https://ubuntu.com/download) on a dedicated virtual machine. Although not required, we also recommended that you place the Ansible controller virtual machine on the same ESXi host as where you will deploy your Pod. This VM can be connected to any VLAN as long as it:
+The Ansible controller is the machine from which you will run the Ansible scripts. We recommend installing a modern version of [Ubuntu](https://ubuntu.com/download) on a dedicated virtual machine. This VM can be connected to any VLAN as long as it:
 
 * Can Reach the Lab-Routers segment and the Pod networks behind the [VyOS](https://www.vyos.io/) router.
 * Has Internet access.
