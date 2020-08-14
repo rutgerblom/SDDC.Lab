@@ -90,10 +90,10 @@ cp licenses_sample.yml config.yml
 In software.yml we've defined the poducts and versions that can be deployed with the scripts.
 cp software_sample.yml config.yml
 
-## Create the software library
+## Create the software library (TBD)
 
-## Create the Pod configuration
+## Create the Pod configuration (TBD)
 
-## Start the Pod deployment
+## Start the Pod deployment (TBD)
 
-## Access the Pod's components
+## Access the Pod's components (TBD)
