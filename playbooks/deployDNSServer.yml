@@ -92,7 +92,7 @@
         password: "{{ Target.Password }}"
         validate_certs: no
         datacenter: "{{ Target.DataCenter }}"
-        folder: "{{ Target.VMFolder }}"
+        folder: "{% if Target.Deployment == 'vCenter' %}{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}{% else %}{{ Target.VMFolder }}{% endif %}"          # If vCenter, use Parent folder
         name: "{{ Nested_DNSServer.VM.VMName }}"
         schema: "vsphere"
         properties: ["overallStatus"]
@@ -228,7 +228,7 @@
         guest_id: ubuntu64Guest
         cluster: "{{ Target.Cluster }}"
         datacenter: "{{ Target.DataCenter }}"
-        folder: "{{ Target.VMFolder }}"
+        folder: "{% if Target.Deployment == 'vCenter' %}{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}{% else %}{{ Target.VMFolder }}{% endif %}"          # If vCenter, use Parent folder
         disk:
         - size_gb: "{{ Nested_DNSServer.VM.HardwareSettings.DiskSize }}"
           type: "{{ Common.DiskProvisioning }}"
