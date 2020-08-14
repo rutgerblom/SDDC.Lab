@@ -33,7 +33,8 @@ Currently the scripts supports deploying Pods on a standalone ESXi host. This ho
 
 The Ansible controller is the machine from which you will run the Ansible scripts. We recommend installing a modern version of [Ubuntu](https://ubuntu.com/download) on a dedicated virtual machine. This VM can be connected to any VLAN as long as it:
 
-* Can Reach the Lab-Routers segment and the Pod networks behind the [VyOS](https://www.vyos.io/) router.
+* Can access the physical ESXi host
+* Can reach the Lab-Routers segment and the Pod networks behind the [VyOS](https://www.vyos.io/) router.
 * Has Internet access.
 
 ### Software
@@ -61,7 +62,6 @@ After cloning the repository you will end up with a directory called "SDDC.Lab" 
     playbooks
     plugins
     templates
-    tests
     utils
     ansible.cfg
     CHANGELOG.md
@@ -77,7 +77,6 @@ Three files in the root of the SDDC.Lab directory require your attention:
 * config_sample.yml
 * licenses_sample.yml
 * software_sample.yml
-
 
 ### config.yml (TBD)
 In config.yml you define the configuration and settings of your Pod.   
