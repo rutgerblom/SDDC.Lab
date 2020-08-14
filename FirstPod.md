@@ -27,7 +27,7 @@ Currently the scripts supports deploying Pods on a standalone ESXi host. This ho
 
 ## Install the Ansible controller
 
-The Ansible controller is the machine from which you run the Ansible scripts. We recommend installing a modern version of [Ubuntu](#https://ubuntu.com/download) on a dedicated virtual machine for this purpose. Although not required, we recommended that you deploy the Ansible controller virtual machine on the same ESXi host as where you will deploy your Pod. Consider connecting this VM to the Lab-Routers port group. Internet access from this VM is recommended.
+The Ansible controller is the machine from which you run the Ansible scripts. We recommend installing a modern version of [Ubuntu](https://ubuntu.com/download) on a dedicated virtual machine for this purpose. Although not required, we recommended that you deploy the Ansible controller virtual machine on the same ESXi host as where you will deploy your Pod. Consider connecting this VM to the Lab-Routers port group. Internet access from this VM is recommended.
 
 ### Software
 After installing the Ubuntu OS and the latest updates, some additional software is required. You can simply copy and paste the commands below. Installation of the additional software will only take some minutes.
