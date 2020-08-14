@@ -1,6 +1,11 @@
-##  Desired Enhancements:
-##    1) Set network_policy/security sections based on ESXi version to optimize network usage.
-## 
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/preparePhysical.j2
+##    Purpose: This Ansbile script is to prepare the physical environment, which includes:
+##              a) Creating vSphere Switch (vDS or vSS)
+##              b) Creating vSphere Port-Groups (Mgmt and Trunk)
+##              c) VM Folder Structure (vCenter Deployment Only)
 ##
 ---
 - hosts: localhost
@@ -93,7 +98,7 @@
 
 ## if vDS was created, vds_result.result == "DVS created"
 
-    - name: DEBUG - Display vds_result
+    - name: DEBUG -- Display vds_result
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
@@ -127,7 +132,7 @@
         - Target.Deployment == "vCenter"
         - vds_result.result == "DVS created"
 
-    - name: DEBUG - Display vcenter_auth_result
+    - name: DEBUG -- Display vcenter_auth_result
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
@@ -150,7 +155,7 @@
         - Target.Deployment == "vCenter"
         - vds_result.result == "DVS created"
 
-    - name: DEBUG - Display vCenter_SessionID
+    - name: DEBUG -- Display vCenter_SessionID
       pause:
         seconds: 1
         prompt: |
@@ -189,7 +194,7 @@
         - Target.Deployment == "vCenter"
         - vds_result.result == "DVS created"
 
-    - name: Display cluster_info
+    - name: DEBUG -- Display cluster_info
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
@@ -213,7 +218,7 @@
         - Target.Deployment == "vCenter"
         - vds_result.result == "DVS created"
 
-    - name: Display Cluster_ID
+    - name: DEBUG -- Display Cluster_ID
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
@@ -248,7 +253,7 @@
         - Target.Deployment == "vCenter"
         - vds_result.result == "DVS created"
 
-    - name: Display cluster_hosts
+    - name: DEBUG -- Display cluster_hosts
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
@@ -287,7 +292,7 @@
 
     - name: If vDS created, display Action Notice
       pause:
-        seconds: 10
+        minutes: 60
         prompt: |
           =================================================================================================
           =======================================  ACTION REQUIRED  =======================================
@@ -297,21 +302,10 @@
 
                                                    {{ Target.vSwitch }}
 
-            The script will now exit so that you can associate a vmnic interface to the vDS's uplink.  Once
-            you have assocated a vmnic to the uplink of the vDS, please re-run the deploy.yml script.
-
-            IMPORTANT: When you re-run the script, it will NOT verify that you have connected a vmnic as
-                       an uplink to the vDS, or that you have configured it correctly.  If you do not
-                       connect a vmnic as an uplink, or have an issue with it's configuration, the script
-                       may eventually fail when you re-run it at some point during it's execution.
+            The script will now wait so that you can associate a vmnic interface to the vDS's uplink.  Once
+            you have assocated a vmnic to the uplink of the vDS, please press CTRL-C, then C, to continue.
 
           =================================================================================================
-      when:
-        - Target.Deployment == "vCenter"
-        - vds_result.result == "DVS created"
-
-    - name: Exit Ansible playbook so user can perform their required actons
-      meta: end_play
       when:
         - Target.Deployment == "vCenter"
         - vds_result.result == "DVS created"
@@ -338,8 +332,7 @@
           promiscuous: "{{ Target.vSwitchVersion is version('6.5.0', '<=') }}"                         # 'true' if vSwitchVersion is <= 6.5.0
           forged_transmits: "{{ Target.vSwitchVersion is version('6.5.0', '<=') }}"                    # 'true' if vSwitchVersion is <= 6.5.0
           mac_changes: false
-      when:
-        - Target.Deployment == "vCenter"
+      when: Target.Deployment == "vCenter"
 
     - name: Create a Trunk Distributed Port-Group in vCenter
       vmware_dvs_portgroup:
@@ -358,9 +351,80 @@
           promiscuous: "{{ Target.vSwitchVersion is version('6.5.0', '<=') }}"                         # 'true' if vSwitchVersion is <= 6.5.0
           forged_transmits: "{{ Target.vSwitchVersion is version('6.5.0', '<=') }}"                    # 'true' if vSwitchVersion is <= 6.5.0
           mac_changes: false
-      when:
-        - Target.Deployment == "vCenter"
+      when: Target.Deployment == "vCenter"
 
+
+
+##
+###############################################################################################################
+##                                  Create VM Folder Structure in vCenter Server                             ##
+##                                         Target.Deployment == "vCenter"                                    ##
+###############################################################################################################
+##
+
+
+    - name: Create Parent VM Folder
+      vcenter_folder:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        datacenter: "{{ Target.DataCenter }}"
+        folder_type: vm
+        parent_folder: ""
+        folder_name: "{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}"                     # Extract parent folder from VMFolder full path"
+        state: present
+      register: vm_parent_folder_creation_result
+      when: Target.Deployment == "vCenter"
+
+    - name: DEBUG -- Display vm_parent_folder_creation_result
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: vm_parent_folder_creation_result
+          ==========================================
+          {{ vm_parent_folder_creation_result | to_nice_yaml }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Target.Deployment == "vCenter"
+        - vm_parent_folder_creation_result is defined
+
+    - name: Create Child VM Folder
+      vcenter_folder:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        datacenter: "{{ Target.DataCenter }}"
+        folder_type: vm
+        parent_folder: "{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}"                     # Extract parent folder from VMFolder full path
+        folder_name:   "{{ Target.VMFolder | regex_replace('^.*/(.*)$', '\\1') }}"                     # Extract remaining folder name
+        state: present
+      register: vm_child_folder_creation_result
+      when: 
+        - Target.Deployment == "vCenter"
+        - vm_parent_folder_creation_result is defined
+        - vm_parent_folder_creation_result.failed != true
+
+    - name: DEBUG -- Display vm_child_folder_creation_result
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: vm_child_folder_creation_result
+          ==========================================
+          {{ vm_child_folder_creation_result | to_nice_yaml }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Target.Deployment == "vCenter"
+        - vm_child_folder_creation_result is defined
 
 
 
@@ -381,8 +445,7 @@
         esxi_hostname: "{{ Target.FQDN }}"
         switch_name: "{{ Target.vSwitch }}"
         mtu: 9000
-      when:
-        - Target.Deployment == "Host"
+      when: Target.Deployment == "Host"
 
     - name: Create a management port group for the lab environment
       vmware_portgroup:
@@ -396,8 +459,7 @@
         vlan_id: "{{ Target.PortGroup.Management.VLAN }}"
         security:
           promiscuous_mode: True
-      when:
-        - Target.Deployment == "Host"
+      when: Target.Deployment == "Host"
 
     - name: Create trunk port group for the lab environment
       vmware_portgroup:
@@ -413,8 +475,7 @@
           promiscuous_mode: True
           forged_transmits: True
           mac_changes: True
-      when:
-        - Target.Deployment == "Host"
+      when: Target.Deployment == "Host"
 
 
 ##
