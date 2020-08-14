@@ -14,7 +14,7 @@
 * [Recommendations](#Recommendations)
 * [Preparations](#Preparations)
 * [Usage](#Usage)
-* [More Information](More-Information)
+* [More Information](#More-Information)
 
 
 ## Description
