@@ -125,6 +125,7 @@
       template: 
         src: "{{ Target.TemplateFolder }}/{{ PodTemplate }}"
         dest: "{{ lookup('env','HOME') }}/{{ PodConfigFile }}"
+        mode: "666"
         force: yes
       when: 
         - Pod.Number is defined
