@@ -15,7 +15,7 @@ reboot
 
 # Open busybox and launch commands
 %firstboot --interpreter=busybox
-{% if Deploy.Setting.EnableSSH %}
+{% if item.value.EnableSSH %}
 # Enable & start remote ESXi Shell (SSH)
 vim-cmd hostsvc/enable_ssh
 vim-cmd hostsvc/start_ssh
@@ -26,7 +26,7 @@ vim-cmd hostsvc/start_esx_shell
 
 # Supress ESXi Shell warning
 esxcli system settings advanced set -o /UserVars/SuppressShellWarning -i 1
-{% endif %}{# Deploy.Setting.EnableSSH #}
+{% endif %}{# item.value.EnableSSH #}
 # Configure NTP Server addresses
 echo "server {{ Common.NTP.Server1.IPv4 }}" >> /etc/ntp.conf;
 echo "server {{ Common.NTP.Server2.IPv4 }}" >> /etc/ntp.conf;
