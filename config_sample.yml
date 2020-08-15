@@ -1236,7 +1236,7 @@ Nested_vCenter:
       - Compute-A
       - Edge
       Config:
-        Version: "{{ Software.VMware.ESXi.Installers[Deploy.Software.ESXi.Version].vSwitch }}"
+        Version: "{{ Software.VMware.ESXi.Installers[Deploy.Software.ESXi.Version].vSwitch }}"        # This MUST reference the Software data structure rather than Deploy as version is not in Config_Sample.yml until Pod_Config.j2 template creates static config.
         NumberOfUplinks: 2
         MTU: 9000
         LinkDiscoveryProtocol:

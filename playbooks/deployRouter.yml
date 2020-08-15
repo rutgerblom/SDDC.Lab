@@ -225,8 +225,9 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
+        datacenter: "{{ Target.DataCenter }}"
         datastore: "{{ Target.Datastore }}" 
+        src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         path: "{{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
       tags: upload
       when: 

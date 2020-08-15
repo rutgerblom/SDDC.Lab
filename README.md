@@ -12,6 +12,7 @@
 * [Recommendations](#Recommendations)
 * [Preparations](#Preparations)
 * [Usage](#Usage)
+* [Known Issues](#Known-Issues)
 * [More Information](#More-Information)
 
 
@@ -34,7 +35,7 @@ The following are the requirements for successful Pod deployments:
 * A physical standalone ESXi host running version 6.7 or higher.
 * The physical standalone ESXi host hostname must be resolvable by DNS.
 * A virtual machine with a modern version of Ubuntu (used as the Ansible controller)
-* The default deployment settings require DNS name resolution. Your can leverage an existing DNS server, but it must be configured with the required forward and reverse zones and support dynamic updates.
+* The default deployment settings require DNS name resolution. You can leverage an existing DNS server, but it must be configured with the required forward and reverse zones and support dynamic updates.
 * Access to VMware product installation media.
 * For deploying NSX-T you will need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval)).
 * If IPv6 deployment is enabled (Deploy.Setting.IPv6 = True):
@@ -104,6 +105,10 @@ Deploying an SDDC Pod will take somewhere between 1 and 1.5 hours depending on y
 
 Similary you remove a Pod with:  
 **sudo ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" undeploy.yml**
+
+## Known Issues
+Here are some known issues:
+1. eBGP IPv6 peerings show as DOWN within the NSX-T GUI, even though the IPv6 routes are being exchanged with the VyOS router.  We are investigating this.
 
 ## More Information
 For detailed installation, preparation, and deployment steps, please see the "[Deploying your first SDDC.Lab Pod](FirstPod.md)" document.
