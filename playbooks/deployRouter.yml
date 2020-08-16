@@ -148,6 +148,7 @@
       template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
+        mode: "666"
       when: 
         - Deploy.Product.Router == true
         - status is failed
