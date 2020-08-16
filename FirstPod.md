@@ -25,16 +25,15 @@
 ## Configure the physical ESXi host
 Currently the scripts supports deploying Pods on a standalone ESXi host. This host must be running ESXi version 6.7 or later. After installing ESXi make sure that you configure the following:
 
-* DNS name resolution. The ESXi host should be able to resolve its own hostname via DNS and the Ansible controller must be able to resolve the ESXi hostname via DNS.
 * A datastore.
-* A portgroup configured with the VLAN ID of the Lab-Routers segment. In the default Pod configuration this portgroup is actually called "Lab-Routers" so giving it that name means you have one thing less to think about later on. 
+* A portgroup configured with the VLAN ID of the Router Uplink segment. In the default Pod configuration this portgroup is called "Lab-Routers" so giving it that name will save you some time. 
 
 ## Install the Ansible controller
 
 The Ansible controller is the machine from which you will run the Ansible scripts. We recommend installing a modern version of [Ubuntu](https://ubuntu.com/download) on a dedicated virtual machine. This VM can be connected to any VLAN as long as it:
 
 * Can access the physical ESXi host
-* Can reach the Lab-Routers segment and the Pod networks behind the [VyOS](https://www.vyos.io/) router.
+* Can reach the Router Uplink segment and the Pod networks behind the [VyOS](https://www.vyos.io/) router.
 * Has Internet access.
 
 ### Software

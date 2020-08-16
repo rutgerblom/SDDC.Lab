@@ -33,7 +33,6 @@ The primary use case is consistent and speedy provisioning of nested VMware SDDC
 The following are the requirements for successful Pod deployments:
 
 * A physical standalone ESXi host running version 6.7 or higher.
-* The physical standalone ESXi host hostname must be resolvable by DNS.
 * A virtual machine with a modern version of Ubuntu (used as the Ansible controller)
 * The default deployment settings require DNS name resolution. You can leverage an existing DNS server, but it must be configured with the required forward and reverse zones and support dynamic updates.
 * Access to VMware product installation media.
