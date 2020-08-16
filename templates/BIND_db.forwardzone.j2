@@ -13,9 +13,5 @@ $TTL 604800
 $ORIGIN  {{ Common.DNS.Domain | lower }}.
 
 ; A records for name servers
-{% if Deploy.Setting.IPv4 %}
 {{ Nested_DNSServer.FQDN | lower }}.           IN   A    {{ Nested_DNSServer.OS.Network.IPv4.Address }}
-{% endif %}{# Deploy.Setting.IPv4 #}
-{% if Deploy.Setting.IPv6 %}
 {{ Nested_DNSServer.FQDN | lower }}.           IN   AAAA    {{ Nested_DNSServer.OS.Network.IPv6.Address }}
-{% endif %}{# Deploy.Setting.IPv6 #}

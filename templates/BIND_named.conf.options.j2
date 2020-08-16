@@ -9,15 +9,7 @@ options {
   allow-query { any; };
   allow-query-cache { any; };
   allow-recursion { any; };
-  {% if Deploy.Setting.IPv4 == true and Deploy.Setting.IPv6 != true %}
-  forwarders { {{ Nested_DNSServer.OS.Packages.BIND.Forwarder.IPv4 }}; }; 
-  {% endif %}
-  {% if Deploy.Setting.IPv4 == true and Deploy.Setting.IPv6 == true %}
   forwarders { {{ Nested_DNSServer.OS.Packages.BIND.Forwarder.IPv4 }}; {{ Nested_DNSServer.OS.Packages.BIND.Forwarder.IPv6 }}; };
-  {% endif %}
-  {% if Deploy.Setting.IPv4 != true and Deploy.Setting.IPv6 == true %}
-  forwarders { {{ Nested_DNSServer.OS.Packages.BIND.Forwarder.IPv6 }}; };
-  {% endif %}
   dnssec-validation no;
   auth-nxdomain no; # conform to RFC1035
   listen-on { localhost; any; };

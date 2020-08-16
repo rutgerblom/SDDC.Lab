@@ -16,15 +16,12 @@ zone "{{ Common.DNS.Domain | lower }}" {
   allow-transfer { any; };       // Needs to include the IP address of the Ansible control station for utils/showdns
   file "/var/lib/bind/db.{{ Common.DNS.Domain | lower }}";
 };
-{% if Deploy.Setting.IPv4 %}
 zone "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}" {
   type master;
   allow-update { any; };         // Needs to include the IP address of the Ansible control station
   allow-transfer { any; };       // Needs to include the IP address of the Ansible control station for utils/showdns
   file "/var/lib/bind/db.{{ Pod.BaseNetwork.IPv4 }}";
 };
-{% endif %}{# Deploy.Setting.IPv4 #}
-{% if Deploy.Setting.IPv6 %}
 zone "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{40}(.*).$', '\\1') }}" {
   type master;
   allow-update { any; };         // Needs to include the IP address of the Ansible control station
@@ -32,4 +29,3 @@ zone "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replac
   file "/var/lib/bind/db.{{ Pod.BaseNetwork.IPv6 }}";
   notify yes;
 };
-{% endif %}{# Deploy.Setting.IPv6 #}
