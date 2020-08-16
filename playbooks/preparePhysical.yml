@@ -348,8 +348,8 @@
         num_ports: 32
         state: present
         network_policy:
-          promiscuous: "{{ Target.vSwitchVersion is version('6.5.0', '<=') }}"                         # 'true' if vSwitchVersion is <= 6.5.0
-          forged_transmits: "{{ Target.vSwitchVersion is version('6.5.0', '<=') }}"                    # 'true' if vSwitchVersion is <= 6.5.0
+          promiscuous: true                                                                            # Must be true to vmk migration to work
+          forged_transmits: true                                                                       # Must be true to vmk migration to work
           mac_changes: false
       when: Target.Deployment == "vCenter"
 
