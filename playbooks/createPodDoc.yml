@@ -9,7 +9,6 @@
 
   vars:
     - PodDocHTML: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Doc.html"
-    - PodDocPDF: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Doc.pdf"
     - PodDocTemplate: "Pod_Doc.j2"
 
   vars_prompt:
@@ -63,7 +62,6 @@
                                            Pod.Number: {{ Pod.Number }}
 
                                Pod Documentation Path: {{ DestinationPodDocPath }}/{{ PodDocHTML }}
-                                Pod Documentation PDF: {{ PodDocPDF }}
                                Configuration Template: {{ Target.TemplateFolder }}/{{ PodDocTemplate }}
 
           =================================================================================================
@@ -80,7 +78,7 @@
 
           Generating the Pod documentation for Pod {{ Pod.Number }}.
 
-               Once generated, it will be saved to {{ DestinationPodDocPath }}/{{ PodDocHTML }} and {{ DestinationPodDocPath }}/{{ PodDocPDF }}
+               Once generated, it will be saved to {{ DestinationPodDocPath }}/{{ PodDocHTML }}
 
           =====================================================================================================
 
@@ -93,8 +91,4 @@
         src: "{{ Target.TemplateFolder }}/{{ PodDocTemplate }}"
         dest: "{{ DestinationPodDocPath }}/{{ PodDocHTML }}"
         mode: 0666
-      ignore_errors: true
-
-    - name: Print Pod Documentation to PDF
-      shell: "weasyprint {{ DestinationPodDocPath }}/{{ PodDocHTML }} {{ DestinationPodDocPath }}/{{ PodDocPDF }}"
       ignore_errors: true
