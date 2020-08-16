@@ -614,7 +614,7 @@
         - Deploy.Software.Router.Version == "Legacy"
 
     - name: Add static route on the Ansible control node
-      command: ./ip route add "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}" via "{{ Nested_Router.Uplink.IPv4.Address }}"
+      command: ./ip route add "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}" via "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
       args:
         chdir: /bin/
       register: iproute
