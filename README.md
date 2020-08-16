@@ -76,8 +76,7 @@ The following are recommendations based on our experience with deploying Pods:
 
 * Install the required software on your Ansible controller:
   * sudo apt install python3 python3-pip xorriso
-  * pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython
-  * sudo pip3 install weasyprint
+  * sudo pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython weasyprint
   * git clone https://github.com/rutgerblom/SDDC.Lab.git 
 
 * Copy/rename the sample files:
