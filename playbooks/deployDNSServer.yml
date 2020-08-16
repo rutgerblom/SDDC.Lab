@@ -190,6 +190,7 @@
       template: 
         src: "{{ item.Source }}"
         dest: "{{ item.FinalDestination }}"
+        mode: '0600'
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AutoInstall }}"
       when: 
         - ubuntu_status is failed
