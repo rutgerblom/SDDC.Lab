@@ -134,18 +134,18 @@ TargetConfig:
     User: "root"                                          
     Password: "{{ Common.Password.Physical }}"
     vSwitch: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"        # vSwitch - Created as part of the deployment 
-    vSwitchVersion: ""                                                # vSwitchVersion - Do not change
-    DataCenter: "ha-datacenter"                                       # DataCenter - Do not change
-    Cluster: ""                                                       # Cluster - Do not change
+    vSwitchVersion: ""                                                
+    DataCenter: "ha-datacenter"                                       
+    Cluster: ""                                                       
     Datastore: "Local_VMs"                                            # Datastore - The datastore connected to your physicsal ESXi host
-    VMFolder: "ha-datacenter/vm"                                      # VMFolder - Do not change
+    VMFolder: "ha-datacenter/vm"                                      
     ISOFolder: "/SDDCLab-ISO-Folder"                                  # ISOFolder - Created as part of the deployment
-    ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"    # ISOMount - Do not change
-    TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"        # TempFolder - Do not change
-    VarsFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/vars"   # VarsFolder - Do not change
-    TemplateFolder: "../templates"                                    # TemplateFolder - Do not change
+    ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"    
+    TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"        
+    VarsFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/vars"   
+    TemplateFolder: "../templates"                                    
     PortGroup:
-      RouterUplink: "Lab-Routers"                                     # RouterUplink - The portgroup for the Router Uplink segment must exist before deploying 
+      RouterUplink: "Lab-Routers"                                     # RouterUplink - The portgroup for the Router Uplink segment. Must exist before deploying 
       Management:
         Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt"
         VLAN: "{{ Net.Management.VLAN }}"
