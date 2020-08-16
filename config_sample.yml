@@ -141,8 +141,7 @@ TargetConfig:
     VMFolder: "ha-datacenter/vm"                                      
     ISOFolder: "/SDDCLab-ISO-Folder"
     ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"    
-    TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"        
-    VarsFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/vars"   
+    TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"          
     TemplateFolder: "../templates"                                    
     PortGroup:
       RouterUplink: "Lab-Routers"                                     # RouterUplink - The portgroup for the Router Uplink segment. Must exist before deploying 
@@ -165,7 +164,6 @@ TargetConfig:
     ISOFolder: "/SDDCLab-ISO-Folder"
     ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"
     TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"
-    VarsFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/vars"
     TemplateFolder: "../templates"
     PortGroup:
       RouterUplink: "Lab-Routers"
@@ -194,7 +192,6 @@ Target:
   ISOFolder:      "{{ TargetConfig[TargetConfig.Deployment].ISOFolder }}"
   ISOMount:       "{{ TargetConfig[TargetConfig.Deployment].ISOMount }}"
   TempFolder:     "{{ TargetConfig[TargetConfig.Deployment].TempFolder }}"
-  VarsFolder:     "{{ TargetConfig[TargetConfig.Deployment].VarsFolder }}"
   TemplateFolder: "{{ TargetConfig[TargetConfig.Deployment].TemplateFolder }}"
   PortGroup:
     RouterUplink: "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].RouterUplink }}"
