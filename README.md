@@ -9,7 +9,7 @@
 
 * [Description](#Description)
 * [Requirements](#Requirements)
-* [Recommendations](#Recommendations)
+  * [Recommendations](#Recommendations)
 * [Preparations](#Preparations)
 * [Usage](#Usage)
 * [Known Items](#Known-Items)
@@ -51,7 +51,7 @@ The following are the requirements for successful Pod deployments:
     * NSX-T Segments
     * NSX-T eBGP Peering with the Router
 
-## Recommendations
+### Recommendations
 The following are recommendations based on our experience with deploying Pods:
 
 * Use a physical layer-3 switch with appropriate OSPF configuration matching the OSPF settings in your config.yml file. Dynamic routing between your Pods and your physical network will make your life easier.
@@ -60,8 +60,8 @@ The following are recommendations based on our experience with deploying Pods:
   * 320 GB RAM
   * 1 TB storage capacity (preferably SSD). Either DAS or 10 Gbit NFS/iSCSI
 * Virtual hardware configuration of the Ansible controller VM:
-  * 2 CPUs
-  * 16 GB RAM
+  * 1 CPUs
+  * 8 GB RAM
   * 150 GB hard disk
   * VMware Paravirtual SCSI controller
   * VMXNET 3 network adapter
