@@ -111,8 +111,8 @@ Common:
   Syslog:
     Protocol: udp
     Port: 514
-    IPv4: "10.203.240.6"
-    IPv6: 
+    IPv4: "{{ Net.Management.IPv4.Network }}.6"                       # Replace with your IP address if Deploy.Product.vRLI == false
+    IPv6: "{{ Net.Management.IPv6.Network }}::6"                      # Replace with your IP address if Deploy.Product.vRLI == false
   DiskProvisioning: "thin"
   NFS:
     Server:
