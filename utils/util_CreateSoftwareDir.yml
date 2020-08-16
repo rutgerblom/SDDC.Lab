@@ -7,31 +7,7 @@
 - hosts: localhost
   vars_files:
     - ../software.yml
-    - ../config.yml
   tasks:
-    - name: DEBUG -- Display Target Variables (Pause)
-      pause:
-        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
-        prompt: |
-          =================================== DEBUG: Display Variables ====================================
-
-                                    Target.Deployment: {{ Target.Deployment }}
-
-                                          Target.FQDN: {{ Target.FQDN }}
-                                          Target.User: {{ Target.User }}
-                                      Target.Password: {{ Target.Password }}
-                                       Target.vSwitch: {{ Target.vSwitch }}
-                                       Target.Cluster: {{ Target.Cluster }}
-                                    Target.DataCenter: {{ Target.DataCenter }}
-
-                               Software RootDirectory: {{ RootDirectory }}
-
-          =================================================================================================
-      when:
-        - DEBUG.DisplayVariables == true
-        - false
-
-
 ##
 ## VMware
 ##

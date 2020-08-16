@@ -12,7 +12,7 @@
 * [Recommendations](#Recommendations)
 * [Preparations](#Preparations)
 * [Usage](#Usage)
-* [Known Issues](#Known-Issues)
+* [Known Items](#Known-Items)
 * [More Information](#More-Information)
 
 
@@ -106,9 +106,10 @@ Deploying an SDDC Pod will take somewhere between 1 and 1.5 hours depending on y
 Similary you remove a Pod with:  
 **sudo ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" undeploy.yml**
 
-## Known Issues
-Here are some known issues:
+## Known Items
+Here are some known items to be aware of:
 1. eBGP IPv6 peerings show as DOWN within the NSX-T GUI, even though the IPv6 routes are being exchanged with the VyOS router.  We are investigating this.
+2. If you attempt to deploy a pod, and receive a message indicating "Error rmdir /tmp/Pod-###/iso: [Errno 39] Directory not empty: '/tmp/Pod-###/iso'", that's because a previous pod deployment failed (for whatever reason), and some files remained in the /tmp/Pod-### directory.  To resolve this issue, delete the entire /tmp/Pod-### directory, and then re-deploy the Pod.  If an ISO image is still mounted (which you can check by running 'mount'), then you will need to unmount the ISO image before you can delete the /tmp/Pod-### directory.  In all examples, the "###" of Pod-### is the 3-digit Pod Number.
 
 ## More Information
 For detailed installation, preparation, and deployment steps, please see the "[Deploying your first SDDC.Lab Pod](FirstPod.md)" document.
