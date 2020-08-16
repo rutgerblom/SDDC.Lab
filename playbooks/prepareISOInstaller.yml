@@ -103,6 +103,7 @@
       template: 
         src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.ESXi.Template }}"
         dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
+        mode: "666"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
       tags: esxi-install-media

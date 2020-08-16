@@ -72,6 +72,7 @@
       template: 
         src: "../templates/vsan_silence.rb.j2"
         dest: "{{ Target.TempFolder }}/{{ item.key }}"
+        mode: "666"
       loop: "{{ Nested_Clusters | dict2items }}"
       when: 
         - item.value.vSAN == true
