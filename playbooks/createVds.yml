@@ -69,7 +69,7 @@
         datacenter_name: "{{ Nested_vCenter.DataCenter }}"
         validate_certs: false
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
-        switch_version: "{{ Nested_vCenter.Networking.vSwitch.Config.Version }}"
+        switch_version: "{% if Deploy.Software.vCenter.vSwitch == Deploy.Software.ESXi.vSwitch %}{{ omit }}{% else %}{{ Deploy.Software.ESXi.vSwitch }}{% endif %}"
         mtu: "{{ Nested_vCenter.Networking.vSwitch.Config.MTU }}"
         uplink_quantity: "{{ Nested_vCenter.Networking.vSwitch.Config.NumberOfUplinks }}"
         discovery_proto: "{{ Nested_vCenter.Networking.vSwitch.Config.LinkDiscoveryProtocol.Type }}"
@@ -169,7 +169,7 @@
         portgroup_type: earlyBinding
         state: present
 
-    - name: Create vmnetwork port group
+    - name: Create VMNetwork port group
       vmware_dvs_portgroup:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
@@ -196,7 +196,7 @@
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
-       - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
     - name: Migrate vmk0 to the VDS
       vmware_migrate_vmk:
@@ -212,7 +212,7 @@
         migrate_portgroup_name: "{{ item.value.vmk.vmk0.PortGroup }}"
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
-       - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
     - name: Create vmk1 for vMotion
       vmware_vmkernel:
@@ -232,7 +232,7 @@
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
-       - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
     - name: Create vmk2 for vSAN
       vmware_vmkernel:
@@ -252,7 +252,7 @@
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
-       - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
       
     - name: Create vmk3 for IP Storage
       vmware_vmkernel:
@@ -271,7 +271,7 @@
         state: present
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
-       - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
       
     - name: Remove the standard switch from the ESXi hosts
       vmware_vswitch:
@@ -283,4 +283,4 @@
         state: absent
       loop: "{{ Nested_ESXi.Hosts | dict2items }}"
       when: 
-       - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
