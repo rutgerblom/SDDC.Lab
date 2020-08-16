@@ -133,13 +133,13 @@ TargetConfig:
     FQDN: "Host32.NetLab.Home"                                        # FQDN - Your physical ESXi host
     User: "root"                                          
     Password: "{{ Common.Password.Physical }}"
-    vSwitch: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"        # vSwitch - Created as part of the deployment 
+    vSwitch: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"
     vSwitchVersion: ""                                                
     DataCenter: "ha-datacenter"                                       
     Cluster: ""                                                       
     Datastore: "Local_VMs"                                            # Datastore - The datastore connected to your physicsal ESXi host
     VMFolder: "ha-datacenter/vm"                                      
-    ISOFolder: "/SDDCLab-ISO-Folder"                                  # ISOFolder - Created as part of the deployment
+    ISOFolder: "/SDDCLab-ISO-Folder"
     ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"    
     TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"        
     VarsFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/vars"   
