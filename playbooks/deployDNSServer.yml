@@ -190,7 +190,7 @@
       template: 
         src: "{{ item.Source }}"
         dest: "{{ item.FinalDestination }}"
-        mode: '0600'
+        mode: "666"
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AutoInstall }}"
       when: 
         - ubuntu_status is failed
@@ -289,6 +289,7 @@
       template: 
         src: "{{ item.Source }}"
         dest: "{{ item.LocalDestination }}"
+        mode: "666"
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
       when: 
         - ubuntu_status is failed
