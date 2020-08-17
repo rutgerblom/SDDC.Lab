@@ -27,6 +27,8 @@ This repository contains Ansible scripts that perform fully automated deployment
 * vRealize Log Insight
 * A DNS Server (multi-Pod)
 
+![Physicaloverview](images/SDDC-Lab-pod2phys.png)
+
 The primary use case is consistent and speedy provisioning of nested VMware SDDC lab environments.
 
 ## Requirements
