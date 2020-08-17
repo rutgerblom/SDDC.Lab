@@ -112,7 +112,7 @@
         validate_certs: no
         datastore: "{{ Target.Datastore }}"
         allow_duplicates: no
-        folder: "{{ Target.VMFolder }}"
+        folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}{% else %}{{ Target.VMFolder }}{% endif %}"         # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
         datacenter: "{{ Target.DataCenter }}"
         cluster: "{{ Target.Cluster }}"
         name: "{{ Nested_NSXT.Components.LocalManager.VMName }}"
