@@ -107,7 +107,7 @@
         validate_certs: false
         datastore: "{{ Target.Datastore }}"
         allow_duplicates: false
-        folder: "{{ Target.VMFolder }}"
+        folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}{% else %}{{ Target.VMFolder }}{% endif %}"         # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
         datacenter: "{{ Target.DataCenter }}"
         cluster: "{{ Target.Cluster }}"
         name: "{{ Nested_vRLI.VMName }}"
@@ -121,7 +121,7 @@
         inject_ovf_env: true
         properties:
           ## vm.vmname is hard-coded in the OVF file and referenced by several OVF properties and must be 'VMware_vCenter_Log_Insight' it seems. Deployment fails if setting something else.
-          vm.vmname: "VMware_vCenter_Log_Insight"
+#          vm.vmname: "VMware_vCenter_Log_Insight"
           preferipv6: "False"
           rootpw: "{{ Nested_vRLI.Credential.root.Password }}"
           hostname: "{{ Nested_vRLI.FQDN }}"
