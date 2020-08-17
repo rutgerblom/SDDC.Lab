@@ -131,18 +131,18 @@ TargetConfig:
   Deployment: "Host"                                                  # Deployment - MUST be set to "Host"
   Host:
     FQDN: "Host32.NetLab.Home"                                        # FQDN - The FQDN or IP address of your physical ESXi host
-    User: "root"                                          
+    User: "root"
     Password: "{{ Common.Password.Physical }}"
     vSwitch: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"
-    vSwitchVersion: ""                                                
-    DataCenter: "ha-datacenter"                                       
-    Cluster: ""                                                       
+    vSwitchVersion: ""
+    DataCenter: "ha-datacenter"
+    Cluster: ""
     Datastore: "Local_VMs"                                            # Datastore - The datastore connected to your physicsal ESXi host
-    VMFolder: "ha-datacenter/vm"                                      
+    VMFolder: "ha-datacenter/vm"
     ISOFolder: "/SDDCLab-ISO-Folder"
-    ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"    
-    TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"          
-    TemplateFolder: "../templates"                                    
+    ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"
+    TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"
+    TemplateFolder: "../templates"
     PortGroup:
       RouterUplink: "Lab-Routers"                                     # RouterUplink - The portgroup for your Router Uplink segment 
       Management:
