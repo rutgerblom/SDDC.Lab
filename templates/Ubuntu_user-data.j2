@@ -20,11 +20,6 @@ autoinstall:
               - "{{ Nested_DNSServer.OS.Network.IPv6.DNS }}"
             search: 
               - {{ Common.DNS.Domain }}
-  apt:
-    preserve_sources_list: false
-    primary:
-      - arches: [amd64]
-        uri: "http://archive.ubuntu.com/ubuntu/"
   identity:
     hostname: {{ Nested_DNSServer.FQDN }}
     username: {{ Nested_DNSServer.OS.Credential.User }}
