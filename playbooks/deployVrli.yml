@@ -120,6 +120,7 @@
         wait_for_ip_address: true
         inject_ovf_env: true
         properties:
+          vm.vmname: "{% if Target.Deployment == 'Host' %}VMware_vCenter_Log_Insight{% else %}{{ omit }}{% endif %}"                                         # Host requires static vmname value, vCenter complains, so omitting property from vCenter Deployment
           preferipv6: "False"
           rootpw: "{{ Nested_vRLI.Credential.root.Password }}"
           hostname: "{{ Nested_vRLI.FQDN }}"
@@ -132,44 +133,44 @@
       when:
         - Deploy.Product.vRLI == true
         - vrli_check.status != 200
-        - Target.Deployment == "vCenter"
+###        - Target.Deployment == "vCenter"       # commented so both Host and vCenter deployments use it
 
-    - name: Deploy vRLI from OVA to Host
-      vmware_deploy_ovf:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: false
-        datastore: "{{ Target.Datastore }}"
-        allow_duplicates: false
-        folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}{% else %}{{ Target.VMFolder }}{% endif %}"         # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
-        datacenter: "{{ Target.DataCenter }}"
-        cluster: "{{ Target.Cluster }}"
-        name: "{{ Nested_vRLI.VMName }}"
-        ovf: "{{ Deploy.Software.vRLI.Directory }}/{{ Deploy.Software.vRLI.File }}"
-        deployment_option: "{{ Nested_vRLI.Deployment.Size }}"
-        networks:
-          "Network 1": "{{ Target.PortGroup.Management.Name }}"
-        disk_provisioning: "{{ Common.DiskProvisioning }}"
-        power_on: true
-        wait_for_ip_address: true
-        inject_ovf_env: true
-        properties:
-          ## vm.vmname is hard-coded in the OVF file and referenced by several OVF properties and must be 'VMware_vCenter_Log_Insight' it seems. Deployment fails if setting something else.
-          vm.vmname: "VMware_vCenter_Log_Insight"
-          preferipv6: "False"
-          rootpw: "{{ Nested_vRLI.Credential.root.Password }}"
-          hostname: "{{ Nested_vRLI.FQDN }}"
-          vami.DNS.VMware_vCenter_Log_Insight: "{{ Common.DNS.Server1.IPv4 }}"
-          vami.domain.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
-          vami.gateway.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Address.IPv4.Gateway }}"
-          vami.ip0.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Address.IPv4.Address }}"
-          vami.netmask0.VMware_vCenter_Log_Insight: "{{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) | ipaddr('netmask') }}"
-          vami.searchpath.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
-      when:
-        - Deploy.Product.vRLI == true
-        - vrli_check.status != 200
-        - Target.Deployment == "Host"
+#    - name: Deploy vRLI from OVA to Host
+#      vmware_deploy_ovf:
+#        hostname: "{{ Target.FQDN }}"
+#        username: "{{ Target.User }}"
+#        password: "{{ Target.Password }}"
+#        validate_certs: false
+#        datastore: "{{ Target.Datastore }}"
+#        allow_duplicates: false
+#        folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}{% else %}{{ Target.VMFolder }}{% endif %}"         # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
+#        datacenter: "{{ Target.DataCenter }}"
+#        cluster: "{{ Target.Cluster }}"
+#        name: "{{ Nested_vRLI.VMName }}"
+#        ovf: "{{ Deploy.Software.vRLI.Directory }}/{{ Deploy.Software.vRLI.File }}"
+#        deployment_option: "{{ Nested_vRLI.Deployment.Size }}"
+#        networks:
+#          "Network 1": "{{ Target.PortGroup.Management.Name }}"
+#        disk_provisioning: "{{ Common.DiskProvisioning }}"
+#        power_on: true
+#        wait_for_ip_address: true
+#        inject_ovf_env: true
+#        properties:
+#          ## vm.vmname is hard-coded in the OVF file and referenced by several OVF properties and must be 'VMware_vCenter_Log_Insight' it seems. Deployment fails if setting something else.
+#          vm.vmname: "VMware_vCenter_Log_Insight"
+#          preferipv6: "False"
+#          rootpw: "{{ Nested_vRLI.Credential.root.Password }}"
+#          hostname: "{{ Nested_vRLI.FQDN }}"
+#          vami.DNS.VMware_vCenter_Log_Insight: "{{ Common.DNS.Server1.IPv4 }}"
+#          vami.domain.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
+#          vami.gateway.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Address.IPv4.Gateway }}"
+#          vami.ip0.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Address.IPv4.Address }}"
+#          vami.netmask0.VMware_vCenter_Log_Insight: "{{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) | ipaddr('netmask') }}"
+#          vami.searchpath.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
+#      when:
+#        - Deploy.Product.vRLI == true
+#        - vrli_check.status != 200
+#        - Target.Deployment == "Host"
 
     - name: Start checking if the vRLI Web UI is available
       uri:
