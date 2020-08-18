@@ -25,7 +25,7 @@ This repository contains Ansible scripts that perform fully automated deployment
 * NSX-T Local Manager
 * NSX-T Edge Nodes
 * vRealize Log Insight
-* A DNS Server (multi-Pod)
+* A DNS/NTP Server (multi-Pod)
 
 ![Physicaloverview](images/SDDC-Lab-pod2phys.png)
 
