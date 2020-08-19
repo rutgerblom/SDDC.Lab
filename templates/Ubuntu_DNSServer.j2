@@ -73,6 +73,7 @@ Configuration:
       Daemon:
   Commands:
     - Name: echo '{{ Nested_DNSServer.OS.Credential.User }} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu # Allow user to run sudo without password. Required for successfull post configuration.
+    - Name: apt update && apt upgrade -y
   Directories:
     - Name:  LogDir
       Path: /var/log/named
