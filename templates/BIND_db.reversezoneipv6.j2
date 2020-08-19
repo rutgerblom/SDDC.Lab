@@ -1,5 +1,5 @@
 $TTL 604800     ; 1 week
-{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{40}(.*)$', '\\1') }}  IN SOA  dns.{{ Common.DNS.Domain | lower }}. admin.{{ Common.DNS.Domain | lower }}. (
+{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{36}(.*)$', '\\1') }}  IN SOA  dns.{{ Common.DNS.Domain | lower }}. admin.{{ Common.DNS.Domain | lower }}. (
                 1          ; serial
                 604800     ; refresh (1 week)
                 86400      ; retry (1 day)
@@ -8,4 +8,4 @@ $TTL 604800     ; 1 week
                 )
 
                 NS      dns.{{ Common.DNS.Domain | lower }}.
-$ORIGIN {{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{40}(.*)$', '\\1') }}
+$ORIGIN {{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{36}(.*)$', '\\1') }}

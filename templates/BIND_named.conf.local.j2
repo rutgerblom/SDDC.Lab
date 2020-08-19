@@ -22,7 +22,7 @@ zone "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', 
   allow-transfer { any; };       // Needs to include the IP address of the Ansible control station for utils/showdns
   file "/var/lib/bind/db.{{ Pod.BaseNetwork.IPv4 }}";
 };
-zone "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{40}(.*).$', '\\1') }}" {
+zone "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{36}(.*).$', '\\1') }}" {
   type master;
   allow-update { any; };         // Needs to include the IP address of the Ansible control station
   allow-transfer { any; };       // Needs to include the IP address of the Ansible control station for utils/showdns
