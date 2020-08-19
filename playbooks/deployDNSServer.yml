@@ -159,6 +159,7 @@
       copy: 
         src: "{{ Target.ISOMount }}/"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
+        mode: "666"
       when: 
         - ubuntu_status is failed
         - Deploy.Product.DNSServer == true  
