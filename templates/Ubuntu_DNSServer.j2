@@ -62,7 +62,18 @@ Configuration:
     - Name: net-tools
       Daemon:
     - Name: ntpstat
-      Daemon: 
+      Daemon:
+    - Name: software-properties-common
+      Daemon:
+    - Name: apt-transport-https
+      Daemon:
+    - Name: wget
+      Daemon:
+    - Name: webmin
+      Daemon:
+  Commands:
+    - Name: echo '{{ Nested_DNSServer.OS.Credential.User }} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu # Allow user to run sudo without password. Required for successfull post configuration.
+    - Name: apt update && apt upgrade -y
   Directories:
     - Name:  LogDir
       Path: /var/log/named
