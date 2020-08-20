@@ -224,7 +224,7 @@
 
     - name: IPv6 'PTR' records for Nested_Router
       nsupdate:
-        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     "PTR"
         protocol: "udp"
         record:   "{{ item.value.IPv6.Address | ipaddr('revdns') }}"
