@@ -20,6 +20,12 @@ autoinstall:
               - "{{ Nested_DNSServer.OS.Network.IPv6.DNS }}"
             search: 
               - {{ Common.DNS.Domain }}
+  identity:
+    hostname: {{ Nested_DNSServer.FQDN }}
+    username: {{ Nested_DNSServer.OS.Credential.User }}
+    password: "$6$ryx4qBcSL3V1qKaU$UVKN5KO0gwjUqha0OQkGX8CL/Dbp3NCPo52vEvXO1/2s3NkFcvw540HPWc1g6/7UFEmYEbeRXFdttuguFsvj00" # VMware1!
+  ssh:
+    install-server: yes
   apt:
     sources:
       source1:
@@ -49,12 +55,6 @@ autoinstall:
           /YzvqYwAnj85Ehe8EmnKuor/k/TPtKl4MzDm
           =oxvD
           -----END PGP PUBLIC KEY BLOCK-----
-  identity:
-    hostname: {{ Nested_DNSServer.FQDN }}
-    username: {{ Nested_DNSServer.OS.Credential.User }}
-    password: "$6$ryx4qBcSL3V1qKaU$UVKN5KO0gwjUqha0OQkGX8CL/Dbp3NCPo52vEvXO1/2s3NkFcvw540HPWc1g6/7UFEmYEbeRXFdttuguFsvj00" # VMware1!
-  ssh:
-    install-server: yes
   packages:
 {% for Package in var_UbuntuConfiguration.Configuration.Packages %}
     - {{ Package.Name }}
