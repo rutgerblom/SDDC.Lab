@@ -51,15 +51,17 @@ Configuration:
         FinalDestination: /var/lib/bind/db.{{ Pod.BaseNetwork.IPv4 }}
       - Name: BINDReverseZoneIPv6
         Source: {{ Target.TemplateFolder }}/BIND_db.reversezoneipv6.j2
-        LocalDestination: {{ Target.TempFolder }}/db.{{ Pod.BaseNetwork.IPv6 }}
-        StageDestination: /home/{{ Nested_DNSServer.OS.Credential.User }}/db.{{ Pod.BaseNetwork.IPv6 }}
-        FinalDestination: /var/lib/bind/db.{{ Pod.BaseNetwork.IPv6 }}
+        LocalDestination: {{ Target.TempFolder }}/db.fd
+        StageDestination: /home/{{ Nested_DNSServer.OS.Credential.User }}/db.fd
+        FinalDestination: /var/lib/bind/db.fd
   Packages:
     - Name: dns-server^
       Daemon: named
     - Name: ntp
       Daemon: ntp
     - Name: net-tools
+      Daemon:
+    - Name: bind9-utils
       Daemon:
     - Name: ntpstat
       Daemon:
