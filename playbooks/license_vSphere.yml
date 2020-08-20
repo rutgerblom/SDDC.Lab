@@ -130,6 +130,7 @@
         license: "{{ item.KeyCode }}"
         state: present
       loop: "{{ License.VMware.vCenter.Licenses | default([]) }}"
+      no_log: true
       when:
         - Deploy.Software.vCenter.Version is match( item.Version )
         - LicenseProducts == True
@@ -142,6 +143,7 @@
       set_fact:
         ESXi_Licenses: "{{ (ESXi_Licenses | default([])) + [ item ] }}"
       loop: "{{ License.VMware.ESXi.Licenses | default([]) }}"
+      no_log: true
       when:
         - Deploy.Software.ESXi.Version is match( item.Version )
         - LicenseProducts == True
@@ -175,6 +177,7 @@
         license: "{{ item.License }}"
         state: present
       loop: "{{ HostsToLicense }}"
+      no_log: true
       when: LicenseProducts == True
 
 
@@ -186,6 +189,7 @@
       set_fact:
         vSAN_Licenses: "{{ (vSAN_Licenses | default([])) + [ item ] }}"
       loop: "{{ License.VMware.vSAN.Licenses | default([]) }}"
+      no_log: true
       when:
         - Deploy.Software.vCenter.Version is match( item.Version )
         - LicenseProducts == True
@@ -220,6 +224,7 @@
         license: "{{ item.License }}"
         state: present
       loop: "{{ ClustersToLicense }}"
+      no_log: true
       when:
         - LicenseProducts == True
 
