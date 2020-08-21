@@ -1,0 +1,556 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/validateConfiguration.yml
+##
+##    Purpose: The purpose of this playbook is to try to find configuration and/or environmental issues
+##             early in the deployment process, in the hopes of saving time from failed deployments.
+##
+---
+- hosts: localhost
+  name: validateConfiguration.yml
+  vars:
+    - IssueFound: False
+  tasks:
+
+##
+########################################################################################################################
+##                         Perform basic validation checking of config file settings                                  ##
+########################################################################################################################
+##
+
+##
+## Verify Pod.Number
+##
+    - name: Verifying Pod.Number is within valid range
+      pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Pod.Number must be between 10 and 240 (Inclusive)
+
+             Configured Value: {{ Pod.Number }}
+
+          =================================================================================================
+      when:
+        - Pod.Number < 10 or Pod.Number > 240
+
+    - name: Set flag if issue found with Pod.Number
+      set_fact:
+        IssueFound: true
+      when:
+        - Pod.Number < 10 or Pod.Number > 240
+
+
+##
+## Verify Pod.VLANOffset
+##
+    - name: Verifying Pod.VLANOffset iw within valid range
+      pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Pod.VLANOffset must be between 0 and 3750 (Inclusive)
+
+             Configured Value: {{ Pod.VLANOffset }}
+
+          =================================================================================================
+      when:
+        - Pod.VLANOffset < 0 or Pod.VLANOffset > 3750
+
+    - name: Set flag if issue found with Pod.VLANOffset
+      set_fact:
+        IssueFound: true
+      when:
+        - Pod.VLANOffset < 0 or Pod.VLANOffset > 3750
+
+
+##
+## Verify Deploy.Setting.IPv4
+##
+    - name: Verifying Deploy.Setting.IPv4 is 'True'
+      pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Deploy.Setting.IPv4 must be enabled, as an IPv6 only deployment is not supported
+
+             Configured Value: {{ Deploy.Setting.IPv4 }}
+
+          =================================================================================================
+      when:
+        - Deploy.Setting.IPv4 != true
+
+    - name: Set flag if issue found with Deploy.Setting.IPv4
+      set_fact:
+        IssueFound: true
+      when:
+        - Deploy.Setting.IPv4 != true
+
+
+##
+## Verify Pod.BaseNetwork.IPv6 is 17 characters long and makes a valid /56 prefix
+##
+    - name: Verify Pod.BaseNetwork.IPv6
+      pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Pod.BaseNetwork.IPv6 does not appear to be a valid IPv6 /56 prefix
+
+            Response Received: {{ Pod.BaseNetwork.IPv6 }}
+
+          =================================================================================================
+      when:
+        - Deploy.Setting.IPv6 == true
+        - ( Pod.BaseNetwork.IPv6 | length ) != 17 or ( (Pod.BaseNetwork.IPv6 + '::/56') | ipv6 ) == False
+
+    - name: Set flag if issue found with Pod.BaseNetwork.IPv6
+      set_fact:
+        IssueFound: true
+      when:
+        - Deploy.Setting.IPv6 == true
+        - ( Pod.BaseNetwork.IPv6 | length ) != 17 or ( (Pod.BaseNetwork.IPv6 + '::/56') | ipv6 ) == False
+
+
+##
+## Verify 'Net' prefix values
+##
+    - name: Verifying 'Net' prefix values
+      pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Net.{{ item.key }} has an incorrect prefix set.
+                               IPv4 addresses must have a Prefix value of 24
+                               IPv6 addresses must have a Prefix value of 64
+
+            Configured Values: Net.{{ item.key }}.IPv4.Prefix = {{ item.value.IPv4.Prefix }}
+                               Net.{{ item.key }}.IPv6.Prefix = {{ item.value.IPv6.Prefix }}
+
+          =================================================================================================
+      loop: "{{ Net | dict2items }}"
+      when:
+        - item.value.IPv4.Prefix != 24 or item.value.IPv6.Prefix != 64
+
+    - name: Set flag if issue found with Net Prefix value
+      set_fact:
+        IssueFound: true
+      loop: "{{ Net | dict2items }}"
+      when:
+        - item.value.IPv4.Prefix != 24 or item.value.IPv6.Prefix != 64
+
+
+##
+## Verify Target.Deployment
+##
+    - name: Verify Target.Deployment is valid
+      pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Target.Deployment must be either "vCenter" or "Host"
+
+             Configured Value: {{ Target.Deployment }}
+
+          =================================================================================================
+      when:
+        - Target.Deployment != "vCenter" and Target.Deployment != "Host"
+
+    - name: Set flag if issue found with Target.Deployment
+      set_fact:
+        IssueFound: true
+      when:
+        - Target.Deployment != "vCenter" and Target.Deployment != "Host"
+
+
+##
+## Verify Target.FQDN (Host)
+##
+    - name: Gather information on ESXi Host (Host Deployment)
+      vmware_host_facts:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+      ignore_errors: yes
+      register: Host_Facts
+      when:
+        - Target.Deployment == "Host"
+
+    - name: Verify Target.FQDN is valid for Host deployment
+      pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Unable to communicate with vSphere Host provided via Target.FQDN
+
+             Configured Value: {{ Target.FQDN }}
+
+          =================================================================================================
+      when:
+        - Target.Deployment == "Host"
+        - Host_Facts.failed == true
+
+    - name: Set flag if issue found with Target.FQDN (Host)
+      set_fact:
+        IssueFound: true
+      when:
+        - Target.Deployment == "Host"
+        - Host_Facts.failed == true
+
+
+##
+## Verify Target.FQDN (vCenter) by requesting list of VMs
+##
+    - name: Gather all registered VMs from vCenter Server (vCenter Deployment)
+      vmware_vm_info:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+      ignore_errors: yes
+      register: vCenter_Facts
+      when:
+        - Target.Deployment == "vCenter"
+
+    - name: Verify Target.FQDN is valid for Host deployment
+      pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Unable to obtain VM list from vCenter Server provided via Target.FQDN
+
+             Configured Value: {{ Target.FQDN }}
+
+          =================================================================================================
+      when:
+        - Target.Deployment == "vCenter"
+        - vCenter_Facts.failed == true
+
+    - name: Set flag if issue found with Target.FQDN (vCenter)
+      set_fact:
+        IssueFound: true
+      when:
+        - Target.Deployment == "vCenter"
+        - vCenter_Facts.failed == true
+
+
+##
+## Verify Ansible Control Station can resolve DNS
+##
+    - name: Perform DNS lookup for www.google.com
+      set_fact:
+        dns_succeeded: "{{ lookup('dig', 'www.google.com/A') | ipaddr }}"                                 # This will result in 'False' if an IP is not returned from query
+      when:
+        - Deploy.Setting.UseDNS == true
+
+    - name: Verify we received a DNS response via IPv4
+      pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Ansible Control Station was not able to resolve www.google.com
+
+            Response Received: {{ dns_succeeded }}
+
+          =================================================================================================
+      when:
+        - Deploy.Setting.UseDNS == true
+        - dns_succeeded == False
+
+    - name: Set flag if issue found with DNS lookup of www.google.com
+      set_fact:
+        IssueFound: true
+      when:
+        - Deploy.Setting.UseDNS == true
+        - dns_succeeded == False
+
+
+##
+## Verify vCenter Server installation files exist
+##
+    - name: Check if vCenter Server Installer file exists
+      stat:
+        path: "{{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }}"
+        get_checksum: no
+        get_attributes: no
+        get_mime: no
+        follow: no
+      register: vCenter_Installer
+
+    - name: Verify vCenter Installer exists
+      pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: vCenter Server installer file could not be found at specified path
+
+            Full Path To File: {{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }}
+
+          =================================================================================================
+      when:
+        - vCenter_Installer.stat.isreg is not defined or vCenter_Installer.stat.isreg != true
+
+    - name: Set flag if issue found locating vCenter Server installer file
+      set_fact:
+        IssueFound: true
+      when:
+        - vCenter_Installer.stat.isreg is not defined or vCenter_Installer.stat.isreg != true
+
+
+##
+## Verify vCenter Server Template files exist (vCenter Installation)
+##
+    - name: Check if vCenter Server template file exists (vCenter Installation)
+      stat:
+        path: "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.vCenter }}"
+        get_checksum: no
+        get_attributes: no
+        get_mime: no
+        follow: no
+      register: vCenter_Template
+      when:
+        - Target.Deployment == "vCenter"
+
+    - name: Verify vCenter Server Template file exists (vCenter Installation)
+      pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: vCenter Server template file could not be found at specified path
+
+            Full Path To File: {{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.ESXi }}
+
+          =================================================================================================
+      when:
+        - Target.Deployment == "vCenter"
+        - vCenter_Template.stat.isreg is not defined or vCenter_Template.stat.isreg != true
+
+    - name: Set flag if issue found locating vCenter Server template file (vCenter Installation)
+      set_fact:
+        IssueFound: true
+      when:
+        - vCenter_Template.stat.isreg is not defined or vCenter_Template.stat.isreg != true
+
+
+##
+## Verify vCenter Server Template files exist (Host Installation)
+##
+    - name: Check if vCenter Server template file exists (Host Installation)
+      stat:
+        path: "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.ESXi }}"
+        get_checksum: no
+        get_attributes: no
+        get_mime: no
+        follow: no
+      register: vCenter_Template
+      when:
+        - Target.Deployment == "Host"
+
+    - name: Verify vCenter Server Template file exists (Host Installation)
+      pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: vCenter Server template file could not be found at specified path
+
+            Full Path To File: {{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.ESXi }}
+
+          =================================================================================================
+      when:
+        - Target.Deployment == "Host"
+        - vCenter_Template.stat.isreg is not defined or vCenter_Template.stat.isreg != true
+
+    - name: Set flag if issue found locating vCenter Server template file (Host Installation)
+      set_fact:
+        IssueFound: true
+      when:
+        - Target.Deployment == "Host"
+        - vCenter_Template.stat.isreg is not defined or vCenter_Template.stat.isreg != true
+
+
+##
+## Verify ESXi installation files exist
+##
+    - name: Check if ESXi Installer file exists
+      stat:
+        path: "{{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }}"
+        get_checksum: no
+        get_attributes: no
+        get_mime: no
+        follow: no
+      register: ESXi_Installer
+
+    - name: Verify ESXi Installer exists
+      pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: ESXi installer file could not be found at specified path
+
+            Full Path To File: {{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }}
+
+          =================================================================================================
+      when:
+        - ESXi_Installer.stat.isreg is not defined or ESXi_Installer.stat.isreg != true
+
+    - name: Set flag if issue found locating ESXi installer file
+      set_fact:
+        IssueFound: true
+      when:
+        - ESXi_Installer.stat.isreg is not defined or ESXi_Installer.stat.isreg != true
+
+
+##
+## Verify ESXi Kickstart file exist
+##
+    - name: Check if ESXi Kickstart file exists
+      stat:
+        path: "{{ Target.TemplateFolder }}/{{ Deploy.Software.ESXi.Template }}"
+        get_checksum: no
+        get_attributes: no
+        get_mime: no
+        follow: no
+      register: ESXi_Template
+
+    - name: Verify ESXi Kickstart exists
+      pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: ESXi Kickstart file could not be found at specified path
+
+            Full Path To File: {{ Target.TemplateFolder }}/{{ Deploy.Software.ESXi.Template }}
+
+          =================================================================================================
+      when:
+        - ESXi_Template.stat.isreg is not defined or ESXi_Template.stat.isreg != true
+
+    - name: Set flag if issue found locating ESXi Kickstart file
+      set_fact:
+        IssueFound: true
+      when:
+        - ESXi_Template.stat.isreg is not defined or ESXi_Template.stat.isreg != true
+
+
+##
+## Verify NSX-T installation files exist
+##
+    - name: Check if NSX-T Installer file exists
+      stat:
+        path: "{{ Deploy.Software.NSXT.Directory }}/{{ Deploy.Software.NSXT.File }}"
+        get_checksum: no
+        get_attributes: no
+        get_mime: no
+        follow: no
+      register: NSXT_Installer
+      when: Deploy.Product.NSXT.LocalManager or Deploy.Product.NSXT.GlobalManager
+
+    - name: Verify NSX-T Installer exists
+      pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: NSX-T installer file could not be found at specified path
+
+            Full Path To File: {{ Deploy.Software.NSXT.Directory }}/{{ Deploy.Software.NSXT.File }}
+
+          =================================================================================================
+      when:
+        - Deploy.Product.NSXT.LocalManager or Deploy.Product.NSXT.GlobalManager
+        - NSXT_Installer.stat.isreg is not defined or NSXT_Installer.stat.isreg != true
+
+    - name: Set flag if issue found locating NSX-T installer file
+      set_fact:
+        IssueFound: true
+      when:
+        - Deploy.Product.NSXT.LocalManager or Deploy.Product.NSXT.GlobalManager
+        - NSXT_Installer.stat.isreg is not defined or NSXT_Installer.stat.isreg != true
+
+
+##
+## Verify vRLI installation files exist
+##
+    - name: Check if vRLI Installer file exists
+      stat:
+        path: "{{ Deploy.Software.vRLI.Directory }}/{{ Deploy.Software.vRLI.File }}"
+        get_checksum: no
+        get_attributes: no
+        get_mime: no
+        follow: no
+      register: vRLI_Installer
+      when: Deploy.Product.vRLI
+
+    - name: Verify vRLI Installer exists
+      pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: vRLI installer file could not be found at specified path
+
+            Full Path To File: {{ Deploy.Software.vRLI.Directory }}/{{ Deploy.Software.vRLI.File }}
+
+          =================================================================================================
+      when:
+        - Deploy.Product.vRLI
+        - vRLI_Installer.stat.isreg is not defined or vRLI_Installer.stat.isreg != true
+
+    - name: Set flag if issue found locating vRLI installer file
+      set_fact:
+        IssueFound: true
+      when:
+        - Deploy.Product.vRLI
+        - vRLI_Installer.stat.isreg is not defined or vRLI_Installer.stat.isreg != true
+
+
+##
+## Done With Vaidation Checks
+##
+    - name: Issue found, so tell user to quit and correct issue before re-running
+      pause:
+        seconds: 99999
+        prompt: |
+          =====================================================================================================
+          =========================================  ISSUE(S) FOUND  ==========================================
+          =====================================================================================================
+
+             *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*
+
+          While validating the deployment environment, some issues were found that would most likely cause
+          your Pod deployment to fail during the deploment process.  For that reason, please abort by
+          
+                                    PRESSING CONTROL-C, FOLLOWED BY THE LETTER "A"
+          
+          Once the scripts have been cancelled/aborted, please scroll up and review the issue(s) identified,
+          and correct them.  If changes need to be made to your Config.yml file, you will need to recreate the
+          Pod configuration file via the 'createPodConfig.yml' process.
+          
+             *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*
+
+          =====================================================================================================
+      when:
+        - IssueFound == true
+
+
+##
+########################################################################################################################
+##               At this point, everything looks good, so let's create the new static configuration file              ##
+########################################################################################################################
+##
