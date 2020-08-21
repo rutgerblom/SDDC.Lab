@@ -6,19 +6,10 @@
 ---
 - hosts: localhost
   name: createPodDoc.yml
-
   vars:
-    - PodDocHTML: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Doc.html"
-    - PodDocTemplate: "Pod_Doc.j2"
-
-  vars_prompt:
-
-    - name: DestinationPodDocPath
-      prompt: "In which directory would you like to save the Pod documentation?"
-      unsafe: yes
-      private: no
-      default: "/home/{{ lookup('env','SUDO_USER') }}"
-
+    - LOCAL_PodDocHTML: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Doc.html"
+    - LOCAL_PodDocTemplate: "Pod_Doc.j2"
+    - LOCAL_PodDocDestination: "/home/{{ lookup('env','SUDO_USER') }}"
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -61,8 +52,8 @@
 
                                            Pod.Number: {{ Pod.Number }}
 
-                               Pod Documentation Path: {{ DestinationPodDocPath }}/{{ PodDocHTML }}
-                               Configuration Template: {{ Target.TemplateFolder }}/{{ PodDocTemplate }}
+                               Pod Documentation Path: {{ LOCAL_PodDocDestination }}/{{ LOCAL_PodDocHTML }}
+                               Configuration Template: {{ Target.TemplateFolder }}/{{ LOCAL_PodDocTemplate }}
 
           =================================================================================================
       when:
@@ -78,7 +69,7 @@
 
           Generating the Pod documentation for Pod {{ Pod.Number }}.
 
-               Once generated, it will be saved to {{ DestinationPodDocPath }}/{{ PodDocHTML }}
+               Once generated, it will be saved to {{ LOCAL_PodDocDestination }}/{{ LOCAL_PodDocHTML }}
 
           =====================================================================================================
 
@@ -88,7 +79,7 @@
 
     - name: Write Pod Documentation in HTML format
       template: 
-        src: "{{ Target.TemplateFolder }}/{{ PodDocTemplate }}"
-        dest: "{{ DestinationPodDocPath }}/{{ PodDocHTML }}"
-        mode: 0666
+        src: "{{ Target.TemplateFolder }}/{{ LOCAL_PodDocTemplate }}"
+        dest: "{{ LOCAL_PodDocDestination }}/{{ LOCAL_PodDocHTML }}"
+        mode: "666"
       ignore_errors: true
