@@ -42,7 +42,6 @@ The following are the requirements for successful Pod deployments:
 * If IPv6 deployment is enabled (Deploy.Setting.IPv6 = True):
   * Pod.BaseNetwork.IPv6 must be a fully expanded /56 IPv6 network prefix.  By default, [RFC4193](https://tools.ietf.org/html/rfc4193) ULA fd00::/56 prefix is used.
   * Router Version should be set to "Latest" (default)
-  * Nested_Router.Protocol must be set to "OSPF" (default), as "Static" is not supported
   * It is recommended that the physical layer-3 switch be configured with OSPFv3 enabed on the Lab-Routers segment
   * The Ansible controller must be IPv6 enabled
   * DNS server must be IPv6 enabled
