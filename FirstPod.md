@@ -91,7 +91,7 @@ There are many settings that you ***can*** change, but only a few that you ***mu
 | TargetConfig.Host.PortGroup.RouterUplink | The portgroup that will connect your Pod to your physical network                 | Lab-Routers
 | Nested_Router.Protocol                   | The routing method for routing traffic between your Pod and your physical network | OSPF
 
-Change either your environment or the settings so that they match. 
+Change either your environment or these settings so that they match!
 
 ### licenses.yml (TBD)
 In licenses.yml you store your license keys for the different products. 
