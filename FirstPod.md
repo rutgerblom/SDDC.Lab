@@ -74,10 +74,10 @@ Three files in the root of the SDDC.Lab directory require your attention:
 * licenses_sample.yml
 * software_sample.yml
 
-### config.yml (TBD)
-This file contains all of the configuration and settings for the Pod you're about to deploy. There are many settings that you *can* change, but only a few that you *must* change. The follwing table lists the settings that you *must* change:
+### config.yml
+This file contains all of the configuration and settings for the Pod you're about to deploy. There are many settings that you *can* change, but only a few that you *must* change. The follwing table contains the settings that you *must* change:
 <br>
-| Setting                                  | Description                                                                       | Example Value
+| Setting                                  | Description                                                                       | Example
 | ---                                      | ---                                                                               | ---
 | Common.Password.Physical                 | The root password of your physical ESXi host                                      | VMware1!
 | TargetConfig.Host.FQDN                   | The FQDN of your physical ESXi host                                               | Host32.NetLab.Home
