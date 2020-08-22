@@ -11,7 +11,7 @@
 * [Configure the physical network](#Configure-your-physical-network)
 * [Configure the physical ESXi host](#Configure-the-physical-ESXi-host)
 * [Install the Ansible Controller](#Install-the-Ansible-Controller)
-* [Prepare the configuration files](#Prepare-the-configuration-files)
+* [Prepare the Pod configuration files](#Prepare-the-Pod-configuration-files)
   * [config.yml](#config\.yml)
   * [licenses.yml](#licenses\.yml)
   * [software.yml](#software\.yml)
