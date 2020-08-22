@@ -20,7 +20,7 @@
 * [Start your Pod deployment](#Start-your-Pod-deployment)
 * [Access your Pod's components](#Access-your-Pod's-components)
 
-## Configure your physical network
+## Configure your physical network (TBD)
 
 ## Configure your physical ESXi host
 Currently the scripts supports deploying Pods on a standalone ESXi host. This host must be running ESXi version 6.7 or later. After installing ESXi make sure that you configure the following:
