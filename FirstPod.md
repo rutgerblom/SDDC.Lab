@@ -91,7 +91,7 @@ There are many settings that you ***can*** change, but only a few that you ***mu
 | Common.Password.Physical                 | The root password of your physical ESXi host                                      | VMware1!
 | TargetConfig.Host.FQDN                   | The FQDN of your physical ESXi host                                               | Host32.NetLab.Home
 | TargetConfig.Host.Datastore              | The datastore on your physical ESXi host                                          | Local_VMs
-| TargetConfig.Host.PortGroup.RouterUplink | The portgroup that will connect your Pod to your physical network                 | Lab-Routers
+| TargetConfig.Host.PortGroup.RouterUplink | The portgroup that connects your Pod to your physical network                     | Lab-Routers
 | Nested_Router.Protocol                   | The routing method for routing traffic between your Pod and your physical network | OSPF
 
 Change either your environment or these settings so that they match!
