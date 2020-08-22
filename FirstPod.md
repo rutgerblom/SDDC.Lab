@@ -25,16 +25,16 @@
 ## Configure your physical ESXi host
 Currently the scripts supports deploying Pods on a standalone ESXi host. This host must be running ESXi version 6.7 or later. After installing ESXi make sure that you configure the following:
 
-* A datastore.
-* A portgroup configured with the VLAN ID of the Router Uplink segment. In the default Pod configuration this portgroup is called "Lab-Routers" so giving it that name will save you some time. 
+* A datastore
+* A portgroup configured with the VLAN ID of the Router Uplink segment (e.g. Lab-Routers)
 
 ## Install your Ansible controller
 
 The Ansible controller is the machine from which you will run the Ansible scripts. We recommend installing a modern version of [Ubuntu](https://ubuntu.com/download) on a dedicated virtual machine. This VM can be connected to any VLAN as long as it:
 
 * Can access the physical ESXi host
-* Can reach the Router Uplink segment and the Pod networks behind the [VyOS](https://www.vyos.io/) router.
-* Has Internet access.
+* Can reach the Router Uplink segment and the Pod networks behind the [VyOS](https://www.vyos.io/) router
+* Has Internet access
 
 ### Software
 After you've installed the Ubuntu OS and applied the latest updates, some additional software is required to turn this machine into an Ansible controller for your SDDC.Lab Pods. You can simply copy and paste the commands below. Installation of the additional software will only take some minutes.
@@ -45,7 +45,7 @@ After you've installed the Ubuntu OS and applied the latest updates, some additi
 1. Ansible and the required Python modules:  
 **sudo pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython==1.16.0**
 
-1. And finally you need to clone the SDDC.Lab repository to an appropriate location on your Ubuntu machine (e.g. $HOME) with:  
+1. The SDDC.Lab repository cloned to an appropriate location on your Ubuntu machine (e.g. $HOME) with:  
 **git clone https://github.com/rutgerblom/SDDC.Lab.git**
 
 ## Prepare your Pod configuration files
