@@ -75,7 +75,7 @@ Three files in the root of the SDDC.Lab directory require your attention:
 * software_sample.yml
 
 ### config.yml
-This file contains all of the configuration and settings for the Pod you're about to deploy. There are many settings that you *can* change, but only a few that you *must* change. The follwing table contains the settings that you *must* change:
+This file contains all of the configuration and settings for the Pod you're about to deploy. There are many settings that you *can* change, but only a few that you *must* change. The table below contains the settings that you *must* change:
 <br>
 | Setting                                  | Description                                                                       | Example
 | :---                                     | :---                                                                              | :---
