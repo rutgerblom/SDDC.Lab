@@ -12,9 +12,9 @@
 * [Configure the physical ESXi host](#Configure-the-physical-ESXi-host)
 * [Install the Ansible Controller](#Install-the-Ansible-Controller)
 * [Prepare the configuration files](#Prepare-the-configuration-files)
-  * [config.yml](#licenses.yml)
+  * [config.yml](#config.yml)
   * [licenses.yml](#licenses.yml)
-  * [software.yml](#licenses.yml)
+  * [software.yml](#software.yml)
 * [Create the software library](#Create-the-software-library)
 * [Create the Pod configuration](#Create-the-Pod-configuration)
 * [Start the Pod deployment](#Start-the-Pod-deployment)
@@ -74,8 +74,8 @@ Three files in the root of the SDDC.Lab directory require your attention:
 * licenses_sample.yml
 * software_sample.yml
 
-### config_sample.yml (TBD)
-Start by copying this file to **config.yml**. This file contains all of the configuration and settings for the Pod you're about to deploy. There are many settings that you *can* change, but only a few that you *must* change. The follwing table lists the settings that you *must* change:
+### config.yml (TBD)
+This file contains all of the configuration and settings for the Pod you're about to deploy. There are many settings that you *can* change, but only a few that you *must* change. The follwing table lists the settings that you *must* change:
 <br>
 | Setting                                  | Description                                                                       | Example Value
 | ---                                      | ---                                                                               | ---
@@ -85,6 +85,7 @@ Start by copying this file to **config.yml**. This file contains all of the conf
 | TargetConfig.Host.PortGroup.RouterUplink | The portgroup that connects your Pod to your physical network                     | Lab-Routers
 | Nested_Router.Protocol                   | The routing method for routing traffic between your Pod and your physical network | OSPF
  <br>
+
 ### licenses.yml (TBD)
 In licenses.yml you store your license keys for the different products. 
 cp licenses_sample.yml config.yml
