@@ -116,6 +116,7 @@
       copy:
         src:  "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
+        mode: "666"
         force: yes
       when:
         - InstallerFileCheck.stat.exists == true
