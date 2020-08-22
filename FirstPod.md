@@ -12,9 +12,9 @@
 * [Configure the physical ESXi host](#Configure-the-physical-ESXi-host)
 * [Install the Ansible Controller](#Install-the-Ansible-Controller)
 * [Prepare the configuration files](#Prepare-the-configuration-files)
-  * [config.yml](#config.yml)
-  * [licenses.yml](#licenses.yml)
-  * [software.yml](#software.yml)
+  * [config.yml](#config_yml)
+  * [licenses.yml](#licenses_yml)
+  * [software.yml](#software_yml)
 * [Create the software library](#Create-the-software-library)
 * [Create the Pod configuration](#Create-the-Pod-configuration)
 * [Start the Pod deployment](#Start-the-Pod-deployment)
@@ -73,6 +73,11 @@ Three files in the root of the SDDC.Lab directory require your attention:
 * config_sample.yml
 * licenses_sample.yml
 * software_sample.yml
+
+Start by creating your own copies of the sample configuration files:
+* cp config_sample.yml config.yml
+* cp licenses_sample.yml licenses.yml
+* cp software_sample.yml software.yml
 
 ### config.yml
 This file contains all of the configuration and settings for the Pod you're about to deploy. There are many settings that you *can* change, but only a few that you *must* change. The table below contains the settings that you *must* change:
