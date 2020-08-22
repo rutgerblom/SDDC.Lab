@@ -80,7 +80,10 @@ Start by creating your own copies of the sample configuration files:
 * cp software_sample.yml software.yml
 
 ### config.yml
-This file contains all of the configuration and settings for the Pod you're about to deploy. Its contents are organized in several different sections and data structures.<br>
+This file contains all of the configuration and settings for the Pod you're about to deploy. Its contents are organized in several different sections and data structures.
+<br>
+![config.yml](images/config_yml.png)
+<br>
 There are many settings that you ***can*** change, but only a few that you ***must*** change. Especially when deploying your first Pod we strongly recommend that you keep changes to a minimum. The table below contains the settings that ***must*** match your environment:
 <br>
 | Setting                                  | Description                                                                       | Example
