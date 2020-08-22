@@ -80,8 +80,8 @@ Start by creating your own copies of the sample configuration files:
 * cp software_sample.yml software.yml
 
 ### config.yml
-This file contains all of the configuration and settings for the Pod you're about to deploy. The settings are organized in data structures.  
-There are many settings that you ***can*** change, but only a few that you ***must*** change. When deploying your first Pod we strongly recommend that you keep changes to a minimum. The table below contains the settings that you ***must*** change so that they match your environment:
+This file contains all of the configuration and settings for the Pod you're about to deploy. Its contents are organized in several different sections and data structures.<br>
+There are many settings that you ***can*** change, but only a few that you ***must*** change. Especially when deploying your first Pod we strongly recommend that you keep changes to a minimum. The table below contains the settings that ***must*** match your environment:
 <br>
 | Setting                                  | Description                                                                       | Example
 | :---                                     | :---                                                                              | :---
@@ -90,7 +90,8 @@ There are many settings that you ***can*** change, but only a few that you ***mu
 | TargetConfig.Host.Datastore              | The datastore on your physical ESXi host                                          | Local_VMs
 | TargetConfig.Host.PortGroup.RouterUplink | The portgroup that will connect your Pod to your physical network                 | Lab-Routers
 | Nested_Router.Protocol                   | The routing method for routing traffic between your Pod and your physical network | OSPF
- <br>
+
+Change either your environment or the settings so that they match. 
 
 ### licenses.yml (TBD)
 In licenses.yml you store your license keys for the different products. 
