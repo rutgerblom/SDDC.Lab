@@ -342,6 +342,7 @@
       set_fact:
         IssueFound: true
       when:
+        - Target.Deployment == "vCenter"
         - vCenter_Template.stat.isreg is not defined or vCenter_Template.stat.isreg != true
 
 
@@ -521,7 +522,7 @@
 
 
 ##
-## Done With Vaidation Checks
+## Done With Validation Checks
 ##
     - name: Issue found, so tell user to quit and correct issue before re-running
       pause:
