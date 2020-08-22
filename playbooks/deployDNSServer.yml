@@ -7,7 +7,7 @@
 - hosts: localhost
   name: deployDNSServer.yml
   vars:
-      LOCAL_Ubuntu_Template: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Ubuntu.Template }}"
+      LOCAL_Ubuntu_Template: "{{ Target.TemplateFolder }}/{{ Deploy.Software.DNSServer.Template }}"
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -61,7 +61,7 @@
                                       Target.VMFolder: {{ Target.VMFolder }}
                                     Target.TempFolder: {{ Target.TempFolder }}
 
-                                       Ubuntu Version: {{ Deploy.Software.Ubuntu.Version }}
+                                       Ubuntu Version: {{ Deploy.Software.DNSServer.Version }}
                                           Ubuntu FQDN: {{ Nested_DNSServer.FQDN }}
                                         Ubuntu VMName: {{ Nested_DNSServer.VM.VMName }}
                                           Ubuntu User: {{ Nested_DNSServer.OS.Credential.User }}
@@ -77,8 +77,8 @@
                                Ubuntu Network Netmask: {{ (Nested_DNSServer.OS.Network.IPv4.Address + '/' + Nested_DNSServer.OS.Network.IPv4.Prefix) | ipaddr('netmask') }}
                           Ubuntu Network IPv4 Gateway: {{ Nested_DNSServer.OS.Network.IPv4.Gateway }}
 
-                                    Ubuntu Media Path: {{ Deploy.Software.Ubuntu.Directory }}
-                                    Ubuntu Media File: {{ Deploy.Software.Ubuntu.File }}
+                                    Ubuntu Media Path: {{ Deploy.Software.DNSServer.Directory }}
+                                    Ubuntu Media File: {{ Deploy.Software.DNSServer.File }}
 
 
           =================================================================================================
@@ -132,16 +132,15 @@
         - ubuntu_status is failed
         - Deploy.Product.DNSServer == true
     
-
     - name: Check if Ubuntu ISO file exists locally exists locally in the software repository
       stat:
-        path: "{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}"
+        path: "{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}"
       register: InstallerFileCheck 
 
     - name: Update Ubuntu ISO file in the local software repository (overwrite if exists)
       get_url:
-        url:  "{{ Deploy.Software.Ubuntu.URL }}/{{ Deploy.Software.Ubuntu.File }}"
-        dest: "{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}"
+        url:  "{{ Deploy.Software.DNSServer.URL }}/{{ Deploy.Software.DNSServer.File }}"
+        dest: "{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}"
         force: yes
       when: 
         - (InstallerFileCheck.stat.exists != true) or (Deploy.Software.Options.UseLocalInstaller != true)
@@ -150,7 +149,7 @@
         - Deploy.Product.DNSServer == true 
         
     - name: Mount Ubuntu ISO file
-      action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}" opts=loop fstype=iso9660 state=mounted
+      action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}" opts=loop fstype=iso9660 state=mounted
       when: 
         - ubuntu_status is failed
         - Deploy.Product.DNSServer == true  
@@ -158,7 +157,7 @@
     - name: Copy txt.cfg from Ubuntu ISO
       copy: 
         src: "{{ Target.ISOMount }}/isolinux/txt.cfg"
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/isolinux/"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/isolinux/"
         mode: "666"
       when: 
         - ubuntu_status is failed
@@ -166,7 +165,7 @@
 
     - name: Edit txt.cfg to enable autoinstaller 
       replace:
-        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/isolinux/txt.cfg"
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/isolinux/txt.cfg"
         regexp: 'append   initrd=/casper/initrd quiet  ---'
         replace: 'append   initrd=/casper/initrd quiet --- autoinstall ds=nocloud;s=/cdrom/{{ Common.DNS.Domain }}/'
       when: 
@@ -175,7 +174,7 @@
 
     - name: Create directory to store user-data and meta-data
       file:
-        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/{{ Common.DNS.Domain }}"
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/{{ Common.DNS.Domain }}"
         state: directory
       when: 
         - ubuntu_status is failed
@@ -192,15 +191,15 @@
         - Deploy.Product.DNSServer == true  
 
     - name: Create custom Ubuntu ISO
-      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.File }} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table  {{ Target.ISOMount }}/ {{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
+      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table  {{ Target.ISOMount }}/ {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
       args:
-        chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/"
+        chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
       when: 
         - ubuntu_status is failed
         - Deploy.Product.DNSServer == true
 
     - name: Unmount Ubuntu ISO
-      action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.Ubuntu.Directory }}/{{ Deploy.Software.Ubuntu.File }}" fstype=iso9660 state=absent
+      action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}" fstype=iso9660 state=absent
       when: 
         - ubuntu_status is failed
         - Deploy.Product.DNSServer == true  
@@ -212,9 +211,9 @@
         password: "{{ Target.Password }}"
         validate_certs: no
         datacenter: "{{ Target.DataCenter }}"
-        src: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.File }}" 
+        src: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }}" 
         datastore: "{{ Target.Datastore }}"
-        path: "{{ Target.ISOFolder }}/{{ Deploy.Software.Ubuntu.File }}"
+        path: "{{ Target.ISOFolder }}/{{ Deploy.Software.DNSServer.File }}"
       when: 
         - ubuntu_status is failed
         - Deploy.Product.DNSServer == true  
@@ -244,7 +243,7 @@
             device_type: vmxnet3
         cdrom:
           type: "iso"
-          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Ubuntu.File }}"
+          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.DNSServer.File }}"
         annotation: | 
                     {{ Nested_DNSServer.VM.Annotation }}
                     Username: {{ Nested_DNSServer.OS.Credential.User }}
@@ -399,7 +398,7 @@
 
     - name: Delete local ISO content directory
       file:
-        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}"
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}"
         state: absent
       when: 
         - DEBUG.KeepInstallerFiles != true
@@ -408,7 +407,7 @@
 
     - name: Delete the custom Ubuntu ISO file
       file:
-        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.File }}" 
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }}" 
         state: absent
       when: 
         - DEBUG.KeepInstallerFiles != true

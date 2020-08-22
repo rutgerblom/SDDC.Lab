@@ -12,12 +12,12 @@ Configuration:
         Source: {{ Target.TemplateFolder }}/Ubuntu_user-data.j2
         LocalDestination:
         StageDestination:
-        FinalDestination: {{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/{{ Common.DNS.Domain }}/user-data
+        FinalDestination: {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/{{ Common.DNS.Domain }}/user-data
       - Name: MetaData
         Source: {{ Target.TemplateFolder }}/Ubuntu_meta-data.j2
         LocalDestination:
         StageDestination:
-        FinalDestination: {{ Target.TempFolder }}/{{ Deploy.Software.Ubuntu.Installer }}/{{ Common.DNS.Domain }}/meta-data
+        FinalDestination: {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/{{ Common.DNS.Domain }}/meta-data
     AfterBoot:
       - Name: NetPlan
         Source: {{ Target.TemplateFolder }}/Ubuntu_Netplan.j2
