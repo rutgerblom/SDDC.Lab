@@ -8,27 +8,27 @@
 # Deploying your first SDDC.Lab Pod
 
 ## Table of Contents
-* [Configure the physical network](#Configure-your-physical-network)
-* [Configure the physical ESXi host](#Configure-the-physical-ESXi-host)
-* [Install the Ansible Controller](#Install-the-Ansible-Controller)
-* [Prepare the Pod configuration files](#Prepare-the-Pod-configuration-files)
+* [Configure your physical network](#Configure-your-physical-network)
+* [Configure your physical ESXi host](#Configure-your-physical-ESXi-host)
+* [Install your Ansible Controller](#Install-your-Ansible-Controller)
+* [Prepare your Pod configuration files](#Prepare-your-Pod-configuration-files)
   * [config.yml](#configyml)
   * [licenses.yml](#licensesyml)
   * [software.yml](#softwareyml)
-* [Create the software library](#Create-the-software-library)
-* [Create the Pod configuration](#Create-the-Pod-configuration)
-* [Start the Pod deployment](#Start-the-Pod-deployment)
-* [Access the Pod's components](#Access-the-Pod's-components)
+* [Create your software library](#Create-your-software-library)
+* [Generate your Pod configuration](#Generate-your-Pod-configuration)
+* [Start your Pod deployment](#Start-your-Pod-deployment)
+* [Access your Pod's components](#Access-your-Pod's-components)
 
-## Configure the physical network
+## Configure your physical network
 
-## Configure the physical ESXi host
+## Configure your physical ESXi host
 Currently the scripts supports deploying Pods on a standalone ESXi host. This host must be running ESXi version 6.7 or later. After installing ESXi make sure that you configure the following:
 
 * A datastore.
 * A portgroup configured with the VLAN ID of the Router Uplink segment. In the default Pod configuration this portgroup is called "Lab-Routers" so giving it that name will save you some time. 
 
-## Install the Ansible controller
+## Install your Ansible controller
 
 The Ansible controller is the machine from which you will run the Ansible scripts. We recommend installing a modern version of [Ubuntu](https://ubuntu.com/download) on a dedicated virtual machine. This VM can be connected to any VLAN as long as it:
 
@@ -48,7 +48,7 @@ After you've installed the Ubuntu OS and applied the latest updates, some additi
 1. And finally you need to clone the SDDC.Lab repository to an appropriate location on your Ubuntu machine (e.g. $HOME) with:  
 **git clone https://github.com/rutgerblom/SDDC.Lab.git**
 
-## Prepare the Pod configuration files
+## Prepare your Pod configuration files
 After cloning the repository you will end up with a directory called "SDDC.Lab" with the following contents:
 
     hosts
@@ -99,10 +99,10 @@ cp licenses_sample.yml config.yml
 In software.yml we've defined the poducts and versions that can be deployed with the scripts.
 cp software_sample.yml config.yml
 
-## Create the software library (TBD)
+## Create your software library (TBD)
 
-## Create the Pod configuration (TBD)
+## Generate your Pod configuration (TBD)
 
-## Start the Pod deployment (TBD)
+## Start your Pod deployment (TBD)
 
-## Access the Pod's components (TBD)
+## Access your Pod's components (TBD)
