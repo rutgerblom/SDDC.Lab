@@ -82,19 +82,22 @@ Start by creating your own copies of the sample configuration files:
 ### config.yml
 This file contains all of the configuration and settings for the Pod you're about to deploy. Its contents are organized in several different sections and data structures.
 <br>
-![config.yml](images/config_yml.png)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![config.yml](images/config_yml.png)
 <br>
-There are many settings that you ***can*** change, but only a few that you ***must*** change. Especially when deploying your first Pod we strongly recommend that you keep changes to a minimum. The table below contains the settings that ***must*** match your environment:
-<br>
-| Setting                                  | Description                                                                                                          | Default Value
-| :---                                     | :---                                                                                                                 | :---
-| Common.Password.Physical                 | The root password of your physical ESXi host                                                                         | VMware1!
-| Common.DNS.Server1.IPv4/IPv6             | The IP address of the DNS server to be used by the nested environment. Only change this if Deploy.DNSServer == false | 10.203.0.5
-| Common.NTP.Server1.IPv4/IPv6             | The IP address of the NTP server to be used by the nested environment. Only change this if Deploy.DNSServer == false | 10.203.0.5
-| TargetConfig.Host.FQDN                   | The FQDN of your physical ESXi host                                                                                  | Host32.NetLab.Home
-| TargetConfig.Host.Datastore              | The datastore on your physical ESXi host                                                                             | Local_VMs
-| TargetConfig.Host.PortGroup.RouterUplink | The portgroup that connects your Pod to your physical network                                                        | Lab-Routers
-| Nested_Router.Protocol                   | The routing method for routing traffic between your Pod and your physical network                                    | OSPF
+There are many settings that you ***can*** change, but only a few that you ***must*** change. Especially when deploying your first Pod we strongly recommend that you keep changes to a minimum.
+
+- The table below contains the settings that ***must*** match your environment:
+
+    | Setting                                  | Description                                                                                                          | Default Value
+    | :---                                     | :---                                                                                                                 | :---
+    | Common.Password.Physical                 | The root password of your physical ESXi host                                                                         | VMware1!
+    | Common.DNS.Server1.IPv4/IPv6             | The IP address of the DNS server to be used by the nested environment. Only change this if Deploy.DNSServer == false | 10.203.0.5
+    | Common.NTP.Server1.IPv4/IPv6             | The IP address of the NTP server to be used by the nested environment. Only change this if Deploy.DNSServer == false | 10.203.0.5
+    | TargetConfig.Host.FQDN                   | The FQDN of your physical ESXi host                                                                                  | Host32.NetLab.Home
+    | TargetConfig.Host.Datastore              | The datastore on your physical ESXi host                                                                             | Local_VMs
+    | TargetConfig.Host.PortGroup.RouterUplink | The portgroup that connects your Pod to your physical network                                                        | Lab-Routers
+    | Nested_Router.Protocol                   | The routing method for routing traffic between your Pod and your physical network                                    | OSPF
 
 Change either your environment or these settings so that they match!
 
