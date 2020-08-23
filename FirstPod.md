@@ -81,10 +81,12 @@ Start by creating your own copies of the sample configuration files:
 
 ### config.yml
 This file contains all of the configuration and settings for the Pod you're about to deploy. Its contents are organized in several different sections and data structures.
+
 <br>
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![config.yml](images/config_yml.png)
 <br>
+
 There are many settings that you ***can*** change, but only a few that you ***must*** change. Especially when deploying your first Pod we strongly recommend that you keep changes to a minimum.
 
 - The table below contains the settings that ***must*** match your environment:
@@ -103,10 +105,12 @@ Change either your environment or these settings so that they match.
 
 ### licenses.yml
 Licenses.yml contains the licenses that you want to assign to the software within the Pod. Just like config.yml this file is organized in a data structure.
+
 <br>
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![licenses.yml](images/licenses_yml.png)
 <br>
+
 The file contains many example entries which you are free to change or remove. A typical licenses.yml might look something like this:
 
     ---
@@ -161,11 +165,86 @@ The file contains many example entries which you are free to change or remove. A
 Are license keys required? Only for NSX-T. The other components will deploy fine without license keys and are operational for a limited amount of time.<br>
 NSX-T license keys can be obtained via [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval).
 
-### software.yml (TBD)
-In software.yml we've defined the poducts and versions that can be deployed with the scripts.
-cp software_sample.yml config.yml
+### software.yml
+Software.yml contains a data structure with the software that can currently be deployed using the scripts. It's used by most of the Ansible scripts as well. The directory structure of the [software library](#Create-your-software-library) is based on the entries in this file.<br> 
+You would normally not make any changes to this file and even more so when you're deploying your first Pod. Leave it as it is.
+
+<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![software.yml](images/software_yml.png)
+<br>
 
 ## Create your software library (TBD)
+Now that your configuration files have been prepared, you can continue with creating the software library. The first thing you need to do is create the software library's directory structure. We've created an Ansible script that does this for you:
+
+**sudo ansible-playbook utils/util_CreateSoftwareDir.yml**
+
+This creates an empty directory structure at /Software on your Ansible controller that will look something like this:
+
+    /Software/
+    ├── Ubuntu
+    │   └── Server
+    │       └── v20.04.1
+    ├── VMware
+    │   ├── ESXi
+    │   │   ├── v6.7.0U3B
+    │   │   ├── v7.0.0
+    │   │   └── v7.0.0B
+    │   ├── NSX-T
+    │   │   ├── v3.0.0
+    │   │   ├── v3.0.1
+    │   │   └── v3.0.1.1
+    │   ├── vCenter
+    │   │   ├── v6.7.0U3B
+    │   │   ├── v6.7.0U3G
+    │   │   ├── v7.0.0
+    │   │   ├── v7.0.0A
+    │   │   ├── v7.0.0B
+    │   │   └── v7.0.0C
+    │   └── vRLI
+    │       └── v8.1.1
+    └── VyOS
+        └── Router
+            ├── Latest
+            └── v1.1.8
+
+The next step is to populate the directories with installation media. Some deployment scripts will download the installation media for you when it's missing from the software library. Currently both Ubuntu Server and VyOS Router are downloaded when missing. VMware products always need to be downloaded by you.
+
+
+In **config.yml** under **Deploy.Software** you can see (and change) which version of a particular software is going to be deployed and thus needs to be downloaded. The default is to deploy the latest supported combination of versions. For your first Pod we recommend that you leave it like that.
+
+A populated software library could look something like this:
+
+    /Software/
+    ├── Ubuntu
+    │   └── Server
+    │       └── v20.04.1
+    ├── VMware
+    │   ├── ESXi
+    │   │   ├── v6.7.0U3B
+    │   │   ├── v7.0.0
+    │   │   └── v7.0.0B
+    │   │       └── VMware-VMvisor-Installer-7.0b-16324942.x86_64.iso
+    │   ├── NSX-T
+    │   │   ├── v3.0.0
+    │   │   ├── v3.0.1
+    │   │   └── v3.0.1.1
+    │   │       └── nsx-unified-appliance-3.0.1.1.0.16556500.ova
+    │   ├── vCenter
+    │   │   ├── v6.7.0U3B
+    │   │   ├── v6.7.0U3G
+    │   │   ├── v7.0.0
+    │   │   ├── v7.0.0A
+    │   │   ├── v7.0.0B
+    │   │   └── v7.0.0C
+    │   │       └── VMware-VCSA-all-7.0.0-16620007.iso
+    │   └── vRLI
+    │       └── v8.1.1
+    │           └── VMware-vRealize-Log-Insight-8.1.1.0-16281169_OVF10.ova
+    └── VyOS
+        └── Router
+            ├── Latest
+            └── v1.1.8
 
 ## Generate your Pod configuration (TBD)
 
