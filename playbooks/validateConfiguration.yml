@@ -249,7 +249,7 @@
 ##
     - name: Perform DNS lookup for www.google.com
       set_fact:
-        dns_succeeded: "{{ lookup('dig', 'www.google.com/A') | ipaddr }}"                                 # This will result in 'False' if an IP is not returned from query
+        dns_succeeded: "{{ lookup('dig', 'www.google.com./A') | ipaddr }}"                                 # This will result in 'False' if an IP is not returned from query
       when:
         - Deploy.Setting.UseDNS == true
 
