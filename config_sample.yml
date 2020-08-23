@@ -17,7 +17,7 @@ Pod:
   VLANOffset: 0                                           # VLANOffset - This number added to Net.<SegmentName>.VLAN variable, which will move the POD VLAN up by this amount
   BaseNetwork:
     IPv4: '10.203'                                        # IPv4 BaseNetwork must be the first two octets of the IPv4 address space used by the nested environment.
-    IPv6: "fd00:0000:0000:00"                             # IPv6 BaseNetwork must be a fully expanded /56 prefix.  All nested IPv6 networks build off of this IPv6 base network.
+    IPv6: fd00:0000:0000:00                               # IPv6 BaseNetwork must be a fully expanded /56 prefix.  All nested IPv6 networks build off of this IPv6 base network.
 
 
 Deploy:
@@ -91,10 +91,10 @@ Deploy:
 ##
 Common:
   Password:
-    Nested:   "VMware1!"
-    Physical: "VMware1!"
+    Nested:   VMware1!
+    Physical: VMware1!
   DNS:
-    Domain: "SDDC.Lab"                                                      # Domain - Default DNS Domain used by all nested components.
+    Domain: SDDC.Lab                                                      # Domain - Default DNS Domain used by all nested components.
     Server1:
       IPv4: "{{ Net.RouterUplink.IPv4.Network }}.5"                         # Replace this IP if using a different DNS server than the suggested .5  server in the Router Uplink segment (MUST support Dynamic DNS Updates)
       IPv6: "{{ Net.RouterUplink.IPv6.Network }}::{{ '%04x'|format(5) }}"   # Replace this IP if using a different DNS server than the suggested ::5 server in the Router Uplink segment (MUST support Dynamic DNS Updates)
@@ -113,38 +113,38 @@ Common:
     Port: 514
     IPv4: "{{ Net.Management.IPv4.Network }}.6"                             # Replace with your IP address if Deploy.Product.vRLI == false
     IPv6: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(6) }}"       # Replace with your IP address if Deploy.Product.vRLI == false
-  DiskProvisioning: "thin"
+  DiskProvisioning: thin
   NFS:                                                                      # NFS - The NFS settings below refer to a NFS share that can be used by the NESTED ESXi hosts for storage, and has nothing to do with physical ESXi server(s).  If possible, we suggest using vSAN storage on the nested ESXi hosts, which are backed by local physical storage.
     Server:
-      IPv4: "192.168.0.12"
+      IPv4: 192.168.0.12
       IPv6: 
     Datastore: nfs01
-    Path: "/nested_nfs01"
+    Path: /nested_nfs01
     Type: nfs
-  Annotation: "*** Auto-Deployed by SDDC.Lab ***"
+  Annotation: '*** Auto-Deployed by SDDC.Lab ***'
 
 
 ##
 ## Users should specify their deployment target settings in the 'TargetConfig' section
 ##
 TargetConfig:
-  Deployment: "Host"                                                          # Deployment - Valid options are "Host" or "vCenter", and controls if the physical installation target is vCenter or a single ESXi Host.
+  Deployment: Host                                                            # Deployment - Valid options are "Host" or "vCenter", and controls if the physical installation target is vCenter or a single ESXi Host.
   Host:                                                                       # Settings used when "Host" deployment is chosen (TargetConfig.Deployment == "Host")
-    FQDN: "Host32.NetLab.Home"                                                # FQDN - The FQDN of your physical ESXi host.  IMPORTANT: The FQDN listed here must EXACTLY match the output of the "hostname" CLI command on the ESXi server.
-    User: "root"
+    FQDN: Host32.NetLab.Home                                                  # FQDN - The FQDN of your physical ESXi host.  IMPORTANT: The FQDN listed here must EXACTLY match the output of the "hostname" CLI command on the ESXi server.
+    User: root
     Password: "{{ Common.Password.Physical }}"
     vSwitch: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"
-    vSwitchVersion: ""
-    DataCenter: "ha-datacenter"
-    Cluster: ""
-    Datastore: "Local_VMs"                                                    # Datastore - The datastore connected to your physicsal ESXi host
-    VMFolder: "ha-datacenter/vm"
-    ISOFolder: "/SDDCLab-ISO-Folder"
+    vSwitchVersion: ''
+    DataCenter: ha-datacenter
+    Cluster: ''
+    Datastore: Local_VMs                                                      # Datastore - The datastore connected to your physicsal ESXi host
+    VMFolder: ha-datacenter/vm
+    ISOFolder: /SDDCLab-ISO-Folder
     ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"
     TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"
-    TemplateFolder: "../templates"
+    TemplateFolder: ../templates
     PortGroup:
-      RouterUplink: "Lab-Routers"                                             # RouterUplink - The portgroup for your Router Uplink segment 
+      RouterUplink: Lab-Routers                                               # RouterUplink - The portgroup for your Router Uplink segment 
       Management:
         Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt"
         VLAN: "{{ Net.Management.VLAN }}"
@@ -152,21 +152,21 @@ TargetConfig:
         Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Trunk"
         VLAN: 4095
   vCenter:                                                                    # Settings used when "vCenter" deployment is chosen (TargetConfig.Deployment == "vCenter")
-    FQDN: "NetLab-vCenter.NetLab.Local"                                       # FQDN - The FQDN to your physical vCenter Server
-    User: "administrator@vsphere.local"                                       # User - vCenter Server user account
+    FQDN: NetLab-vCenter.NetLab.Local                                         # FQDN - The FQDN to your physical vCenter Server
+    User: administrator@vsphere.local                                         # User - vCenter Server user account
     Password: "{{ Common.Password.Physical }}"                                # Password - Password used by User to authenticate to the physical vCenter Server
-    vSwitch: "SDDCLab_vDS"                                                    # vSwitch - Name of the vDS which is automatically provisioned by the playbooks, and where all the Pod Port-Groups are crated
+    vSwitch: SDDCLab_vDS                                                      # vSwitch - Name of the vDS which is automatically provisioned by the playbooks, and where all the Pod Port-Groups are crated
     vSwitchVersion: 6.6.0                                                     # vSwitchVersion - vDS version used for the given vSwitch
-    DataCenter: "SDDC"                                                        # DataCenter - Defines under which DataCenter object the lab Pod's are deployed
-    Cluster: "Lab-Cluster"                                                    # Cluster - Defines which vSphere cluster within DataCenter the lab Pod's are deployed
-    Datastore: "Shared_VMs"                                                   # Datastore - Defines Which datastore should the nested lab Pod VMs be placed
+    DataCenter: SDDC                                                          # DataCenter - Defines under which DataCenter object the lab Pod's are deployed
+    Cluster: Lab-Cluster                                                      # Cluster - Defines which vSphere cluster within DataCenter the lab Pod's are deployed
+    Datastore: Shared_VMs                                                     # Datastore - Defines Which datastore should the nested lab Pod VMs be placed
     VMFolder: "SDDC Labs/Pod-{{ '%03d'|format(Pod.Number|int) }}"             # VMFolder - Deployed lab Pod VMs are placed within this VMFolder
-    ISOFolder: "/SDDCLab-ISO-Folder"                                          # ISOFolder - Directory created within Datastore where custom created ISOs are placed as part of the nested lab deployment
+    ISOFolder: /SDDCLab-ISO-Folder                                            # ISOFolder - Directory created within Datastore where custom created ISOs are placed as part of the nested lab deployment
     ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"            # ISOMount - Pod specific mount point for ISO images
     TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"                # TempFolder - Temporary folder location used for temporary files created during the deployment process
-    TemplateFolder: "../templates"                                            # TemplateFolder - The location of the "templates" folder, relative to teh "playbooks" directory
+    TemplateFolder: ../templates                                              # TemplateFolder - The location of the "templates" folder, relative to teh "playbooks" directory
     PortGroup:                                                                # Various PortGroups used during deployment
-      RouterUplink: "Lab-Routers"                                             # RouterUplink - PortGroup which the VyOS lab Pod router attaches it's northbound/outside interface to.
+      RouterUplink: Lab-Routers                                               # RouterUplink - PortGroup which the VyOS lab Pod router attaches it's northbound/outside interface to.
       Management:                                                             # Management PortGroup Information
         Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt"                  # Name - Pod specific Management PortGroup name
         VLAN: "{{ Net.Management.VLAN }}"                                     # VLAN - Pod specific Management VLAN
@@ -306,7 +306,7 @@ Net:
 
 Nested_Router:
   Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Router"
-  Protocol: "OSPF"                                                    # Protocol - Options include "OSPF" or "Static"
+  Protocol: OSPF                                                      # Protocol - Options include "OSPF" or "Static"
   Interface:
     Uplink:
       PortGroup: "{{ Target.PortGroup.RouterUplink }}"
@@ -519,7 +519,7 @@ Nested_Clusters:
     vSAN: true
     vsanDatastore: Compute-A_vSAN
     Prep_NSX: true
-    NSXT_TransportNodeProfile: "TNP-ESXi-Hosts"
+    NSXT_TransportNodeProfile: TNP-ESXi-Hosts
     DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
   Edge:
     DRS: true
@@ -1225,7 +1225,7 @@ Nested_vCenter:
     CEIP:
       Answer: true
       Enabled: false
-  User: "administrator@vsphere.local"
+  User: administrator@vsphere.local
   Password: "{{ Common.Password.Nested }}"
   DeploymentSize: small
   VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vCenter"
@@ -1406,7 +1406,7 @@ Nested_NSXT:
       FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT-CSM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.15{% endif %}"
       Deployment:
         Size: small
-        role: "nsx-cloud-service-manager"
+        role: nsx-cloud-service-manager
         EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
         AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
       Address:
@@ -1420,19 +1420,19 @@ Nested_NSXT:
 
   Networking:
     Tier0Gateways:
-      - Name:         "T0-Gateway-01"
-        Description:  "Tier-0 Gateway for SDDC.Lab"
-        HA_Mode:      "ACTIVE_ACTIVE"                                      # Options are "ACTIVE_ACTIVE" or "ACTIVE_STANDBY"
-        FailoverMode: "NON_PREEMPTIVE"                                     # Options are "NON_PREEMPTIVE" or "PREEMPTIVE"
+      - Name:         T0-Gateway-01
+        Description:  Tier-0 Gateway for SDDC.Lab
+        HA_Mode:      ACTIVE_ACTIVE                                      # Options are "ACTIVE_ACTIVE" or "ACTIVE_STANDBY"
+        FailoverMode: NON_PREEMPTIVE                                     # Options are "NON_PREEMPTIVE" or "PREEMPTIVE"
         Tags:
-          - Tag: "Auto-Created"
-            Scope: "SDDC.Lab"
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
         LocaleServices:
           - Name:        "T0-Gateway-01_Locale_Services"
             Description: "T0-Gateway-01 Locale Services Description"
             Tags:
-              - Tag: "Auto-Created"
-                Scope: "SDDC.Lab"
+              - Tag: Auto-Created
+                Scope: SDDC.Lab
             EdgeCluster:
               Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
             RouteRedistributionConfig:
@@ -1520,8 +1520,8 @@ Nested_NSXT:
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
               Tags:
-                - Tag: "Auto-Created"
-                  Scope: "SDDC.Lab"
+                - Tag: Auto-Created
+                  Scope: SDDC.Lab
               EdgeNodeInfo:
                 EdgeClusterName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
                 EdgeNodeName:    "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
@@ -1536,8 +1536,8 @@ Nested_NSXT:
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
               Tags:
-                - Tag: "Auto-Created"
-                  Scope: "SDDC.Lab"
+                - Tag: Auto-Created
+                  Scope: SDDC.Lab
               EdgeNodeInfo:
                 EdgeClusterName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
                 EdgeNodeName:    "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
@@ -1552,8 +1552,8 @@ Nested_NSXT:
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
               Tags:
-                - Tag: "Auto-Created"
-                  Scope: "SDDC.Lab"
+                - Tag: Auto-Created
+                  Scope: SDDC.Lab
               EdgeNodeInfo:
                 EdgeClusterName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
                 EdgeNodeName:    "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
@@ -1568,8 +1568,8 @@ Nested_NSXT:
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
               Tags:
-                - Tag: "Auto-Created"
-                  Scope: "SDDC.Lab"
+                - Tag: Auto-Created
+                  Scope: SDDC.Lab
               EdgeNodeInfo:
                 EdgeClusterName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
                 EdgeNodeName:    "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
@@ -1580,22 +1580,22 @@ Nested_NSXT:
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
 
     Tier1Gateways:
-      - Name:           "T1-Gateway-01"
-        Description:    "Tier-1 Gateway for SDDC.Lab"
-        FailoverMode:   "NON_PREEMPTIVE"                                # Options are "NON_PREEMPTIVE" or "PREEMPTIVE"
-        Tier0Gateway:   "T0-Gateway-01"
-        PoolAllocation: "ROUTING"
+      - Name:           T1-Gateway-01
+        Description:    Tier-1 Gateway for SDDC.Lab
+        FailoverMode:   NON_PREEMPTIVE                                # Options are "NON_PREEMPTIVE" or "PREEMPTIVE"
+        Tier0Gateway:   T0-Gateway-01
+        PoolAllocation: ROUTING
         Tags:
-          - Tag: "Auto-Created"
-            Scope: "SDDC.Lab"
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
         RouteAdvertisementTypes:
           - TIER1_CONNECTED
         LocaleServices:
-          - Name:        "T1-Gateway-01_Locale_Services"
-            Description: "T1-Gateway-01 Locale Services Description"
+          - Name:        T1-Gateway-01_Locale_Services
+            Description: T1-Gateway-01 Locale Services Description
             Tags:
-              - Tag: "Auto-Created"
-                Scope: "SDDC.Lab"
+              - Tag: Auto-Created
+                Scope: SDDC.Lab
             EdgeCluster:
               Name: ""
             RouteRedistributionConfig:
@@ -1610,10 +1610,10 @@ Nested_NSXT:
       - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
         Description: IP Pool for TEPs
         Tags:
-          - Tag: "Auto-Created"
-            Scope: "SDDC.Lab"
-          - Tag: "Second-Tag-For-Testing"
-            Scope: "SDDC.Lab"
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
+          - Tag: Second-Tag-For-Testing
+            Scope: SDDC.Lab
         Allocations:
           - Description: IP Pool for TEPs
             Prefix:  "{{ Net.Transport.IPv4.Prefix }}"
@@ -1627,8 +1627,8 @@ Nested_NSXT:
       - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-RTEP-Pool"
         Description: IP Pool for Remote TEPs
         Tags:
-          - Tag: "Auto-Created"
-            Scope: "SDDC.Lab"
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
         Allocations:
           - Description: IP Pool for Remote TEPs
             Prefix:  "{{ Net.RTEP.IPv4.Prefix }}"
@@ -1642,8 +1642,8 @@ Nested_NSXT:
       - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Test-Pool"
         Description: IP Test Pool with both IPv4 and IPv6 Allocations
         Tags:
-          - Tag: "Auto-Created"
-            Scope: "SDDC.Lab"
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
         Allocations:
           - Description: "IPv6 Test Address Range"
             Prefix:  "{{ Net.VMNetwork.IPv6.Prefix }}"
@@ -1675,73 +1675,73 @@ Nested_NSXT:
     Segments:
       - Name: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
         AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
-        Description: "NSX T0-Edge Uplink 1"
-        TransportZone: "TZ-Edge"
+        Description: NSX T0-Edge Uplink 1
+        TransportZone: TZ-Edge
         ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
         VLANS:
           - "{{ Net.NSXEdgeUplink1.VLAN }}"
         Tags:
-          - Tag: "Auto-Created"
-            Scope: "SDDC.Lab"
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
       - Name: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
         AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
-        Description: "NSX T0-Edge Uplink 2"
-        TransportZone: "TZ-Edge"
+        Description: NSX T0-Edge Uplink 2
+        TransportZone: TZ-Edge
         ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
         VLANS:
           - "{{ Net.NSXEdgeUplink2.VLAN }}"
         Tags:
-          - Tag: "Auto-Created"
-            Scope: "SDDC.Lab"
-      - Name: "SEG-Web"
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
+      - Name: SEG-Web
         AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
         Description: Web Segment
-        TransportZone: "TZ-Overlay"
+        TransportZone: TZ-Overlay
         ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
         ConnectedTo:
           Tier: 1
-          GatewayName: "T1-Gateway-01"
+          GatewayName: T1-Gateway-01
         Subnets:
-          - GatewayCIDR: "1.1.1.1/24"
-          - GatewayCIDR: "fd00:a:a::1/64"
+          - GatewayCIDR: 1.1.1.1/24
+          - GatewayCIDR: fd00:a:a::1/64
         VLANS:
         Tags:
-          - Tag: "Auto-Created"
-            Scope: "SDDC.Lab"
-      - Name: "SEG-App"
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
+      - Name: SEG-App
         AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
         Description: App Segment
-        TransportZone: "TZ-Overlay"
+        TransportZone: TZ-Overlay
         ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
         ConnectedTo:
           Tier: 1
-          GatewayName: "T1-Gateway-01"
+          GatewayName: T1-Gateway-01
         Subnets:
-          - GatewayCIDR: "1.1.2.1/24"
-          - GatewayCIDR: "fd00:a:b::1/64"
+          - GatewayCIDR: 1.1.2.1/24
+          - GatewayCIDR: fd00:a:b::1/64
         VLANS:
         Tags:
           - Tag:
             Scope:
-      - Name: "SEG-DB"
+      - Name: SEG-DB
         AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
         Description: DB Segment
-        TransportZone: "TZ-Overlay"
+        TransportZone: TZ-Overlay
         ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
         ConnectedTo:
           Tier: 1
-          GatewayName: "T1-Gateway-01"
+          GatewayName: T1-Gateway-01
         Subnets:
-          - GatewayCIDR: "1.1.3.1/24"
-          - GatewayCIDR: "fd00:a:c::1/64"
+          - GatewayCIDR: 1.1.3.1/24
+          - GatewayCIDR: fd00:a:c::1/64
         VLANS:
         Tags:
-          - Tag: "Auto-Created"
-            Scope: "SDDC.Lab"
-      - Name: "SEG-Example-Complicated-VLAN-Segment"
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
+      - Name: SEG-Example-Complicated-VLAN-Segment
         AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
-        Description: "Example Test Segment with many VLANs and Tags"
-        TransportZone: "TZ-VLAN"
+        Description: Example Test Segment with many VLANs and Tags
+        TransportZone: TZ-VLAN
         ReplicationMode: SOURCE                                                  # ReplicationMode can be "MTEP" or "SOURCE"
         VLANS:
           - "{{ Net.NSXEdgeUplink2.VLAN }}"
@@ -1751,28 +1751,28 @@ Nested_NSXT:
           - 102
           - 103
           - 104
-          - "105-110"
+          - 105-110
         Tags:
-          - Tag: "Auto-Created"
-            Scope: "SDDC.Lab"
-          - Tag: "Mickey"
-            Scope: "Disney"
-      - Name: "SEG-Example-Overlay-Without-VLANS"
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
+          - Tag: Mickey
+            Scope: Disney
+      - Name: SEG-Example-Overlay-Without-VLANS
         AdminState: UP                                                           # AdminState can be "UP" or "DOWN"
         Description: Example Overlay Segment without VLAN
-        TransportZone: "TZ-Overlay"
+        TransportZone: TZ-Overlay
         ReplicationMode: MTEP                                                    # ReplicationMode can be "MTEP" or "SOURCE"
         ConnectedTo:
           Tier: 0
-          GatewayName: "T0-Gateway-01"
+          GatewayName: T0-Gateway-01
         Subnets:
-          - GatewayCIDR: "1.1.4.1/24"
-          - GatewayCIDR: "fd00:a:d::1/64"
+          - GatewayCIDR: 1.1.4.1/24
+          - GatewayCIDR: fd00:a:d::1/64
         Tags:
-          - Tag: "Auto-Created"
-            Scope: "SDDC.Lab"
-          - Tag: "Donald"
-            Scope: "Disney"
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
+          - Tag: Donald
+            Scope: Disney
 
   System:
     Fabric:
@@ -1780,111 +1780,111 @@ Nested_NSXT:
         TZ-VLAN:
           Type: VLAN
           Description:
-          Switch: "NVDS-1"
+          Switch: NVDS-1
           TeamingPolicies: []
         TZ-Edge:
           Type: VLAN
           Description: Edge Cluster Peering Segments
-          Switch: "NVDS-1"
+          Switch: NVDS-1
           TeamingPolicies: []
         TZ-Overlay:
           Type: OVERLAY
           Description: GEVEVE Overlay Transport Zone
-          Switch: "NVDS-1"
+          Switch: NVDS-1
           TeamingPolicies: []
 
       Profile:
         UplinkProfiles:
-          - Name: "ESXi-Uplink-Profile"
+          - Name: ESXi-Uplink-Profile
             Description: ESXi Host Transport Node Uplink Profile
             Transport:
               VLAN: "{{ Net.Transport.VLAN }}"
               MTU:  9000
             DefaultTeaming:
-              Policy: "LOADBALANCE_SRCID"                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
+              Policy: LOADBALANCE_SRCID                          # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
               ActiveUplinks:
-                - Name: "uplink-1"
-                  Type: "PNIC"
-                - Name: "uplink-2"
-                  Type: "PNIC"
-          - Name: "Edge-Uplink-Profile"
+                - Name: uplink-1
+                  Type: PNIC
+                - Name: uplink-2
+                  Type: PNIC
+          - Name: Edge-Uplink-Profile
             Description: Edge Transport Node Uplink Profile
             Transport:
               VLAN: "{{ Net.Transport.VLAN }}"
               MTU:  9000
             DefaultTeaming:
-              Policy: "LOADBALANCE_SRCID"                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
+              Policy: LOADBALANCE_SRCID                          # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
               ActiveUplinks:
-                - Name: "uplink-1"
-                  Type: "PNIC"
-                - Name: "uplink-2"
-                  Type: "PNIC"
-          - Name: "Sample-Uplink-Profile"
+                - Name: uplink-1
+                  Type: PNIC
+                - Name: uplink-2
+                  Type: PNIC
+          - Name: Sample-Uplink-Profile
             Description: Sample Uplink Profile
             Transport:
               VLAN: "{{ Net.Transport.VLAN }}"
               MTU:  9000
             DefaultTeaming:
-              Policy: "LOADBALANCE_SRCID"                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
+              Policy: LOADBALANCE_SRCID                          # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
               ActiveUplinks:
-                - Name: "uplink-1"
-                  Type: "PNIC"
-                - Name: "uplink-2"
-                  Type: "PNIC"
+                - Name: uplink-1
+                  Type: PNIC
+                - Name: uplink-2
+                  Type: PNIC
             NamedTeamings:
               - Name: NTP_SampleFailOver
-                Policy: "FAILOVER_ORDER"
+                Policy: FAILOVER_ORDER
                 ActiveUplinks:
-                  - Name: "uplink-1"
-                    Type: "PNIC"
+                  - Name: uplink-1
+                    Type: PNIC
                 StandbyUplinks:
-                  - Name: "uplink-2"
-                    Type: "PNIC"
+                  - Name: uplink-2
+                    Type: PNIC
 
         TransportNodeProfiles:
-          - Name: "TNP-ESXi-Hosts"
+          - Name: TNP-ESXi-Hosts
             Description: ESXi Transport Node Profile
             HostSwitches:
               - Name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
                 Mode: STANDARD
-                Type: "VDS"
+                Type: VDS
                 TransportZones:
-                  - Name: "TZ-Overlay"
-                  - Name: "TZ-VLAN"
+                  - Name: TZ-Overlay
+                  - Name: TZ-VLAN
                 UplinkProfile:
-                  Name: "ESXi-Uplink-Profile"
+                  Name: ESXi-Uplink-Profile
                 IPPool:
                   Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
-                  Type: "StaticIpPoolSpec"
+                  Type: StaticIpPoolSpec
                 Uplinks:
-                  - NSXUplinkName: "uplink-1"
-                    VDSUplinkName: "Uplink 1"
-                  - NSXUplinkName: "uplink-2"
-                    VDSUplinkName: "Uplink 2"
+                  - NSXUplinkName: uplink-1
+                    VDSUplinkName: Uplink 1
+                  - NSXUplinkName: uplink-2
+                    VDSUplinkName: Uplink 2
 
       Nodes:
         EdgeTransportNodes:
           - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
-            Description: "Tier-0 Edge Transport Node"
+            Description: Tier-0 Edge Transport Node
             HostSwitches:
-              - Name: "NVDS-1"
+              - Name: NVDS-1
                 Mode: STANDARD
                 TransportZones:
-                  - Name: "TZ-Edge"
-                  - Name: "TZ-Overlay"
+                  - Name: TZ-Edge
+                  - Name: TZ-Overlay
                 UplinkProfile:
-                  Name: "Edge-Uplink-Profile"
+                  Name: Edge-Uplink-Profile
                 IPPool:
                   Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
-                  Type: "StaticIpPoolSpec"
+                  Type: StaticIpPoolSpec
                 Uplinks:
-                  - NSXUplinkName: "uplink-1"
-                    DeviceName: "fp-eth0"
-                  - NSXUplinkName: "uplink-2"
-                    DeviceName: "fp-eth1"
+                  - NSXUplinkName: uplink-1
+                    DeviceName: fp-eth0
+                  - NSXUplinkName: uplink-2
+                    DeviceName: fp-eth1
             Deployment:
               VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
-              FormFactor: "SMALL"
+              FormFactor: SMALL
               EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
               AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
               CLIPassword:  "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
@@ -1900,33 +1900,33 @@ Nested_NSXT:
               ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
               Hostname: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01.{{ Common.DNS.Domain }}" 
-              vSphereCluster: "Edge"
+              vSphereCluster: Edge
               ESXiHost: "{{ Nested_ESXi.Hosts.ESXi91.FQDN }}"
               Datastore: "{{ Nested_Clusters.Edge.vsanDatastore}}"
             Tags:
-              - Tag: "Auto-Created"
-                Scope: "SDDC.Lab"
+              - Tag: Auto-Created
+                Scope: SDDC.Lab
           - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
-            Description: "Tier-0 Edge Transport Node"
+            Description: Tier-0 Edge Transport Node
             HostSwitches:
-              - Name: "NVDS-1"
+              - Name: NVDS-1
                 Mode: STANDARD
                 TransportZones:
-                  - Name: "TZ-Edge"
-                  - Name: "TZ-Overlay"
+                  - Name: TZ-Edge
+                  - Name: TZ-Overlay
                 UplinkProfile:
-                  Name: "Edge-Uplink-Profile"
+                  Name: Edge-Uplink-Profile
                 IPPool:
                   Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-TEP-Pool"
-                  Type: "StaticIpPoolSpec"
+                  Type: StaticIpPoolSpec
                 Uplinks:
-                  - NSXUplinkName: "uplink-1"
-                    DeviceName: "fp-eth0"
-                  - NSXUplinkName: "uplink-2"
-                    DeviceName: "fp-eth1"
+                  - NSXUplinkName: uplink-1
+                    DeviceName: fp-eth0
+                  - NSXUplinkName: uplink-2
+                    DeviceName: fp-eth1
             Deployment:
               VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
-              FormFactor: "SMALL"
+              FormFactor: SMALL
               EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
               AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
               CLIPassword:  "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
@@ -1942,21 +1942,21 @@ Nested_NSXT:
               ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
               Hostname: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02.{{ Common.DNS.Domain }}" 
-              vSphereCluster: "Edge"
+              vSphereCluster: Edge
               ESXiHost: "{{ Nested_ESXi.Hosts.ESXi92.FQDN }}"
               Datastore: "{{ Nested_Clusters.Edge.vsanDatastore}}"
             Tags:
-              - Tag: "Auto-Created"
-                Scope: "SDDC.Lab"
+              - Tag: Auto-Created
+                Scope: SDDC.Lab
 
         EdgeClusters:
           - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-Edge-Cluster-01"
-            Description: "Edge Cluster"
+            Description: Edge Cluster
             ClusterProfiles:
-              - Name: "nsx-default-edge-high-availability-profile"
+              - Name: nsx-default-edge-high-availability-profile
             Members:
               - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
               - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02"
             Tags:
-              - Tag: "Auto-Created"
-                Scope: "SDDC.Lab"
+              - Tag: Auto-Created
+                Scope: SDDC.Lab
