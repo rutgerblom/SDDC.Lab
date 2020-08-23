@@ -5,7 +5,7 @@
 ##
 ---
 DEBUG:
-  KeepConfigFiles: true
+  KeepConfigFiles: false
   KeepInstallerFiles: false
   DisplayVariables: false
   DisplayVariables_DNS: false
@@ -16,8 +16,8 @@ Pod:
   Number: 240                                             # Number - The number of the Pod to be deployed must be between 10-240.
   VLANOffset: 0                                           # VLANOffset - This number added to Net.<SegmentName>.VLAN variable, which will move the POD VLAN up by this amount
   BaseNetwork:
-    IPv4: '10.203'
-    IPv6: "fd00:0000:0000:00"                             # IPv6 BaseNetwork must be a fully expanded /56 prefix
+    IPv4: '10.203'                                        # IPv4 BaseNetwork must be the first two octets of the IPv4 address space used by the nested environment.
+    IPv6: "fd00:0000:0000:00"                             # IPv6 BaseNetwork must be a fully expanded /56 prefix.  All nested IPv6 networks build off of this IPv6 base network.
 
 
 Deploy:
@@ -26,13 +26,13 @@ Deploy:
     vRLI: true                                            # vRLI - Deploy vRealize Log Insight as part of the Pod deployment.
     DNSServer: false                                      # DNSServer - Deploy a pre-configured DNS/NTP server as part of the Pod deployment. This DNS/NTP server is not Pod specific and can serve multiple Pods.
     NSXT:
-      GlobalManager: false                                # GlobalManager - TBD
+      GlobalManager: false                                # GlobalManager - PLANNED FOR FUTURE - NOT YET IMPLEMENTED
       LocalManager: true                                  # LocalManager - Deploy NSX-T Local Manager as part of the Pod deployment.
-      CloudServicesManager: false                         # CloudServicesManager - TBD
+      CloudServicesManager: false                         # CloudServicesManager - PLANNED FOR FUTURE - NOT YET IMPLEMENTED
       Edge: true                                          # Edge - Deploy NSX-T Edge Transport Nodes as part of the Pod deployment.
   Setting:
     IPv4: true                                            # IPv4 - All components are configured with IPv4 addresses.
-    IPv6: false                                           # IPv6 - Make sure your environment (i.e. Ansible control station, DNS, etc.) are all configured with IPv6 else the installation will fail.
+    IPv6: false                                           # IPv6 - Make sure your environment (i.e. Ansible control station, DNS, etc.) are all configured with IPv6 else the installation will fail.  IPv6 transit also required between Ansible constrol station and DNS Server.
     UseNFS: false                                         # UseNFS - Set to "True" if you want to connect an existing NFS datstore to the nested ESXi hosts. NFS datstore details are configured the under "Common.NFS" section.
     UseDNS: true                                          # UseDNS - Use DNS name resolution within the Pod (recommended). This requires that either "Deploy.Product.DNSServer" is set to "True" (recommended) or that a pre-existing, pre-configured DNS server is available.
     EnableSSH: true                                       # EnableSSH - Allow SSH access to the deployed components.
@@ -50,35 +50,35 @@ Deploy:
     ESXi:
       Vendor:  VMware
       Product: ESXi
-      Version: '7.00B'
+      Version: '7.00B'                                                      # Indicate which version you want to deploy from the software repository (Software.yml)
       Patch:   false
       Config:  "KS.CFG"
       Installer: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Installer-ESXi"
     NSXT:
       Vendor:  VMware
       Product: NSXT
-      Version: '3.0.1.1'
+      Version: '3.0.1.1'                                                    # Indicate which version you want to deploy from the software repository (Software.yml)
       Patch:   false
       Config:  "Pod-{{ '%03d'|format(Pod.Number|int) }}-NSXT.conf"
       Installer: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Installer-NSXT"
     Router:
       Vendor:  VyOS
       Product: Router
-      Version: Latest
+      Version: Latest                                                       # Must be either "Latest" or "Legacy".  Latest will download the latest nightly build from VyOS if you do not already have an ISO local.  We HIGHLY recommend you use "Latest", as not all features are supported by "Legacy"
       Patch:   false
       Config:  "Pod-{{ '%03d'|format(Pod.Number|int) }}-Router.conf"
       Installer: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Installer-Router"
     vRLI:
       Vendor:  VMware
       Product: vRLI
-      Version: '8.1.1'
+      Version: '8.1.1'                                                      # Indicate which version you want to deploy from the software repository (Software.yml)
       Patch:   false
       Config:  "Pod-{{ '%03d'|format(Pod.Number|int) }}-vRLI.conf"
       Installer: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Installer-vRLI"
     DNSServer:
       Vendor:  Ubuntu
       Product: DNSServer
-      Version: '20.04.1'
+      Version: '20.04.1'                                                    # Indicate which version you want to deploy from the software repository (Software.yml)
       Patch:   false
       Config:  "Pod-{{ '%03d'|format(Pod.Number|int) }}-Ubuntu.conf"
       Installer: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Installer-Ubuntu"
@@ -94,7 +94,7 @@ Common:
     Nested:   "VMware1!"
     Physical: "VMware1!"
   DNS:
-    Domain: "SDDC.Lab"
+    Domain: "SDDC.Lab"                                                      # Domain - Default DNS Domain used by all nested components.
     Server1:
       IPv4: "{{ Net.RouterUplink.IPv4.Network }}.5"                         # Replace this IP if using a different DNS server than the suggested .5  server in the Router Uplink segment (MUST support Dynamic DNS Updates)
       IPv6: "{{ Net.RouterUplink.IPv6.Network }}::{{ '%04x'|format(5) }}"   # Replace this IP if using a different DNS server than the suggested ::5 server in the Router Uplink segment (MUST support Dynamic DNS Updates)
@@ -114,7 +114,7 @@ Common:
     IPv4: "{{ Net.Management.IPv4.Network }}.6"                             # Replace with your IP address if Deploy.Product.vRLI == false
     IPv6: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(6) }}"       # Replace with your IP address if Deploy.Product.vRLI == false
   DiskProvisioning: "thin"
-  NFS:
+  NFS:                                                                      # NFS - The NFS settings below refer to a NFS share that can be used by the NESTED ESXi hosts for storage, and has nothing to do with physical ESXi server(s).  If possible, we suggest using vSAN storage on the nested ESXi hosts, which are backed by local physical storage.
     Server:
       IPv4: "192.168.0.12"
       IPv6: 
@@ -128,9 +128,9 @@ Common:
 ## Users should specify their deployment target settings in the 'TargetConfig' section
 ##
 TargetConfig:
-  Deployment: "Host"                                                  # Deployment - MUST be set to "Host"
-  Host:
-    FQDN: "Host32.NetLab.Home"                                        # FQDN - The FQDN or IP address of your physical ESXi host
+  Deployment: "Host"                                                          # Deployment - Valid options are "Host" or "vCenter", and controls if the physical installation target is vCenter or a single ESXi Host.
+  Host:                                                                       # Settings used when "Host" deployment is chosen (TargetConfig.Deployment == "Host")
+    FQDN: "Host32.NetLab.Home"                                                # FQDN - The FQDN of your physical ESXi host.  IMPORTANT: The FQDN listed here must EXACTLY match the output of the "hostname" CLI command on the ESXi server.
     User: "root"
     Password: "{{ Common.Password.Physical }}"
     vSwitch: "Pod-{{ '%03d'|format(Pod.Number|int) }}-vSwitch"
@@ -151,28 +151,28 @@ TargetConfig:
       Trunk:
         Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Trunk"
         VLAN: 4095
-  vCenter:                                                                    # TBD - vCenter target not used in SDDC.Lab version 2
-    FQDN: "NetLab-vCenter.NetLab.Local"                                       # TBD - vCenter target not used in SDDC.Lab version 2
-    User: "administrator@vsphere.local"                                       # TBD - vCenter target not used in SDDC.Lab version 2  
-    Password: "{{ Common.Password.Physical }}"                                # TBD - vCenter target not used in SDDC.Lab version 2
-    vSwitch: "SDDCLab_vDS"                                                    # TBD - vCenter target not used in SDDC.Lab version 2
-    vSwitchVersion: 6.6.0                                                     # TBD - vCenter target not used in SDDC.Lab version 2
-    DataCenter: "SDDC"                                                        # TBD - vCenter target not used in SDDC.Lab version 2
-    Cluster: "Lab-Cluster"                                                    # TBD - vCenter target not used in SDDC.Lab version 2
-    Datastore: "Shared_VMs"                                                   # TBD - vCenter target not used in SDDC.Lab version 2
-    VMFolder: "SDDC Labs/Pod-{{ '%03d'|format(Pod.Number|int) }}"             # TBD - vCenter target not used in SDDC.Lab version 2  
-    ISOFolder: "/SDDCLab-ISO-Folder"                                          # TBD - vCenter target not used in SDDC.Lab version 2
-    ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"            # TBD - vCenter target not used in SDDC.Lab version 2
-    TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"                # TBD - vCenter target not used in SDDC.Lab version 2
-    TemplateFolder: "../templates"                                            # TBD - vCenter target not used in SDDC.Lab version 2
-    PortGroup:                                                                # TBD - vCenter target not used in SDDC.Lab version 2
-      RouterUplink: "Lab-Routers"                                             # TBD - vCenter target not used in SDDC.Lab version 2
-      Management:                                                             # TBD - vCenter target not used in SDDC.Lab version 2
-        Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt"                  # TBD - vCenter target not used in SDDC.Lab version 2
-        VLAN: "{{ Net.Management.VLAN }}"                                     # TBD - vCenter target not used in SDDC.Lab version 2
-      Trunk:                                                                  # TBD - vCenter target not used in SDDC.Lab version 2
-        Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Trunk"                 # TBD - vCenter target not used in SDDC.Lab version 2
-        VLAN: "{{ Net.Management.VLAN }}-{{ Net.VMNetwork.VLAN }}"            # TBD - vCenter target not used in SDDC.Lab version 2
+  vCenter:                                                                    # Settings used when "vCenter" deployment is chosen (TargetConfig.Deployment == "vCenter")
+    FQDN: "NetLab-vCenter.NetLab.Local"                                       # FQDN - The FQDN to your physical vCenter Server
+    User: "administrator@vsphere.local"                                       # User - vCenter Server user account
+    Password: "{{ Common.Password.Physical }}"                                # Password - Password used by User to authenticate to the physical vCenter Server
+    vSwitch: "SDDCLab_vDS"                                                    # vSwitch - Name of the vDS which is automatically provisioned by the playbooks, and where all the Pod Port-Groups are crated
+    vSwitchVersion: 6.6.0                                                     # vSwitchVersion - vDS version used for the given vSwitch
+    DataCenter: "SDDC"                                                        # DataCenter - Defines under which DataCenter object the lab Pod's are deployed
+    Cluster: "Lab-Cluster"                                                    # Cluster - Defines which vSphere cluster within DataCenter the lab Pod's are deployed
+    Datastore: "Shared_VMs"                                                   # Datastore - Defines Which datastore should the nested lab Pod VMs be placed
+    VMFolder: "SDDC Labs/Pod-{{ '%03d'|format(Pod.Number|int) }}"             # VMFolder - Deployed lab Pod VMs are placed within this VMFolder
+    ISOFolder: "/SDDCLab-ISO-Folder"                                          # ISOFolder - Directory created within Datastore where custom created ISOs are placed as part of the nested lab deployment
+    ISOMount:   "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}/iso"            # ISOMount - Pod specific mount point for ISO images
+    TempFolder: "/tmp/Pod-{{ '%03d'|format(Pod.Number|int) }}"                # TempFolder - Temporary folder location used for temporary files created during the deployment process
+    TemplateFolder: "../templates"                                            # TemplateFolder - The location of the "templates" folder, relative to teh "playbooks" directory
+    PortGroup:                                                                # Various PortGroups used during deployment
+      RouterUplink: "Lab-Routers"                                             # RouterUplink - PortGroup which the VyOS lab Pod router attaches it's northbound/outside interface to.
+      Management:                                                             # Management PortGroup Information
+        Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt"                  # Name - Pod specific Management PortGroup name
+        VLAN: "{{ Net.Management.VLAN }}"                                     # VLAN - Pod specific Management VLAN
+      Trunk:                                                                  # Trunk PortGroup Information
+        Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Trunk"                 # Name - Pod specific Trunk PortGroup name
+        VLAN: "{{ Net.Management.VLAN }}-{{ Net.VMNetwork.VLAN }}"            # VLAN - Pod specific VLAN Range
 
 
 ##
@@ -488,7 +488,7 @@ Nested_DNSServer:
         Address: "{{ Net.RouterUplink.IPv4.Network }}.5" 
         Prefix:  "{{ Net.RouterUplink.IPv4.Prefix }}"
         Gateway: "{{ Net.RouterUplink.IPv4.Network }}.1"
-        DNS: 8.8.8.8
+        DNS: 8.8.8.8                                                                    # DNS server reachable by OS to resolve names.  Update as required for your environment.
       IPv6:
         Address: "{{ Net.RouterUplink.IPv6.Network }}::{{ '%04x'|format(5) }}" 
         Prefix:  "{{ Net.RouterUplink.IPv6.Prefix }}"
@@ -500,7 +500,7 @@ Nested_DNSServer:
     Packages:
       BIND:
         Forwarder:
-          IPv4: 8.8.8.8
+          IPv4: 8.8.8.8                                                                 # DNS forwarders used by BIND.  Update as required for your environment.
           IPv6: 2001:4860:4860::8888
 
 
@@ -512,7 +512,7 @@ Nested_Clusters:
     vsanDatastore: Management_vSAN
     Prep_NSX: false
     NSXT_TransportNodeProfile:
-    DeployHosts: false
+    DeployHosts: false                                                                  # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
   Compute-A:
     DRS: true
     HA: false
@@ -520,7 +520,7 @@ Nested_Clusters:
     vsanDatastore: Compute-A_vSAN
     Prep_NSX: true
     NSXT_TransportNodeProfile: "TNP-ESXi-Hosts"
-    DeployHosts: true
+    DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
   Edge:
     DRS: true
     HA: false
@@ -528,7 +528,7 @@ Nested_Clusters:
     vsanDatastore: Edge_vSAN
     Prep_NSX: false
     NSXT_TransportNodeProfile:
-    DeployHosts: true
+    DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
 
 
 Nested_ESXi:
@@ -1241,7 +1241,7 @@ Nested_vCenter:
   SSO:
     Domain: vsphere.local
     Site: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Site"
-    ReplicationPartner: ""                                                                 # If replication partner hostname is provided, the Replication template will be used to configure vCenter.  Else, field should be left as an empty string ("").
+    ReplicationPartner: ""                                                                 # If replication partner FQDN is provided, the Replication template will be used to configure vCenter.  Else, field should be left as an empty string ("").
   DataCenter: "Pod-{{ '%03d'|format(Pod.Number|int) }}-DataCenter"
   Networking:
     vSwitch:
@@ -1670,7 +1670,7 @@ Nested_NSXT:
 
 ##
 ## If Overlay segments are configured with a subnet, they will be connected to the Gateway specified.  If not, the Segments
-## are only created within NSX-T, but not connected.  Subnets are only added to Overlay segments.
+## are only created within NSX-T, but not connected to any Tier-0 or Tier-1 Gateway.  Subnets are only added to Overlay segments.
 ##
     Segments:
       - Name: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
