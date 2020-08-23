@@ -99,11 +99,67 @@ There are many settings that you ***can*** change, but only a few that you ***mu
     | TargetConfig.Host.PortGroup.RouterUplink | The portgroup that connects your Pod to your physical network                                                        | Lab-Routers
     | Nested_Router.Protocol                   | The routing method for routing traffic between your Pod and your physical network                                    | OSPF
 
-Change either your environment or these settings so that they match!
+Change either your environment or these settings so that they match.
 
-### licenses.yml (TBD)
-In licenses.yml you store your license keys for the different products. 
-cp licenses_sample.yml config.yml
+### licenses.yml
+Licenses.yml contains the licenses that you want to assign to the software within the Pod. Just like config.yml this file is organized in a data structure.
+<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![licenses.yml](images/licenses_yml.png)
+<br>
+The file contains many example entries which you are free to change or remove. A typical licenses.yml might look something like this:
+
+    ---
+    License:
+      VMware:
+        vCenter:
+          Name: vCenter Server
+          Licenses:
+          - Quantity: 2
+            Version: "7.[0-9]"
+            Measure: Instance
+            KeyCode: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+            Edition: Standard
+            Comment:
+        ESXi:
+          Name: vSphere ESXi Host
+          Licenses:
+          - Quantity: 16
+            Version: "7.[0-9]"
+            Measure: CPU
+            KeyCode: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+            Edition: Enterprise Plus
+            Comment: 
+        NSXT:
+          Name: NSX Transformers
+          Licenses:
+          - Quantity: 16
+            Version: "[23].[0-9]"
+            Measure: CPU
+            KeyCode: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+            Edition: Enterprise Plus
+            Comment: 
+        vSAN:
+          Name: vSAN
+          Licenses:
+          - Quantity: 16
+            Version: "[7].[0-9]"
+            Measure: CPU
+            KeyCode: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+            Edition: Enterprise
+            Comment: 
+        vRLI:
+          Name: vRealize Log Insight
+          Licenses:
+          - Quantity: 25
+            Version: "[8].[0-9]"
+            Measure: OSI
+            KeyCode: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+            Edition: N/A
+            Comment: 
+
+Are license keys required? Only for NSX-T. The other components will deploy fine without license keys and are operational for a limited amount of time.<br>
+NSX-T license keys can be obtained via [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval).
 
 ### software.yml (TBD)
 In software.yml we've defined the poducts and versions that can be deployed with the scripts.
