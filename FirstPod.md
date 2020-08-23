@@ -174,12 +174,12 @@ You would normally not make any changes to this file and even more so when you'r
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![software.yml](images/software_yml.png)
 <br>
 
-## Create your software library (TBD)
+## Create your software library
 Now that your configuration files have been prepared, you can continue with creating the software library. The first thing you need to do is create the software library's directory structure. We've created an Ansible script that does this for you:
 
 **sudo ansible-playbook utils/util_CreateSoftwareDir.yml**
 
-This creates an empty directory structure at /Software on your Ansible controller that will look something like this:
+This creates an empty directory structure at **/Software** on your Ansible controller that will look something like this:
 
     /Software/
     ├── Ubuntu
@@ -208,10 +208,10 @@ This creates an empty directory structure at /Software on your Ansible controlle
             ├── Latest
             └── v1.1.8
 
-The next step is to populate the directories with installation media. Some deployment scripts will download the installation media for you when it's missing from the software library. Currently both Ubuntu Server and VyOS Router are downloaded when missing. VMware products always need to be downloaded by you.
+The next step is to populate the structure with the required installation media. Some deployment scripts will download the installation media for you when it's missing in the software library. Currently both Ubuntu Server and VyOS Router are downloaded when absent. VMware products always need to be downloaded by you.
 
 
-In **config.yml** under **Deploy.Software** you can see (and change) which version of a particular software is going to be deployed and thus needs to be downloaded. The default is to deploy the latest supported combination of versions. For your first Pod we recommend that you leave it like that.
+In **config.yml** under **Deploy.Software** you can see (and change) which version of a particular software is going to be deployed and thus needs to be present in the software library. The default setting is to deploy the latest supported combination of versions. For your first Pod we recommend that you leave it like that.
 
 A populated software library could look something like this:
 
