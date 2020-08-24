@@ -166,11 +166,11 @@ You would normally not make any changes to this file and even more so when you'r
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/software_yml.png" alt="software.yml" width="50%"/>
 <br>
 ## Create your software library
-Now that your configuration files have been prepared, you can continue with creating the software library. The first thing you need to do is create the software library's directory structure. We've created an Ansible script that does this for you:
+Now that your configuration files have been prepared, you can continue with creating the software library. The first thing you need to do is create the software library's directory structure. We've created an Ansible script that does this for you. Simply run:
 
-**sudo ansible-playbook utils/util_CreateSoftwareDir.yml**
+* **sudo ansible-playbook utils/util_CreateSoftwareDir.yml**
 
-This creates an empty directory structure at **/Software** on your Ansible controller that will look something like this:
+This script creates an empty directory structure at **/Software** on your Ansible controller that will look something like this:
 
     /Software/
     ├── Ubuntu
