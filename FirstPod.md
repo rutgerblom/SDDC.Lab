@@ -81,12 +81,9 @@ Start by creating your own copies of the sample configuration files:
 
 ### config.yml
 This file contains all of the configuration and settings for the Pod you're about to deploy. Its contents are organized in several different sections and data structures.
-
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/config_yml.png" alt="licenses.yml" width="50%"/>
 <br>
-<br>
-
 There are many settings that you ***can*** change, but only a few that you ***must*** change. Especially when deploying your first Pod we strongly recommend that you keep changes to a minimum.
 
 - The table below contains the settings that ***must*** match your environment:
@@ -105,12 +102,9 @@ Change either your environment or these settings so that they match.
 
 ### licenses.yml
 Licenses.yml contains the licenses that you want to assign to the software within the Pod. Just like config.yml this file is organized in a data structure.
-
 <br>
-
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/licenses_yml.png" alt="licenses.yml" width="50%"/>
 <br>
-
 The file contains many example entries which you are free to change or remove. A typical licenses.yml might look something like this:
 
     ---
@@ -168,12 +162,9 @@ NSX-T license keys can be obtained via [VMUG Advantage](https://www.vmug.com/mem
 ### software.yml
 Software.yml contains a data structure with the software that can currently be deployed using the scripts. It's used by most of the Ansible scripts as well. The directory structure of the [software library](#Create-your-software-library) is based on the entries in this file.<br> 
 You would normally not make any changes to this file and even more so when you're deploying your first Pod. Leave it as it is.
-
 <br>
-
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/software_yml.png" alt="software.yml" width="50%"/>
 <br>
-
 ## Create your software library
 Now that your configuration files have been prepared, you can continue with creating the software library. The first thing you need to do is create the software library's directory structure. We've created an Ansible script that does this for you:
 
