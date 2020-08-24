@@ -83,8 +83,8 @@ Start by creating your own copies of the sample configuration files:
 This file contains all of the configuration and settings for the Pod you're about to deploy. Its contents are organized in several different sections and data structures.
 
 <br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![config.yml](images/config_yml.png)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/config_yml.png" alt="licenses.yml" width="50%"/>
+<br>
 <br>
 
 There are many settings that you ***can*** change, but only a few that you ***must*** change. Especially when deploying your first Pod we strongly recommend that you keep changes to a minimum.
@@ -108,7 +108,7 @@ Licenses.yml contains the licenses that you want to assign to the software withi
 
 <br>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![licenses.yml](images/licenses_yml.png)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/licenses_yml.png" alt="licenses.yml" width="50%"/>
 <br>
 
 The file contains many example entries which you are free to change or remove. A typical licenses.yml might look something like this:
@@ -171,7 +171,7 @@ You would normally not make any changes to this file and even more so when you'r
 
 <br>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![software.yml](images/software_yml.png)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/software_yml.png" alt="software.yml" width="50%"/>
 <br>
 
 ## Create your software library
