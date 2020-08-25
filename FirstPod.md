@@ -40,7 +40,7 @@ The Ansible controller is the machine from which you will run the Ansible script
 After you've installed the Ubuntu OS and applied the latest updates, some additional software is required to turn this machine into an Ansible controller for your SDDC.Lab Pods. You can simply copy and paste the commands below. Installation of the additional software will only take some minutes.
 
 1. Python, pip, and xorriso:  
-**sudo apt install python3 python3-pip xorriso**
+**sudo apt install python3 python3-pip xorriso git**
 
 1. Ansible and the required Python modules:  
 **sudo pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython==1.16.0**

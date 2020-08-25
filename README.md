@@ -75,7 +75,7 @@ The following are recommendations based on our experience with deploying Pods:
   * Configure OSPFv2/OSPFv3 on the Lab-Routers segment.
 
 * Install the required software on your Ansible controller:
-  * sudo apt install python3 python3-pip xorriso
+  * sudo apt install python3 python3-pip xorriso git
   * sudo pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython==1.16.0
   * git clone https://github.com/rutgerblom/SDDC.Lab.git 
 
