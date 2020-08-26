@@ -94,7 +94,7 @@
         datacenter: "{{ Target.DataCenter }}"
         folder: "{% if Target.Deployment == 'vCenter' %}{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}{% else %}{{ Target.VMFolder }}{% endif %}"          # If vCenter, use Parent folder
         name: "{{ Nested_DNSServer.VM.VMName }}"
-        schema: "vsphere"
+        schema: vsphere
         properties: ["overallStatus"]
       register: ubuntu_status
       ignore_errors: true
@@ -242,7 +242,7 @@
           - name: "{{ Nested_DNSServer.VM.HardwareSettings.PortGroup }}"
             device_type: vmxnet3
         cdrom:
-          type: "iso"
+          type: iso
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.DNSServer.File }}"
         annotation: | 
                     {{ Nested_DNSServer.VM.Annotation }}
@@ -260,7 +260,7 @@
         validate_certs: no
         datacenter: "{{ Target.DataCenter }}"
         name: "{{ Nested_DNSServer.VM.VMName }}"
-        schema: "vsphere"
+        schema: vsphere
       register: vm_facts
       until: vm_facts.instance.guest.hostName is search(Nested_DNSServer.FQDN)
       retries: 30
@@ -374,7 +374,7 @@
         vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
         vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
-        vm_shell_args: "netplan apply"
+        vm_shell_args: netplan apply
       when: 
         - ubuntu_status is failed
         - Deploy.Product.DNSServer == true
