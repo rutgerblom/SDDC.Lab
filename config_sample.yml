@@ -521,7 +521,7 @@ Nested_Clusters:
     Prep_NSX: true
     NSXT_TransportNodeProfile: TNP-ESXi-Hosts
     DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
-  Edge:
+  Edge:                                                                                 # 'Edge' is where NSX-T ETN's are deployed.  HIGHLY suggest you always have an 'Edge' cluster.
     DRS: true
     HA: false
     vSAN: true
@@ -1863,7 +1863,7 @@ Nested_NSXT:
                     VDSUplinkName: Uplink 2
 
       Nodes:
-        vSphereEdgeCluster: Edge                                                 # vSphere cluster where NSX-T Edge Transport Nodes are deployed
+        vSphereEdgeCluster: Edge                                                 # vSphere cluster where NSX-T Edge Transport Nodes are deployed (If changed, update datastore on ETNs)
         EdgeTransportNodes:
           - Name: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01"
             Description: Tier-0 Edge Transport Node
@@ -1901,9 +1901,7 @@ Nested_NSXT:
               ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
               Hostname: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-01.{{ Common.DNS.Domain }}" 
-              vSphereCluster: Edge
-              ESXiHost: "{{ Nested_ESXi.Hosts.ESXi91.FQDN }}"
-              Datastore: "{{ Nested_Clusters.Edge.vsanDatastore}}"
+              Datastore: "{{ Nested_Clusters.Edge.vsanDatastore }}"
             Tags:
               - Tag: Auto-Created
                 Scope: SDDC.Lab
@@ -1943,9 +1941,7 @@ Nested_NSXT:
               ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
               Hostname: "Pod-{{ '%03d'|format(Pod.Number|int) }}-T0-EdgeVM-02.{{ Common.DNS.Domain }}" 
-              vSphereCluster: Edge
-              ESXiHost: "{{ Nested_ESXi.Hosts.ESXi92.FQDN }}"
-              Datastore: "{{ Nested_Clusters.Edge.vsanDatastore}}"
+              Datastore: "{{ Nested_Clusters.Edge.vsanDatastore }}"
             Tags:
               - Tag: Auto-Created
                 Scope: SDDC.Lab
