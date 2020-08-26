@@ -559,10 +559,10 @@ Nested_ESXi:
         CapacitySize: 180
 
   Hosts:
-    ESXi21:
+    Mgmt1:
       Cluster: Management
-      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-21.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.21{% endif %}"
-      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-21"
+      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.21{% endif %}"
+      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt-1"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -632,10 +632,10 @@ Nested_ESXi:
               Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(21) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
-    ESXi22:
+    Mgmt2:
       Cluster: Management
-      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-22.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.22{% endif %}"
-      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-22"
+      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.22{% endif %}"
+      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt-2"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -705,10 +705,10 @@ Nested_ESXi:
               Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(22) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
-    ESXi23:
+    Mgmt2:
       Cluster: Management
-      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-23.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.23{% endif %}"
-      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-23"
+      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.22{% endif %}"
+      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Mgmt-2"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -778,10 +778,10 @@ Nested_ESXi:
               Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(23) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
-    ESXi31:
+    ComputeA1:
       Cluster: Compute-A
-      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-31.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.31{% endif %}"
-      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-31"
+      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ComputeA-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.31{% endif %}"
+      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-ComputeA-1"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -851,10 +851,10 @@ Nested_ESXi:
               Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(31) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
-    ESXi32:
+    ComputeA2:
       Cluster: Compute-A
-      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-32.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.32{% endif %}"
-      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-32"
+      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ComputeA-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.32{% endif %}"
+      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-ComputeA-2"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -924,10 +924,10 @@ Nested_ESXi:
               Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(32) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
-    ESXi33:
+    ComputeA3:
       Cluster: Compute-A
-      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-33.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.33{% endif %}"
-      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-33"
+      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ComputeA-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.33{% endif %}"
+      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-ComputeA-3"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -997,10 +997,10 @@ Nested_ESXi:
               Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(33) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
-    ESXi91:
+    Edge1:
       Cluster: Edge
-      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-91.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.91{% endif %}"
-      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-91"
+      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-Edge-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.91{% endif %}"
+      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Edge-1"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -1070,10 +1070,10 @@ Nested_ESXi:
               Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(91) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
-    ESXi92:
+    Edge2:
       Cluster: Edge
-      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-92.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.92{% endif %}"
-      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-92"
+      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-Edge-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.92{% endif %}"
+      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Edge-2"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -1143,10 +1143,10 @@ Nested_ESXi:
               Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(92) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
-    ESXi93:
+    Edge3:
       Cluster: Edge
-      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-93.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.93{% endif %}"
-      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-ESXi-93"
+      FQDN: "{% if Deploy.Setting.UseDNS %}Pod-{{ '%03d'|format(Pod.Number|int) }}-Edge-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.93{% endif %}"
+      VMName: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Edge-3"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
