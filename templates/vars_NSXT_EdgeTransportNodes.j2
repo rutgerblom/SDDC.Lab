@@ -81,7 +81,7 @@
           default_gateway_addresses: 
           - "{{ EdgeTransportNode.Deployment.Gateway }}"
           hostname: "{{ EdgeTransportNode.Deployment.Hostname }}"
-          compute: "{{ EdgeTransportNode.Deployment.vSphereCluster }}"
+          compute: "{{ Nested_NSXT.System.Fabric.Nodes.vSphereEdgeCluster }}"
           storage: "{{ EdgeTransportNode.Deployment.Datastore }}"
-          host: "{{ EdgeTransportNode.Deployment.ESXiHost |lower }}"
+          host: "{{ EdgeHosts[(loop.index0 % (EdgeHosts|length))] }}"
 {% endfor %}{# EdgeTransportNode #}

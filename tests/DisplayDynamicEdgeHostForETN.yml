@@ -64,7 +64,7 @@
 
     - name: Get the vSphere Cluster's Object ID (MoREF)
       uri:
-        url: "https://{{ Nested_vCenter.FQDN }}/rest/vcenter/cluster?filter.names=Edge"
+        url: "https://{{ Nested_vCenter.FQDN }}/rest/vcenter/cluster?filter.names={{ Nested_NSXT.System.Fabric.Nodes.vSphereEdgeCluster }}"
         headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
         method: GET
         validate_certs: no
@@ -155,7 +155,7 @@
         prompt: |
           =================================================================================================
 
-          Variable: EdgeHosts (Length={{ EdgeHosts|length}})
+          Variable: EdgeHosts (Length={{ EdgeHosts|length }})
           =======================
           {{ EdgeHosts | to_nice_yaml }}
 

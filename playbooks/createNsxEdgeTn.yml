@@ -41,7 +41,6 @@
       meta: end_play
       when: Valid_Pod_Config_File is not defined
 
-      
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
@@ -63,6 +62,112 @@
         - Deploy.Product.NSXT.LocalManager == true
         - Deploy.Product.NSXT.Edge == true
 
+
+##
+## Get vCenter session ID
+##
+    - name: Authenticate to vCenter to obtain a Session ID
+      uri:
+        url: "https://{{ Nested_vCenter.FQDN }}/rest/com/vmware/cis/session"
+        headers: "{ 'vmware-use-header-authn':'test' }"
+        method: POST
+        validate_certs: no
+        timeout: 10
+        force_basic_auth: yes
+        url_username: "{{ Nested_vCenter.User }}"
+        url_password: "{{ Nested_vCenter.Password }}"
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: vcenter_auth_result
+
+    - name: Store vCenter Session ID for later use
+      set_fact:
+        vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
+      when:
+        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.Edge == true
+
+
+##
+## Get vSphere Cluster ID
+##
+    - name: Get the vSphere Cluster's Object ID (MoREF)
+      uri:
+        url: "https://{{ Nested_vCenter.FQDN }}/rest/vcenter/cluster?filter.names={{ Nested_NSXT.System.Fabric.Nodes.vSphereEdgeCluster }}"
+        headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
+        method: GET
+        validate_certs: no
+        timeout: 10
+        force_basic_auth: yes
+        url_username: "{{ Nested_vCenter.User }}"
+        url_password: "{{ Nested_vCenter.Password }}"
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: cluster_info
+      when:
+        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.Edge == true
+
+    - name: Store vSphere Cluster Object ID (MoREF) for later use
+      set_fact:
+        Cluster_ID: "{{ cluster_info.json.value[0].cluster | default(None) }}"
+      when:
+        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.Edge == true
+
+
+##
+## Get all of the hosts in the vSphere cluster
+##
+    - name: Get ESXi hosts in vSphere Cluster
+      uri:
+        url: "https://{{ Nested_vCenter.FQDN }}/rest/vcenter/host?filter.clusters={{ Cluster_ID }}"
+        headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
+        method: GET
+        validate_certs: no
+        timeout: 10
+        force_basic_auth: yes
+        url_username: "{{ Nested_vCenter.User }}"
+        url_password: "{{ Nested_vCenter.Password }}"
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: cluster_hosts
+      when:
+        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.Edge == true
+
+    - name: Create list containing just the FQDN EdgeHosts
+      set_fact:
+        EdgeHosts: "{{ EdgeHosts | default([]) + [ item.name ] }}"
+      loop: "{{ cluster_hosts.json.value }}"
+      when:
+        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.Edge == true
+
+    - name: DEBUG -- Display EdgeHosts
+      pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: EdgeHosts (Length={{ EdgeHosts|length }})
+          ===============================
+          {{ EdgeHosts | to_nice_yaml }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - EdgeHosts is defined
+        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.Edge == true
+
+
+##
+## Generate Data Structure for API call
+##
     - name: Read the structure from template into a variable
       set_fact:
         var_EdgeTransportNodes: "{{ lookup('template', LOCAL_EdgeTnTemplate) | from_yaml }}"
@@ -70,7 +175,7 @@
         - Deploy.Product.NSXT.LocalManager == true
         - Deploy.Product.NSXT.Edge == true
 
-    - name: DEBUG -- Display Target Variables (Pause)
+    - name: DEBUG -- Display Target Variables
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
@@ -85,6 +190,10 @@
         - Deploy.Product.NSXT.Edge == true
         - var_EdgeTransportNodes != ""
 
+
+##
+## Provision Transport Nodes
+##
     - name: Deploy and configure Edge Transport Nodes
       nsxt_transport_nodes:
         hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"

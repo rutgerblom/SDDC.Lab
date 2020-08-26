@@ -7,7 +7,7 @@
 - hosts: localhost
   name: createPodDoc.yml
   vars:
-    - LOCAL_PodDocHTML: "Pod-{{ '%03d'|format(Pod.Number|int) }}-Doc.html"
+    - LOCAL_PodDocHTML: "{{ SiteCode }}-Doc.html"
     - LOCAL_PodDocTemplate: "Pod_Doc.j2"
     - LOCAL_PodDocDestination: "/home/{{ lookup('env','SUDO_USER') }}"
   tasks:
