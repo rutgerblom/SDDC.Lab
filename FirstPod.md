@@ -257,7 +257,7 @@ The script then wants to know the name of your configuration file:
 
     What is the name of the configuration file that you would like to have prepared? [config.yml]:
 
-If you've been following this guide the filename will be **config.yml** and you can press \<Enter> to accept the default.
+If you have been following this guide, the filename will indeed be **config.yml** and you can press \<Enter> to accept the default.
 
 The static configuration file is now generated. On average this process will take between 5-15 minutes, but may vary depending on the size of your lab, and the speed of your Ansible controller.
 
