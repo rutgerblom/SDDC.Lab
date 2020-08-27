@@ -251,13 +251,13 @@ The script needs to know where your **config.yml** is located:
 
     In which directory is the Pod-Config file you want to have prepared located? [/home/ubuntu/SDDC.Lab/]: 
 
-The default path is the current working directory. If this is correct you simply press \<Enter>.
+The default path is the current working directory. If this is correct you simply press **\<Enter>**.
 
 The script then wants to know the name of your configuration file:
 
     What is the name of the configuration file that you would like to have prepared? [config.yml]:
 
-If you have been following this guide, the filename will indeed be **config.yml** and you can press \<Enter> to accept the default.
+If you have been following this guide, the filename will indeed be **config.yml** and you can press **\<Enter>** to accept the default.
 
 The static configuration file is now generated. On average this process will take between 5-15 minutes, but may vary depending on the size of your lab, and the speed of your Ansible controller.
 
