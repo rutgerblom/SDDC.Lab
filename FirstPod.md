@@ -43,7 +43,7 @@ After you've installed the Ubuntu OS and applied the latest updates, some additi
 **sudo apt install python3 python3-pip xorriso git**
 
 1. Ansible and the required Python modules:  
-**sudo pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython==1.16.0**
+**sudo pip3 install ansible==2.9.12 pyvim pyvmomi netaddr jmespath dnspython==1.16.0**
 
 1. The SDDC.Lab repository cloned to an appropriate location on your Ubuntu machine (e.g. $HOME) with:  
 **git clone https://github.com/rutgerblom/SDDC.Lab.git**
