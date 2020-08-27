@@ -1,8 +1,8 @@
      _________________  _____       _           _     
     /  ___|  _  \  _  \/  __ \     | |         | |    
-    \ `--.| | | | | | || /  \/     | |     __ _| |__  
-     `--. \ | | | | | || |         | |    / _` | '_ \ 
-    /\__/ / |/ /| |/ / | \__/\  _  | |___| (_| | |_) |
+    \ `--.| | | | | | || /  \/     | |     __ _| |__      Rutger Blom
+     `--. \ | | | | | || |         | |    / _` | '_ \          &
+    /\__/ / |/ /| |/ / | \__/\  _  | |___| (_| | |_) |     Luis Chanu
     \____/|___/ |___/   \____/ (_) \_____/\__,_|_.__/ 
 
 ## Table of Contents
@@ -14,6 +14,7 @@
 * [Usage](#Usage)
 * [Known Items](#Known-Items)
 * [More Information](#More-Information)
+* [Credits](#Credits)
 
 
 ## Description
@@ -110,3 +111,5 @@ Here are some known items to be aware of:
 
 ## More Information
 For detailed installation, preparation, and deployment steps, please see the "[Deploying your first SDDC.Lab Pod](FirstPod.md)" document.
+
+## Credits (TBD)
