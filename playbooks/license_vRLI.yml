@@ -144,6 +144,7 @@
         body_format: json
         status_code: 201
       loop: "{{ License.VMware.vRLI.Licenses }}"
+      ignore_errors: yes                                                             # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
       no_log: true
       when:
         - Deploy.Product.vRLI == true

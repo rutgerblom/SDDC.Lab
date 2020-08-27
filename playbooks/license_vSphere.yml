@@ -130,6 +130,7 @@
         license: "{{ item.KeyCode }}"
         state: present
       loop: "{{ License.VMware.vCenter.Licenses | default([]) }}"
+      ignore_errors: yes                                                             # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
       no_log: true
       when:
         - Deploy.Software.vCenter.Version is match( item.Version )
@@ -177,6 +178,7 @@
         license: "{{ item.License }}"
         state: present
       loop: "{{ HostsToLicense }}"
+      ignore_errors: yes                                                             # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
       no_log: true
       when: LicenseProducts == True
 
@@ -224,6 +226,7 @@
         license: "{{ item.License }}"
         state: present
       loop: "{{ ClustersToLicense }}"
+      ignore_errors: yes                                                             # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
       no_log: true
       when:
         - LicenseProducts == True
