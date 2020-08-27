@@ -78,7 +78,7 @@
         - item.value.vSAN == true
         - item.value.DeployHosts == true
 
-    - name: Copy Ruby script to the nested vCenter deployed on vCenter
+    - name: Copy Ruby script to the nested vCenter
       vmware_guest_file_operation:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -95,31 +95,11 @@
             dest: "/tmp/{{ item.key }}"
             overwrite: true
       loop: "{{ Nested_Clusters | dict2items }}"
-      when: 
-        - Target.Deployment == "vCenter"
+      when:
         - item.value.vSAN == true
         - item.value.DeployHosts == true
 
-    - name: Copy Ruby script to the nested vCenter deployed on the ESXi host
-      vmware_guest_file_operation:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: false
-        vm_id: "{{ Nested_vCenter.VMName }}"
-        vm_username: "root"
-        vm_password: "{{ Nested_vCenter.Password }}"
-        copy:
-            src: "{{ Target.TempFolder }}/{{ item.key }}"
-            dest: "/tmp/{{ item.key }}"
-            overwrite: true
-      loop: "{{ Nested_Clusters | dict2items }}"
-      when: 
-        - Target.Deployment == "Host"
-        - item.value.vSAN == true
-        - item.value.DeployHosts == true
-
-    - name: Run Ruby script on the nested vCenter deployed on vCenter
+    - name: Run Ruby script on the nested vCenter
       vmware_vm_shell:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -127,23 +107,6 @@
         cluster: "{{ Target.Cluster }}"
         datacenter: "{{ Target.DataCenter }}"
         folder: "{{ Target.VMFolder }}"
-        validate_certs: false
-        vm_id: "{{ Nested_vCenter.VMName }}"
-        vm_username: "root"
-        vm_password: "{{ Nested_vCenter.Password }}"
-        vm_shell: /usr/bin/rvc
-        vm_shell_args: '{{ Nested_vCenter.User }}:VMware1\!@{{ Nested_vCenter.FQDN | lower }} -s /tmp/{{ item.key }}'
-      loop: "{{ Nested_Clusters | dict2items }}"
-      when: 
-        - Target.Deployment == "vCenter"
-        - item.value.vSAN == true
-        - item.value.DeployHosts == true
-        
-    - name: Run Ruby script on the nested vCenter deployed on the ESXi host
-      vmware_vm_shell:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
         validate_certs: false
         vm_id: "{{ Nested_vCenter.VMName }}"
         vm_username: "root"
@@ -152,7 +115,6 @@
         vm_shell_args: '{{ Nested_vCenter.User }}:VMware1\!@{{ Nested_vCenter.FQDN | lower }} -s /tmp/{{ item.key }}'
       loop: "{{ Nested_Clusters | dict2items }}"
       when:
-        - Target.Deployment == "Host"
         - item.value.vSAN == true
         - item.value.DeployHosts == true
 
