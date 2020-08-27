@@ -65,7 +65,6 @@ The following are recommendations based on our experience with deploying Pods:
   * 150 GB hard disk
   * VMware Paravirtual SCSI controller
   * VMXNET 3 network adapter
-* Deploy the Ansible controller VM on the same ESXi host as where you will deploy your Pod.
 * Deploy the pre-configured DNS server for DNS name resolution within Pods instead of using your own.
 
 ## Preparations
