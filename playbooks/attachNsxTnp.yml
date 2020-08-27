@@ -78,3 +78,23 @@
         - item.value.Prep_NSX == true
         - item.value.DeployHosts == true
         - item.value.NSXT_TransportNodeProfile != ""
+
+    - name: Wait until the NSX-T API reports that the Transport Zones are in "UP" state
+      uri:
+        url: https://{{ Nested_NSXT.Components.LocalManager.FQDN }}/api/v1/transport-zones/status
+        validate_certs: no
+        timeout: 10
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: (result.json.up_count | default(0)) > 0
+      retries: 20
+      delay: 60
+      when: 
+        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.Edge != true
