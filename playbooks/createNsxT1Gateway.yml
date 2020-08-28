@@ -9,6 +9,10 @@
   vars:
     LOCAL_T1Gateways_Template: "{{ Target.TemplateFolder }}/vars_NSXT_T1Gateways.j2"
   tasks:
+    - name: createNsxT1Gateway_Playbook
+      debug:
+        msg: "Starting playbook: createNsxT1Gateway"
+
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
         seconds: 5

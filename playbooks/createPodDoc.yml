@@ -11,6 +11,10 @@
     - LOCAL_PodDocTemplate: "Pod_Doc.j2"
     - LOCAL_PodDocDestination: "/home/{{ lookup('env','SUDO_USER') }}"
   tasks:
+    - name: createPodDoc_Playbook
+      debug:
+        msg: "Starting playbook: createPodDoc"
+
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
         seconds: 5

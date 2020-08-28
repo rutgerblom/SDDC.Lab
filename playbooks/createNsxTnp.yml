@@ -9,6 +9,10 @@
   vars:
       LOCAL_TransportNodeProfiles_Template: "{{ Target.TemplateFolder }}/vars_NSXT_TransportNodeProfiles.j2"
   tasks:
+    - name: createNsxTnp_Playbook
+      debug:
+        msg: "Starting playbook: createNsxTnp"
+
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
         seconds: 5

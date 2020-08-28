@@ -9,6 +9,10 @@
   vars:
     LOCAL_UplinkProfiles_Template: "{{ Target.TemplateFolder }}/vars_NSXT_UplinkProfiles.j2"
   tasks:
+    - name: createNsxUplinkProfiles_Playbook
+      debug:
+        msg: "Starting playbook: createNsxUplinkProfiles"
+
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
         seconds: 5

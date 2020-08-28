@@ -9,6 +9,10 @@
   vars:
     LOCAL_IPPools_Template: "{{ Target.TemplateFolder }}/vars_NSXT_IPPools.j2"
   tasks:
+    - name: createNsxIpPool_Playbook
+      debug:
+        msg: "Starting playbook: createNsxIpPool"
+
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
         seconds: 5

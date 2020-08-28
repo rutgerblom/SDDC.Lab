@@ -9,6 +9,10 @@
   vars:
       LOCAL_Ubuntu_Template: "{{ Target.TemplateFolder }}/{{ Deploy.Software.DNSServer.Template }}"
   tasks:
+    - name: deployDNSServer_Playbook
+      debug:
+        msg: "Starting playbook: deployDNSServer"
+
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
         seconds: 5

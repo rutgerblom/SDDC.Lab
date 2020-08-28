@@ -12,6 +12,10 @@
   vars:
     - LOCAL_RecordState: "absent"           # LOCAL_RecordState values are either "present" (Records will be added) or "absent" (Records will be deleted)
   tasks:
+    - name: cleanupDNS_Playbook
+      debug:
+        msg: "Starting playbook: cleanupDNS"
+
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
         seconds: 5
