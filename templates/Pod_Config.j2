@@ -72,10 +72,10 @@ Deploy:
       Config:    "{{ Deploy.Software.vCenter.Template }}"
       Installer: "{{ Deploy.Software.vCenter.Installer }}"
       Template:
-        Repl_vCenter: "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Template'].Repl_vCenter }}"
-        Repl_ESXi:    "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Template'].Repl_ESXi }}"
-        vCenter: "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Template'].vCenter }}"
-        ESXi:    "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Template'].ESXi }}"
+        Repl_vCenter: "{{ Template['vCenter'][Deploy.Software.vCenter.Version]['Template'].Repl_vCenter }}"
+        Repl_ESXi:    "{{ Template['vCenter'][Deploy.Software.vCenter.Version]['Template'].Repl_ESXi }}"
+        vCenter: "{{ Template['vCenter'][Deploy.Software.vCenter.Version]['Template'].vCenter }}"
+        ESXi:    "{{ Template['vCenter'][Deploy.Software.vCenter.Version]['Template'].ESXi }}"
       Directory: "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version]['Location'].Local }}"
       File:      "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].File }}"
       vSwitch:   "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].vSwitch }}"
@@ -86,7 +86,7 @@ Deploy:
       Patch:     {{ Deploy.Software.ESXi.Patch }}
       Config:    "{{ Deploy.Software.ESXi.Template }}"
       Installer: "{{ Deploy.Software.ESXi.Installer }}"
-      Template:  "{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].Template }}"
+      Template:  "{{ Template['ESXi'][Deploy.Software.ESXi.Version].Template }}"
       Directory: "{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version]['Location'].Local }}"
       File:      "{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].File }}"
       vSwitch:   "{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version].vSwitch }}"
@@ -106,7 +106,7 @@ Deploy:
       Patch:     {{ Deploy.Software.Router.Patch }}
       Config:    "{{ Deploy.Software.Router.Template }}"
       Installer: "{{ Deploy.Software.Router.Installer }}"
-      Template:  "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].Template }}"
+      Template:  "{{ Template['Router'][Deploy.Software.Router.Version].Template }}"
       Directory: "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version]['Location'].Local }}"
       File:      "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version].File }}"
       URL:       "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version]['Location'].URL }}"
@@ -126,7 +126,7 @@ Deploy:
       Patch:     {{ Deploy.Software.DNSServer.Patch }}
       Config:    "{{ Deploy.Software.DNSServer.Config }}"
       Installer: "{{ Deploy.Software.DNSServer.Installer }}"
-      Template:  "{{ Software[Deploy.Software.DNSServer.Vendor][Deploy.Software.DNSServer.Product]['Installers'][Deploy.Software.DNSServer.Version].Template }}"
+      Template:  "{{ Template['DNSServer'][Deploy.Software.DNSServer.Version].Template }}"
       Directory: "{{ Software[Deploy.Software.DNSServer.Vendor][Deploy.Software.DNSServer.Product]['Installers'][Deploy.Software.DNSServer.Version]['Location'].Local }}"
       File:      "{{ Software[Deploy.Software.DNSServer.Vendor][Deploy.Software.DNSServer.Product]['Installers'][Deploy.Software.DNSServer.Version].File }}"
       URL:       "{{ Software[Deploy.Software.DNSServer.Vendor][Deploy.Software.DNSServer.Product]['Installers'][Deploy.Software.DNSServer.Version]['Location'].URL }}"
