@@ -1,6 +1,6 @@
 {#
  #    Authors: Luis Chanu & Rutger Blom
- #   Filename: templates/Ubuntu_DNSServer.j2
+ #   Filename: templates/DNSServer_v20.04.01_runbook.j2
  #    Used By: This file is used by the playbook deployDNS.yml
  #    Purpose: This Jinja2 template file is used to create the data structure that is provided to the modules in deployDNS.yml .
  #
@@ -9,48 +9,48 @@ Configuration:
   Templates:
     AutoInstall:
       - Name: UserData
-        Source: {{ Target.TemplateFolder }}/Ubuntu_user-data.j2
+        Source: {{ Target.TemplateFolder }}/Ubuntu_v20.04.01_user-data.j2
         LocalDestination:
         StageDestination:
         FinalDestination: {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/{{ Common.DNS.Domain }}/user-data
       - Name: MetaData
-        Source: {{ Target.TemplateFolder }}/Ubuntu_meta-data.j2
+        Source: {{ Target.TemplateFolder }}/Ubuntu_v20.04.01_meta-data.j2
         LocalDestination:
         StageDestination:
         FinalDestination: {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/{{ Common.DNS.Domain }}/meta-data
     AfterBoot:
       - Name: NetPlan
-        Source: {{ Target.TemplateFolder }}/Ubuntu_Netplan.j2
+        Source: {{ Target.TemplateFolder }}/Ubuntu_v20.04.01_Netplan.j2
         LocalDestination: {{ Target.TempFolder }}/00-installer-config.yaml
         StageDestination: /home/{{ Nested_DNSServer.OS.Credential.User }}/00-installer-config.yaml
         FinalDestination: /etc/netplan/00-installer-config.yaml
       - Name: BINDNamedConf
-        Source: {{ Target.TemplateFolder }}/BIND_named.conf
+        Source: {{ Target.TemplateFolder }}/BIND_v9_named.conf
         LocalDestination: {{ Target.TempFolder }}/named.conf
         StageDestination: /home/{{ Nested_DNSServer.OS.Credential.User }}/named.conf
         FinalDestination: /etc/bind/named.conf
       - Name: BINDNamedConfOptions
-        Source: {{ Target.TemplateFolder }}/BIND_named.conf.options.j2
+        Source: {{ Target.TemplateFolder }}/BIND_v9_named.conf.options.j2
         LocalDestination: {{ Target.TempFolder }}/named.conf.options
         StageDestination: /home/{{ Nested_DNSServer.OS.Credential.User }}/named.conf.options
         FinalDestination: /etc/bind/named.conf.options
       - Name: BINDNamedConfLocal
-        Source: {{ Target.TemplateFolder }}/BIND_named.conf.local.j2
+        Source: {{ Target.TemplateFolder }}/BIND_v9_named.conf.local.j2
         LocalDestination: {{ Target.TempFolder }}/named.conf.local
         StageDestination: /home/{{ Nested_DNSServer.OS.Credential.User }}/named.conf.local
         FinalDestination: /etc/bind/named.conf.local
       - Name: BINDForwardZone
-        Source: {{ Target.TemplateFolder }}/BIND_db.forwardzone.j2
+        Source: {{ Target.TemplateFolder }}/BIND_v9_db.forwardzone.j2
         LocalDestination: {{ Target.TempFolder }}/db.{{ Common.DNS.Domain | lower }}
         StageDestination: /home/{{ Nested_DNSServer.OS.Credential.User }}/db.{{ Common.DNS.Domain | lower }}
         FinalDestination: /var/lib/bind/db.{{ Common.DNS.Domain | lower }}
       - Name: BINDReverseZoneIPv4
-        Source: {{ Target.TemplateFolder }}/BIND_db.reversezoneipv4.j2
+        Source: {{ Target.TemplateFolder }}/BIND_v9_db.reversezoneipv4.j2
         LocalDestination: {{ Target.TempFolder }}/db.{{ Pod.BaseNetwork.IPv4 }}
         StageDestination: /home/{{ Nested_DNSServer.OS.Credential.User }}/db.{{ Pod.BaseNetwork.IPv4 }}
         FinalDestination: /var/lib/bind/db.{{ Pod.BaseNetwork.IPv4 }}
       - Name: BINDReverseZoneIPv6
-        Source: {{ Target.TemplateFolder }}/BIND_db.reversezoneipv6.j2
+        Source: {{ Target.TemplateFolder }}/BIND_v9_db.reversezoneipv6.j2
         LocalDestination: {{ Target.TempFolder }}/db.fd
         StageDestination: /home/{{ Nested_DNSServer.OS.Credential.User }}/db.fd
         FinalDestination: /var/lib/bind/db.fd
