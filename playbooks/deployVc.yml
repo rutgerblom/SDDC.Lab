@@ -71,7 +71,7 @@
                                      vCenter Template: {{ Deploy.Software.vCenter.Template.vCenter }}
                           Host Template (Replication): {{ Deploy.Software.vCenter.Template.Repl_ESXi }}
                        vCenter Template (Replication): {{ Deploy.Software.vCenter.Template.Repl_vCenter }}
-                                Installation Template: {{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}
+                                Installation Template: {{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Template }}
 
                           vCenter Replication Partner: {{ Nested_vCenter.SSO.ReplicationPartner }}
 
@@ -97,7 +97,7 @@
     - name: Create vCenter with embedded PSC installation template (Target=Host) - No Replication Partner
       template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.ESXi }}"
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Template }}"
         mode: "666"
       when:
         - vcenter_check.status != 200
@@ -107,7 +107,7 @@
     - name: Create vCenter with embedded PSC installation template (Target=vCenter) - No Replication Partner
       template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.vCenter }}"
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Template }}"
         mode: "666"
       when:
         - vcenter_check.status != 200
@@ -117,7 +117,7 @@
     - name: Create vCenter with embedded PSC installation template (Target=Host) - With Replication Partner
       template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.Repl_ESXi }}"
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Template }}"
         mode: "666"
       when:
         - vcenter_check.status != 200
@@ -127,7 +127,7 @@
     - name: Create vCenter with embedded PSC installation template (Target=vCenter) - With Replication Partner
       template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.Repl_vCenter }}"
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Template }}"
         mode: "666"
       when:
         - vcenter_check.status != 200
@@ -143,7 +143,7 @@
       when: vcenter_check.status != 200
       
     - name: Perform vCenter CLI-based installation
-      command: "./vcsa-deploy install --accept-eula --no-ssl-certificate-verification --acknowledge-ceip {{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
+      command: "./vcsa-deploy install --accept-eula --no-ssl-certificate-verification --acknowledge-ceip {{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Template }}"
       args:
         chdir: "{{ Target.ISOMount }}/VCSA/vcsa-cli-installer/lin64/"
       register: vcdeploy
@@ -154,7 +154,7 @@
       when: vcenter_check.status != 200
 
     - name: Delete the temporary vCenter with embedded PSC installation template
-      file: "path={{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }} state=absent"
+      file: "path={{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Template }} state=absent"
       when: 
         - vcenter_check.status != 200
         - DEBUG.KeepConfigFiles != true

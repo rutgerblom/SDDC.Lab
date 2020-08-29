@@ -85,7 +85,7 @@
       replace:
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/boot.cfg"
         regexp: 'kernelopt=cdromBoot runweasel'
-        replace: 'kernelopt=ks=cdrom:/{{ Deploy.Software.ESXi.Config }}'
+        replace: 'kernelopt=ks=cdrom:/{{ Deploy.Software.ESXi.Template }}'
       tags: esxi-install-media
 
     - name: Create a directory for each nested ESXi host
@@ -99,14 +99,14 @@
     - name: Create kickstart file for each nested ESXi host
       template: 
         src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.ESXi.Template }}"
-        dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
+        dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Template }}"
         mode: "666"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
       tags: esxi-install-media
 
     - name: Create custom ESXi ISO for each nested ESXi host
-      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }} -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.ISOMount }}/ {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/ {{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
+      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }} -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.ISOMount }}/ {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/ {{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Template }}"
       args:
         chdir: "{{ Target.TempFolder }}/{{ item.value.VMName }}/"
       loop: "{{ Nested_ESXi.Host | dict2items }}"

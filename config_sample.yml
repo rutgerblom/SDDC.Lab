@@ -48,42 +48,42 @@ Deploy:
       Product: vCenter
       Version: '7.00D'
       Patch:   false
-      Config:  "{{ SiteCode }}-vCenter.conf"
+      Template:  "{{ SiteCode }}-vCenter.conf"
       Installer: "{{ SiteCode }}-Installer-vCenter"
     ESXi:
       Vendor:  VMware
       Product: ESXi
       Version: '7.00B'                                                        # Indicate which version you want to deploy from the software repository (Software.yml)
       Patch:   false
-      Config:  "KS.CFG"
+      Template:  "KS.CFG"
       Installer: "{{ SiteCode }}-Installer-ESXi"
     NSXT:
       Vendor:  VMware
       Product: NSXT
       Version: '3.0.1.1'                                                      # Indicate which version you want to deploy from the software repository (Software.yml)
       Patch:   false
-      Config:  "{{ SiteCode }}-NSXT.conf"
+      Template:  "{{ SiteCode }}-NSXT.conf"
       Installer: "{{ SiteCode }}-Installer-NSXT"
     Router:
       Vendor:  VyOS
       Product: Router
       Version: Latest                                                         # Must be either "Latest" or "Legacy".  Latest will download the latest nightly build from VyOS if you do not already have an ISO local.  We HIGHLY recommend you use "Latest", as not all features are supported by "Legacy"
       Patch:   false
-      Config:  "{{ SiteCode }}-Router.conf"
+      Template:  "{{ SiteCode }}-Router.conf"
       Installer: "{{ SiteCode }}-Installer-Router"
     vRLI:
       Vendor:  VMware
       Product: vRLI
       Version: '8.1.1'                                                        # Indicate which version you want to deploy from the software repository (Software.yml)
       Patch:   false
-      Config:  "{{ SiteCode }}-vRLI.conf"
+      Template:  "{{ SiteCode }}-vRLI.conf"
       Installer: "{{ SiteCode }}-Installer-vRLI"
     DNSServer:
       Vendor:  Ubuntu
       Product: DNSServer
       Version: '20.04.1'                                                      # Indicate which version you want to deploy from the software repository (Software.yml)
       Patch:   false
-      Config:  "{{ SiteCode }}-Ubuntu.conf"
+      Template:  "{{ SiteCode }}-Ubuntu.conf"
       Installer: "{{ SiteCode }}-Installer-Ubuntu"
 
 

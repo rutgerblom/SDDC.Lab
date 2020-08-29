@@ -8,11 +8,11 @@
 
     - name: Delete the temporary template file for VyOS router
       file: 
-        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Template }}"
         state: absent
 
     - name: Create configuration template file for VyOS router
       template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}"
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Template }}"
 

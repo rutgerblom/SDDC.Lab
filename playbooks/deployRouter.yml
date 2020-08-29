@@ -148,7 +148,7 @@
     - name: Create configuration template file for VyOS router
       template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}"
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Template }}"
         mode: "666"
       when: 
         - Deploy.Product.Router == true
@@ -195,7 +195,7 @@
         vm_username: "vyos"
         vm_password: "vyos"
         copy:
-            src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
+            src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Template }}"
             dest: "/config/config.boot"
             overwrite: true
       when: 
@@ -500,7 +500,7 @@
         vm_username: "vyos"
         vm_password: "vyos"
         copy:
-            src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
+            src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Template }}"
             dest: "/config/config.boot"
             overwrite: true
       when: 
@@ -580,7 +580,7 @@
 
     - name: Delete the temporary template file for VyOS router
       file: 
-        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Template }}"
         state: absent
       when: 
         - Deploy.Product.Router == true
