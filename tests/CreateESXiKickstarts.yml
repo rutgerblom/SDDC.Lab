@@ -69,12 +69,12 @@
       file:
         path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
         state: directory
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
         
     - name: Create KS.CFG for each nested ESXi host
       template: 
         src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.ESXi.Template }}"
         dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}/KS.CFG"
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true

@@ -15,7 +15,7 @@
 {% set ns = namespace() %}
 {% set ns.LicenseAssignedToHost=false %}
 {% set ns.Licenses=ESXi_Licenses %}
-{% for HostName, HostConfig in Nested_ESXi.Hosts.items() %}
+{% for HostName, HostConfig in Nested_ESXi.Host.items() %}
 {# Calculate number of sockets this host needs #}
 {% set HostSockets = (Nested_ESXi.HardwareSettings[HostConfig.Cluster].CPU / Nested_ESXi.HardwareSettings[HostConfig.Cluster].CoresPerSocket) | int %}
 {# Reset Global flag that ensures that each host only gets one license assigned to it #}

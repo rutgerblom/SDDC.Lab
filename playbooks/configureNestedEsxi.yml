@@ -71,7 +71,7 @@
       until: vm_facts is search(item.value.vmk.vmk0.Address.IPv4.Address)
       retries: 15
       delay: 60
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
@@ -88,7 +88,7 @@
         esxi_password: "{{ item.value.Password }}"
         state: present
       ignore_errors: true
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
@@ -105,7 +105,7 @@
         nfs_path: "{{ Common.NFS.Path }}"
         nfs_ro: no
         state: present
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
       async: 1800
       poll: 0
       when: 
@@ -122,7 +122,7 @@
         datastore: "{{ Target.Datastore }}"
         path: "{{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
         state: absent
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
         - DEBUG.KeepInstallerFiles != true

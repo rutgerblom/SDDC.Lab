@@ -194,7 +194,7 @@
           - vmnic1
           - vmnic2
         state: present
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
@@ -210,7 +210,7 @@
         current_portgroup_name: 'Management Network'
         migrate_switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         migrate_portgroup_name: "{{ item.value.vmk.vmk0.PortGroup }}"
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
@@ -230,7 +230,7 @@
           subnet_mask: "{{ (item.value.vmk.vmk1.Address.IPv4.Address + '/' + item.value.vmk.vmk1.Address.IPv4.Prefix) | ipaddr('netmask') }}"
           tcpip_stack: "{{ item.value.vmk.vmk1.Stack }}"
         state: present
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
@@ -250,7 +250,7 @@
           subnet_mask: "{{ (item.value.vmk.vmk2.Address.IPv4.Address + '/' + item.value.vmk.vmk2.Address.IPv4.Prefix) | ipaddr('netmask') }}"
           tcpip_stack: "{{ item.value.vmk.vmk2.Stack }}"
         state: present
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
       
@@ -269,7 +269,7 @@
           subnet_mask: "{{ (item.value.vmk.vmk3.Address.IPv4.Address + '/' + item.value.vmk.vmk3.Address.IPv4.Prefix) | ipaddr('netmask') }}"
           tcpip_stack: "{{ item.value.vmk.vmk3.Stack }}"
         state: present
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
       
@@ -281,6 +281,6 @@
         validate_certs: false
         switch: 'vSwitch0'
         state: absent
-      loop: "{{ Nested_ESXi.Hosts | dict2items }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
