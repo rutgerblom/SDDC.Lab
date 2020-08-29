@@ -9,6 +9,10 @@
   vars:
       LOCAL_EdgeClusterTemplate: "{{ Target.TemplateFolder }}/vars_NSXT_EdgeClusters.j2"
   tasks:
+    - name: createNsxEdgeCluster_Playbook
+      debug:
+        msg: "Starting playbook: createNsxEdgeCluster"
+
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
         seconds: 5

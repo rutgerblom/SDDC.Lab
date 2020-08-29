@@ -9,6 +9,10 @@
   vars:
       LOCAL_EdgeTnTemplate: "{{ Target.TemplateFolder }}/vars_NSXT_EdgeTransportNodes.j2"
   tasks:
+    - name: createNsxEdgeTn_Playbook
+      debug:
+        msg: "Starting playbook: createNsxEdgeTn"
+
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
         seconds: 5
