@@ -69,7 +69,7 @@ Deploy:
       Product:   "{{ Deploy.Software.vCenter.Product }}"
       Version:   "{{ Deploy.Software.vCenter.Version }}"
       Patch:     {{ Deploy.Software.vCenter.Patch }}
-      Config:    "{{ Deploy.Software.vCenter.Template }}"
+      Config:    "{{ Deploy.Software.vCenter.Config }}"
       Installer: "{{ Deploy.Software.vCenter.Installer }}"
       Template:
         Repl_vCenter: "{{ Template['vCenter'][Deploy.Software.vCenter.Version]['Template'].Repl_vCenter }}"
@@ -84,7 +84,7 @@ Deploy:
       Product:   "{{ Deploy.Software.ESXi.Product }}"
       Version:   "{{ Deploy.Software.ESXi.Version }}"
       Patch:     {{ Deploy.Software.ESXi.Patch }}
-      Config:    "{{ Deploy.Software.ESXi.Template }}"
+      Config:    "{{ Deploy.Software.ESXi.Config }}"
       Installer: "{{ Deploy.Software.ESXi.Installer }}"
       Template:  "{{ Template['ESXi'][Deploy.Software.ESXi.Version].Template }}"
       Directory: "{{ Software[Deploy.Software.ESXi.Vendor][Deploy.Software.ESXi.Product]['Installers'][Deploy.Software.ESXi.Version]['Location'].Local }}"
@@ -95,7 +95,7 @@ Deploy:
       Product:   "{{ Deploy.Software.NSXT.Product }}"
       Version:   "{{ Deploy.Software.NSXT.Version }}"
       Patch:     {{ Deploy.Software.NSXT.Patch }}
-      Config:    "{{ Deploy.Software.NSXT.Template }}"
+      Config:    "{{ Deploy.Software.NSXT.Config }}"
       Installer: "{{ Deploy.Software.NSXT.Installer }}"
       Directory: "{{ Software[Deploy.Software.NSXT.Vendor][Deploy.Software.NSXT.Product]['Installers'][Deploy.Software.NSXT.Version]['Location'].Local }}"
       File:      "{{ Software[Deploy.Software.NSXT.Vendor][Deploy.Software.NSXT.Product]['Installers'][Deploy.Software.NSXT.Version].File }}"
@@ -104,7 +104,7 @@ Deploy:
       Product:   "{{ Deploy.Software.Router.Product }}"
       Version:   "{{ Deploy.Software.Router.Version }}"
       Patch:     {{ Deploy.Software.Router.Patch }}
-      Config:    "{{ Deploy.Software.Router.Template }}"
+      Config:    "{{ Deploy.Software.Router.Config }}"
       Installer: "{{ Deploy.Software.Router.Installer }}"
       Template:  "{{ Template['Router'][Deploy.Software.Router.Version].Template }}"
       Directory: "{{ Software[Deploy.Software.Router.Vendor][Deploy.Software.Router.Product]['Installers'][Deploy.Software.Router.Version]['Location'].Local }}"
