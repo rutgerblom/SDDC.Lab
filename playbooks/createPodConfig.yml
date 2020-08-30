@@ -142,5 +142,5 @@
       when: result.stat.exists
 
     - name: Move/Rename Temp Pod Config to Pod Config
-      command: mv "{{ lookup('env','HOME') }}/{{ PodTempConfigFile }} {{ lookup('env','HOME') }}/{{ PodConfigFile }}"
+      command: mv {{ lookup('env','HOME') }}/{{ PodTempConfigFile }} {{ lookup('env','HOME') }}/{{ PodConfigFile }}
       when: result.stat.exists
