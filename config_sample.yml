@@ -43,47 +43,47 @@ Deploy:
     Options:
       UseLocalInstaller: true
       KeepNewInstallers: true
-    vCenter:
-      Vendor:  VMware
-      Product: vCenter
-      Version: '7.00D'
+    vCenter:                                                                  # Label used for selection of which template to use during deployment (templates.yml)
+      Vendor:  VMware                                                         # Indicates software vendor  you want to deploy from the software repository (software.yml)
+      Product: vCenter                                                        # Indicates software product you want to deploy from the software repository (software.yml)
+      Version: '7.00D'                                                        # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
-      Template:  "{{ SiteCode }}-vCenter.conf"
+      Config:  "{{ SiteCode }}-vCenter.conf"
       Installer: "{{ SiteCode }}-Installer-vCenter"
-    ESXi:
-      Vendor:  VMware
-      Product: ESXi
-      Version: '7.00B'                                                        # Indicate which version you want to deploy from the software repository (Software.yml)
+    ESXi:                                                                     # Label used for selection of which template to use during deployment (templates.yml)
+      Vendor:  VMware                                                         # Indicates software vendor  you want to deploy from the software repository (software.yml)
+      Product: ESXi                                                           # Indicates software product you want to deploy from the software repository (software.yml)
+      Version: '7.00B'                                                        # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
-      Template:  "KS.CFG"
+      Config:  "KS.CFG"
       Installer: "{{ SiteCode }}-Installer-ESXi"
-    NSXT:
-      Vendor:  VMware
-      Product: NSXT
-      Version: '3.0.1.1'                                                      # Indicate which version you want to deploy from the software repository (Software.yml)
+    NSXT:                                                                     # Label used for selection of which template to use during deployment (templates.yml)
+      Vendor:  VMware                                                         # Indicates software vendor  you want to deploy from the software repository (software.yml)
+      Product: NSXT                                                           # Indicates software product you want to deploy from the software repository (software.yml)
+      Version: '3.0.1.1'                                                      # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
-      Template:  "{{ SiteCode }}-NSXT.conf"
+      Config:  "{{ SiteCode }}-NSXT.conf"
       Installer: "{{ SiteCode }}-Installer-NSXT"
-    Router:
-      Vendor:  VyOS
-      Product: Router
+    Router:                                                                   # Label used for selection of which template to use during deployment (templates.yml)
+      Vendor:  VyOS                                                           # Indicates software vendor  you want to deploy from the software repository (software.yml)
+      Product: Router                                                         # Indicates software product you want to deploy from the software repository (software.yml)
       Version: Latest                                                         # Must be either "Latest" or "Legacy".  Latest will download the latest nightly build from VyOS if you do not already have an ISO local.  We HIGHLY recommend you use "Latest", as not all features are supported by "Legacy"
       Patch:   false
-      Template:  "{{ SiteCode }}-Router.conf"
+      Config:  "{{ SiteCode }}-Router.conf"
       Installer: "{{ SiteCode }}-Installer-Router"
-    vRLI:
-      Vendor:  VMware
-      Product: vRLI
-      Version: '8.1.1'                                                        # Indicate which version you want to deploy from the software repository (Software.yml)
+    vRLI:                                                                     # Label used for selection of which template to use during deployment (templates.yml)
+      Vendor:  VMware                                                         # Indicates software vendor  you want to deploy from the software repository (software.yml)
+      Product: vRLI                                                           # Indicates software product you want to deploy from the software repository (software.yml)
+      Version: '8.1.1'                                                        # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
-      Template:  "{{ SiteCode }}-vRLI.conf"
+      Config:  "{{ SiteCode }}-vRLI.conf"
       Installer: "{{ SiteCode }}-Installer-vRLI"
-    DNSServer:
-      Vendor:  Ubuntu
-      Product: DNSServer
-      Version: '20.04.1'                                                      # Indicate which version you want to deploy from the software repository (Software.yml)
+    DNSServer:                                                                # Label used for selection of which template to use during deployment (templates.yml)
+      Vendor:  Ubuntu                                                         # Indicates software vendor  you want to deploy from the software repository (software.yml)
+      Product: Server                                                         # Indicates software product you want to deploy from the software repository (software.yml)
+      Version: '20.04.1'                                                      # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
-      Template:  "{{ SiteCode }}-Ubuntu.conf"
+      Config:  "{{ SiteCode }}-Ubuntu.conf"
       Installer: "{{ SiteCode }}-Installer-Ubuntu"
 
 
