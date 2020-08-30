@@ -12,6 +12,7 @@
 
   vars:
     - PodTemplate: "Pod_Config.j2"
+    - PodTempConfigFile: "{{ SiteCode }}-Config_Temp.yml"
     - PodConfigFile: "{{ SiteCode }}-Config.yml"
 
   vars_prompt:
@@ -81,6 +82,7 @@
 
                        Pod-Config File Being Prepared: {{ SourceConfigPath }}/{{ SourceConfigFile }}
                                Configuration Template: {{ Target.TemplateFolder }}/{{ PodTemplate }}
+                       Target Temp Configuration File: {{ PodTempConfigFile }}
                             Target Configuration File: {{ PodConfigFile }}
 
           =================================================================================================
@@ -109,23 +111,19 @@
           =====================================================================================================
 
 
-    - name: Delete existing configuration file
+    - name: Delete existing temp configuration file if it exists
       file:
-        path: "{{ lookup('env','HOME') }}/{{ PodConfigFile }}"
+        path: "{{ lookup('env','HOME') }}/{{ PodTempConfigFile }}"
         state: absent
-      when:
-        - Pod.Number is defined
-        - Pod.Number >= 10
-        - Pod.Number <= 240
 
     - name: Create variable with current date and time
       set_fact: 
         time: "{{lookup('pipe','date \"+%d-%B-%Y %H:%M\"')}}"
  
-    - name: Create Pod Configuration File (Used For Pod Deployment)
+    - name: Create Temp Pod Configuration File (Used For Pod Deployment)
       template: 
         src: "{{ Target.TemplateFolder }}/{{ PodTemplate }}"
-        dest: "{{ lookup('env','HOME') }}/{{ PodConfigFile }}"
+        dest: "{{ lookup('env','HOME') }}/{{ PodTempConfigFile }}"
         mode: "666"
         force: yes
       when: 
@@ -133,3 +131,16 @@
         - Pod.Number >= 10
         - Pod.Number <= 240
 
+    - name: Verify Temp Pod Configuration File Exists
+      stat: path="{{ lookup('env','HOME') }}/{{ PodTempConfigFile }}"
+      register: result
+
+    - name: Delete Pod Configuration file if Temp Pod Config file exists
+      file:
+        path: "{{ lookup('env','HOME') }}/{{ PodConfigFile }}"
+        state: absent
+      when: result.stat.exists
+
+    - name: Move/Rename Temp Pod Config to Pod Config
+      command: mv "{{ lookup('env','HOME') }}/{{ PodTempConfigFile }} {{ lookup('env','HOME') }}/{{ PodConfigFile }}"
+      when: result.stat.exists
