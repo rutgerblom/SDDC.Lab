@@ -1,6 +1,6 @@
 {#
  #    Authors: Luis Chanu & Rutger Blom
- #   Filename: templates/DNSServer_v20.04.01_runbook.j2
+ #   Filename: templates/DNSServer_v20.04.1_runbook.j2
  #    Used By: This file is used by the playbook deployDNS.yml
  #    Purpose: This Jinja2 template file is used to create the data structure that is provided to the modules in deployDNS.yml .
  #
@@ -9,18 +9,18 @@ Configuration:
   Templates:
     AutoInstall:
       - Name: UserData
-        Source: {{ Target.TemplateFolder }}/Ubuntu_v20.04.01_user-data.j2
+        Source: {{ Target.TemplateFolder }}/Ubuntu_v20.04.1_user-data.j2
         LocalDestination:
         StageDestination:
         FinalDestination: {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/{{ Common.DNS.Domain }}/user-data
       - Name: MetaData
-        Source: {{ Target.TemplateFolder }}/Ubuntu_v20.04.01_meta-data.j2
+        Source: {{ Target.TemplateFolder }}/Ubuntu_v20.04.1_meta-data.j2
         LocalDestination:
         StageDestination:
         FinalDestination: {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/{{ Common.DNS.Domain }}/meta-data
     AfterBoot:
       - Name: NetPlan
-        Source: {{ Target.TemplateFolder }}/Ubuntu_v20.04.01_Netplan.j2
+        Source: {{ Target.TemplateFolder }}/Ubuntu_v20.04.1_Netplan.j2
         LocalDestination: {{ Target.TempFolder }}/00-installer-config.yaml
         StageDestination: /home/{{ Nested_DNSServer.OS.Credential.User }}/00-installer-config.yaml
         FinalDestination: /etc/netplan/00-installer-config.yaml
