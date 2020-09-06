@@ -172,7 +172,7 @@
         allow_duplicates: no
         cluster: "{{ Target.Cluster }}"
         datacenter: "{{ Target.DataCenter }}"
-        folder: "{{ Target.VMFolder }}"
+        folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}{% else %}{{ Target.VMFolder }}{% endif %}"         # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
         datastore: "{{ Target.Datastore }}"
         name: "{{ Nested_Router.Name }}"
         ovf: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
