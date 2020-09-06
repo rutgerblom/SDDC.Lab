@@ -309,14 +309,15 @@ protocols {
     }
 {% endif %}{# Deploy.Setting.IPv6 #}
 {% endif %}{# Nested_Router.Protocol == OSPF #}
-{% if Nested_Router.Protocol == "Static" %}
+{# % if Nested_Router.Protocol == "Static" % #}
     static {
         route 0.0.0.0/0 {
             next-hop {{ Nested_Router.Interface.Uplink.IPv4.Gateway }} {
+                distance 250
             }
         }
     }
-{% endif %}{# Nested_Router.Protocol == Static #}
+{# % endif %}{# Nested_Router.Protocol == Static #}
 }
 service {
     dhcp-server {
