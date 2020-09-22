@@ -19,7 +19,7 @@
 
 ## Description
 
-This repository contains Ansible scripts that perform fully automated deployments of complete VMware SDDC Pods. Each Pod contains:
+This repository contains Ansible scripts that perform fully automated deployments of complete nested VMware SDDC Pods. Each Pod contains:
 * A [VyOS](https://www.vyos.io/) Router
 * vCenter Server
 * ESXi Hosts
