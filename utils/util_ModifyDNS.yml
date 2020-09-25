@@ -70,8 +70,8 @@
         server:   "{{ DNS.Server.IP }}"
         protocol: "{{ DNS.Server.Protocol }}"
         type:     "PTR"
-        record:   "{{ item.Value }}.{{ item.Zone }}."
-        value:    "{{ item.Record | ipaddr('revdns') }}"
+        record:   "{{ item.Value | ipaddr('revdns') }}"
+        value:    "{{ item.Record }}.{{ item.Zone }}."
         state:    "{{ item.State }}"
       loop: "{{ DNS.Records }}"
       when:
