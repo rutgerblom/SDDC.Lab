@@ -1,0 +1,93 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: utils/util_ModifyDNS.yml
+##    Purpose: This module allows a user to create/delete various records to the DNS server via Dynamic Updates.
+##
+##   Instructions:
+##     1) Copy the utils/util_ModifyDNS_SampleConfig.yml file to a new file (i.e. DNSRecords.yml), and modify it with the records you want created/deleted
+##     2) Execute this utility via the following command:
+##                             ansible-playbook -e "@DNSRecords.yml" utils/ModifyDNS.yml
+##
+---
+- hosts: localhost
+  name: ModifyDNS.yml
+  tasks:
+    - name: ModifyDNS_Playbook
+      debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+
+##
+## Process Record Deletions
+##
+    - name: Process record deletions (Forward)
+      nsupdate:
+        server:   "{{ DNS.Server.IP }}"
+        protocol: "{{ DNS.Server.Protocol }}"
+        type:     "{{ item.Type }}"
+        zone:     "{{ item.Zone }}"
+        record:   "{{ item.Record }}"
+        value:    "{{ item.Value }}"
+        state:    "{{ item.State }}"
+      loop: "{{ DNS.Records }}"
+      when:
+        - item.State == "absent"
+
+    - name: Delete PTR entries for A and AAAA records
+      nsupdate:
+        server:   "{{ DNS.Server.IP }}"
+        protocol: "{{ DNS.Server.Protocol }}"
+        type:     "PTR"
+        record:   "{{ item.Value }}.{{ item.Zone }}."
+        value:    "{{ item.Record | ipaddr('revdns') }}"
+        state:    "{{ item.State }}"
+      loop: "{{ DNS.Records }}"
+      when:
+        - item.State == "absent"
+        - item.Type == "A" or item.Type == "AAAA"
+
+
+##
+## Process Record Additions
+##
+    - name: Process A, AAAA, and CNAME records
+      nsupdate:
+        server:   "{{ DNS.Server.IP }}"
+        protocol: "{{ DNS.Server.Protocol }}"
+        type:     "{{ item.Type }}"
+        zone:     "{{ item.Zone }}"
+        record:   "{{ item.Record }}"
+        value:    "{{ item.Value }}"
+        state:    "{{ item.State }}"
+      loop: "{{ DNS.Records }}"
+      when:
+        - item.State == "present"
+        - item.Type == "A" or item.Type == "AAAA" or item.Type == "CNAME"
+
+    - name: Auto-Create PTR entries for A and AAAA records
+      nsupdate:
+        server:   "{{ DNS.Server.IP }}"
+        protocol: "{{ DNS.Server.Protocol }}"
+        type:     "PTR"
+        record:   "{{ item.Value | ipaddr('revdns') }}"
+        value:    "{{ item.Record }}.{{ item.Zone }}."
+        state:    "{{ item.State }}"
+      loop: "{{ DNS.Records }}"
+      when:
+        - item.State == "present"
+        - item.Type == "A" or item.Type == "AAAA"
+        - DNS.Option.AutoCreatePTR == true
+
+    - name: Process PTR records
+      nsupdate:
+        server:   "{{ DNS.Server.IP }}"
+        protocol: "{{ DNS.Server.Protocol }}"
+        type:     "{{ item.Type }}"
+        record:   "{{ item.Record | ipaddr('revdns') }}"
+        value:    "{{ item.Value }}.{{ item.Zone }}."
+        state:    "{{ item.State }}"
+      loop: "{{ DNS.Records }}"
+      when:
+        - item.State == "present"
+        - item.Type == "PTR"
