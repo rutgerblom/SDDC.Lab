@@ -1,0 +1,30 @@
+{#
+ #     Author: Luis Chanu
+ #   Filename: utils/util_GetVMs_Template.j2
+ #    Used By: This file is used by the playbook util_GetVMs.yml
+ #    Purpose: This Jinja2 template file is used to create the YAML list of VMs in a list which can be used to assign NSX-T Tags
+ #
+ #}
+##
+##       Description: Virtual Machines and Templates registred on vCenter Server "{{ vCenter.Server }}"
+##
+##       Output File: {{ LOCAL_DestinationFolder }}/{{ LOCAL_OutputFile }}
+##        Created by: {{ lookup('env','USER') }}
+##        Created at: {{ time }}
+##
+VMList:
+{% for vm in vmlist %}
+  - name: {{ vm.guest_name }}
+    tags:
+      - tag: 
+        scope: 
+{% endfor %}{# vm #}
+{% if DEBUG.IncludeRawVMData == true %}
+
+
+##
+## Raw VM Information Received From vCenter Server
+##
+Filtered_VMList_from_vCenter:
+  {{ vmlist | to_nice_yaml(indent=2) }}
+{% endif %}{# DEBUG.IncludeRawVMData #}

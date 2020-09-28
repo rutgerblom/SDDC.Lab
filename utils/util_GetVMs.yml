@@ -1,0 +1,89 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: utils/util_GetVMs.yml
+##    Purpose: This module produces a test file called "GetVMs_List.yaml" in the users home directory.  This file will include all of the VMs callows a user get a list of all VMs and Templates registered on a given vCenter Server
+##
+##   Instructions:
+##     1) Update vCenter Server information and credentials in the VARS section
+##     2) Set FilterBy conditions (i.e. vSphereCluster) which must match raw data received with VMs.  To match ALL VM's, set to "".
+##     3) VMs and templates which match FilterBy items will be included in the list.  FilterBy options must EXACTLY match raw data output.
+##     4) This should be executed from within the Utils folder, where the GetVMs.yml and GetVMs_Template.j2 files are located.
+##     5) This Ansible playbook should be run as a regular user, and NOT with "sudo"
+##
+---
+- hosts: localhost
+  name: util_GetVMs.yml
+  vars:
+    - LOCAL_OutputFile: "GetVMs_List.yaml"
+    - LOCAL_Template: "util_GetVMs_Template.j2"
+    - LOCAL_DestinationFolder: "/home/{{ lookup('env','USER') }}"
+    - DEBUG:
+        DisplayVMs: false                                                                   # Display VM information on screen during execution
+        IncludeRawVMData: false                                                             # Include raw VM data in GetVMs_List.yaml file
+    - vCenter:
+        Server: OKN-vCenter.SDDC.Lab
+        User: administrator@vsphere.local
+        Password: VMware1!
+    - FilterBy:
+        vSphereCluster: ""                                                                  # Specify vSphere cluster to include. To include all clusters, set to "".
+
+  tasks:
+    - name: util_GetVMs_Playbook
+      debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Get all registered VMs and Tempaltes on the given vCenter Server
+      vmware_vm_info:
+        hostname: "{{ vCenter.Server }}"
+        username: "{{ vCenter.User }}"
+        password: "{{ vCenter.Password }}"
+        validate_certs: no
+        vm_type: all
+      register: vmlist_raw
+
+    - name: Display VMs and Templates Received From vCenter Server
+      pause:
+        seconds: 1
+        prompt: |
+          ================================== Show VM & Template Information ==================================
+
+          vmlist_raw (output)
+          ===================
+          {{ vmlist_raw | to_nice_yaml }}
+
+          ====================================================================================================
+      when:
+        - DEBUG.DisplayVMs == true
+
+
+    - name: Apply filter to 'vmlist_raw'
+      set_fact:
+        vmlist: "{{ (vmlist | default([])) + [ item ] }}"
+      loop: "{{ vmlist_raw.virtual_machines | default([]) }}"
+      when:
+        - FilterBy.vSphereCluster == "" or FilterBy.vSphereCluster == item.cluster
+
+    - name: Display VMs and Templates (Filtered)
+      pause:
+        seconds: 1
+        prompt: |
+          ================================== Show VM & Template Information ==================================
+
+          vmlist (Filtered)
+          ===================
+          {{ vmlist | to_nice_yaml }}
+
+          ====================================================================================================
+      when:
+        - DEBUG.DisplayVMs == true
+
+    - name: Create variable with current date and time for template
+      set_fact: 
+        time: "{{lookup('pipe','date \"+%d-%B-%Y %H:%M\"')}}"
+
+    - name: Create VM List with Blank NSX-T tags
+      template: 
+        src:  "{{ LOCAL_Template }}"
+        dest: "{{ LOCAL_DestinationFolder }}/{{ LOCAL_OutputFile }}"
+        mode: "666"
