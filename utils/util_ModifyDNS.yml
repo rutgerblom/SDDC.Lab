@@ -7,13 +7,13 @@
 ##   Instructions:
 ##     1) Copy the utils/util_ModifyDNS_SampleConfig.yml file to a new file (i.e. DNSRecords.yml), and modify it with the records you want created/deleted
 ##     2) Execute this utility via the following command:
-##                             ansible-playbook -e "@DNSRecords.yml" utils/ModifyDNS.yml
+##                             ansible-playbook -e "@DNSRecords.yml" utils/util_ModifyDNS.yml
 ##
 ---
 - hosts: localhost
-  name: ModifyDNS.yml
+  name: util_ModifyDNS.yml
   tasks:
-    - name: ModifyDNS_Playbook
+    - name: util_ModifyDNS_Playbook
       debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
