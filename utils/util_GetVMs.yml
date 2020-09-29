@@ -6,7 +6,7 @@
 ##
 ##   Instructions:
 ##     1) Update vCenter Server information and credentials in the VARS section
-##     2) Set FilterBy conditions (i.e. vSphereCluster) which must match raw data received with VMs.  To match ALL VM's, set to "".
+##     2) Set FilterBy conditions (i.e. vSphereClusters) which must match raw data received with VMs.  To match ALL VM's, set to "".
 ##     3) VMs and templates which match FilterBy items will be included in the list.  FilterBy options must EXACTLY match raw data output.
 ##     4) This should be executed from within the Utils folder, where the GetVMs.yml and GetVMs_Template.j2 files are located.
 ##     5) This Ansible playbook should be run as a regular user, and NOT with "sudo"
@@ -22,11 +22,11 @@
         DisplayVMs: false                                                                   # Display VM information on screen during execution
         IncludeRawVMData: false                                                             # Include raw VM data in GetVMs_List.yaml file
     - vCenter:
-        Server: Pod-100-vCenter.SDDC.Lab
+        Server: OKN-vCenter.SDDC.Lab
         User: administrator@vsphere.local
         Password: VMware1!
     - FilterBy:
-        vSphereCluster: ""                                                                  # Specify vSphere cluster to include. To include all clusters, set to "".
+        vSphereClusters: [ OKN-DEV-1 ]                                                           # Specify vSphere clusters to include. To include all clusters, set to empty list, which is [].
 
   tasks:
     - name: util_GetVMs_Playbook
@@ -62,7 +62,7 @@
         vmlist: "{{ (vmlist | default([])) + [ item ] }}"
       loop: "{{ vmlist_raw.virtual_machines | default([]) }}"
       when:
-        - FilterBy.vSphereCluster == "" or FilterBy.vSphereCluster == item.cluster
+        - FilterBy.vSphereClusters|length == 0 or item.cluster in FilterBy.vSphereClusters                           # If FilterBy.vSphereClusters is an empty list, or if item's cluster is one of the vSphereClusters
 
     - name: Display VMs and Templates (Filtered)
       pause:
