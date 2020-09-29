@@ -25,13 +25,13 @@
         DisplayVMs: false                                                                   # Display VM information on screen during execution
         IncludeRawVMData: false                                                             # Include raw VM data at the end of the GetVMs_List.yaml file
     - vCenter:
-        Server: Pod-100-vCenter.SDDC.Lab
+        Server: OKN-vCenter.SDDC.Lab
         User: administrator@vsphere.local
         Password: VMware1!
-        DataCenter: Pod-100-DataCenter
+        DataCenter: OKN-DataCenter
     - FilterBy:
-        vSphereClusters: [ Edge ]                                                           # Specify vSphere clusters to match against. To include all clusters, set to empty list, which is [].
-        PortGroups: [ SEG-Dev-Web]                                                          # Specify vSphere PortGroups to match against.  To include all Port-Groups, set to empty list, which is [].
+        vSphereClusters: []                                                                # Specify vSphere clusters to match against. To include all clusters, set to empty list, which is [].
+        PortGroups: []                                                                     # Specify vSphere PortGroups to match against.  To include all Port-Groups, set to empty list, which is [].
 
   tasks:
     - name: util_GetVMs_Playbook
