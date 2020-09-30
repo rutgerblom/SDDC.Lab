@@ -1,0 +1,24 @@
+{#
+ #     Author: Luis Chanu
+ #   Filename: utils/util_GetVMs_Filter_Template.j2
+ #    Used By: This file is used by the playbook util_GetVMs.yml
+ #    Purpose: This Jinja2 template removes all VM's from the 'guestinfo' list which do not have any connections to any of the FilterBy.PortGroups MoREFs.  These MoREFs are in the "ListOfNetworkObjects" list
+ #
+ #}
+{% set ns = namespace() %}
+{% set ns.NetworkMatchFound = false %}
+{% for vm in guestinfo.results %}
+{% set ns.NetworkMatchFound = false %}
+{# If no FilterBy.PortGorups specified, force a match as there is no PortGroup filtering #}
+{% if ListOfNetworkObjects is undefined %}
+{% set ns.NetworkMatchFound = true %}
+{% else %}{# ListOfNetworkObjects #}
+{# ListOfNetworkObjects contains entries, so check them #}
+{% for networkobj in ListOfNetworkObjects | default([]) %}
+{% if networkobj == vm.instance.hw_eth0.portgroup_key %}{% set ns.NetworkMatchFound = true %}{% endif %}
+{% endfor %}{# networkobj #}
+{% endif %}{# ListOfNetworkObjects#}
+{% if ns.NetworkMatchFound == true %}
+  - {{ vm.instance.hw_name }}
+{% endif %}{# NetworkMatchFound #}
+{% endfor %}{# vm #}

@@ -1,3 +1,4 @@
+#jinja2: trim_blocks:False
 {#
  #     Author: Luis Chanu
  #   Filename: utils/util_GetVMs_Template.j2
@@ -12,9 +13,15 @@
 ##        Created by: {{ lookup('env','USER') }}
 ##        Created at: {{ time }}
 ##
+##    Filters Applied
+##    ================
+##    vSphereClusters: {% if FilterBy.vSphereClusters|length == 0 %}None{% else %}{{ FilterBy.vSphereClusters }}{% endif %}
+##         PortGroups: {% if FilterBy.PortGroups|length == 0 %}None{% else %}{{ FilterBy.PortGroups }}{% endif %}
+##
+
 VMList:
-{% for vm in vmlist %}
-  - name: {{ vm.guest_name }}
+{%- for vm in vmlist %}
+  - name: {{ vm }}
     tags:
       - tag: 
         scope: 
