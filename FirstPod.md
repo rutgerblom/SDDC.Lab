@@ -67,17 +67,20 @@ After cloning the repository you will end up with a directory called "SDDC.Lab" 
     deploy.yml
     licenses_sample.yml
     software_sample.yml
+    templates_sample.yml
     undeploy.yml
 
-Three files in the root of the SDDC.Lab directory require your attention:
+Four files in the root of the SDDC.Lab directory require your attention:
 * config_sample.yml
 * licenses_sample.yml
 * software_sample.yml
+* templates_sample.yml
 
 Start by creating your own copies of the sample configuration files:
 * cp config_sample.yml config.yml
 * cp licenses_sample.yml licenses.yml
 * cp software_sample.yml software.yml
+* cp templates_sample.yml templates.yml
 
 ### config.yml
 This file contains all of the configuration and settings for the Pod you're about to deploy. Its contents are organized in several different sections and data structures.
