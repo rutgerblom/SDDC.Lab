@@ -83,6 +83,7 @@ The following are recommendations based on our experience with deploying Pods:
   * cp config_sample.yml config.yml
   * cp licenses_sample.yml licenses.yml
   * cp software_sample.yml software.yml
+  * cp templates_sample.yml templates.yml
 
 * Modify **config.yml** and **licenses.yml** according to your needs and your environment
 
