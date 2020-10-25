@@ -452,7 +452,31 @@
       when:
         - ESXi_Template.stat.isreg is not defined or ESXi_Template.stat.isreg != true
 
+##
+## Verify vSphere cluster for NSX-T Edge nodes will be deployed
+##
+    - name: Verify vSphere cluster for Edge nodes
+      pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
 
+                        Issue: NSX-T Edge nodes can not be deployed
+
+                                Deploy NSX-T Edge nodes: {{ Deploy.Product.NSXT.Edge}}    
+            Deploy vSphere cluster for NSX-T Edge nodes: {{ Nested_Clusters.Edge.DeployHosts }}
+
+          =================================================================================================
+      when:
+        - Deploy.Product.NSXT.Edge
+        - Nested_Clusters.Edge.DeployHosts != true
+
+    - name: Set flag if NSX-T Edge cannot be deployed
+      set_fact:
+        IssueFound: true
+      when:
+        - Deploy.Product.NSXT.Edge
+        - Nested_Clusters.Edge.DeployHosts != true
 ##
 ## Verify NSX-T installation files exist
 ##
