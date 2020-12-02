@@ -103,8 +103,8 @@
     - name: IPv4 'A' records for Nested_Router
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
-        type:     "A"
-        protocol: "udp"
+        type:     A
+        protocol: udp
         zone:     "{{ Common.DNS.Domain }}"
         record:   "{{ Nested_Router.Name }}-{{ item.key }}"
         value:    "{{ item.value.IPv4.Address }}"
@@ -117,8 +117,8 @@
     - name: IPv4 'CNAME' records for Nested_Router
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
-        type:     "CNAME"
-        protocol: "udp"
+        type:     CNAME
+        protocol: udp
         zone:     "{{ Common.DNS.Domain }}"
         record:   "{{ Nested_Router.Name }}"
         value:    "{{ Nested_Router.Name }}-Uplink"
@@ -154,8 +154,9 @@
     - name: IPv4 'PTR' records for Nested_Router
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
-        type:     "PTR"
-        protocol: "udp"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
         record:   "{{ item.value.IPv4.Address | ipaddr('revdns') }}"
         value:    "{{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -191,8 +192,8 @@
     - name: IPv6 'AAAA' records for Nested_Router
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
-        type:     "AAAA"
-        protocol: "udp"
+        type:     AAAA
+        protocol: udp
         zone:     "{{ Common.DNS.Domain }}"
         record:   "{{ Nested_Router.Name }}-{{ item.key }}"
         value:    "{{ item.value.IPv6.Address }}"
@@ -229,8 +230,9 @@
     - name: IPv6 'PTR' records for Nested_Router
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
-        type:     "PTR"
-        protocol: "udp"
+        type:     PTR
+        protocol: udp
+        zone:     d.f.ip6.arpa
         record:   "{{ item.value.IPv6.Address | ipaddr('revdns') }}"
         value:    "{{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -268,8 +270,8 @@
     - name: IPv4 'A' records for Nested_vRLI
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
-        type:     "A"
-        protocol: "udp"
+        type:     A
+        protocol: udp
         zone:     "{{ Common.DNS.Domain }}"
         record:   "{{ Nested_vRLI.VMName }}"
         value:    "{{ Nested_vRLI.Address.IPv4.Address }}"
@@ -303,8 +305,9 @@
     - name: IPv4 'PTR' records for Nested_vRLI
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
-        type:     "PTR"
-        protocol: "udp"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
         record:   "{{ Nested_vRLI.Address.IPv4.Address | ipaddr('revdns') }}"
         value:    "{{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -339,8 +342,8 @@
     - name: IPv6 'AAAA' records for Nested_vRLI
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
-        type:     "AAAA"
-        protocol: "udp"
+        type:     AAAA
+        protocol: udp
         zone:     "{{ Common.DNS.Domain }}"
         record:   "{{ Nested_vRLI.VMName }}"
         value:    "{{ Nested_vRLI.Address.IPv6.Address }}"
@@ -376,8 +379,9 @@
     - name: IPv6 'PTR' records for Nested_vRLI
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
-        type:     "PTR"
-        protocol: "udp"
+        type:     PTR
+        protocol: udp
+        zone:     d.f.ip6.arpa
         record:   "{{ Nested_vRLI.Address.IPv6.Address | ipaddr('revdns') }}"
         value:    "{{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -416,8 +420,8 @@
     - name: IPv4 'A' records for Nested_ESXi hosts
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
-        type:     "A"
-        protocol: "udp"
+        type:     A
+        protocol: udp
         zone:     "{{ Common.DNS.Domain }}"
         record:   "{{ item.value.VMName }}"
         value:    "{{ item.value.vmk.vmk0.Address.IPv4.Address }}"
@@ -455,8 +459,9 @@
     - name: IPv4 'PTR' records for Nested_ESXi hosts
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
-        type:     "PTR"
-        protocol: "udp"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
         record:   "{{ item.value.vmk.vmk0.Address.IPv4.Address | ipaddr('revdns') }}"
         value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -493,8 +498,8 @@
     - name: IPv6 'AAAA' records for Nested_ESXi hosts
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
-        type:     "AAAA"
-        protocol: "udp"
+        type:     AAAA
+        protocol: udp
         zone:     "{{ Common.DNS.Domain }}"
         record:   "{{ item.value.VMName }}"
         value:    "{{ item.value.vmk.vmk0.Address.IPv6.Address }}"
@@ -533,8 +538,9 @@
     - name: IPv6 'PTR' records for Nested_ESXi hosts
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
-        type:     "PTR"
-        protocol: "udp"
+        type:     PTR
+        protocol: udp
+        zone:    d.f.ip6.arpa 
         record:   "{{ item.value.vmk.vmk0.Address.IPv6.Address | ipaddr('revdns') }}"
         value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -573,8 +579,8 @@
     - name: IPv4 'A' records for Nested_vCenter
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
-        type:     "A"
-        protocol: "udp"
+        type:     A
+        protocol: udp
         zone:     "{{ Common.DNS.Domain }}"
         record:   "{{ Nested_vCenter.VMName }}"
         value:    "{{ Nested_vCenter.Address.IPv4.Address }}"
@@ -608,8 +614,9 @@
     - name: IPv4 'PTR' records for Nested_vCenter
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
-        type:     "PTR"
-        protocol: "udp"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
         record:   "{{ Nested_vCenter.Address.IPv4.Address | ipaddr('revdns') }}"
         value:    "{{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -644,8 +651,8 @@
     - name: IPv6 'AAAA' records for Nested_vCenter
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
-        type:     "AAAA"
-        protocol: "udp"
+        type:     AAAA
+        protocol: udp
         zone:     "{{ Common.DNS.Domain }}"
         record:   "{{ Nested_vCenter.VMName }}"
         value:    "{{ Nested_vCenter.Address.IPv6.Address }}"
@@ -681,8 +688,9 @@
     - name: IPv6 'PTR' records for Nested_vCenter
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
-        type:     "PTR"
-        protocol: "udp"
+        type:     PTR
+        protocol: udp
+        zone:     d.f.ip6.arpa
         record:   "{{ Nested_vCenter.Address.IPv6.Address | ipaddr('revdns') }}"
         value:    "{{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -720,8 +728,8 @@
     - name: IPv4 'A' records for Nested_NSXT Components
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
-        type:     "A"
-        protocol: "udp"
+        type:     A
+        protocol: udp
         zone:     "{{ Common.DNS.Domain }}"
         record:   "{{ item.value.VMName }}"
         value:    "{{ item.value.Address.IPv4.Address }}"
@@ -757,8 +765,9 @@
     - name: IPv4 'PTR' records for Nested_NSXT Components
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
-        type:     "PTR"
-        protocol: "udp"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
         record:   "{{ item.value.Address.IPv4.Address | ipaddr('revdns') }}"
         value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -794,8 +803,8 @@
     - name: IPv4 'A' records for Nested_NSXT Edge Transport Nodes
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
-        type:     "A"
-        protocol: "udp"
+        type:     A
+        protocol: udp
         zone:     "{{ Common.DNS.Domain }}"
         record:   "{{ item.Name }}"
         value:    "{{ item.Deployment.ManagementIPAddress }}"
@@ -831,8 +840,9 @@
     - name: IPv4 'PTR' records for Nested_NSXT Components
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
-        type:     "PTR"
-        protocol: "udp"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
         record:   "{{ item.Deployment.ManagementIPAddress | ipaddr('revdns') }}"
         value:    "{{ item.Name }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -869,8 +879,8 @@
     - name: IPv6 'AAAA' records for Nested_NSXT Components
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
-        type:     "AAAA"
-        protocol: "udp"
+        type:     AAAA
+        protocol: udp
         zone:     "{{ Common.DNS.Domain }}"
         record:   "{{ item.value.VMName }}"
         value:    "{{ item.value.Address.IPv6.Address }}"
@@ -908,8 +918,9 @@
     - name: IPv6 'PTR' records for Nested_NSXT Components
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
-        type:     "PTR"
-        protocol: "udp"
+        type:     PTR
+        protocol: udp
+        zone:     d.f.ip6.arpa
         record:   "{{ item.value.Address.IPv6.Address | ipaddr('revdns') }}"
         value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
