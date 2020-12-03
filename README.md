@@ -76,7 +76,7 @@ The following are recommendations based on our experience with deploying Pods:
 
 * Install the required software on your Ansible controller:
   * sudo apt install python3 python3-pip xorriso git
-  * sudo pip3 install ansible==2.9.12 pyvim pyvmomi netaddr jmespath dnspython==1.16.0
+  * sudo pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython
   * git clone https://github.com/rutgerblom/SDDC.Lab.git 
 
 * Copy/rename the sample files:
