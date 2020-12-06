@@ -49,6 +49,31 @@
       when: Valid_Pod_Config_File is not defined
 
 
+##
+## Determine Zone to use for IPv6 Reverse Records.  If begins with 'FD', then must use /8.  If it does not begin with 'FD', then default to /56.
+##
+    - name: Determine IPv6 Zone for PTR Records (i.e. Reverse DNS) if BaseNetwork.IPv6 begins with 'fd'
+      set_fact:
+        IPv6_Reverse_Zone: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{60}(.*).$', '\\1') }}"
+      when: (Pod.BaseNetwork.IPv6[0:2] | lower) == 'fd'
+
+    - name: Determine IPv6 Zone for PTR Records (i.e. Reverse DNS) if BaseNetwork.IPv6 does NOT begin with 'fd'
+      set_fact:
+        IPv6_Reverse_Zone: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{36}(.*).$', '\\1') }}"
+      when: (Pod.BaseNetwork.IPv6[0:2] | lower) != 'fd'
+
+
+##
+## Define Zone to use for IPv4 Reverse Records.
+##
+    - name: Determine IPv4 Zone for PTR Records
+      set_fact:
+        IPv4_Reverse_Zone: "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
+
+
+##
+## Standard DEBUG Block (if enabled)
+##
     - name: DEBUG -- Display Target Variables (Pause)
       pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
@@ -67,8 +92,11 @@
                               Common.DNS.Server1.IPv4: {{ Common.DNS.Server1.IPv4 }}
                               Common.DNS.Server1.IPv6: {{ Common.DNS.Server1.IPv6 }}
 
-                                 Pod.BaseNetwork.IPv4: {{ Pod.BaseNetwork.IPv4 }} 
-                                 Pod.BaseNetwork.IPv6: {{ Pod.BaseNetwork.IPv6 }} 
+                                 Pod.BaseNetwork.IPv4: {{ Pod.BaseNetwork.IPv4 }}
+                                 Pod.BaseNetwork.IPv6: {{ Pod.BaseNetwork.IPv6 }}
+
+                                IPv4 Reverse DNS Zone: {{ IPv4_Reverse_Zone }}
+                                IPv6 Reverse DNS Zone: {{ IPv6_Reverse_Zone }}
 
           =================================================================================================
       when:
@@ -82,7 +110,7 @@
       pause:
         seconds: 1
         prompt: |
-          ========================== Display Nested_Router DNS A Records ================================
+          ========================== Display Nested_Router DNS "A" Records ================================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
@@ -117,7 +145,7 @@
     - name: IPv4 'CNAME' records for Nested_Router
       nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
-        type:     "CNAME"
+        type:     CNAME
         protocol: udp
         zone:     "{{ Common.DNS.Domain }}"
         record:   "{{ Nested_Router.Name }}"
@@ -133,13 +161,13 @@
       pause:
         seconds: 1
         prompt: |
-          ========================== Display Nested_Router DNS IPv4 PTR Records =========================
+          ========================== Display Nested_Router DNS IPv4 "PTR" Records =========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
-                                                 Zone: {{ Common.DNS.Domain }}
+                                                 Zone: {{ IPv4_Reverse_Zone }}
                                                Record: {{ item.value.IPv4.Address | ipaddr('revdns') }}
                                                 Value: {{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}
 
@@ -156,7 +184,7 @@
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
         protocol: udp
-        zone:     "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
+        zone:     "{{ IPv4_Reverse_Zone }}"
         record:   "{{ item.value.IPv4.Address | ipaddr('revdns') }}"
         value:    "{{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -171,7 +199,7 @@
       pause:
         seconds: 1
         prompt: |
-          ========================== Display Nested_Router DNS IPv6 AAAA Records ========================
+          ========================== Display Nested_Router DNS IPv6 "AAAA" Records ========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
@@ -209,13 +237,13 @@
       pause:
         seconds: 1
         prompt: |
-          ========================== Display Nested_Router DNS IPv6 PTR Records =========================
+          ========================== Display Nested_Router DNS IPv6 "PTR" Records =========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
-                                                 Zone: {{ Common.DNS.Domain }}
+                                                 Zone: {{ IPv6_Reverse_Zone }}
                                                Record: {{ item.value.IPv6.Address | ipaddr('revdns') }}
                                                 Value: {{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}
 
@@ -232,7 +260,7 @@
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     PTR
         protocol: udp
-        zone:     d.f.ip6.arpa
+        zone:     "{{ IPv6_Reverse_Zone }}"
         record:   "{{ item.value.IPv6.Address | ipaddr('revdns') }}"
         value:    "{{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -250,7 +278,7 @@
       pause:
         seconds: 1
         prompt: |
-          ======================== Display Nested_vRLI DNS IPv4 A Record =============================
+          ======================== Display Nested_vRLI DNS IPv4 "A" Record =============================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
@@ -286,12 +314,13 @@
       pause:
         seconds: 1
         prompt: |
-          ======================== Display Nested_vRLI DNS IPv4 PTR Record ===========================
+          ======================== Display Nested_vRLI DNS IPv4 "PTR" Record ===========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ IPv4_Reverse_Zone }}
                                                Record: {{ Nested_vRLI.Address.IPv4.Address | ipaddr('revdns') }}
                                                 Value: {{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}.
 
@@ -307,7 +336,7 @@
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
         protocol: udp
-        zone:     "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
+        zone:     "{{ IPv4_Reverse_Zone }}"
         record:   "{{ Nested_vRLI.Address.IPv4.Address | ipaddr('revdns') }}"
         value:    "{{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -321,7 +350,7 @@
       pause:
         seconds: 1
         prompt: |
-          ======================= Display Nested_vRLI DNS IPv6 AAAA Record ===========================
+          ======================= Display Nested_vRLI DNS IPv6 "AAAA" Record ===========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
@@ -359,12 +388,13 @@
       pause:
         seconds: 1
         prompt: |
-          ======================== Display Nested_vRLI DNS IPv6 PTR Record ===========================
+          ======================== Display Nested_vRLI DNS IPv6 "PTR" Record ===========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ IPv6_Reverse_Zone }}
                                                Record: {{ Nested_vRLI.Address.IPv6.Address | ipaddr('revdns') }}
                                                 Value: {{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}.
 
@@ -381,7 +411,7 @@
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     PTR
         protocol: udp
-        zone:     d.f.ip6.arpa
+        zone:     "{{ IPv6_Reverse_Zone }}"
         record:   "{{ Nested_vRLI.Address.IPv6.Address | ipaddr('revdns') }}"
         value:    "{{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -399,7 +429,7 @@
       pause:
         seconds: 1
         prompt: |
-          =========================== Display Nested_ESXi DNS A Records =================================
+          =========================== Display Nested_ESXi DNS "A" Records =================================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
@@ -437,13 +467,13 @@
       pause:
         seconds: 1
         prompt: |
-          ========================== Display Nested_ESXi DNS IPv4 PTR Records ===========================
+          ========================== Display Nested_ESXi DNS IPv4 "PTR" Records ===========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
-                                                 Zone: {{ Common.DNS.Domain }}
+                                                 Zone: {{ IPv4_Reverse_Zone }}
                                                Record: {{ item.value.vmk.vmk0.Address.IPv4.Address | ipaddr('revdns') }}
                                                 Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}.
 
@@ -461,7 +491,7 @@
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
         protocol: udp
-        zone:     "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
+        zone:     "{{ IPv4_Reverse_Zone }}"
         record:   "{{ item.value.vmk.vmk0.Address.IPv4.Address | ipaddr('revdns') }}"
         value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -476,7 +506,7 @@
       pause:
         seconds: 1
         prompt: |
-          =========================== Display Nested_ESXi DNS AAAA Records ==============================
+          =========================== Display Nested_ESXi DNS "AAAA" Records ==============================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
@@ -516,13 +546,13 @@
       pause:
         seconds: 1
         prompt: |
-          ========================== Display Nested_ESXi DNS IPv6 PTR Records ===========================
+          ========================== Display Nested_ESXi DNS IPv6 "PTR" Records ===========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
-                                                 Zone: {{ Common.DNS.Domain }}
+                                                 Zone: {{ IPv6_Reverse_Zone }}
                                                Record: item.value.vmk.vmk0.Address.IPv6.Address | ipaddr('revdns') }}
                                                 Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}. 
 
@@ -540,7 +570,7 @@
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     PTR
         protocol: udp
-        zone:     d.f.ip6.arpa
+        zone:     "{{ IPv6_Reverse_Zone }}"
         record:   "{{ item.value.vmk.vmk0.Address.IPv6.Address | ipaddr('revdns') }}"
         value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -559,7 +589,7 @@
       pause:
         seconds: 1
         prompt: |
-          ======================== Display Nested_vCenter DNS IPv4 A Record =============================
+          ======================== Display Nested_vCenter DNS IPv4 "A" Record =============================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
@@ -595,12 +625,13 @@
       pause:
         seconds: 1
         prompt: |
-          ======================== Display Nested_vCenter DNS IPv4 PTR Record ===========================
+          ======================== Display Nested_vCenter DNS IPv4 "PTR" Record ===========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ IPv4_Reverse_Zone }}
                                                Record: {{ Nested_vCenter.Address.IPv4.Address | ipaddr('revdns') }}
                                                 Value: {{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}.
 
@@ -616,7 +647,7 @@
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
         protocol: udp
-        zone:     "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
+        zone:     "{{ IPv4_Reverse_Zone }}"
         record:   "{{ Nested_vCenter.Address.IPv4.Address | ipaddr('revdns') }}"
         value:    "{{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -630,7 +661,7 @@
       pause:
         seconds: 1
         prompt: |
-          ======================= Display Nested_vCenter DNS IPv6 AAAA Record ===========================
+          ======================= Display Nested_vCenter DNS IPv6 "AAAA" Record ===========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
@@ -668,12 +699,13 @@
       pause:
         seconds: 1
         prompt: |
-          ======================== Display Nested_vCenter DNS IPv6 PTR Record ===========================
+          ======================== Display Nested_vCenter DNS IPv6 "PTR" Record ===========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ IPv6_Reverse_Zone }}
                                                Record: {{ Nested_vCenter.Address.IPv6.Address | ipaddr('revdns') }}
                                                 Value: {{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}.
 
@@ -690,7 +722,7 @@
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     PTR
         protocol: udp
-        zone:     d.f.ip6.arpa
+        zone:     "{{ IPv6_Reverse_Zone }}"
         record:   "{{ Nested_vCenter.Address.IPv6.Address | ipaddr('revdns') }}"
         value:    "{{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -707,7 +739,7 @@
       pause:
         seconds: 1
         prompt: |
-          ============================ Display Nested_NSXT DNS A Records ================================
+          ============================ Display Nested_NSXT DNS "A" Records ================================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
@@ -745,12 +777,13 @@
       pause:
         seconds: 1
         prompt: |
-          ========================== Display Nested_NSXT DNS IPv4 PTR Records ===========================
+          ========================== Display Nested_NSXT DNS IPv4 "PTR" Records ===========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ IPv4_Reverse_Zone }}
                                                Record: {{ item.value.Address.IPv4.Address | ipaddr('revdns') }}
                                                 Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}.
 
@@ -767,7 +800,7 @@
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
         protocol: udp
-        zone:     "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
+        zone:     "{{ IPv4_Reverse_Zone }}"
         record:   "{{ item.value.Address.IPv4.Address | ipaddr('revdns') }}"
         value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -782,7 +815,7 @@
       pause:
         seconds: 1
         prompt: |
-          ================= Display Nested_NSXT Edge Transport Nodes DNS IPv4 A Records =================
+          ================= Display Nested_NSXT Edge Transport Nodes DNS IPv4 "A" Records =================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
@@ -820,12 +853,13 @@
       pause:
         seconds: 1
         prompt: |
-          ================ Display Nested_NSXT Edge Transport Nodes DNS IPv4 PTR Records ================
+          ================ Display Nested_NSXT Edge Transport Nodes DNS IPv4 "PTR" Records ================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ IPv4_Reverse_Zone }}
                                                Record: {{ item.Deployment.ManagementIPAddress | ipaddr('revdns') }}
                                                 Value: {{ item.Name }}.{{ Common.DNS.Domain }}.
 
@@ -842,7 +876,7 @@
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
         protocol: udp
-        zone:     "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
+        zone:     "{{ IPv4_Reverse_Zone }}"
         record:   "{{ item.Deployment.ManagementIPAddress | ipaddr('revdns') }}"
         value:    "{{ item.Name }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -857,7 +891,7 @@
       pause:
         seconds: 1
         prompt: |
-          ========================== Display Nested_NSXT DNS AAAA Records ===============================
+          ========================== Display Nested_NSXT DNS "AAAA" Records ===============================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
@@ -897,12 +931,13 @@
       pause:
         seconds: 1
         prompt: |
-          ========================== Display Nested_NSXT DNS IPv6 PTR Records ===========================
+          ========================== Display Nested_NSXT DNS IPv6 "PTR" Records ===========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ IPv6_Reverse_Zone }}
                                                Record: {{ item.value.Address.IPv6.Address | ipaddr('revdns') }}
                                                 Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}.
 
@@ -920,7 +955,7 @@
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     PTR
         protocol: udp
-        zone:     d.f.ip6.arpa
+        zone:     "{{ IPv6_Reverse_Zone }}"
         record:   "{{ item.value.Address.IPv6.Address | ipaddr('revdns') }}"
         value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"

@@ -44,6 +44,20 @@
 ##
     - name: Display IPv6 Reverse DNS for fd00:0000:0000:00::/56 (Absolute path with DNS root '.')
       debug:
+        msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{60}(.*)$', '\\1') }}"
+
+##
+## IMPORTANT: Notice this DNS path is relative (No final '.', which means relative)
+##
+    - name: Display IPv6 Reverse DNS for fd00:0000:0000:00::/8 (Without DNS root '.')
+      debug:
+        msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{60}(.*).$', '\\1') }}"
+
+##
+## IMPORTANT: Notice this DNS path is absolute (Includes final '.', indicating absolute)
+##
+    - name: Display IPv6 Reverse DNS for fd00:0000:0000:00::/8 (Absolute path with DNS root '.')
+      debug:
         msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{36}(.*)$', '\\1') }}"
 
 ##
