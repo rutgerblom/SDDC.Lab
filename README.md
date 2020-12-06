@@ -113,7 +113,7 @@ Here are some known items to be aware of:
 
 2. The DNS IPv6 reverse zone used is determined by the network used for BaseNetwork.IPv6:\
    a) If it begins with "fd", then the zone used is **d.f.ip6.arpa**\
-   b) Otherwise, the zone used is standard IPv6 reverse DNS zone for the /56 network
+   b) Otherwise, the zone used is a standard IPv6 reverse DNS zone for the configured /56 network
 
    This is important understand if you need to configure conditional forwarding to reach your SDDC.Lab environment.
 
