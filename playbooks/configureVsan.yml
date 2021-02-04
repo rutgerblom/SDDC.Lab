@@ -8,11 +8,11 @@
   name: configureVsan.yml
   tasks:
     - name: configureVsan_Playbook
-      debug:
+      ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
     - name: Display error message if Pod-XXX-Config file is not valid or provided
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           *****************************************************************************************************
@@ -41,7 +41,7 @@
 
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ============================ Display Variables For Pod {{Pod.Number}} ===========================
@@ -68,12 +68,12 @@
         - DEBUG.DisplayVariables == true
 
     - name: Create temp directory
-      file:
+      ansible.builtin.file:
         path: "{{ Target.TempFolder }}"
         state: directory
 
     - name: Create Ruby script for silencing vSAN warnings
-      template: 
+      ansible.builtin.template: 
         src: "../templates/vsan_silence.rb.j2"
         dest: "{{ Target.TempFolder }}/{{ item.key }}"
         mode: "666"
@@ -83,7 +83,7 @@
         - item.value.DeployHosts == true
 
     - name: Copy Ruby script to the nested vCenter
-      vmware_guest_file_operation:
+      community.vmware.vmware_guest_file_operation:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -104,7 +104,7 @@
         - item.value.DeployHosts == true
 
     - name: Run Ruby script on the nested vCenter
-      vmware_vm_shell:
+      community.vmware.vmware_vm_shell:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -123,7 +123,7 @@
         - item.value.DeployHosts == true
 
     - name: Delete the Ruby script from the Ansible controller
-      file: 
+      ansible.builtin.file: 
         path: "{{ Target.TempFolder }}/{{ item.key }}"
         state: absent
       loop: "{{ Nested_Clusters | dict2items }}"
