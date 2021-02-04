@@ -8,11 +8,11 @@
   name: deployVc.yml
   tasks:
     - name: deployVc_Playbook
-      debug:
+      ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
     - name: Display error message if Pod-XXX-Config file is not valid or provided
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           *****************************************************************************************************
@@ -40,12 +40,12 @@
         - Valid_Pod_Config_File is not defined
 
     - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
-      meta: end_play
+      ansible.builtin.meta: end_play
       when: Valid_Pod_Config_File is not defined
 
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ============================ Display Variables For Pod {{Pod.Number}} ===========================
@@ -84,12 +84,12 @@
         - DEBUG.DisplayVariables == true
 
     - name: Create temp directory
-      file:
+      ansible.builtin.file:
         path: "{{ Target.TempFolder }}"
         state: directory
 
     - name: Check if vCenter is already installed
-      uri:
+      ansible.builtin.uri:
         url: https://{{ Nested_vCenter.Address.IPv4.Address }}
         validate_certs: False
         timeout: 5
@@ -99,7 +99,7 @@
       no_log: True
 
     - name: Create vCenter with embedded PSC installation template (Target=Host) - No Replication Partner
-      template: 
+      ansible.builtin.template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.ESXi }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
         mode: "666"
@@ -109,7 +109,7 @@
         - Nested_vCenter.SSO.ReplicationPartner == ""
 
     - name: Create vCenter with embedded PSC installation template (Target=vCenter) - No Replication Partner
-      template: 
+      ansible.builtin.template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.vCenter }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
         mode: "666"
@@ -119,7 +119,7 @@
         - Nested_vCenter.SSO.ReplicationPartner == ""
 
     - name: Create vCenter with embedded PSC installation template (Target=Host) - With Replication Partner
-      template: 
+      ansible.builtin.template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.Repl_ESXi }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
         mode: "666"
@@ -129,7 +129,7 @@
         - Nested_vCenter.SSO.ReplicationPartner != ""
 
     - name: Create vCenter with embedded PSC installation template (Target=vCenter) - With Replication Partner
-      template: 
+      ansible.builtin.template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.Repl_vCenter }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
         mode: "666"
@@ -142,12 +142,12 @@
       action: mount name='{{ Target.ISOMount }}/VCSA' src="{{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }}" opts=loop fstype=iso9660 state=mounted
       when: vcenter_check.status != 200
 
-    - debug:
+    - ansible.builtin.debug:
         msg: "Deploying vCenter will take about 20 minutes, so go grab a smoothie!!!"
       when: vcenter_check.status != 200
       
     - name: Perform vCenter CLI-based installation
-      command: "./vcsa-deploy install --accept-eula --no-ssl-certificate-verification --acknowledge-ceip {{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
+      ansible.builtin.command: "./vcsa-deploy install --accept-eula --no-ssl-certificate-verification --acknowledge-ceip {{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
       args:
         chdir: "{{ Target.ISOMount }}/VCSA/vcsa-cli-installer/lin64/"
       register: vcdeploy
@@ -158,13 +158,13 @@
       when: vcenter_check.status != 200
 
     - name: Delete the temporary vCenter with embedded PSC installation template
-      file: "path={{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }} state=absent"
+      ansible.builtin.file: "path={{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }} state=absent"
       when: 
         - vcenter_check.status != 200
         - DEBUG.KeepConfigFiles != true
 
     - name: Write annotation on the vCenter VM
-      vmware_guest:
+      community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -179,7 +179,7 @@
                     Password: {{ Nested_vCenter.Password }}
 
     - name: Create Datacenter
-      vmware_datacenter:
+      community.vmware.vmware_datacenter:
         hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
@@ -189,7 +189,7 @@
       when: vcenter_check.status != 200
 
     - name: Create Clusters
-      vmware_cluster:
+      community.vmware.vmware_cluster:
         hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
@@ -202,7 +202,7 @@
         - item.value.DeployHosts == true
 
     - name: Enable DRS on each Cluster, if applicable
-      vmware_cluster_drs:
+      community.vmware.vmware_cluster_drs:
         hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"

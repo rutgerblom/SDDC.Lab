@@ -10,11 +10,11 @@
     LOCAL_IPPools_Template: "{{ Target.TemplateFolder }}/vars_NSXT_IPPools.j2"
   tasks:
     - name: createNsxIpPool_Playbook
-      debug:
+      ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
     - name: Display error message if Pod-XXX-Config file is not valid or provided
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           *****************************************************************************************************
@@ -43,7 +43,7 @@
 
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
@@ -73,12 +73,12 @@
 
 
     - name: Get list of IP Pools
-      set_fact:
+      ansible.builtin.set_fact:
         IPPoolsToCreate: "{{ lookup('template', LOCAL_IPPools_Template) | from_yaml }}"
       when: Deploy.Product.NSXT.LocalManager == true
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ================================ Display var_IPPools Variable ===================================

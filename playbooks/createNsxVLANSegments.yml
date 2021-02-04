@@ -10,11 +10,11 @@
       LOCAL_Segments_Template: "{{ Target.TemplateFolder }}/vars_NSXT_Segments.j2"
   tasks:
     - name: createNsxVLANSegments_Playbook
-      debug:
+      ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
     - name: Display error message if Pod-XXX-Config file is not valid or provided
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           *****************************************************************************************************
@@ -42,12 +42,12 @@
         - Valid_Pod_Config_File is not defined
 
     - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
-      meta: end_play
+      ansible.builtin.meta: end_play
       when: Valid_Pod_Config_File is not defined
 
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
@@ -66,12 +66,12 @@
         - DEBUG.DisplayVariables == true
 
     - name: Get list of Segments
-      set_fact:
+      ansible.builtin.set_fact:
         SegmentsToCreate: "{{ lookup('template', LOCAL_Segments_Template) | from_yaml }}"
       when: Deploy.Product.NSXT.LocalManager == true
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ================================ Display SegmentsToCreate Variable ===================================

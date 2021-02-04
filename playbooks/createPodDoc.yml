@@ -12,11 +12,11 @@
     - LOCAL_PodDocDestination: "/home/{{ lookup('env','SUDO_USER') }}"
   tasks:
     - name: createPodDoc_Playbook
-      debug:
+      ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
     - name: Display error message if Pod-XXX-Config file is not valid or provided
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           *****************************************************************************************************
@@ -44,7 +44,7 @@
         - Valid_Pod_Config_File is not defined
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
@@ -64,7 +64,7 @@
         - DEBUG.DisplayVariables == true
 
     - name: Inform user of Pod documentation HTML file location
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =====================================================================================================
@@ -78,11 +78,11 @@
           =====================================================================================================
 
     - name: Create variable with current date and time
-      set_fact: 
+      ansible.builtin.set_fact: 
         time: "{{lookup('pipe','date \"+%d-%B-%Y %H:%M\"')}}"
 
     - name: Write Pod Documentation in HTML format
-      template: 
+      ansible.builtin.template: 
         src: "{{ Target.TemplateFolder }}/{{ LOCAL_PodDocTemplate }}"
         dest: "{{ LOCAL_PodDocDestination }}/{{ LOCAL_PodDocHTML }}"
         mode: "666"

@@ -18,26 +18,26 @@
   vars_prompt:
 
     - name: SourceConfigPath
-      prompt: "In which directory is the Pod-Config file you want to have prepared located?"
+      ansible.builtin.prompt: "In which directory is the Pod-Config file you want to have prepared located?"
       unsafe: yes
       private: no
       default: "{{ lookup('env','PWD') }}"
 
     - name: SourceConfigFile
-      prompt: "What is the name of the configuration file that you would like to have prepared?"
+      ansible.builtin.prompt: "What is the name of the configuration file that you would like to have prepared?"
       unsafe: yes
       private: no
       default: "config.yml"
 
   tasks:
     - name: Check to see if the Pod-Config file to be prepared exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ SourceConfigPath }}/{{ SourceConfigFile }}"
       register: ConfigFileCheck
 
 
     - name: Display error message if Pod-Config file is not found
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           *****************************************************************************************************
@@ -57,18 +57,18 @@
 
 
     - name: Exit Ansible playbook if Pod-Config file does not exist
-      meta: end_play
+      ansible.builtin.meta: end_play
       when:
         - ConfigFileCheck.stat.exists != true
 
 
     - name: Include Pod-Config variables into playbook
-      include_vars:
+      ansible.builtin.include_vars:
         file: "{{ SourceConfigPath }}/{{ SourceConfigFile }}"
 
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
@@ -91,7 +91,7 @@
 
 
     - name: Notify user that this will take some time
-      pause:
+      ansible.builtin.pause:
         seconds: 2
         prompt: |
           =====================================================================================================
@@ -112,16 +112,16 @@
 
 
     - name: Delete existing temp configuration file if it exists
-      file:
+      ansible.builtin.file:
         path: "{{ lookup('env','HOME') }}/{{ PodTempConfigFile }}"
         state: absent
 
     - name: Create variable with current date and time
-      set_fact: 
+      ansible.builtin.set_fact: 
         time: "{{lookup('pipe','date \"+%d-%B-%Y %H:%M\"')}}"
  
     - name: Create Temp Pod Configuration File (Used For Pod Deployment)
-      template: 
+      ansible.builtin.template: 
         src: "{{ Target.TemplateFolder }}/{{ PodTemplate }}"
         dest: "{{ lookup('env','HOME') }}/{{ PodTempConfigFile }}"
         mode: "666"
@@ -132,15 +132,15 @@
         - Pod.Number <= 240
 
     - name: Verify Temp Pod Configuration File Exists
-      stat: path="{{ lookup('env','HOME') }}/{{ PodTempConfigFile }}"
+      ansible.builtin.stat: path="{{ lookup('env','HOME') }}/{{ PodTempConfigFile }}"
       register: result
 
     - name: Delete Pod Configuration file if Temp Pod Config file exists
-      file:
+      ansible.builtin.file:
         path: "{{ lookup('env','HOME') }}/{{ PodConfigFile }}"
         state: absent
       when: result.stat.exists
 
     - name: Move/Rename Temp Pod Config to Pod Config
-      command: mv {{ lookup('env','HOME') }}/{{ PodTempConfigFile }} {{ lookup('env','HOME') }}/{{ PodConfigFile }}
+      ansible.builtin.command: mv {{ lookup('env','HOME') }}/{{ PodTempConfigFile }} {{ lookup('env','HOME') }}/{{ PodConfigFile }}
       when: result.stat.exists

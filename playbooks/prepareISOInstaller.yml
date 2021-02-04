@@ -8,11 +8,11 @@
   name: prepareISOInstaller.yml
   tasks:
     - name: prepareISOInstaller_Playbook
-      debug:
+      ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
     - name: Display error message if Pod-XXX-Config file is not valid or provided
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           *****************************************************************************************************
@@ -40,12 +40,12 @@
         - Valid_Pod_Config_File is not defined
 
     - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
-      meta: end_play
+      ansible.builtin.meta: end_play
       when: Valid_Pod_Config_File is not defined
 
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ============================ Display Variables For Pod {{Pod.Number}} ===========================
@@ -70,7 +70,7 @@
         - DEBUG.DisplayVariables == true
 
     - name: Create temp directory
-      file:
+      ansible.builtin.file:
         path: "{{ Target.TempFolder }}"
         state: directory
         
@@ -79,21 +79,21 @@
       tags: esxi-install-media
 
     - name: Copy boot.cfg from the ESXi ISO
-      copy: 
+      ansible.builtin.copy: 
         src: "{{ Target.ISOMount }}/boot.cfg"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
         mode: "666"
       tags: esxi-install-media
 
     - name: Edit boot.cfg
-      replace:
+      ansible.builtin.replace:
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/boot.cfg"
         regexp: 'kernelopt=cdromBoot runweasel'
         replace: 'kernelopt=ks=cdrom:/{{ Deploy.Software.ESXi.Config }}'
       tags: esxi-install-media
 
     - name: Create a directory for each nested ESXi host
-      file:
+      ansible.builtin.file:
         path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
         state: directory
       loop: "{{ Nested_ESXi.Host | dict2items }}"
@@ -101,7 +101,7 @@
       tags: esxi-install-media
 
     - name: Create kickstart file for each nested ESXi host
-      template: 
+      ansible.builtin.template: 
         src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.ESXi.Template }}"
         dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
         mode: "666"
@@ -110,7 +110,7 @@
       tags: esxi-install-media
 
     - name: Create custom ESXi ISO for each nested ESXi host
-      command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }} -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.ISOMount }}/ {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/ {{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
+      ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }} -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ Target.ISOMount }}/ {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/ {{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
       args:
         chdir: "{{ Target.TempFolder }}/{{ item.value.VMName }}/"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
@@ -122,7 +122,7 @@
       tags: esxi-install-media
 
     - name: Upload the ESXi ISO to the datastore
-      vsphere_copy: 
+      community.vmware.vsphere_copy: 
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -136,14 +136,14 @@
       tags: esxi-install-media
       
     - name: Delete local ISO content directory
-      file:
+      ansible.builtin.file:
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}"
         state: absent
       when: DEBUG.KeepInstallerFiles != true
       tags: esxi-install-media
 
     - name: Delete nested ESXi host directories
-      file:
+      ansible.builtin.file:
         path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
         state: absent
       loop: "{{ Nested_ESXi.Host | dict2items }}"
@@ -153,7 +153,7 @@
       tags: esxi-install-media
 
     - name: Delete the ESXi ISO files
-      file:
+      ansible.builtin.file:
         path: "{{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }}" 
         state: absent
       loop: "{{ Nested_ESXi.Host | dict2items }}"

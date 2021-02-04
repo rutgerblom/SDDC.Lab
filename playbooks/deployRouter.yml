@@ -8,11 +8,11 @@
   name: deployRouter.yml
   tasks:
     - name: deployRouter_Playbook
-      debug:
+      ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
     - name: Display error message if Pod-XXX-Config file is not valid or provided
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           *****************************************************************************************************
@@ -40,12 +40,12 @@
         - Valid_Pod_Config_File is not defined
 
     - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
-      meta: end_play
+      ansible.builtin.meta: end_play
       when: Valid_Pod_Config_File is not defined
 
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
@@ -81,7 +81,7 @@
         - DEBUG.DisplayVariables == true
 
     - name: Check if the VyOS router is already deployed
-      vmware_guest_info:
+      community.vmware.vmware_guest_info:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -99,7 +99,7 @@
         - Deploy.Product.Router == true
 
     - name: Create temp directory
-      file:
+      ansible.builtin.file:
         path: "{{ Target.TempFolder }}"
         state: directory
       when: 
@@ -107,17 +107,17 @@
         - status is failed
 
     - name: Check if VyOS installation file exists locally in the software repository (Legacy and Latest)
-      stat:
+      ansible.builtin.stat:
         path: "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
       register: InstallerFileCheck
 
     - name: Create temp directory for installation file
-      file:
+      ansible.builtin.file:
         path: "{{ Target.TempFolder }}"
         state: directory
 
     - name: Copy VyOS installation file to temp folder if it already exists locally rather than downloading (overwrite if exists)
-      copy:
+      ansible.builtin.copy:
         src:  "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         mode: "666"
@@ -129,7 +129,7 @@
         - status is failed
 
     - name: Download VyOS installation media (overwrite if exists)
-      get_url:
+      ansible.builtin.get_url:
         url:  "{{ Deploy.Software.Router.URL }}/{{ Deploy.Software.Router.File }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         force: yes
@@ -139,7 +139,7 @@
         - status is failed
 
     - name: Update VyOS installation file in the local software repository (overwrite if exists)
-      copy:
+      ansible.builtin.copy:
         src:  "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         dest: "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
         force: yes
@@ -150,7 +150,7 @@
         - status is failed
 
     - name: Create configuration template file for VyOS router
-      template: 
+      ansible.builtin.template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Template }}"
         mode: "666"
@@ -164,7 +164,7 @@
 ##
 
     - name: Deploy VyOS router (Legacy)
-      vmware_deploy_ovf:
+      community.vmware.vmware_deploy_ovf:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -190,7 +190,7 @@
         - Deploy.Software.Router.Version == "Legacy"
 
     - name: Configure VyOS router (Legacy)
-      vmware_guest_file_operation:
+      community.vmware.vmware_guest_file_operation:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -208,7 +208,7 @@
         - Deploy.Software.Router.Version == "Legacy"
 
     - name: Reboot VyOS VM (Legacy)
-      vmware_guest_powerstate:
+      community.vmware.vmware_guest_powerstate:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -226,7 +226,7 @@
 ##
 
     - name: Upload the VyOS ISO to the datastore (Latest)
-      vsphere_copy: 
+      community.vmware.vsphere_copy: 
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -242,7 +242,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Create VyOS router VM on vCenter (Latest)
-      vmware_guest:
+      community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -280,7 +280,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Wait 1 minute for the VyOS router to boot
-      pause:
+      ansible.builtin.pause:
         minutes: 1
       when: 
         - Deploy.Product.Router == true
@@ -288,7 +288,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Walk through the setup dialog 1 (Enter 'vyos' username)
-      vmware_guest_sendkey:
+      community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -301,7 +301,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Wait 5 seconds
-      pause:
+      ansible.builtin.pause:
         seconds: 5
       when: 
         - Deploy.Product.Router == true
@@ -309,7 +309,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Walk through the setup dialog 2 (Press 'ENTER' after username)
-      vmware_guest_sendkey:
+      community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -323,7 +323,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Wait 5 seconds
-      pause:
+      ansible.builtin.pause:
         seconds: 5
       when: 
         - Deploy.Product.Router == true
@@ -331,7 +331,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Walk through the setup dialog 3 (Send 'vyos' password)
-      vmware_guest_sendkey:
+      community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -344,7 +344,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Wait 5 seconds
-      pause:
+      ansible.builtin.pause:
         seconds: 5
       when: 
         - Deploy.Product.Router == true
@@ -352,7 +352,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Walk through the setup dialog 4
-      vmware_guest_sendkey:
+      community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -368,7 +368,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Wait 5 seconds
-      pause:
+      ansible.builtin.pause:
         seconds: 5
       when: 
         - Deploy.Product.Router == true
@@ -376,7 +376,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Walk through the setup dialog 5 (Destroy data on /dev/sda)
-      vmware_guest_sendkey:
+      community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -394,7 +394,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Wait 5 seconds
-      pause:
+      ansible.builtin.pause:
         seconds: 5
       when: 
         - Deploy.Product.Router == true
@@ -402,7 +402,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Walk through the setup dialog 6 (Create root partition and confirm with 'vyos' password)
-      vmware_guest_sendkey:
+      community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -420,7 +420,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Wait 5 seconds
-      pause: 
+      ansible.builtin.pause: 
         seconds: 5
       when: 
         - Deploy.Product.Router == true
@@ -428,7 +428,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Walk through the setup dialog 7 (Re-enter 'vyos' password to confirm)
-      vmware_guest_sendkey:
+      community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -443,7 +443,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Wait 5 seconds
-      pause: 
+      ansible.builtin.pause: 
         seconds: 5
       when: 
         - Deploy.Product.Router == true
@@ -451,7 +451,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Walk through the setup dialog 8 (Configure GRUB on boot partition)
-      vmware_guest_sendkey:
+      community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -466,7 +466,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Wait 30 seconds before rebooting the VyOS router
-      pause: 
+      ansible.builtin.pause: 
         seconds: 30
       when: 
         - Deploy.Product.Router == true
@@ -474,7 +474,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Reboot VyOS VM
-      vmware_guest_powerstate:
+      community.vmware.vmware_guest_powerstate:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -487,7 +487,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Wait 1 minute for the VyOS router to boot
-      pause: 
+      ansible.builtin.pause: 
         minutes: 1
       when: 
         - Deploy.Product.Router == true
@@ -495,7 +495,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Copy configuration to VyOS router (Latest)
-      vmware_guest_file_operation:
+      community.vmware.vmware_guest_file_operation:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -513,7 +513,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Shutdown VyOS VM
-      vmware_guest_powerstate:
+      community.vmware.vmware_guest_powerstate:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -526,7 +526,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Wait 10 seconds for the VyOS VM to shut down.
-      pause: 
+      ansible.builtin.pause: 
         seconds: 10
       when: 
         - Deploy.Product.Router == true
@@ -534,7 +534,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Disconnect CDROM on VyOS router VM
-      vmware_guest:
+      community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -548,7 +548,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Start the VyOS VM
-      vmware_guest_powerstate:
+      community.vmware.vmware_guest_powerstate:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -561,7 +561,7 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Delete VyOS installer from vSphere datastore
-      vsphere_file:
+      community.vmware.vsphere_file:
         host:     "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -583,7 +583,7 @@
 ##
 
     - name: Delete the temporary template file for VyOS router
-      file: 
+      ansible.builtin.file: 
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Template }}"
         state: absent
       when: 
@@ -592,7 +592,7 @@
         - DEBUG.KeepConfigFiles != true
 
     - name: Delete the temporary installer file for VyOS router
-      file: 
+      ansible.builtin.file: 
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         state: absent
       when: 
@@ -601,7 +601,7 @@
         - DEBUG.KeepInstallerFiles != true
 
     - name: Write annotation on the VyOS VM
-      vmware_guest:
+      community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -620,7 +620,7 @@
         - Deploy.Software.Router.Version == "Legacy"
 
     - name: Add static route on the Ansible control node
-      command: ./ip route add "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}" via "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
+      ansible.builtin.command: ./ip route add "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}" via "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
       args:
         chdir: /bin/
       register: iproute
@@ -631,7 +631,7 @@
         - status is failed
 
     - name: Wait 10 seconds
-      pause: seconds=10
+      ansible.builtin.pause: seconds=10
       when: 
         - Deploy.Product.Router == true
         - status is failed

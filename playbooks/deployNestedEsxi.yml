@@ -8,11 +8,11 @@
   name: deployNestedEsxi.yml
   tasks:
     - name: deployNestedEsxi_Playbook
-      debug:
+      ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
     - name: Display error message if Pod-XXX-Config file is not valid or provided
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           *****************************************************************************************************
@@ -41,7 +41,7 @@
 
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ============================ Display Variables For Pod {{Pod.Number}} ===========================
@@ -68,7 +68,7 @@
         - DEBUG.DisplayVariables == true
 
     - name: Deploy nested ESXi hosts
-      vmware_guest:
+      community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"

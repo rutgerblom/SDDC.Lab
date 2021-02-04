@@ -13,7 +13,7 @@
     - IssueFound: False
   tasks:
     - name: validateConfiguration_Playbook
-      debug:
+      ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
 
@@ -27,7 +27,7 @@
 ## Verify Pod.Number
 ##
     - name: Verifying Pod.Number is within valid range
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
@@ -41,7 +41,7 @@
         - Pod.Number < 10 or Pod.Number > 240
 
     - name: Set flag if issue found with Pod.Number
-      set_fact:
+      ansible.builtin.set_fact:
         IssueFound: true
       when:
         - Pod.Number < 10 or Pod.Number > 240
@@ -51,7 +51,7 @@
 ## Verify Pod.VLANOffset
 ##
     - name: Verifying Pod.VLANOffset iw within valid range
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
@@ -65,7 +65,7 @@
         - Pod.VLANOffset < 0 or Pod.VLANOffset > 3750
 
     - name: Set flag if issue found with Pod.VLANOffset
-      set_fact:
+      ansible.builtin.set_fact:
         IssueFound: true
       when:
         - Pod.VLANOffset < 0 or Pod.VLANOffset > 3750
@@ -75,7 +75,7 @@
 ## Verify Deploy.Setting.IPv4
 ##
     - name: Verifying Deploy.Setting.IPv4 is 'True'
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
@@ -89,7 +89,7 @@
         - Deploy.Setting.IPv4 != true
 
     - name: Set flag if issue found with Deploy.Setting.IPv4
-      set_fact:
+      ansible.builtin.set_fact:
         IssueFound: true
       when:
         - Deploy.Setting.IPv4 != true
@@ -99,7 +99,7 @@
 ## Verify Pod.BaseNetwork.IPv6 is 17 characters long and makes a valid /56 prefix
 ##
     - name: Verify Pod.BaseNetwork.IPv6
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
@@ -114,7 +114,7 @@
         - ( Pod.BaseNetwork.IPv6 | length ) != 17 or ( (Pod.BaseNetwork.IPv6 + '::/56') | ipv6 ) == False
 
     - name: Set flag if issue found with Pod.BaseNetwork.IPv6
-      set_fact:
+      ansible.builtin.set_fact:
         IssueFound: true
       when:
         - Deploy.Setting.IPv6 == true
@@ -125,7 +125,7 @@
 ## Verify 'Net' prefix values
 ##
     - name: Verifying 'Net' prefix values
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
@@ -143,7 +143,7 @@
         - item.value.IPv4.Prefix != 24 or item.value.IPv6.Prefix != 64
 
     - name: Set flag if issue found with Net Prefix value
-      set_fact:
+      ansible.builtin.set_fact:
         IssueFound: true
       loop: "{{ Net | dict2items }}"
       when:
@@ -154,7 +154,7 @@
 ## Verify Target.Deployment
 ##
     - name: Verify Target.Deployment is valid
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
@@ -168,7 +168,7 @@
         - Target.Deployment != "vCenter" and Target.Deployment != "Host"
 
     - name: Set flag if issue found with Target.Deployment
-      set_fact:
+      ansible.builtin.set_fact:
         IssueFound: true
       when:
         - Target.Deployment != "vCenter" and Target.Deployment != "Host"
@@ -178,7 +178,7 @@
 ## Verify Target.FQDN (Host)
 ##
     - name: Gather information on ESXi Host (Host Deployment)
-      vmware_host_facts:
+      community.vmware.vmware_host_facts:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -189,7 +189,7 @@
         - Target.Deployment == "Host"
 
     - name: Verify Target.FQDN is valid for Host deployment
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
@@ -204,7 +204,7 @@
         - Host_Facts.failed == true
 
     - name: Set flag if issue found with Target.FQDN (Host)
-      set_fact:
+      ansible.builtin.set_fact:
         IssueFound: true
       when:
         - Target.Deployment == "Host"
@@ -215,7 +215,7 @@
 ## Verify Target.FQDN (vCenter) by requesting list of VMs
 ##
     - name: Gather all registered VMs from vCenter Server (vCenter Deployment)
-      vmware_vm_info:
+      community.vmware.vmware_vm_info:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -226,7 +226,7 @@
         - Target.Deployment == "vCenter"
 
     - name: Verify Target.FQDN is valid for Host deployment
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
@@ -241,7 +241,7 @@
         - vCenter_Facts.failed == true
 
     - name: Set flag if issue found with Target.FQDN (vCenter)
-      set_fact:
+      ansible.builtin.set_fact:
         IssueFound: true
       when:
         - Target.Deployment == "vCenter"
@@ -252,13 +252,13 @@
 ## Verify Ansible Control Station can resolve DNS
 ##
     - name: Perform DNS lookup for www.google.com
-      set_fact:
+      ansible.builtin.set_fact:
         dns_succeeded: "{{ lookup('dig', 'www.google.com./A') | ipaddr }}"                                 # This will result in 'False' if an IP is not returned from query
       when:
         - Deploy.Setting.UseDNS == true
 
     - name: Verify we received a DNS response via IPv4
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
@@ -273,7 +273,7 @@
         - dns_succeeded == False
 
     - name: Set flag if issue found with DNS lookup of www.google.com
-      set_fact:
+      ansible.builtin.set_fact:
         IssueFound: true
       when:
         - Deploy.Setting.UseDNS == true
@@ -284,7 +284,7 @@
 ## Verify vCenter Server installation files exist
 ##
     - name: Check if vCenter Server Installer file exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }}"
         get_checksum: no
         get_attributes: no
@@ -293,7 +293,7 @@
       register: vCenter_Installer
 
     - name: Verify vCenter Installer exists
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
@@ -307,7 +307,7 @@
         - vCenter_Installer.stat.isreg is not defined or vCenter_Installer.stat.isreg != true
 
     - name: Set flag if issue found locating vCenter Server installer file
-      set_fact:
+      ansible.builtin.set_fact:
         IssueFound: true
       when:
         - vCenter_Installer.stat.isreg is not defined or vCenter_Installer.stat.isreg != true
@@ -317,7 +317,7 @@
 ## Verify vCenter Server Template files exist (vCenter Installation)
 ##
     - name: Check if vCenter Server template file exists (vCenter Installation)
-      stat:
+      ansible.builtin.stat:
         path: "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.vCenter }}"
         get_checksum: no
         get_attributes: no
@@ -328,7 +328,7 @@
         - Target.Deployment == "vCenter"
 
     - name: Verify vCenter Server Template file exists (vCenter Installation)
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
@@ -343,7 +343,7 @@
         - vCenter_Template.stat.isreg is not defined or vCenter_Template.stat.isreg != true
 
     - name: Set flag if issue found locating vCenter Server template file (vCenter Installation)
-      set_fact:
+      ansible.builtin.set_fact:
         IssueFound: true
       when:
         - Target.Deployment == "vCenter"
@@ -354,7 +354,7 @@
 ## Verify vCenter Server Template files exist (Host Installation)
 ##
     - name: Check if vCenter Server template file exists (Host Installation)
-      stat:
+      ansible.builtin.stat:
         path: "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.ESXi }}"
         get_checksum: no
         get_attributes: no
@@ -365,7 +365,7 @@
         - Target.Deployment == "Host"
 
     - name: Verify vCenter Server Template file exists (Host Installation)
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
@@ -380,7 +380,7 @@
         - vCenter_Template.stat.isreg is not defined or vCenter_Template.stat.isreg != true
 
     - name: Set flag if issue found locating vCenter Server template file (Host Installation)
-      set_fact:
+      ansible.builtin.set_fact:
         IssueFound: true
       when:
         - Target.Deployment == "Host"
@@ -391,7 +391,7 @@
 ## Verify ESXi installation files exist
 ##
     - name: Check if ESXi Installer file exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }}"
         get_checksum: no
         get_attributes: no
@@ -400,7 +400,7 @@
       register: ESXi_Installer
 
     - name: Verify ESXi Installer exists
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
@@ -414,7 +414,7 @@
         - ESXi_Installer.stat.isreg is not defined or ESXi_Installer.stat.isreg != true
 
     - name: Set flag if issue found locating ESXi installer file
-      set_fact:
+      ansible.builtin.set_fact:
         IssueFound: true
       when:
         - ESXi_Installer.stat.isreg is not defined or ESXi_Installer.stat.isreg != true
@@ -424,7 +424,7 @@
 ## Verify ESXi Kickstart file exist
 ##
     - name: Check if ESXi Kickstart file exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ Target.TemplateFolder }}/{{ Deploy.Software.ESXi.Template }}"
         get_checksum: no
         get_attributes: no
@@ -433,7 +433,7 @@
       register: ESXi_Template
 
     - name: Verify ESXi Kickstart exists
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
@@ -447,7 +447,7 @@
         - ESXi_Template.stat.isreg is not defined or ESXi_Template.stat.isreg != true
 
     - name: Set flag if issue found locating ESXi Kickstart file
-      set_fact:
+      ansible.builtin.set_fact:
         IssueFound: true
       when:
         - ESXi_Template.stat.isreg is not defined or ESXi_Template.stat.isreg != true
@@ -456,7 +456,7 @@
 ## Verify vSphere cluster for NSX-T Edge nodes will be deployed
 ##
     - name: Verify vSphere cluster for Edge nodes
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
@@ -472,7 +472,7 @@
         - Nested_Clusters.Edge.DeployHosts != true
 
     - name: Set flag if NSX-T Edge cannot be deployed
-      set_fact:
+      ansible.builtin.set_fact:
         IssueFound: true
       when:
         - Deploy.Product.NSXT.Edge
@@ -481,7 +481,7 @@
 ## Verify NSX-T installation files exist
 ##
     - name: Check if NSX-T Installer file exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ Deploy.Software.NSXT.Directory }}/{{ Deploy.Software.NSXT.File }}"
         get_checksum: no
         get_attributes: no
@@ -491,7 +491,7 @@
       when: Deploy.Product.NSXT.LocalManager or Deploy.Product.NSXT.GlobalManager
 
     - name: Verify NSX-T Installer exists
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
@@ -506,7 +506,7 @@
         - NSXT_Installer.stat.isreg is not defined or NSXT_Installer.stat.isreg != true
 
     - name: Set flag if issue found locating NSX-T installer file
-      set_fact:
+      ansible.builtin.set_fact:
         IssueFound: true
       when:
         - Deploy.Product.NSXT.LocalManager or Deploy.Product.NSXT.GlobalManager
@@ -517,7 +517,7 @@
 ## Verify vRLI installation files exist
 ##
     - name: Check if vRLI Installer file exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ Deploy.Software.vRLI.Directory }}/{{ Deploy.Software.vRLI.File }}"
         get_checksum: no
         get_attributes: no
@@ -527,7 +527,7 @@
       when: Deploy.Product.vRLI
 
     - name: Verify vRLI Installer exists
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
@@ -542,7 +542,7 @@
         - vRLI_Installer.stat.isreg is not defined or vRLI_Installer.stat.isreg != true
 
     - name: Set flag if issue found locating vRLI installer file
-      set_fact:
+      ansible.builtin.set_fact:
         IssueFound: true
       when:
         - Deploy.Product.vRLI
@@ -553,7 +553,7 @@
 ## Done With Validation Checks
 ##
     - name: Issue found, so tell user to quit and correct issue before re-running
-      pause:
+      ansible.builtin.pause:
         seconds: 99999
         prompt: |
           =====================================================================================================

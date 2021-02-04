@@ -1,0 +1,37 @@
+---
+- hosts: localhost
+  tasks:
+##
+## Works - Per Nested ESXi Host
+##
+    - name: Modify ESXi host firewall setting to permit Syslog traffic
+      community.vmware.vmware_host_firewall_manager:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: false
+        esxi_hostname: "{{ item.value.FQDN | lower }}"
+        rules:
+            - name: syslog
+              enabled: True
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when:
+        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+
+##
+## Works - Per Cluster (performs against all hosts) - PEFER THIS METHOD
+##
+    - name: Modify ESXi hosts firewall setting to permit Syslog traffic per cluster
+      community.vmware.vmware_host_firewall_manager:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: false
+        cluster_name: "{{ item.key }}"
+        rules:
+            - name: syslog
+              enabled: True
+      loop: "{{ Nested_Clusters | dict2items }}"
+      when:
+        - Nested_Clusters[item.key]['DeployHosts'] == true
+        - false
