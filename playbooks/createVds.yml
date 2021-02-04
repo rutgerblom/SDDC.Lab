@@ -8,11 +8,11 @@
   name: createVds.yml
   tasks:
     - name: createVds_Playbook
-      debug:
+      ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
     - name: Display error message if Pod-XXX-Config file is not valid or provided
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           *****************************************************************************************************
@@ -41,7 +41,7 @@
 
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ============================ Display Variables For Pod {{Pod.Number}} ===========================
@@ -66,7 +66,7 @@
         - DEBUG.DisplayVariables == true
 
     - name: Create distributed switch in the nested vCenter
-      vmware_dvswitch:
+      community.vmware.vmware_dvswitch:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
@@ -81,7 +81,7 @@
         state: present
 
     - name: Create Management port group
-      vmware_dvs_portgroup:
+      community.vmware.vmware_dvs_portgroup:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
@@ -94,7 +94,7 @@
         state: present
 
     - name: Create vMotion port group
-      vmware_dvs_portgroup:
+      community.vmware.vmware_dvs_portgroup:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
@@ -107,7 +107,7 @@
         state: present
 
     - name: Create vSAN port group
-      vmware_dvs_portgroup:
+      community.vmware.vmware_dvs_portgroup:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
@@ -120,7 +120,7 @@
         state: present
 
     - name: Create IP Storage port group
-      vmware_dvs_portgroup:
+      community.vmware.vmware_dvs_portgroup:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
@@ -133,7 +133,7 @@
         state: present
 
     - name: Create SVM-Management port group
-      vmware_dvs_portgroup:
+      community.vmware.vmware_dvs_portgroup:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
@@ -146,7 +146,7 @@
         state: present
 
     - name: Create Uplink1 port group
-      vmware_dvs_portgroup:
+      community.vmware.vmware_dvs_portgroup:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
@@ -160,7 +160,7 @@
         state: present
 
     - name: Create Uplink2 port group
-      vmware_dvs_portgroup:
+      community.vmware.vmware_dvs_portgroup:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
@@ -174,7 +174,7 @@
         state: present
 
     - name: Create VMNetwork port group
-      vmware_dvs_portgroup:
+      community.vmware.vmware_dvs_portgroup:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
@@ -187,7 +187,7 @@
         state: present
 
     - name: Migrate uplinks to the VDS
-      vmware_dvs_host:
+      community.vmware.vmware_dvs_host:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
@@ -203,7 +203,7 @@
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
     - name: Migrate vmk0 to the VDS
-      vmware_migrate_vmk:
+      community.vmware.vmware_migrate_vmk:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
@@ -219,7 +219,7 @@
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
     - name: Create vmk1 for vMotion
-      vmware_vmkernel:
+      community.vmware.vmware_vmkernel:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
@@ -239,7 +239,7 @@
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
     - name: Configure vMotion TCP/IP stack gateway address on Nested_ESXi hosts
-      vmware_vm_shell:
+      community.vmware.vmware_vm_shell:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -257,7 +257,7 @@
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
 
     - name: Create vmk2 for vSAN
-      vmware_vmkernel:
+      community.vmware.vmware_vmkernel:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
@@ -277,7 +277,7 @@
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
       
     - name: Create vmk3 for IP Storage
-      vmware_vmkernel:
+      community.vmware.vmware_vmkernel:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
@@ -296,7 +296,7 @@
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
       
     - name: Remove the standard switch from the ESXi hosts
-      vmware_vswitch:
+      community.vmware.vmware_vswitch:
         hostname: '{{ item.value.FQDN }}'
         username: '{{ item.value.User }}'
         password: '{{ item.value.Password }}'

@@ -10,11 +10,11 @@
     - LOCAL_LicenseFile: ../licenses.yml
   tasks:
     - name: license_vRLI_Playbook
-      debug:
+      ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
     - name: Display error message if Pod-XXX-Config file is not valid or provided
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           *****************************************************************************************************
@@ -42,11 +42,11 @@
         - Valid_Pod_Config_File is not defined
 
     - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
-      meta: end_play
+      ansible.builtin.meta: end_play
       when: Valid_Pod_Config_File is not defined
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ============================ Display Variables For Pod {{Pod.Number}} ===========================
@@ -77,24 +77,24 @@
 ###
 
     - name: Check for existance of license file
-      stat:
+      ansible.builtin.stat:
         path: "{{ LOCAL_LicenseFile }}"
         get_checksum: no
       register: stat_results
 
     - name: Assume file does not exist, so set flag to skip licensing products
-      set_fact:
+      ansible.builtin.set_fact:
         LicenseProducts: False
 
     - name: If License file does exist and is a regular file, then set flag to license products
-      set_fact:
+      ansible.builtin.set_fact:
         LicenseProducts: True
       when:
         - stat_results.stat.exists == True
         - stat_results.stat.isreg == True
 
     - name: If not licensing products, notify user
-      pause:
+      ansible.builtin.pause:
         seconds: 20
         prompt: |
           =========================================================================
@@ -114,7 +114,7 @@
         - LicenseProducts != True
 
     - name: If we are licensing products, read in license information
-      include_vars:
+      ansible.builtin.include_vars:
         file: "{{ LOCAL_LicenseFile }}"
       when: LicenseProducts == True
 
@@ -123,7 +123,7 @@
 ## License vRealize Log Insight
 ##
     - name: Obtain a session ID from the vRLI API 
-      uri:
+      ansible.builtin.uri:
         url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/sessions
         validate_certs: no
         method: POST
@@ -137,7 +137,7 @@
         - Deploy.Product.vRLI == true
 
     - name: Add all licenses to vRLI
-      uri:
+      ansible.builtin.uri:
         url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/licenses
         validate_certs: no
         method: POST

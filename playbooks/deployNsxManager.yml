@@ -8,11 +8,11 @@
   name: deployNsxManager.yml
   tasks:
     - name: deployNsxManager_Playbook
-      debug:
+      ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
     - name: Display error message if Pod-XXX-Config file is not valid or provided
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           *****************************************************************************************************
@@ -40,12 +40,12 @@
         - Valid_Pod_Config_File is not defined
 
     - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
-      meta: end_play
+      ansible.builtin.meta: end_play
       when: Valid_Pod_Config_File is not defined
 
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
@@ -98,7 +98,7 @@
         - DEBUG.DisplayVariables == true
 
     - name: Check if NSX-T Local Manager is already installed
-      uri:
+      ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Components.LocalManager.FQDN }}
         validate_certs: False
         timeout: 5
@@ -109,7 +109,7 @@
       when: Deploy.Product.NSXT.LocalManager == true
 
     - name: Deploy NSX-T Local Manager from OVA
-      vmware_deploy_ovf:
+      community.vmware.vmware_deploy_ovf:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -155,13 +155,13 @@
       register: deployment
 
     - name: Wait 3 seconds before start checking whether the NSX-T Manager node is ready
-      pause: seconds=3
+      ansible.builtin.pause: seconds=3
       when: 
         - Deploy.Product.NSXT.LocalManager == true
         - deployment.changed == true
 
     - name: Result check for NSX-T Manager node deployment
-      async_status:
+      ansible.builtin.async_status:
         jid: "{{ item.ansible_job_id }}"
       register: job_result
       with_items: "{{ deployment.results }}"
@@ -171,7 +171,7 @@
         - item.started is defined
 
     - name: Wait until the NSX-T API reports that the NSX-T Manager cluster is "STABLE"
-      uri:
+      ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Components.LocalManager.FQDN | lower }}/api/v1/cluster/status
         validate_certs: no
         timeout: 5
@@ -190,7 +190,7 @@
         - Deploy.Product.NSXT.LocalManager == true
 
     - name: Write annotation on the NSX-T Local Manager VM
-      vmware_guest:
+      community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -211,7 +211,7 @@
 ## Disable Password Expiration for all users except for root (API does not permit disabling for 'root' user)
 ##
     - name: Obtain NSX-T Local Manager User List
-      uri:
+      ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Components.LocalManager.FQDN | lower }}/api/v1/node/users
         validate_certs: no
         timeout: 15
@@ -227,7 +227,7 @@
         - Deploy.Product.NSXT.LocalManager == true
 
     - name: Disable Password Expiration Of All NSX-T Users (except for 'root')
-      uri:
+      ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Components.LocalManager.FQDN | lower }}/api/v1/node/users/{{ item.userid }}
         validate_certs: no
         timeout: 15

@@ -8,11 +8,11 @@
   name: deployVrli.yml
   tasks:
     - name: deployVrli_Playbook
-      debug:
+      ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
     - name: Display error message if Pod-XXX-Config file is not valid or provided
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           *****************************************************************************************************
@@ -40,12 +40,12 @@
         - Valid_Pod_Config_File is not defined
 
     - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
-      meta: end_play
+      ansible.builtin.meta: end_play
       when: Valid_Pod_Config_File is not defined
 
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
@@ -93,7 +93,7 @@
         - DEBUG.DisplayVariables == true
 
     - name: Check if vRLI is already installed
-      uri:
+      ansible.builtin.uri:
         url: https://{{ Nested_vRLI.FQDN }}
         validate_certs: false
         timeout: 5
@@ -104,7 +104,7 @@
       when: Deploy.Product.vRLI == true
 
     - name: Deploy vRLI from OVA
-      vmware_deploy_ovf:
+      community.vmware.vmware_deploy_ovf:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -139,7 +139,7 @@
         - vrli_check.status != 200
 
     - name: Start checking if the vRLI Web UI is available
-      uri:
+      ansible.builtin.uri:
         url: https://{{ Nested_vRLI.FQDN }}
         validate_certs: false
         timeout: 5
@@ -152,7 +152,7 @@
       delay: 60
 
     - name: Perform vRLI bootstrap
-      uri:
+      ansible.builtin.uri:
         url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/deployment/new
         validate_certs: no
         method: POST
@@ -168,7 +168,7 @@
         - vrli_check.status != 200
 
     - name: Obtain a session ID from the vRLI API 
-      uri:
+      ansible.builtin.uri:
         url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/sessions
         validate_certs: no
         method: POST
@@ -183,7 +183,7 @@
         - vrli_check.status != 200
 
     - name: Add vSphere to vRLI
-      uri:
+      ansible.builtin.uri:
         url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/vsphere
         validate_certs: no
         method: POST
@@ -206,7 +206,7 @@
         - vrli_check.status != 200
 
     - name: Write annotation on the vRLI VM
-      vmware_guest:
+      community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"

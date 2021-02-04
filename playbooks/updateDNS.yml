@@ -13,11 +13,11 @@
     - LOCAL_RecordState: "present"           # LOCAL_RecordState values are either "present" (Records will be added) or "absent" (Records will be deleted)
   tasks:
     - name: updateDNS_Playbook
-      debug:
+      ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
     - name: Display error message if Pod-XXX-Config file is not valid or provided
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           *****************************************************************************************************
@@ -45,7 +45,7 @@
         - Valid_Pod_Config_File is not defined
 
     - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
-      meta: end_play
+      ansible.builtin.meta: end_play
       when: Valid_Pod_Config_File is not defined
 
 
@@ -53,12 +53,12 @@
 ## Determine Zone to use for IPv6 Reverse Records.  If begins with 'FD', then must use /8.  If it does not begin with 'FD', then default to /56.
 ##
     - name: Determine IPv6 Zone for PTR Records (i.e. Reverse DNS) if BaseNetwork.IPv6 begins with 'fd'
-      set_fact:
+      ansible.builtin.set_fact:
         IPv6_Reverse_Zone: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{60}(.*).$', '\\1') }}"
       when: (Pod.BaseNetwork.IPv6[0:2] | lower) == 'fd'
 
     - name: Determine IPv6 Zone for PTR Records (i.e. Reverse DNS) if BaseNetwork.IPv6 does NOT begin with 'fd'
-      set_fact:
+      ansible.builtin.set_fact:
         IPv6_Reverse_Zone: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{36}(.*).$', '\\1') }}"
       when: (Pod.BaseNetwork.IPv6[0:2] | lower) != 'fd'
 
@@ -67,7 +67,7 @@
 ## Define Zone to use for IPv4 Reverse Records.
 ##
     - name: Determine IPv4 Zone for PTR Records
-      set_fact:
+      ansible.builtin.set_fact:
         IPv4_Reverse_Zone: "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
 
 
@@ -75,7 +75,7 @@
 ## Standard DEBUG Block (if enabled)
 ##
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
@@ -107,7 +107,7 @@
 ## Process Nested_Router
 ##
     - name: DEBUG -- Display IPv4 'A' records for Nested_Router
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ========================== Display Nested_Router DNS "A" Records ================================
@@ -129,7 +129,7 @@
         - Deploy.Setting.IPv4 == true
 
     - name: IPv4 'A' records for Nested_Router
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     A
         protocol: udp
@@ -143,7 +143,7 @@
         - Deploy.Setting.IPv4 == true
 
     - name: IPv4 'CNAME' records for Nested_Router
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     CNAME
         protocol: udp
@@ -158,7 +158,7 @@
 
 
     - name: DEBUG -- Display IPv4 'PTR' records for Nested_Router
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ========================== Display Nested_Router DNS IPv4 "PTR" Records =========================
@@ -180,7 +180,7 @@
         - Deploy.Setting.IPv4 == true
 
     - name: IPv4 'PTR' records for Nested_Router
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
         protocol: udp
@@ -196,7 +196,7 @@
 
 
     - name: DEBUG -- Display IPv6 'AAAA' records for Nested_Router
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ========================== Display Nested_Router DNS IPv6 "AAAA" Records ========================
@@ -218,7 +218,7 @@
         - Deploy.Setting.IPv6 == true
 
     - name: IPv6 'AAAA' records for Nested_Router
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     AAAA
         protocol: udp
@@ -234,7 +234,7 @@
 
 
     - name: DEBUG -- Display IPv6 'PTR' records for Nested_Router
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ========================== Display Nested_Router DNS IPv6 "PTR" Records =========================
@@ -256,7 +256,7 @@
         - Deploy.Setting.IPv6 == true
 
     - name: IPv6 'PTR' records for Nested_Router
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     PTR
         protocol: udp
@@ -275,7 +275,7 @@
 ## Process Nested_vRLI
 ##
     - name: DEBUG -- Display IPv4 'A' record for Nested_vRLI
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ======================== Display Nested_vRLI DNS IPv4 "A" Record =============================
@@ -296,7 +296,7 @@
         - Deploy.Setting.IPv4 == true
 
     - name: IPv4 'A' records for Nested_vRLI
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     A
         protocol: udp
@@ -311,7 +311,7 @@
 
 
     - name: DEBUG -- Display IPv4 'PTR' record for Nested_vRLI
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ======================== Display Nested_vRLI DNS IPv4 "PTR" Record ===========================
@@ -332,7 +332,7 @@
         - Deploy.Setting.IPv4 == true
 
     - name: IPv4 'PTR' records for Nested_vRLI
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
         protocol: udp
@@ -347,7 +347,7 @@
 
 
     - name: DEBUG -- Display IPv6 'AAAA' record for Nested_vRLI
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ======================= Display Nested_vRLI DNS IPv6 "AAAA" Record ===========================
@@ -369,7 +369,7 @@
         - False
 
     - name: IPv6 'AAAA' records for Nested_vRLI
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     AAAA
         protocol: udp
@@ -385,7 +385,7 @@
 
 
     - name: DEBUG -- Display IPv6 'PTR' record for Nested_vRLI
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ======================== Display Nested_vRLI DNS IPv6 "PTR" Record ===========================
@@ -407,7 +407,7 @@
         - False
 
     - name: IPv6 'PTR' records for Nested_vRLI
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     PTR
         protocol: udp
@@ -426,7 +426,7 @@
 ## Process Nested_ESXi Hosts
 ##
     - name: DEBUG -- Display IPv4 'A' records for Nested_ESXi hosts
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           =========================== Display Nested_ESXi DNS "A" Records =================================
@@ -448,7 +448,7 @@
         - Deploy.Setting.IPv4 == true
 
     - name: IPv4 'A' records for Nested_ESXi hosts
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     A
         protocol: udp
@@ -464,7 +464,7 @@
 
 
     - name: DEBUG -- Display IPv4 'PTR' records for Nested_ESXi Hosts
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ========================== Display Nested_ESXi DNS IPv4 "PTR" Records ===========================
@@ -487,7 +487,7 @@
 
 
     - name: IPv4 'PTR' records for Nested_ESXi hosts
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
         protocol: udp
@@ -503,7 +503,7 @@
 
 
     - name: DEBUG -- Display IPv6 'AAAA' records for Nested_ESXi hosts
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           =========================== Display Nested_ESXi DNS "AAAA" Records ==============================
@@ -526,7 +526,7 @@
         - False
 
     - name: IPv6 'AAAA' records for Nested_ESXi hosts
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     AAAA
         protocol: udp
@@ -543,7 +543,7 @@
 
 
     - name: DEBUG -- Display IPv6 'PTR' records for Nested_ESXi Hosts
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ========================== Display Nested_ESXi DNS IPv6 "PTR" Records ===========================
@@ -566,7 +566,7 @@
         - False
 
     - name: IPv6 'PTR' records for Nested_ESXi hosts
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     PTR
         protocol: udp
@@ -586,7 +586,7 @@
 ## Process Nested_vCenter
 ##
     - name: DEBUG -- Display IPv4 'A' record for Nested_vCenter
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ======================== Display Nested_vCenter DNS IPv4 "A" Record =============================
@@ -607,7 +607,7 @@
         - Deploy.Setting.IPv4 == true
 
     - name: IPv4 'A' records for Nested_vCenter
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     A
         protocol: udp
@@ -622,7 +622,7 @@
 
 
     - name: DEBUG -- Display IPv4 'PTR' record for Nested_vCenter
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ======================== Display Nested_vCenter DNS IPv4 "PTR" Record ===========================
@@ -643,7 +643,7 @@
         - Deploy.Setting.IPv4 == true
 
     - name: IPv4 'PTR' records for Nested_vCenter
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
         protocol: udp
@@ -658,7 +658,7 @@
 
 
     - name: DEBUG -- Display IPv6 'AAAA' record for Nested_vCenter
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ======================= Display Nested_vCenter DNS IPv6 "AAAA" Record ===========================
@@ -680,7 +680,7 @@
         - False
 
     - name: IPv6 'AAAA' records for Nested_vCenter
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     AAAA
         protocol: udp
@@ -696,7 +696,7 @@
 
 
     - name: DEBUG -- Display IPv6 'PTR' record for Nested_vCenter
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ======================== Display Nested_vCenter DNS IPv6 "PTR" Record ===========================
@@ -718,7 +718,7 @@
         - False
 
     - name: IPv6 'PTR' records for Nested_vCenter
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     PTR
         protocol: udp
@@ -736,7 +736,7 @@
 ## Process Nested_NSXT Related Items
 ##
     - name: DEBUG -- Display IPv4 'A' records for Nested_NSXT
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ============================ Display Nested_NSXT DNS "A" Records ================================
@@ -758,7 +758,7 @@
         - Deploy.Setting.IPv4 == true
 
     - name: IPv4 'A' records for Nested_NSXT Components
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     A
         protocol: udp
@@ -774,7 +774,7 @@
 
 
     - name: DEBUG -- Display IPv4 'PTR' records for Nested_NSXT
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ========================== Display Nested_NSXT DNS IPv4 "PTR" Records ===========================
@@ -796,7 +796,7 @@
         - Deploy.Setting.IPv4 == true
 
     - name: IPv4 'PTR' records for Nested_NSXT Components
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
         protocol: udp
@@ -812,7 +812,7 @@
 
 
     - name: DEBUG -- Display IPv4 'A' records for Nested_NSXT Edge Transport Nodes
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ================= Display Nested_NSXT Edge Transport Nodes DNS IPv4 "A" Records =================
@@ -834,7 +834,7 @@
         - Deploy.Setting.IPv4 == true
 
     - name: IPv4 'A' records for Nested_NSXT Edge Transport Nodes
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     A
         protocol: udp
@@ -850,7 +850,7 @@
 
 
     - name: DEBUG -- Display IPv4 'PTR' records for Nested_NSXT Edge Transport Nodes
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ================ Display Nested_NSXT Edge Transport Nodes DNS IPv4 "PTR" Records ================
@@ -872,7 +872,7 @@
         - Deploy.Setting.IPv4 == true
 
     - name: IPv4 'PTR' records for Nested_NSXT Components
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
         protocol: udp
@@ -888,7 +888,7 @@
  
 
     - name: DEBUG -- Display IPv6 'AAAA' records for Nested_NSXT
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ========================== Display Nested_NSXT DNS "AAAA" Records ===============================
@@ -911,7 +911,7 @@
         - False
 
     - name: IPv6 'AAAA' records for Nested_NSXT Components
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     AAAA
         protocol: udp
@@ -928,7 +928,7 @@
 
 
     - name: DEBUG -- Display IPv6 'PTR' records for Nested_NSXT Components
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ========================== Display Nested_NSXT DNS IPv6 "PTR" Records ===========================
@@ -951,7 +951,7 @@
         - False
 
     - name: IPv6 'PTR' records for Nested_NSXT Components
-      nsupdate:
+      community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv6 }}"
         type:     PTR
         protocol: udp
