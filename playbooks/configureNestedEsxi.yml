@@ -102,7 +102,7 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
-        esxi_hostname: "{{ item.value.FQDN }}"      
+        esxi_hostname: "{{ item.value.FQDN }}"
         datastore_name: "{{ Common.NFS.Datastore }}"
         datastore_type: "{{ Common.NFS.Type }}"
         nfs_server: "{{ Common.NFS.Server.IPv4 }}"
@@ -130,3 +130,21 @@
       when: 
         - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
         - DEBUG.KeepInstallerFiles != true
+
+##
+## Nested ESXi host deployment complete, so below we apply configuration settings to the ESXi hosts
+##
+
+    - name: Configure deployed ESXi hosts firewall to permit syslog traffic
+      community.vmware.vmware_host_firewall_manager:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: false
+        cluster_name: "{{ item.key }}"
+        rules:
+            - name: syslog
+              enabled: True
+      loop: "{{ Nested_Clusters | dict2items }}"
+      when:
+        - Nested_Clusters[item.key]['DeployHosts'] == true
