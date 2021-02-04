@@ -142,9 +142,7 @@
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
         cluster_name: "{{ item.key }}"
-        rules:
-            - name: syslog
-              enabled: True
+        rules: "{{ Nested_ESXi.FirewallRules }}"
       loop: "{{ Nested_Clusters | dict2items }}"
       when:
         - Nested_Clusters[item.key]['DeployHosts'] == true
