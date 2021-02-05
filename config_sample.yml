@@ -561,6 +561,10 @@ Nested_ESXi:
         CacheSize: 20                                                                   # CacheSize and CapacitySize MUST be different values.  Normally, CacheSize is smaller than CapacitySize.
         CapacitySize: 180                                                               # CacheSize and CapacitySize MUST be different values.  Normally, CapacitySize is larger than CacheSize.
 
+  FirewallRules:                                                                        # ESXi host firewall rules to configure on all deployed ESXi hosts
+    - name: syslog
+      enabled: True
+
   Host:
     Mgmt1:
       Cluster: Management
