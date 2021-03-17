@@ -88,7 +88,7 @@
     - name: Edit boot.cfg
       ansible.builtin.replace:
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/boot.cfg"
-        regexp: 'kernelopt=cdromBoot runweasel'
+        regexp: 'kernelopt=.*'
         replace: 'kernelopt=ks=cdrom:/{{ Deploy.Software.ESXi.Config }}'
       tags: esxi-install-media
 
