@@ -142,7 +142,8 @@
       action: mount name='{{ Target.ISOMount }}/VCSA' src="{{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }}" opts=loop fstype=iso9660 state=mounted
       when: vcenter_check.status != 200
 
-    - ansible.builtin.debug:
+    - name: Notify user of vCenter install time
+      ansible.builtin.debug:
         msg: "Deploying vCenter will take about 20 minutes, so go grab a smoothie!!!"
       when: vcenter_check.status != 200
       
