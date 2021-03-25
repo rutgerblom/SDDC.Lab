@@ -20,7 +20,7 @@ module: set_drive_type
 
 short_description: Manage the drive type of a vSAN eligible 'disk' storage devices on an ESXi servers which are members of a vCenter Server
 
-description: Manage the drive type of vSAN eligible 'disk' type storage devices on an ESXi server to be either a 'Flash' or 'HDD' type device.  The module is idempotent, and only makes changes to the drive type if they are not already properly set.  If only a vSphere Data Center is specified, then changes apply to all hosts within that data center that match the filtering criteria.  A drive capacity can also be included, which will act as a filter, and only matching drives will be considered.  All ESXi hosts must be a member of a vCenter Server.  This module has not been tested against a stand-alone (i.e. Not vCenter Server managed) ESXi host.
+description: Manage the drive type of vSAN eligible 'disk' type storage devices on an ESXi server to be either a 'Flash' or 'HDD' type device.  The module is idempotent, and only makes changes to the drive type if they are not already properly set.  If only a vSphere Data Center is specified, then changes apply to all hosts within that data center that match the filtering criteria.  If 'drive_capacity' is specified, it will act as a filter, and only matching drives will be considered.  If 'esxi_hostname' is included, it must be a member of a vCenter Server.  To run against a stand-alone ESXi host directly, do not include 'datacenter', 'cluster_name', or 'esxi_hostname' variables, and reference the ESXi host directory (see example).
 
 version_added: "1.0.0"
 
@@ -46,7 +46,7 @@ options:
         required: false
         type: str
     esxi_hostname:
-        description: The name of the ESXi host to modify.  If specified, datacenter and cluster_name are not used.
+        description: The name of the ESXi host that is managed by vCenter Server to modify.  If specified, datacenter and cluster_name are not used even if they are included.
         required: false
         type: str
     set_drivetype_to_flash:
@@ -95,6 +95,16 @@ EXAMPLES = '''
     esxi_hostname: "Pod-200-ComputeA-1"
     drive_capacity: 10240
     set_drivetype_to_flash: false
+
+
+- name: Modify all drives on a stand-alone ESXi host to be 'HDD' type devices
+  set_drive_type:
+    hostname: "Pod-200-Edge-1.SDDC.Lab"
+    username: "root"
+    password: "VMware1!"
+    drive_capacity: 0
+    set_drivetype_to_flash: false
+    delegate_to: localhost
 
 '''
 
@@ -205,8 +215,7 @@ def main():
         ],
         required_by={
             'cluster_name': 'datacenter',
-        },
-        required_one_of= [['datacenter','esxi_hostname']],
+        }
     )
 
     try:
@@ -225,17 +234,11 @@ def main():
     cluster     = get_obj(content, datacenter, [vim.ClusterComputeResource], module.params['cluster_name'])
     esxi        = get_obj(content, content.rootFolder, [vim.HostSystem], module.params['esxi_hostname'])
 
-    ## Verify we have at least one object retrived for us to use
-    if datacenter is None and cluster is None and esxi is None:
-        module.fail_json(msg='Unable to retrieve Datacenter, Cluster, and ESX Server objects from inventory.')
-
-    ##
-    ## Create list of hosts to process
-    ##
+    ## Initialize list of hosts to process
     hosts = []
 
-    # Check if single host was specified
-    if module.params['esxi_hostname'] is not None:
+    # Check if we are targeting an stand-alone ESXi host directly (datacenter=cluster=esxi=None) or a specific ESXi host within vCenter
+    if (datacenter is None and cluster is None and esxi is None) or module.params['esxi_hostname'] is not None:
         hosts = [ esxi ]
     
     # Check if cluster was specified
@@ -249,10 +252,10 @@ def main():
         hosts = container.view
 
 
-
-    ##
-    ##  Data structure being used is nested dicts containing host and list of disks on that host, which looks like this:
-    ##
+    ################################################################################################################################
+    ##  Data structure being used is nested dicts containing host and list of disks on that host, which looks like the following  ##
+    ################################################################################################################################
+    #
     #   hosts_with_disks = {
     #       "host1":{
     #            "host": host_object,
@@ -285,7 +288,7 @@ def main():
                 # Obtain the disk object
                 disk = vsan_disk.disk
 
-            # Calculate disk size in MB
+            # Calculate drive capacity in MB
             drive_capacity = capacity(disk)
 
             # Check if drive_capacity matches
@@ -357,7 +360,6 @@ def main():
         module.exit_json(changed=False, msg=checkmode_changes)
     else:
         module.exit_json(changed=True, msg=actual_changes)
-
 
 
 if __name__ == '__main__':
