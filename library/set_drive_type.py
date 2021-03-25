@@ -9,6 +9,8 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import absolute_import, division, print_function
+__metaclass__ = type
 
 ANSIBLE_METADATA = {'metadata_version': '1.0',
                     'status': ['preview'],
@@ -20,7 +22,13 @@ module: set_drive_type
 
 short_description: Manage the drive type of a vSAN eligible 'disk' storage devices on an ESXi servers which are members of a vCenter Server
 
-description: Manage the drive type of vSAN eligible 'disk' type storage devices on an ESXi server to be either a 'Flash' or 'HDD' type device.  The module is idempotent, and only makes changes to the drive type if they are not already properly set.  If only a vSphere Data Center is specified, then changes apply to all hosts within that data center that match the filtering criteria.  If 'drive_capacity' is specified, it will act as a filter, and only matching drives will be considered.  If 'esxi_hostname' is included, it must be a member of a vCenter Server.  To run against a stand-alone ESXi host directly, do not include 'datacenter', 'cluster_name', or 'esxi_hostname' variables, and reference the ESXi host directory (see example).
+description:
+    Manage the drive type of vSAN eligible 'disk' type storage devices on an ESXi server to be either a 'Flash' or 'HDD' type device.
+    The module is idempotent, and only makes changes to the drive type if they are not already properly set.  If only a vSphere Data
+    Center is specified, then changes apply to all hosts within that data center that match the filtering criteria.  If 'drive_capacity'
+    is specified, it will act as a filter, and only matching drives will be considered.  If 'esxi_hostname' is included, it must be a
+    member of a vCenter Server.  To run against a stand-alone ESXi host directly, do not include 'datacenter', 'cluster_name', or
+    'esxi_hostname' variables, and reference the ESXi host directory (see example).
 
 version_added: "1.0.0"
 
@@ -42,11 +50,14 @@ options:
         required: false
         type: str
     cluster_name:
-        description: The name of the vSphere vCenter cluster.  If specified, 'datacenter' is required.  All hosts within vSphere vCenter cluster will be updated.
+        description:
+            The name of the vSphere vCenter cluster.  If specified, 'datacenter' is required.  All hosts within vSphere vCenter cluster will be updated.
         required: false
         type: str
     esxi_hostname:
-        description: The name of the ESXi host that is managed by vCenter Server to modify.  If specified, datacenter and cluster_name are not used even if they are included.
+        description:
+            The name of the ESXi host that is managed by vCenter Server to modify.
+            If specified, 'datacenter' and 'cluster_name' are not used even if they are included.
         required: false
         type: str
     set_drivetype_to_flash:
@@ -111,7 +122,6 @@ EXAMPLES = '''
 RETURN = '''# '''
 
 
-
 import requests
 import ssl
 from pyVim import connect
@@ -136,7 +146,7 @@ def connect_to_api(hostname, username, password):
 # Modified 'get_obj' that includes base "search_root" argument
 def get_obj(content, search_root, vimtype, name):
     obj = None
-    container = content.viewManager.CreateContainerView( search_root, vimtype, True )
+    container = content.viewManager.CreateContainerView(search_root, vimtype, True)
     for c in container.view:
         if name:
             if c.name == name:
@@ -150,9 +160,8 @@ def get_obj(content, search_root, vimtype, name):
 
 # Calculate disk size in MB
 def capacity(disk):
-    capacity = int( (disk.capacity.block * disk.capacity.blockSize) / 1024 / 1024 )
+    capacity = int((disk.capacity.block * disk.capacity.blockSize) / 1024 / 1024)
     return capacity
-
 
 
 def wait_for_tasks(tasks):
@@ -181,10 +190,10 @@ def wait_for_tasks(tasks):
                             state = change.val
                         else:
                             continue
-                        
+
                         if not str(task) in task_list:
                             continue
-                        
+
                         if state == vim.TaskInfo.State.success:
                             task_list.remove(str(task))
                         elif state == vim.TaskInfo.State.error:
@@ -195,7 +204,6 @@ def wait_for_tasks(tasks):
             pcfilter.Destroy()
 
 
-
 def main():
 
     module = AnsibleModule(
@@ -203,10 +211,10 @@ def main():
             hostname=dict(required=True, type='str'),
             username=dict(required=True, type='str'),
             password=dict(required=True, type='str', no_log=True),
-	        datacenter=dict(required=False, type='str', default=None),
-	        cluster_name=dict(required=False, type='str', default=None, aliases=['cluster']),
+            datacenter=dict(required=False, type='str', default=None),
+            cluster_name=dict(required=False, type='str', default=None, aliases=['cluster']),
             esxi_hostname=dict(required=False, type='str', default=None, aliases=['esxi']),
-	        set_drivetype_to_flash=dict(required=False, type='bool', default=True),
+            set_drivetype_to_flash=dict(required=False, type='bool', default=True),
             drive_capacity=dict(required=False, type='int', default=0)
         ),
         supports_check_mode=True,
@@ -226,35 +234,34 @@ def main():
     except requests.exceptions.ConnectionError:
         module.fail_json(msg='exception while connecting to vCenter or ESXi host.  Please check hostname, FQDN or IP')
 
-    ## Is this line even needed??
+    # Is this line even needed??
     content = service_instance.RetrieveContent()
 
-    ## Retrieve objects from vCenter/Host Inventory.  NoneType returned if empty not found.
-    datacenter  = get_obj(content, content.rootFolder, [vim.Datacenter], module.params['datacenter'])
-    cluster     = get_obj(content, datacenter, [vim.ClusterComputeResource], module.params['cluster_name'])
-    esxi        = get_obj(content, content.rootFolder, [vim.HostSystem], module.params['esxi_hostname'])
+    # Retrieve objects from vCenter/Host Inventory.  NoneType returned if empty not found.
+    datacenter = get_obj(content, content.rootFolder, [vim.Datacenter], module.params['datacenter'])
+    cluster = get_obj(content, datacenter, [vim.ClusterComputeResource], module.params['cluster_name'])
+    esxi = get_obj(content, content.rootFolder, [vim.HostSystem], module.params['esxi_hostname'])
 
-    ## Initialize list of hosts to process
+    # Initialize list of hosts to process
     hosts = []
 
     # Check if we are targeting an stand-alone ESXi host directly (datacenter=cluster=esxi=None) or a specific ESXi host within vCenter
     if (datacenter is None and cluster is None and esxi is None) or module.params['esxi_hostname'] is not None:
-        hosts = [ esxi ]
-    
+        hosts = [esxi]
+
     # Check if cluster was specified
     elif module.params['cluster_name'] is not None:
         hosts = cluster.host
 
-    ## Else we are processing all the hosts of a DataCenter
+    # Else we are processing all the hosts of a DataCenter
     else:
         # Create a custom view of all the hosts in the datacenter
-        container = content.viewManager.CreateContainerView( datacenter, [vim.HostSystem], True )
+        container = content.viewManager.CreateContainerView(datacenter, [vim.HostSystem], True)
         hosts = container.view
 
-
-    ################################################################################################################################
-    ##  Data structure being used is nested dicts containing host and list of disks on that host, which looks like the following  ##
-    ################################################################################################################################
+    # ############################################################################################################################
+    # # Data structure being used is nested dicts containing host and list of disks on that host, which looks like the following #
+    # ############################################################################################################################
     #
     #   hosts_with_disks = {
     #       "host1":{
@@ -269,13 +276,13 @@ def main():
     #   }
     #
 
-    ## Initialize variables
+    # Initialize variables
     hosts_with_disks = {}
     disks = []
 
-    ## Iterate through each of the hosts to get the storage devices on that host which need to be modified
+    # Iterate through each of the hosts to get the storage devices on that host which need to be modified
     for host in hosts:
-        
+
         # Iterate through each vSAN eligible storage device on the host.  We only allow vSAN storage devices
         # because they exclude boot devices and non-disk devices (i.e. CDROMs)
         for vsan_disk in host.configManager.vsanSystem.QueryDisksForVsan():
@@ -284,9 +291,9 @@ def main():
             if vsan_disk.state != "eligible":
                 # Go check next vSAN disk
                 continue
-            else:
-                # Obtain the disk object
-                disk = vsan_disk.disk
+
+            # Obtain the disk object
+            disk = vsan_disk.disk
 
             # Calculate drive capacity in MB
             drive_capacity = capacity(disk)
@@ -296,12 +303,12 @@ def main():
 
                 # See if host already exists in the disks dict, add disk to list of disks
                 if host.name in hosts_with_disks:
-                    nested_host = hosts_with_disks.pop( host.name )
+                    nested_host = hosts_with_disks.pop(host.name)
                     disks = nested_host['disks']
-                    disks.append( disk )
+                    disks.append(disk)
                 # This is the first entry, so we add that disk by itself
                 else:
-                    disks = [ disk ]
+                    disks = [disk]
 
                 # Build updated nested host data structure
                 nested_host = {
@@ -310,12 +317,12 @@ def main():
                 }
 
                 # Add the nested host with the key being the human readable name of the ESXi host
-                hosts_with_disks[ host.name ] = nested_host
+                hosts_with_disks[host.name] = nested_host
 
-    ##
-    ## At this point, 'hosts_with_disks' should have all the ESXi hosts, along with the disk UUIDs that matched the size condition.
-    ## So, now we just need to iterate through them, and set the ssd flag accordingly
-    ##
+    #
+    # At this point, 'hosts_with_disks' should have all the ESXi hosts, along with the disk objects that matched the size condition.
+    # So, now we just need to iterate through them, and set the ssd flag accordingly
+    #
 
     # If module was run with "--check", keep track of change that would have been made
     checkmode_changes = []
@@ -325,7 +332,7 @@ def main():
     for hostname in hosts_with_disks:
 
         # Get host
-        nested_host = hosts_with_disks[ hostname ]
+        nested_host = hosts_with_disks[hostname]
 
         # Iterate through the disks of the host
         for disk in nested_host['disks']:
@@ -334,25 +341,28 @@ def main():
                 # If we are running in "--check" mode
                 if module.check_mode:
                     # Return description of what would have been done
-                    checkmode_changes.append('CHECK MODE: Host: {0}, CTL: {1}, Capacity: {2:7d}MB, Would be set to Flash (Set SSD flag)'.format(hostname, disk.canonicalName, capacity(disk)))
+                    checkmode_changes.append('CHECK MODE: Host: {0}, CTL: {1}, Capacity: {2:7d}MB, Would be set to Flash (Set SSD flag)'
+                                             .format(hostname, disk.canonicalName, capacity(disk)))
                 else:
                     # Set SSD flag (Flash)
-                    task = nested_host['host'].configManager.storageSystem.MarkAsSsd_Task( disk.uuid )
+                    task = nested_host['host'].configManager.storageSystem.MarkAsSsd_Task(disk.uuid)
                     wait_for_tasks([task])
-                    actual_changes.append('Host: {0}, CTL: {1}, Capacity: {2:7d}MB, Set to Flash (Set SSD flag)'.format(hostname, disk.canonicalName, capacity(disk)))
+                    actual_changes.append('Host: {0}, CTL: {1}, Capacity: {2:7d}MB, Set to Flash (Set SSD flag)'
+                                          .format(hostname, disk.canonicalName, capacity(disk)))
 
             # Make "HDD", but only if already a SSD, which is NOT a HDD (idempotency check)
             elif not module.params['set_drivetype_to_flash'] and disk.ssd:
                 # If we are running in "--check" mode
                 if module.check_mode:
                     # Return description of what would have been done
-                    checkmode_changes.append('CHECK MODE: Host: {0}, CTL: {1}, Capacity: {2:7d}MB, Would be set to HDD (Clear SSD flag)'.format(hostname, disk.canonicalName, capacity(disk)))
+                    checkmode_changes.append('CHECK MODE: Host: {0}, CTL: {1}, Capacity: {2:7d}MB, Would be set to HDD (Clear SSD flag)'
+                                             .format(hostname, disk.canonicalName, capacity(disk)))
                 else:
                     # Clear SSD flag (HDD)
-                    task = nested_host['host'].configManager.storageSystem.MarkAsNonSsd_Task( disk.uuid )
+                    task = nested_host['host'].configManager.storageSystem.MarkAsNonSsd_Task(disk.uuid)
                     wait_for_tasks([task])
-                    actual_changes.append('Host: {0}, CTL: {1}, Capacity: {2:7d}MB, Set to HDD (Clear SSD flag)'.format(hostname, disk.canonicalName, capacity(disk)))
-
+                    actual_changes.append('Host: {0}, CTL: {1}, Capacity: {2:7d}MB, Set to HDD (Clear SSD flag)'
+                                          .format(hostname, disk.canonicalName, capacity(disk)))
 
     # If running in Check-Mode
     if module.check_mode:
