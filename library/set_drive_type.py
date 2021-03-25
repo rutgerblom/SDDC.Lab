@@ -20,7 +20,7 @@ module: set_drive_type
 
 short_description: Manage the drive type of a vSAN eligible 'disk' storage devices on an ESXi server
 
-description: Manage the drive type of vSAN eligible 'disk' type storage devices on an ESXi server to be either a 'Flash' or 'HDD' type device.  The module is idempotent, and only makes changes to the drive type if they are not already properly set.  If only a vSphere Data Center is specified, then changes apply to all hosts within that data center.  A drive capacity can also be included, which will act as a filter, and only matching drives will be considered.
+description: Manage the drive type of vSAN eligible 'disk' type storage devices on an ESXi server to be either a 'Flash' or 'HDD' type device.  The module is idempotent, and only makes changes to the drive type if they are not already properly set.  If only a vSphere Data Center is specified, then changes apply to all hosts within that data center that match the filtering criteria.  A drive capacity can also be included, which will act as a filter, and only matching drives will be considered.
 
 version_added: "1.0.0"
 
