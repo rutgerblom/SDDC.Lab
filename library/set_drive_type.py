@@ -18,9 +18,9 @@ DOCUMENTATION = '''
 ---
 module: set_drive_type
 
-short_description: Manage the drive type of a vSAN eligible 'disk' storage devices on an ESXi server
+short_description: Manage the drive type of a vSAN eligible 'disk' storage devices on an ESXi servers which are members of a vCenter Server
 
-description: Manage the drive type of vSAN eligible 'disk' type storage devices on an ESXi server to be either a 'Flash' or 'HDD' type device.  The module is idempotent, and only makes changes to the drive type if they are not already properly set.  If only a vSphere Data Center is specified, then changes apply to all hosts within that data center that match the filtering criteria.  A drive capacity can also be included, which will act as a filter, and only matching drives will be considered.
+description: Manage the drive type of vSAN eligible 'disk' type storage devices on an ESXi server to be either a 'Flash' or 'HDD' type device.  The module is idempotent, and only makes changes to the drive type if they are not already properly set.  If only a vSphere Data Center is specified, then changes apply to all hosts within that data center that match the filtering criteria.  A drive capacity can also be included, which will act as a filter, and only matching drives will be considered.  All ESXi hosts must be a member of a vCenter Server.  This module has not been tested against a stand-alone (i.e. Not vCenter Server managed) ESXi host.
 
 version_added: "1.0.0"
 
@@ -68,6 +68,15 @@ requirements:
 '''
 
 EXAMPLES = '''
+- name: Modify all disks on all hosts in the 'Pod-200-DataCenter' datacenter (i.e. All clusters) to be 'Flash' type devices
+  set_drive_type:
+    hostname: "Pod-200-vCenter.SDDC.Lab"
+    username: "administrator@vsphere.local"
+    password: "VMware1!"
+    datacenter: "Pod-200-DataCenter"
+    set_drivetype_to_flash: true
+
+
 - name: Modify all disks in 'Compute-A' cluster to be 'Flash' type devices
   set_drive_type:
     hostname: "Pod-200-vCenter.SDDC.Lab"
@@ -77,15 +86,16 @@ EXAMPLES = '''
     cluster_name: "Compute-A"
     set_drivetype_to_flash: true
 
-- name: Modify all 10GB disks on host 'Pod-200-ComputeA-1' in 'Pod-200-DataCenter' datacenter to be 'HDD' type devices
+
+- name: Modify all 10GB disks on ESXi host 'Pod-200-ComputeA-1' to be 'HDD' type devices
   set_drive_type:
     hostname: "Pod-200-vCenter.SDDC.Lab"
     username: "administrator@vsphere.local"
     password: "VMware1!"
-    datacenter: "Pod-200-DataCenter"
     esxi_hostname: "Pod-200-ComputeA-1"
     drive_capacity: 10240
     set_drivetype_to_flash: false
+
 '''
 
 RETURN = '''# '''
