@@ -139,7 +139,7 @@ def connect_to_api(hostname, username, password):
             context.verify_mode = ssl.CERT_NONE
             service_instance = connect.SmartConnect(host=hostname, user=username, pwd=password, sslContext=context)
         except Exception as e:
-            raise Exception(e)
+            raise Exception(e) from e
     return service_instance.RetrieveContent()
 
 
