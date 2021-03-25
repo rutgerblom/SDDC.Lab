@@ -9,10 +9,9 @@
         datacenter: "Pod-200-DataCenter"
 #        cluster_name: "Edge"
         drive_capacity: 0
-        set_drivetype_to_flash: False
+        set_drivetype_to_flash: True
       delegate_to: localhost
-      when: True
-
+      when: False
 
     - name: Set drives to be Flash (Cluster)
       set_drive_type:
@@ -22,11 +21,9 @@
         datacenter: "Pod-200-DataCenter"
         cluster_name: "Edge"
         drive_capacity: 0
-        set_drivetype_to_flash: False
+        set_drivetype_to_flash: True
       delegate_to: localhost
-      when: False
-
-
+      when: True
 
     - name: Set drives to be Flash (Stand-alone host Pod-200-Edge-1)
       set_drive_type:
