@@ -1,7 +1,7 @@
 ---
 - hosts: localhost
   tasks:
-    - name: Set drives to be Flash
+    - name: Set drives to be Flash (DataCenter)
       set_drive_type:
         hostname: "Pod-200-vCenter.SDDC.Lab"
         username: "administrator@vsphere.local"
@@ -11,3 +11,30 @@
         drive_capacity: 0
         set_drivetype_to_flash: False
       delegate_to: localhost
+      when: True
+
+
+    - name: Set drives to be Flash (Cluster)
+      set_drive_type:
+        hostname: "Pod-200-vCenter.SDDC.Lab"
+        username: "administrator@vsphere.local"
+        password: "VMware1!"
+        datacenter: "Pod-200-DataCenter"
+        cluster_name: "Edge"
+        drive_capacity: 0
+        set_drivetype_to_flash: False
+      delegate_to: localhost
+      when: False
+
+
+
+    - name: Set drives to be Flash (Stand-alone host Pod-200-Edge-1)
+      set_drive_type:
+        hostname: "Pod-200-Edge-1.SDDC.Lab"
+        username: "root"
+        password: "VMware1!"
+        drive_capacity: 0
+        set_drivetype_to_flash: False
+      delegate_to: localhost
+      when: False
+
