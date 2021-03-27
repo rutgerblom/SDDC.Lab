@@ -36,7 +36,7 @@ The primary use case is consistent and speedy provisioning of nested VMware SDDC
 ## Requirements
 The following are the requirements for successful Pod deployments:
 
-* A physical standalone ESXi host running version 6.7 or higher.
+* A physical ESXi host running version 6.7 or higher.
 * A virtual machine with a modern version of Ubuntu (used as the Ansible controller)
 * The default deployment settings require DNS name resolution. You can leverage an existing DNS server, but it must be configured with the required forward and reverse zones and support dynamic updates.
 * Access to VMware product installation media.
@@ -56,8 +56,8 @@ The following are the requirements for successful Pod deployments:
 ### Recommendations
 The following are recommendations based on our experience with deploying Pods:
 
-* Use a physical layer-3 switch with appropriate OSPF configuration matching the OSPF settings in your config.yml file. Dynamic routing between your Pods and your physical network will make your life easier.
-* Hardware configuration of the physical standalone ESXi host:
+* Use a physical layer-3 switch with appropriate OSPF configuration matching the OSPF settings in your config.yml file. Dynamic routing between your Pods and your physical network will make for a better experience.
+* Hardware configuration of the physical ESXi host(s):
   * 2 CPUs (10 cores per CPU)
   * 320 GB RAM
   * 1 TB storage capacity (preferably SSD). Either DAS or 10 Gbit NFS/iSCSI
@@ -74,6 +74,7 @@ The following are recommendations based on our experience with deploying Pods:
 * Configure your physical network:
   * Create an Lab-Routers VLAN used as transit segment between your layer-3 switch and the Pod [VyOS](https://www.vyos.io/) router.
   * Configure OSPFv2/OSPFv3 on the Lab-Routers segment.
+  * Add the Pod VLANs to your layer-3 switch in case you are deploying the Pod to a vSphere cluster. 
 
 * Install the required software on your Ansible controller:
   * sudo apt install python3 python3-pip xorriso git
