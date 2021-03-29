@@ -86,7 +86,7 @@ EXAMPLES = '''
     password: "VMware1!"
     datacenter: "Pod-200-DataCenter"
     set_drivetype_to_flash: true
-
+  delegate_to: localhost
 
 - name: Modify all disks in 'Compute-A' cluster to be 'Flash' type devices
   set_drive_type:
@@ -96,7 +96,7 @@ EXAMPLES = '''
     datacenter: "Pod-200-DataCenter"
     cluster_name: "Compute-A"
     set_drivetype_to_flash: true
-
+  delegate_to: localhost
 
 - name: Modify all 10GB disks on ESXi host 'Pod-200-ComputeA-1' to be 'HDD' type devices
   set_drive_type:
@@ -106,7 +106,7 @@ EXAMPLES = '''
     esxi_hostname: "Pod-200-ComputeA-1"
     drive_capacity: 10240
     set_drivetype_to_flash: false
-
+  delegate_to: localhost
 
 - name: Modify all drives on a stand-alone ESXi host to be 'HDD' type devices
   set_drive_type:
