@@ -115,7 +115,7 @@ EXAMPLES = '''
     password: "VMware1!"
     drive_capacity: 0
     set_drivetype_to_flash: false
-    delegate_to: localhost
+  delegate_to: localhost
 
 '''
 
