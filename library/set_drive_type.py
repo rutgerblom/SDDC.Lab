@@ -234,7 +234,6 @@ def main():
     except requests.exceptions.ConnectionError:
         module.fail_json(msg='exception while connecting to vCenter or ESXi host.  Please check hostname, FQDN or IP')
 
-    # Is this line even needed??
     content = service_instance.RetrieveContent()
 
     # Retrieve objects from vCenter/Host Inventory.  NoneType returned if empty not found.
