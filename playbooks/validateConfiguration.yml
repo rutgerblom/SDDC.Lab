@@ -488,7 +488,7 @@
         get_mime: no
         follow: no
       register: NSXT_Installer
-      when: Deploy.Product.NSXT.LocalManager or Deploy.Product.NSXT.GlobalManager
+      when: Deploy.Product.NSXT.LocalManager
 
     - name: Verify NSX-T Installer exists
       ansible.builtin.pause:
@@ -502,14 +502,14 @@
 
           =================================================================================================
       when:
-        - Deploy.Product.NSXT.LocalManager or Deploy.Product.NSXT.GlobalManager
+        - Deploy.Product.NSXT.LocalManager
         - NSXT_Installer.stat.isreg is not defined or NSXT_Installer.stat.isreg != true
 
     - name: Set flag if issue found locating NSX-T installer file
       ansible.builtin.set_fact:
         IssueFound: true
       when:
-        - Deploy.Product.NSXT.LocalManager or Deploy.Product.NSXT.GlobalManager
+        - Deploy.Product.NSXT.LocalManager
         - NSXT_Installer.stat.isreg is not defined or NSXT_Installer.stat.isreg != true
 
 

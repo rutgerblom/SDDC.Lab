@@ -92,6 +92,12 @@ options:
         description: 'IP address or hostname of compute manager'
         required: true
         type: str
+    set_as_oidc_provider:
+        description: "Specifies whether compute manager has been set as OIDC provider
+                        If the compute manager is VC and need to set set as OIDC provider for NSX then
+                        this flag should be set as true. This is specific to TKGS. NSX-T 3.0 only"
+        required: false
+        type: bool
     state:
         choices:
             - present
@@ -226,6 +232,9 @@ def check_for_update(module, manager_url, mgr_username, mgr_password, validate_c
         existing_compute_manager['credential']['thumbprint'] != compute_manager_with_ids['credential']['thumbprint'] or \
         existing_compute_manager['origin_type'] != compute_manager_with_ids['origin_type']:
         return True
+    if existing_compute_manager.__contains__('set_as_oidc_provider') and compute_manager_with_ids.__contains__('set_as_oidc_provider') and \
+        existing_compute_manager['set_as_oidc_provider'] != compute_manager_with_ids['set_as_oidc_provider']:
+        return True
     return False
 
 def main():
@@ -242,6 +251,7 @@ def main():
                     origin_type=dict(required=True, type='str'),
                     description=dict(required=False, type='str'),
                     server=dict(required=True, type='str'),
+                    set_as_oidc_provider=dict(required=False, type='bool'),
                     state=dict(required=True, choices=['present', 'absent']))
 
   module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)

@@ -46,21 +46,21 @@ Deploy:
     vCenter:                                                                  # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                                         # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: vCenter                                                        # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '7.00D'                                                        # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '7.00U2'                                                       # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-vCenter.conf"
       Installer: "{{ SiteCode }}-Installer-vCenter"
     ESXi:                                                                     # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                                         # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: ESXi                                                           # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '7.00B'                                                        # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '7.00U2'                                                       # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "KS.CFG"
       Installer: "{{ SiteCode }}-Installer-ESXi"
     NSXT:                                                                     # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                                         # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: NSXT                                                           # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '3.0.1.1'                                                      # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '3.1.1'                                                        # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-NSXT.conf"
       Installer: "{{ SiteCode }}-Installer-NSXT"
@@ -74,14 +74,14 @@ Deploy:
     vRLI:                                                                     # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                                         # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: vRLI                                                           # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '8.2.0'                                                        # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '8.3.0'                                                        # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-vRLI.conf"
       Installer: "{{ SiteCode }}-Installer-vRLI"
     DNSServer:                                                                # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  Ubuntu                                                         # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: Server                                                         # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '20.04.1'                                                      # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '20.04.2'                                                      # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-Ubuntu.conf"
       Installer: "{{ SiteCode }}-Installer-Ubuntu"
@@ -156,7 +156,7 @@ TargetConfig:
         VLAN: 4095
   vCenter:                                                                    # Settings used when "vCenter" deployment is chosen (TargetConfig.Deployment == "vCenter")
     FQDN: NetLab-vCenter.NetLab.Local                                         # FQDN - The FQDN to your physical vCenter Server
-    User: administrator@vsphere.local                                         # User - vCenter Server user account
+    User: administrator@vsphere.local                                         # User - vCenter Server user account.  We suggest you create a dedicate account for deployments, such as SDDCLab@vsphere.local
     Password: "{{ Common.Password.Physical }}"                                # Password - Password used by User to authenticate to the physical vCenter Server
     vSwitch: SDDCLab_vDS                                                      # vSwitch - Name of the vDS which is automatically provisioned by the playbooks, and where all the Pod Port-Groups are crated
     vSwitchVersion: 6.6.0                                                     # vSwitchVersion - vDS version used for the given vSwitch
@@ -547,7 +547,7 @@ Nested_ESXi:
     Compute-A:
       CPU: 8
       CoresPerSocket: 8
-      Memory: 32768
+      Memory: 16384
       BootDiskSize: 8
       vSAN:
         CacheSize: 20                                                                   # CacheSize and CapacitySize MUST be different values.  Normally, CacheSize is smaller than CapacitySize.
@@ -555,7 +555,7 @@ Nested_ESXi:
     Edge:
       CPU: 8
       CoresPerSocket: 8
-      Memory: 65536
+      Memory: 16384
       BootDiskSize: 8
       vSAN:
         CacheSize: 20                                                                   # CacheSize and CapacitySize MUST be different values.  Normally, CacheSize is smaller than CapacitySize.
@@ -1773,7 +1773,7 @@ Nested_NSXT:
           Tier: 0
           GatewayName: T0-Gateway-01
         Subnets:
-          - GatewayCIDR: 1.1.4.1/24
+          - GatewayCIDR: 192.168.4.1/24
           - GatewayCIDR: fd00:a:d::1/64
         Tags:
           - Tag: Auto-Created
@@ -1788,16 +1788,19 @@ Nested_NSXT:
           Type: VLAN
           Description:
           Switch: NVDS-1
+          SetAsDefault: false
           TeamingPolicies: []
         TZ-Edge:
           Type: VLAN
           Description: Edge Cluster Peering Segments
           Switch: NVDS-1
+          SetAsDefault: false
           TeamingPolicies: []
         TZ-Overlay:
           Type: OVERLAY
           Description: GEVEVE Overlay Transport Zone
           Switch: NVDS-1
+          SetAsDefault: true
           TeamingPolicies: []
 
       Profile:

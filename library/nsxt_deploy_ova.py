@@ -282,11 +282,13 @@ def main():
         ovf_base_options.extend(['--net:Network 0={}'.format(module.params['portgroup']),
                                  '--net:Network 1={}'.format(module.params['portgroup_ext']),
                                  '--net:Network 2={}'.format(module.params['portgroup_transport']),
-                                 '--net:Network 3={}'.format(module.params['portgroup']),
-                                 '--deploymentOption={}'.format(module.params['deployment_size'])])
+                                 '--net:Network 3={}'.format(module.params['portgroup'])])
     else:
         ovf_base_options.extend(['--network={}'.format(module.params['portgroup'])])
     ovf_command.extend(ovf_base_options)
+
+    ovf_deployement_size = ['--deploymentOption={}'.format(module.params['deployment_size'])]
+    ovf_command.extend(ovf_deployement_size)
 
     ovf_ext_prop = ['--prop:nsx_hostname={}'.format(module.params['hostname']),
                    '--prop:nsx_dns1_0={}'.format(module.params['dns_server']),

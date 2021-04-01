@@ -38,7 +38,8 @@ import inspect
 # Policy API here. Required to infer base resource params.
 BASE_RESOURCES = {"NSXTSegment", "NSXTTier0", "NSXTTier1",
                   "NSXTSecurityPolicy", "NSXTPolicyGroup",
-                  "NSXTIpBlock", "NSXTIpPool"}
+                  "NSXTIpBlock", "NSXTIpPool", "NSXTBFDProfile",
+                  "NSXTGatewayPolicy", "NSXTL2BridgeEpProfile"}
 
 
 class NSXTBaseRealizableResource(ABC):
@@ -69,32 +70,44 @@ class NSXTBaseRealizableResource(ABC):
         mgr_hostname = self.module.params['hostname']
         mgr_username = self.module.params['username']
         mgr_password = self.module.params['password']
+        nsx_cert_path = self.module.params['nsx_cert_path']
+        nsx_key_path = self.module.params['nsx_key_path']
+
+        request_headers = self.module.params['request_headers']
+        ca_path = self.module.params['ca_path']
+        validate_certs = self.module.params['validate_certs']
 
         # Each manager has an associated PolicyCommunicator
         self.policy_communicator = PolicyCommunicator.get_instance(
-            mgr_username, mgr_hostname, mgr_password)
+            mgr_hostname, mgr_username, mgr_password, nsx_cert_path,
+            nsx_key_path, request_headers, ca_path, validate_certs)
 
         if resource_params is None:
             resource_params = self.module.params
 
         self.resource_params = resource_params
 
-        self.validate_certs = self.module.params['validate_certs']
         self._state = self.get_attribute('state', resource_params)
         if not (hasattr(self, 'id') and self.id):
             if self.get_resource_name() in BASE_RESOURCES:
                 self.id = self._get_id_using_attr_name(
                     None, resource_params,
                     self.get_resource_base_url(self.baseline_args),
-                    self.get_spec_identifier())
+                    self.get_spec_identifier(),
+                    fail_if_not_found=False)
             else:
                 self.id = self._get_id_using_attr_name(
                     None, resource_params,
                     self.get_resource_base_url(self._parent_info),
-                    self.get_spec_identifier())
-
-        if self.id is None:
-            return
+                    self.get_spec_identifier(),
+                    fail_if_not_found=False)
+                if self.id is None:
+                    self.id = self.infer_resource_id(self._parent_info)
+                if self.id is None:
+                    self.module.fail_json(
+                        msg="Please specify either id or display_name for "
+                            "resource {}".format(str(
+                                self.get_spec_identifier())))
 
         # Extract the resource params from module
         self.nsx_resource_params = self._extract_nsx_resource_params(
@@ -108,7 +121,10 @@ class NSXTBaseRealizableResource(ABC):
         try:
             # get existing resource schema
             _, self.existing_resource = self._send_request_to_API(
-                "/" + self.id, ignore_error=False)
+                "/" + self.id, ignore_error=False,
+                accepted_error_codes=set([404]))
+            self.existing_resource_revision = self.existing_resource[
+                '_revision']
             # As Policy API's PATCH requires all attributes to be filled,
             # we fill the missing resource params (the params not specified)
             # by user using the existing params
@@ -117,6 +133,10 @@ class NSXTBaseRealizableResource(ABC):
         except Exception as err:
             # the resource does not exist currently on the manager
             self.existing_resource = None
+            self.existing_resource_revision = None
+        finally:
+            self._clean_none_resource_params(
+                self.existing_resource, self.nsx_resource_params)
         self._achieve_state(resource_params, successful_resource_exec_logs)
 
     @classmethod
@@ -132,6 +152,11 @@ class NSXTBaseRealizableResource(ABC):
 
     def get_parent_info(self):
         return self._parent_info
+
+    def infer_resource_id(self, parent_info):
+        # This is called when the user has not specified the ID or
+        # display_name of any child resource or its sub-resources
+        pass
 
     @staticmethod
     @abstractmethod
@@ -309,17 +334,10 @@ class NSXTBaseRealizableResource(ABC):
         return False
 
     def get_id_using_attr_name_else_fail(self, attr_name, params,
-                                         resource_base_url, resource_type,
-                                         ignore_not_found_error=True):
-        resource_id = self._get_id_using_attr_name(
+                                         resource_base_url, resource_type):
+        return self._get_id_using_attr_name(
             attr_name, params, resource_base_url, resource_type,
-            ignore_not_found_error)
-        if resource_id is not None:
-            return resource_id
-        # Incorrect usage of Ansible Module
-        self.module.fail_json(msg="Please specify either {} id or display_name"
-                              " for the resource {}".format(
-                                  attr_name, str(resource_type)))
+            fail_if_not_found=True)
 
     def exit_with_failure(self, msg, **kwargs):
         self.module.fail_json(msg=msg, **kwargs)
@@ -351,7 +369,7 @@ class NSXTBaseRealizableResource(ABC):
 
     def _get_id_using_attr_name(self, attr_name, params,
                                 resource_base_url, resource_type,
-                                ignore_not_found_error=True):
+                                fail_if_not_found=True):
         # Pass attr_name '' or None to infer base resource's ID
         id_identifier = 'id'
         display_name_identifier = 'display_name'
@@ -366,7 +384,12 @@ class NSXTBaseRealizableResource(ABC):
             # Use display_name as ID if ID is not specified.
             return (self.get_id_from_display_name(
                 resource_base_url, resource_display_name, resource_type,
-                ignore_not_found_error) or resource_display_name)
+                not fail_if_not_found) or resource_display_name)
+        if fail_if_not_found:
+            # Incorrect usage of Ansible Module
+            self.module.fail_json(
+                msg="Please specify either {} id or display_name for the "
+                    "resource {}".format(attr_name, str(resource_type)))
 
     def get_id_from_display_name(self, resource_base_url,
                                  resource_display_name,
@@ -601,17 +624,30 @@ class NSXTBaseRealizableResource(ABC):
             self.nsx_resource_params['_revision'] = \
                 self.existing_resource['_revision']
             try:
-                _, resp = self._send_request_to_API(
+                _, patch_resp = self._send_request_to_API(
                     suffix="/"+self.id, method="PATCH",
                     data=self.nsx_resource_params)
-                successful_resource_exec_logs.append({
-                    "changed": True,
-                    "id": self.id,
-                    "body": str(resp),
-                    "message": "%s with id %s updated." %
-                    (self.get_resource_name(), self.id),
-                    "resource_type": self.get_resource_name()
-                })
+                # Get the resource again and compare version numbers
+                _, updated_resource_spec = self._send_request_to_API(
+                    suffix="/"+self.id, method="GET")
+                if updated_resource_spec[
+                        '_revision'] != self.existing_resource_revision:
+                    successful_resource_exec_logs.append({
+                        "changed": True,
+                        "id": self.id,
+                        "body": str(patch_resp),
+                        "message": "%s with id %s updated." %
+                        (self.get_resource_name(), self.id),
+                        "resource_type": self.get_resource_name()
+                    })
+                else:
+                    successful_resource_exec_logs.append({
+                        "changed": False,
+                        "id": self.id,
+                        "message": "%s with id %s already exists." %
+                        (self.get_resource_name(), self.id),
+                        "resource_type": self.get_resource_name()
+                    })
             except Exception as err:
                 srel = successful_resource_exec_logs
                 self.module.fail_json(msg="Failed to update %s with id %s."
@@ -658,9 +694,10 @@ class NSXTBaseRealizableResource(ABC):
                                                       self.id, to_native(err)),
                                   successfully_updated_resources=srel)
 
-    def _send_request_to_API(self, suffix="", ignore_error=True,
+    def _send_request_to_API(self, suffix="", ignore_error=False,
                              method='GET', data=None,
-                             resource_base_url=None):
+                             resource_base_url=None,
+                             accepted_error_codes=set()):
         try:
             if not resource_base_url:
                 if self.get_resource_name() not in BASE_RESOURCES:
@@ -672,11 +709,29 @@ class NSXTBaseRealizableResource(ABC):
                                          get_resource_base_url(
                                              baseline_args=self.baseline_args))
             (rc, resp) = self.policy_communicator.request(
-                resource_base_url + suffix, validate_certs=self.validate_certs,
+                resource_base_url + suffix,
                 ignore_errors=ignore_error, method=method, data=data)
             return (rc, resp)
+        except DuplicateRequestError:
+            self.module.fail_json(msg='Duplicate request')
         except Exception as e:
+            if (e.args[0] not in accepted_error_codes and
+                    self.get_resource_name() in BASE_RESOURCES):
+                msg = ('Received {} from NSX Manager. Please try '
+                       'again. '.format(e.args[0]))
+                if len(e.args) == 2 and e.args[1] and (
+                        'error_message' in e.args[1]):
+                    msg += e.args[1]['error_message']
+                self.module.fail_json(msg=msg)
             raise e
+
+    def get_all_resources_from_nsx(self):
+        rc, resp = self._send_request_to_API()
+        if rc != 200:
+            self.module.fail_json(
+                "Invalid URL to retrieve all configured {} NSX "
+                "resources".format(self.get_spec_identifier()))
+        return resp['results']
 
     def _achieve_state(self, resource_params,
                        successful_resource_exec_logs=[]):
@@ -745,7 +800,8 @@ class NSXTBaseRealizableResource(ABC):
         """
         while True:
             try:
-                self._send_request_to_API("/" + self.id)
+                self._send_request_to_API(
+                    "/" + self.id, accepted_error_codes=set([404]))
                 time.sleep(10)
             except DuplicateRequestError:
                 self.module.fail_json(msg='Duplicate request')
@@ -759,7 +815,8 @@ class NSXTBaseRealizableResource(ABC):
         try:
             count = 0
             while True:
-                rc, resp = self._send_request_to_API("/" + self.id)
+                rc, resp = self._send_request_to_API(
+                    "/" + self.id, accepted_error_codes=set([404]))
                 if 'state' in resp:
                     if any(resp['state'] in progress_status for progress_status
                             in IN_PROGRESS_STATES):
@@ -801,3 +858,15 @@ class NSXTBaseRealizableResource(ABC):
                 resource_params[k] = v
             elif type(v).__name__ == 'dict':
                 self._fill_missing_resource_params(v, resource_params[k])
+
+    def _clean_none_resource_params(self, existing_params, resource_params):
+        keys_to_remove = []
+        for k, v in resource_params.items():
+            if v is None and (
+                    existing_params is None or k not in existing_params):
+                keys_to_remove.append(k)
+        for key in keys_to_remove:
+            resource_params.pop(key)
+        for k, v in resource_params.items():
+            if type(v).__name__ == 'dict':
+                self._clean_none_resource_params(existing_params, v)

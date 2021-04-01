@@ -75,6 +75,10 @@ options:
         description: 'Description of this resource'
         required: false
         type: bool
+    tags:
+        description: Opaque identifier meaninful to API user
+        required: false
+        type: Array of Tag
     state:
         choices:
             - present
@@ -224,6 +228,7 @@ def main():
                        resource_type=dict(required=False, type='str'),
                        id=dict(required=False, type='str'),
                        is_protected=dict(required=False, type='bool'),
+                       tags=dict(required=False, type='list'),
                     state=dict(required=True, choices=['present', 'absent']))
   '''
   Core function of the module reponsible for adding and deleting the certififcate.

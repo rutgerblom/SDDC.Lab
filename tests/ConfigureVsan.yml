@@ -1,0 +1,71 @@
+---
+- hosts: localhost
+  tasks:
+
+    - name: Enable vSAN
+      community.vmware.vmware_cluster_vsan:
+        hostname: pod-200-vcenter.sddc.lab
+        username: administrator@vsphere.local
+        password: VMware1!
+        validate_certs: false
+        datacenter_name: Pod-200-DataCenter
+        cluster_name: Compute-A
+        enable_vsan: True
+      delegate_to: localhost
+      when: true
+
+    - name: Enable vSAN and claim storage automatically
+      community.vmware.vmware_cluster_vsan:
+        hostname: pod-200-vcenter.sddc.lab
+        username: administrator@vsphere.local
+        password: VMware1!
+        validate_certs: false
+        datacenter_name: Pod-200-DataCenter
+        cluster_name: Compute-A
+        enable_vsan: True
+        vsan_auto_claim_storage: True
+      delegate_to: localhost
+      when: false
+
+
+#    - name: Enable vSAN and claim storage automatically
+#      community.vmware.vmware_cluster_vsan:
+#        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+#        username: "{{ Nested_vCenter.User }}"
+#        password: "{{ Nested_vCenter.Password }}"
+#        validate_certs: false
+#        datacenter_name: "{{ Nested_vCenter.DataCenter }}"
+#        cluster_name: "{{ item.key }}"
+#        enable_vsan: True
+#        vsan_auto_claim_storage: True
+#      delegate_to: localhost
+#      loop: "{{ Nested_Clusters | dict2items }}"
+#      when:
+#        - item.value.vSAN == true
+#        - item.value.DeployHosts == true
+
+
+#    - name: Enable vSAN
+#      enable_vsan:
+#        vcenter: "{{ Nested_vCenter.FQDN | lower }}"
+#        user: "{{ Nested_vCenter.User }}"
+#        passwd: "{{ Nested_vCenter.Password }}"
+#        cluster: "{{ item.key }}"
+#      ignore_errors: true
+#      loop: "{{ Nested_Clusters | dict2items }}"
+#      when:
+#        - item.value.vSAN == true
+#        - item.value.DeployHosts == true
+#
+#    - name: Claim disks for vSAN
+#      claim_vsan_disks:
+#        vcenter: "{{ Nested_vCenter.FQDN | lower }}"
+#        user: "{{ Nested_vCenter.User }}"
+#        passwd: "{{ Nested_vCenter.Password }}"
+#        cluster: "{{ item.key }}"
+#        datastorename: "{{ item.value.vsanDatastore }}"
+#      ignore_errors: true
+#      loop: "{{ Nested_Clusters | dict2items }}"
+#      when:
+#        - item.value.vSAN == true
+#        - item.value.DeployHosts == true
