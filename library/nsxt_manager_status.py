@@ -79,12 +79,17 @@ def main():
         current_time = datetime.now()
         (rc, resp) = request(manager_url+ '/cluster-manager/status', headers=dict(Accept='application/json'),
                         url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
-        module.exit_json(changed=changed, msg= " NSX manager is UP")
+        if "overall_status" in resp and resp["overall_status"] == "STABLE":
+            module.exit_json(changed=changed, msg= " NSX manager is UP")
+        else:
+            time_diff = datetime.now() - current_time
+            time.sleep(10)
+            wait_time = time_diff.seconds + wait_time + 10
       except Exception as err:
         time_diff = datetime.now() - current_time
         time.sleep(10)
         wait_time = time_diff.seconds + wait_time + 10
-  module.fail_json(changed=changed, msg= " Error accessing nsx manager. Timeed out")
+  module.fail_json(changed=changed, msg= " Error accessing nsx manager. Timed out")
 
 if __name__ == '__main__':
 	main()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2018 VMware, Inc.
+# Copyright 2020 VMware, Inc.
 # SPDX-License-Identifier: BSD-2-Clause OR GPL-3.0-only
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -26,11 +26,11 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = '''
 ---
-module: nsxt_policy_security_policy
-short_description: Create or Delete a Policy Security Policy
+module: nsxt_policy_gateway_policy
+short_description: Update a Gateway Policy
 description:
-    Creates or deletes a Policy Security Policy.
-    Required attributes include id and display_name.
+    Updates a Gateway Policy
+    Required attributes include id or display_name
 version_added: "2.8"
 author: Gautam Verma
 options:
@@ -68,7 +68,7 @@ options:
     display_name:
         description:
             - Display name.
-            - If resource ID is not specified, display_name will be used as ID.
+            - If resource ID is not specified, display_name will be used as ID
         required: false
         type: str
     state:
@@ -95,122 +95,54 @@ options:
                 description: Tag value.
                 required: true
                 type: str
-    do_wait_till_create:
-        type: bool
-        default: false
-        description:
-            - Can be used to wait for the realization of subresource before the
-              request to create the next resource is sent to the Manager.
-            - Can be specified for each subresource.
     id:
-        description: The id of the Policy Security Policy.
+        description: The id of the Gateway Policy
         required: false
         type: str
     description:
-        description: Security Policy description.
+        description: Gateway Policy description.
         type: str
-    domain_id:
-        description: The domain id where the Security Policy is realized.
-        type: str
-        required: true
     category:
         description:
-            - A way to classify a security policy, if needed.
-            - Distributed Firewall
-                - Policy framework provides five pre-defined categories for
-                classifying a security policy. They are "Ethernet",Emergency",
-                "Infrastructure", "Environment" and "Application". There is a
-                pre-determined order in which the policy framework manages the
-                priority of these security policies. Ethernet category is for
-                supporting layer 2 firewall rules. The other four categories
-                are applicable for layer 3 rules. Amongst them, the Emergency
-                category has the highest priority followed by Infrastructure,
-                Environment and then Application rules. Administrator can
-                choose to categorize a security policy into the above
-                categories or can choose to leave it empty. If empty it will
-                have the least precedence w.r.t the above four categories.
-            - Edge Firewall
-                - Policy Framework for Edge Firewall provides six pre-defined
-                categories "Emergency", "SystemRules", "SharedPreRules",
-                "LocalGatewayRules", "AutoServiceRules" and
-                "Default", in order of priority of rules.
-                All categories are allowed for Gatetway Policies
-                that belong to 'default' Domain. However, for
-                user created domains, category is restricted to
-                "SharedPreRules" or "LocalGatewayRules" only.
-                Also, the users can add/modify/delete rules from
-                only the "SharedPreRules" and "LocalGatewayRules"
-                categories. If user doesn't specify the category
-                then defaulted to "Rules". System generated
-                category is used by NSX created rules, for
-                example BFD rules. Autoplumbed category used by
-                NSX verticals to autoplumb data path rules.
-                Finally, "Default" category is the placeholder
-                default rules with lowest in the order of priority.
+            Policy Framework for Edge Firewall provides six pre-defined
+            categories - "Emergency", "SystemRules", "SharedPreRules",
+            "LocalGatewayRules", "AutoServiceRules" and "Default", in order
+            of priority of rules. All categories are allowed for Gatetway
+            Policies that belong to 'default' Domain. However, for user
+            created domains, category is restricted to "SharedPreRules" or
+            "LocalGatewayRules" only. Also, the users can add/modify/delete
+            rules from only the "SharedPreRules" and "LocalGatewayRules"
+            categories. If user doesn't specify the category then defaulted
+            to "Rules". System generated category is used by NSX created
+            rules, for example BFD rules. Autoplumbed category used by NSX
+            verticals to autoplumb data path rules. Finally, "Default"
+            category is the placeholder default rules with lowest in the order
+            of priority
+        required: false
         type: str
+        choices:
+            - Emergency
+            - SystemRules
+            - SharedPreRules
+            - LocalGatewayRules
+            - AutoServiceRules
+            - Default
+        default: Default
     comments:
+        description: Comments for security policy lock/unlock
+        required: false
         type: str
-        description: SecurityPolicy lock/unlock comments
-    connectivity_strategy:
-        type: str
-        description:
-            - Connectivity strategy applicable for this SecurityPolicy
-            - This field indicates the default connectivity policy for the
-              security policy. Based on the connectivitiy strategy, a default
-              rule for this security policy will be created. An appropriate
-              action will be set on the rule based on the value of the
-              connectivity strategy. If NONE is selected or no connectivity
-              strategy is specified, then no default rule for the security
-              policy gets created. The default rule that gets created will be a
-              any-any rule and applied to entities specified in the scope of
-              the security policy. Specifying the connectivity_strategy without
-              specifying the scope is not allowed. The scope has to be a
-              Group and one cannot specify IPAddress directly in the group that
-              is used as scope. This default rule is only applicable for the
-              Layer3 security policies
-            - WHITELIST - Adds a default drop rule. Administrator can then use
-              "allow" rules (aka whitelist) to allow traffic between groups
-            - BLACKLIST - Adds a default allow rule. Admin can then use "drop"
-              rules (aka blacklist) to block traffic between groups
-            - WHITELIST_ENABLE_LOGGING - Whitelising with logging enabled
-            - BLACKLIST_ENABLE_LOGGING - Blacklisting with logging enabled
-            - NONE - No default rule is created
     locked:
+        description: Indicates whether a security policy should be locked.
+                     If the security policy is locked by a user, then no other
+                     user would be able to modify this security policy. Once
+                     the user releases the lock, other users can update this
+                     security policy
+        required: false
         type: bool
-        description:
-            - Lock a security policy
-            - Indicates whether a security policy should be locked. If the
-              security policy is locked by a user, then no other user would
-              be able to modify this security policy. Once the user releases
-              the lock, other users can update this security policy.
-    scheduler_path:
-        type: str
-        description:
-            - Path to the scheduler for time based scheduling
-            - Provides a mechanism to apply the rules in this policy for a
-              specified time duration.
-    scope:
-        description: The list of group paths where the rules in this
-                     policy will get applied. This scope will take
-                     precedence over rule level scope. Supported only
-                     for security policies.
-        type: list
-    sequence_number:
-        description: Sequence number to resolve conflicts across Domains
-        type: int
-    stateful:
-        type: bool
-        description:
-            - Stateful nature of the entries within this security policy.
-            - Stateful or Stateless nature of security policy is enforced
-              on all rules in this security policy. When it is stateful, the
-              state of the network connects are tracked and a stateful packet
-              inspection is performed.
-            - Layer3 security policies can be stateful or stateless.
-              By default, they are stateful.
-            - Layer2 security policies can only be stateless.
+        default: false
     rules:
-        description: Rules that are a part of this SecurityPolicy
+        description: Rules that are a part of this GatewayPolicy
         type: list
         suboptions:
             action:
@@ -342,45 +274,74 @@ options:
                     tag:
                         description: Tag value
                         type: str
-    tcp_strict:
+    scheduler_path:
+        description:
+            - Path to the scheduler for time based scheduling
+            - Provides a mechanism to apply the rules in this policy for a
+              specified time duration
+        required: false
+        type: str
+    scope:
+        description: The list of group paths where the rules in this policy
+                     will get applied. This scope will take precedence over
+                     rule level scope. Supported only for security and
+                     redirection policies. In case of RedirectionPolicy, it is
+                     expected only when the policy is NS and redirecting to
+                     service chain.
+        required: false
+        type: list
+        element: str
+    sequence_number:
+        description:
+            - Sequence number to resolve conflicts across Domains
+            - This field is used to resolve conflicts between security
+              policies across domains. In order to change the sequence number
+              of a policy one can fire a POST request on the policy entity
+              with a query parameter action=revise The sequence number field
+              will reflect the value of the computed sequence number upon
+              execution of the above mentioned POST request. For scenarios
+              where the administrator is using a template to update several
+              security policies, the only way to set the sequence number is
+              to explicitly specify the sequence number for each security
+              policy. If no sequence number is specified in the payload, a
+              value of 0 is assigned by default. If there are multiple
+              policies with the same sequence number then their order is not
+              deterministic. If a specific order of policies is desired, then
+              one has to specify unique sequence numbers or use the POST
+              request on the policy entity with a query parameter
+              action=revise to let the framework assign a sequence number
+        required: false
+        type: int
+    stateful:
+        description:
+            - Stateful nature of the entries within this security policy.
+            - Stateful or Stateless nature of security policy is enforced on
+              all rules in this security policy. When it is stateful, the state
+              of the network connects are tracked and a stateful packet
+              inspection is performed. Layer3 security policies can be stateful
+              or stateless. By default, they are stateful. Layer2 security
+              policies can only be stateless.
+        required: false
         type: bool
+    tcp_strict:
         description:
             - Enforce strict tcp handshake before allowing data packets
             - Ensures that a 3 way TCP handshake is done before the data
-              packets are sent.
-            - tcp_strict=true is supported only for stateful security policies
+              packets are sent. tcp_strict=true is supported only for stateful
+              security policies.
+        required: false
+        type: bool
 '''
 
 EXAMPLES = '''
-- name: create Security Policy
-  nsxt_policy_security_policy:
+- name: Update Gateway Policy
+  nsxt_policy_gateway_policy:
     hostname: "10.10.10.10"
     nsx_cert_path: /root/com.vmware.nsx.ncp/nsx.crt
     nsx_key_path: /root/com.vmware.nsx.ncp/nsx.key
     validate_certs: False
-    id: test-sec-pol
-    display_name: test-sec-pol
-    state: "present"
-    domain_id: "default"
-    locked: True
-    rules:
-      - action: "ALLOW"
-        description: "example-rule"
-        sequence_number: 1
-        display_name: "test-example-rule"
-        id: "test-example-rule"
-        source_groups: ["/infra/domains/vmc/groups/dbgroup"]
-        destination_groups: ["/infra/domains/vmc/groups/appgroup"]
-        services: ["/infra/services/HTTP", "/infra/services/CIM-HTTP"]
-        tag: my-tag
-        tags:
-          - scope: scope-1
-            tag: tag-1
-        logged: True
-        notes: dummy-notes
-        ip_protocol: IPV4_IPV6
-        scope: my-scope
-        profiles: "encryption algorithm"
+    display_name: test-gateway-policy
+    state: present
 '''
 
 RETURN = '''# '''
@@ -389,20 +350,25 @@ import json
 import time
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.nsxt_base_resource import NSXTBaseRealizableResource
-from ansible.module_utils.nsxt_resource_urls import SECURITY_POLICY_URL
+from ansible.module_utils.nsxt_resource_urls import GATEWAY_POLICY_URL
 from ansible.module_utils.policy_resource_specs.security_policy import (
     SPEC as SecurityPolicySpec)
 from ansible.module_utils._text import to_native
 
 
-class NSXTSecurityPolicy(NSXTBaseRealizableResource):
+class NSXTGatewayPolicy(NSXTBaseRealizableResource):
     @staticmethod
     def get_resource_spec():
-        return SecurityPolicySpec
+        gateway_policy_arg_spec = {}
+        gateway_policy_arg_spec.update(
+            SecurityPolicySpec
+        )
+        gateway_policy_arg_spec.pop('connectivity_strategy')
+        return gateway_policy_arg_spec
 
     @staticmethod
     def get_resource_base_url(baseline_args):
-        return SECURITY_POLICY_URL.format(
+        return GATEWAY_POLICY_URL.format(
             baseline_args["domain_id"])
 
     def update_resource_params(self, nsx_resource_params):
@@ -410,5 +376,5 @@ class NSXTSecurityPolicy(NSXTBaseRealizableResource):
 
 
 if __name__ == '__main__':
-    sec_policy = NSXTSecurityPolicy()
-    sec_policy.realize(baseline_arg_names=["domain_id"])
+    gw_policy = NSXTGatewayPolicy()
+    gw_policy.realize(baseline_arg_names=["domain_id"])

@@ -36,11 +36,14 @@ SEGMENT_PORT_URL = SEGMENT_URL + '/{}/ports'
 
 TRANSPORT_ZONE_URL = _ENFORCEMENT_POINT_URL + '/{}/transport-zones'
 
+L2_BRIDGE_EP_PROFILE_URL = _ENFORCEMENT_POINT_URL + '/{}/edge-bridge-profiles'
+
 TIER_0_URL = '/infra/tier-0s'
 TIER_0_STATIC_ROUTE_URL = TIER_0_URL + '/{}/static-routes'
 TIER_0_LOCALE_SERVICE_URL = TIER_0_URL + '/{}/locale-services'
 TIER_0_LS_INTERFACE_URL = TIER_0_LOCALE_SERVICE_URL + '/{}/interfaces'
 TIER_0_BGP_NEIGHBOR_URL = TIER_0_LOCALE_SERVICE_URL + '/{}/bgp/neighbors'
+TIER_0_BFD_PEERS = TIER_0_STATIC_ROUTE_URL + '/bfd-peers'
 
 TIER_1_URL = '/infra/tier-1s'
 TIER_1_STATIC_ROUTE_URL = TIER_1_URL + '/{}/static-routes'
@@ -55,3 +58,9 @@ DHCP_RELAY_CONFIG_URL = '/infra/dhcp-relay-configs'
 
 EDGE_CLUSTER_URL = _ENFORCEMENT_POINT_URL + '/{}/edge-clusters'
 EDGE_NODE_URL = EDGE_CLUSTER_URL + '/{}/edge-nodes'
+
+VM_URL = '/infra/realized-state/enforcement-points/default/virtual-machines'
+
+BFD_PROFILE_URL = '/infra/bfd-profiles'
+
+GATEWAY_POLICY_URL = _DOMAIN_URL + '/{}/gateway-policies'

@@ -41,12 +41,31 @@ options:
         type: str
     username:
         description: The username to authenticate with the NSX manager.
-        required: true
         type: str
     password:
-        description: The password to authenticate with the NSX manager
-        required: true
+        description:
+            - The password to authenticate with the NSX manager.
+            - Must be specified if username is specified
         type: str
+    ca_path:
+        description: Path to the CA bundle to be used to verify host's SSL
+                     certificate
+        type: str
+    nsx_cert_path:
+        description: Path to the certificate created for the Principal
+                     Identity using which the CRUD operations should be
+                     performed
+        type: str
+    nsx_key_path:
+        description:
+            - Path to the certificate key created for the Principal Identity
+              using which the CRUD operations should be performed
+            - Must be specified if nsx_cert_path is specified
+        type: str
+    request_headers:
+        description: HTTP request headers to be sent to the host while making
+                     any request
+        type: dict
     display_name:
         description:
             - Display name.
@@ -513,6 +532,64 @@ options:
                             - either this or edge_node_id must be specified. If
                               both are specified, edge_node_id takes precedence
                         type: str
+            route_redistribution_types:
+                description:
+                    - Enable redistribution of different types of routes on
+                      Tier-0.
+                    - This property is only valid for locale-service under
+                      Tier-0.
+                    - This property is deprecated, please use
+                      "route_redistribution_config" property to configure
+                      redistribution rules.
+                choices:
+                    - TIER0_STATIC - Redistribute user added
+                        static routes.
+                    - TIER0_CONNECTED - Redistribute all
+                        subnets configured on Interfaces and
+                        routes related to TIER0_ROUTER_LINK,
+                        TIER0_SEGMENT, TIER0_DNS_FORWARDER_IP,
+                        TIER0_IPSEC_LOCAL_IP, TIER0_NAT types.
+                    - TIER1_STATIC - Redistribute all subnets
+                        and static routes advertised by Tier-1s.
+                    - TIER0_EXTERNAL_INTERFACE - Redistribute
+                        external interface subnets on Tier-0.
+                    - TIER0_LOOPBACK_INTERFACE - Redistribute
+                        loopback interface subnets on Tier-0.
+                    - TIER0_SEGMENT - Redistribute subnets
+                        configured on Segments connected to
+                        Tier-0.
+                    - TIER0_ROUTER_LINK - Redistribute router
+                        link port subnets on Tier-0.
+                    - TIER0_SERVICE_INTERFACE - Redistribute
+                        Tier0 service interface subnets.
+                    - TIER0_DNS_FORWARDER_IP - Redistribute DNS
+                        forwarder subnets.
+                    - TIER0_IPSEC_LOCAL_IP - Redistribute IPSec
+                        subnets.
+                    - TIER0_NAT - Redistribute NAT IPs owned by
+                        Tier-0.
+                    - TIER0_EVPN_TEP_IP - Redistribute EVPN
+                        local endpoint subnets on Tier-0.
+                    - TIER1_NAT - Redistribute NAT IPs
+                        advertised by Tier-1 instances.
+                    - TIER1_LB_VIP - Redistribute LB VIP IPs
+                        advertised by Tier-1 instances.
+                    - TIER1_LB_SNAT - Redistribute LB SNAT IPs
+                        advertised by Tier-1 instances.
+                    - TIER1_DNS_FORWARDER_IP - Redistribute DNS
+                        forwarder subnets on Tier-1 instances.
+                    - TIER1_CONNECTED - Redistribute all
+                        subnets configured on Segments and
+                        Service Interfaces.
+                    - TIER1_SERVICE_INTERFACE - Redistribute
+                        Tier1 service interface subnets.
+                    - TIER1_SEGMENT - Redistribute subnets
+                        configured on Segments connected to
+                        Tier1.
+                    - TIER1_IPSEC_LOCAL_ENDPOINT - Redistribute
+                        IPSec VPN local-endpoint subnets
+                        advertised by TIER1.
+                type: list
             route_redistribution_config:
                 description: Configure all route redistribution properties like
                              enable/disable redistributon, redistribution rule
@@ -738,8 +815,8 @@ EXAMPLES = '''
 - name: create Tier1
   nsxt_policy_tier1:
     hostname: "10.10.10.10"
-    username: "username"
-    password: "password"
+    nsx_cert_path: /root/com.vmware.nsx.ncp/nsx.crt
+    nsx_key_path: /root/com.vmware.nsx.ncp/nsx.key
     validate_certs: False
     display_name: test-tier22222
     state: present
@@ -1033,6 +1110,25 @@ class NSXTTier1(NSXTBaseRealizableResource):
         def get_spec_identifier(cls):
             return "locale_services"
 
+        def infer_resource_id(self, parent_info):
+            all_locale_services = self.get_all_resources_from_nsx()
+            if len(all_locale_services) == 0:
+                self.module.fail_json(
+                    msg="No {} found under Tier1 gateway {}. Please specify "
+                        "the id or display_name of the LocaleService to be "
+                        "created".format(
+                            self.get_spec_identifier(),
+                            parent_info.get("tier1_id", 'default')))
+            if len(all_locale_services) > 1:
+                ls_ids = [ls['id'] for ls in all_locale_services]
+                self.module.fail_json(
+                    msg="Multiple {} found under Tier1 gateway {} with IDs "
+                        "{}. Please specify the id of the LocaleService "
+                        "to be updated".format(
+                            self.get_spec_identifier(),
+                            parent_info.get("tier1_id", 'default'), ls_ids))
+            return all_locale_services[0]['id']
+
         @staticmethod
         def get_resource_spec():
             tier1_ls_arg_spec = {}
@@ -1086,6 +1182,11 @@ class NSXTTier1(NSXTBaseRealizableResource):
                             type='str'
                         )
                     )
+                ),
+                route_redistribution_types=dict(
+                    required=False,
+                    type='list',
+                    elements='str',
                 ),
                 route_redistribution_config=dict(
                     type='dict',
@@ -1226,19 +1327,17 @@ class NSXTTier1(NSXTBaseRealizableResource):
                         if not external_interface_path:
                             tier0_id = self.get_id_using_attr_name_else_fail(
                                 'tier0', external_interface, TIER_0_URL,
-                                "Tier 0", ignore_not_found_error=False)
+                                "Tier 0")
                             tier0_ls_id = (
                                 self.get_id_using_attr_name_else_fail(
                                     'tier0_ls', external_interface,
                                     TIER_0_LOCALE_SERVICE_URL,
-                                    "Tier 0 Locale Service",
-                                    ignore_not_found_error=False))
+                                    "Tier 0 Locale Service"))
                             tier0_ls_inf_id = (
                                 self.get_id_using_attr_name_else_fail(
                                     'tier0_ls_interface', external_interface,
                                     TIER_0_LS_INTERFACE_URL,
-                                    "Tier 0 Interface",
-                                    ignore_not_found_error=False))
+                                    "Tier 0 Interface"))
                             external_interface_path = (
                                 TIER_0_LS_INTERFACE_URL.format(
                                     tier0_id, tier0_ls_id) + "/" +

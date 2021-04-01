@@ -99,6 +99,10 @@ options:
         description: Enabled or disabled sending LLDP packets
         required: false
         type: boolean
+    tags:
+        description: Opaque identifier meaninful to API user
+        required: false
+        type: Array of Tag
     state:
         choices:
         - present
@@ -181,6 +185,36 @@ def get_uplink_profile_from_display_name(module, manager_url, mgr_username, mgr_
             return host_switch_profile
     return None
 
+def id_exist_in_list_dict_obj(key, list_obj1, list_obj2):
+    all_id_presents = False
+    if len(list_obj1) != len(list_obj2):
+        return all_id_presents
+    for dict_obj1 in list_obj1:
+        if dict_obj1.__contains__(key):
+            for dict_obj2 in list_obj2:
+                if dict_obj2.__contains__(key) and dict_obj1[key] == dict_obj2[key]:
+                    all_id_presents = True
+                    continue
+            if not all_id_presents:
+                return False
+    return True
+def cmp_dict(dict1, dict2): # dict1 contain dict2
+    #print dict2
+    for k2, v2 in dict2.items():
+        found = False
+        if k2 not in dict1:
+            continue
+        if type(v2) != list and dict1[k2] != dict2[k2]:
+            return False
+            
+        for obj2 in v2:
+            for obj1 in dict1[k2]:
+                if all(item in obj1.items() for item in obj2.items()):
+                           found = True
+        if not found:
+            return False
+    return True
+
 def check_for_update(module, manager_url, mgr_username, mgr_password, validate_certs, profile_params):
     existing_profile = get_uplink_profile_from_display_name(module, manager_url, mgr_username, mgr_password, validate_certs, profile_params['display_name'])
     if existing_profile is None:
@@ -191,7 +225,37 @@ def check_for_update(module, manager_url, mgr_username, mgr_password, validate_c
     if existing_profile.__contains__('transport_vlan') and profile_params.__contains__('transport_vlan') and \
         existing_profile['transport_vlan'] != profile_params['transport_vlan']:
         return True
+    if profile_params.__contains__('lags') and profile_params['lags']:
+       existing_lags = existing_profile['lags']
+       new_lags = profile_params['lags']
+       sorted_existing_lags = sorted(existing_lags, key = lambda i: i['name'])
+       sorted_new_lags = sorted(new_lags, key = lambda i: i['name'])
+       if len(sorted_existing_lags) != len(sorted_new_lags):
+          return True
+       both_lags_same = True
+       for i in range(len(sorted_existing_lags)):
+           diff_obj = {k: sorted_existing_lags[i][k] for k in sorted_existing_lags[i] if k in sorted_new_lags[i] and sorted_existing_lags[i][k] != sorted_new_lags[i][k]}
+           del diff_obj['uplinks']
+           if not cmp_dict(diff_obj, sorted_new_lags[i]):
+              both_lags_same = False
+       if not both_lags_same:
+          return True
+    if profile_params.__contains__('named_teamings'):
+       existing_teamings = existing_profile['named_teamings']
+       new_teamings = profile_params['named_teamings']
+       sorted_existing_teamings = sorted(existing_teamings, key = lambda i: i['name'])
+       sorted_new_teamings = sorted(new_teamings, key = lambda i: i['name'])
+       if len(sorted_existing_teamings) != len(sorted_new_teamings):
+          return False
+       both_teamings_same = True
+       for i in range(len(sorted_existing_teamings)):
+           diff_obj = {k: sorted_existing_teamings[i][k] for k in sorted_existing_teamings[i] if k in sorted_new_teamings[i] and sorted_existing_teamings[i][k] != sorted_new_teamings[i][k]}
+           if not cmp_dict(diff_obj, sorted_new_teamings[i]):
+              both_teamings_same = False
+       if not both_teamings_same:
+          return True
     return False
+  
 
 def main():
   argument_spec = vmware_argument_spec()
@@ -211,6 +275,7 @@ def main():
                         standby_list=dict(required=False, type='list'),
                         active_list=dict(required=True, type='list')),
                         lags=dict(required=False, type='list'),
+                        tags=dict(required=False, type='list'),
                         resource_type=dict(required=True, type='str', choices=['UplinkHostSwitchProfile']),
                         state=dict(required=True, choices=['present', 'absent']))
 

@@ -85,7 +85,7 @@ options:
 
 EXAMPLES = '''
 - name: Create transport node profile
-  nsxt_transport_node_profile:
+  nsxt_transport_node_profiles:
     hostname: "10.192.167.137"
     username: "admin"
     password: "Admin!23Admin"
@@ -109,6 +109,9 @@ EXAMPLES = '''
           ip_pool_name: "IPPool-IPV4-1"
         transport_zone_endpoints:
         - transport_zone_name: "TZ1"
+        vmk_install_migration:
+        - device_name: vmk0
+          destination_network_name: "ls_vmk_Mgmt"
     state: "present"
 
 '''
@@ -208,6 +211,13 @@ def update_params_with_id (module, manager_url, mgr_username, mgr_password, vali
                 transport_zone_endpoint['transport_zone_id'] = get_id_from_display_name (module, manager_url,
                                                                                     mgr_username, mgr_password, validate_certs,
                                                                                     "/transport-zones", transport_zone_name)
+        if host_switch.__contains__('vmk_install_migration'):
+            for vmk_install_migration in host_switch['vmk_install_migration']:
+                if vmk_install_migration.__contains__('destination_network_name'):
+                    destination_network_name = vmk_install_migration.pop('destination_network_name', None)
+                    vmk_install_migration['destination_network'] = get_id_from_display_name (module, manager_url,
+                                                                                        mgr_username, mgr_password, validate_certs,
+                                                                                        "/logical-switches", destination_network_name)
     if transport_node_profile_params.__contains__('transport_zone_endpoints'):
         for transport_zone_endpoint in transport_node_profile_params['transport_zone_endpoints']:
             transport_zone_name = transport_zone_endpoint.pop('transport_zone_name', None)

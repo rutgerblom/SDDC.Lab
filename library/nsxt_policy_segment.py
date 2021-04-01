@@ -41,12 +41,31 @@ options:
         type: str
     username:
         description: The username to authenticate with the NSX manager.
-        required: true
         type: str
     password:
-        description: The password to authenticate with the NSX manager
-        required: true
+        description:
+            - The password to authenticate with the NSX manager.
+            - Must be specified if username is specified
         type: str
+    ca_path:
+        description: Path to the CA bundle to be used to verify host's SSL
+                     certificate
+        type: str
+    nsx_cert_path:
+        description: Path to the certificate created for the Principal
+                     Identity using which the CRUD operations should be
+                     performed
+        type: str
+    nsx_key_path:
+        description:
+            - Path to the certificate key created for the Principal Identity
+              using which the CRUD operations should be performed
+            - Must be specified if nsx_cert_path is specified
+        type: str
+    request_headers:
+        description: HTTP request headers to be sent to the host while making
+                     any request
+        type: dict
     display_name:
         description:
             - Display name.
@@ -393,7 +412,8 @@ options:
         suboptions:
             address_bindings:
                 description: Static address binding used for the port.
-                type: dict
+                type: list
+                elements: dict
                 suboptions:
                 ip_address:
                     description: IP Address for port binding.
@@ -551,8 +571,8 @@ EXAMPLES = '''
 - name: create Segment
   nsxt_policy_segment:
     hostname: "10.10.10.10"
-    username: "username"
-    password: "password"
+    nsx_cert_path: /root/com.vmware.nsx.ncp/nsx.crt
+    nsx_key_path: /root/com.vmware.nsx.ncp/nsx.key
     validate_certs: False
     display_name: test-seg-4
     state: present
@@ -715,7 +735,7 @@ class NSXTSegment(NSXTBaseRealizableResource):
             ),
             enforcementpoint_id=dict(
                 required=False,
-                type='str'
+                type='str',
             ),
             extra_configs=dict(
                 type='list',
@@ -780,7 +800,7 @@ class NSXTSegment(NSXTBaseRealizableResource):
             ),
             site_id=dict(
                 required=False,
-                type='str'
+                type='str',
             ),
             subnets=dict(
                 required=False,
@@ -863,21 +883,18 @@ class NSXTSegment(NSXTBaseRealizableResource):
 
         if 'advanced_config' in nsx_resource_params and nsx_resource_params[
                 'advanced_config']:
-            if nsx_resource_params['advanced_config'][
-                    'address_pool_id']:
+            address_pool_id = None
+            if nsx_resource_params['advanced_config'].get('address_pool_id'):
                 address_pool_id = nsx_resource_params['advanced_config'].pop(
                     'address_pool_id')
-                nsx_resource_params['advanced_config'].pop(
-                    'address_pool_display_name')
-            else:
+            elif nsx_resource_params['advanced_config'].get(
+                    'address_pool_display_name'):
                 address_pool_id = self.get_id_from_display_name(
                     IP_POOL_URL, nsx_resource_params['advanced_config'][
                         'address_pool_display_name'], "Ip Pool",
                     ignore_not_found_error=False)
                 nsx_resource_params['advanced_config'].pop(
                     'address_pool_display_name')
-                nsx_resource_params['advanced_config'].pop(
-                    'address_pool_id')
             if address_pool_id:
                 address_pool_paths = [IP_POOL_URL + "/" + address_pool_id]
                 nsx_resource_params['advanced_config'][
@@ -900,7 +917,8 @@ class NSXTSegment(NSXTBaseRealizableResource):
             segment_port_arg_spec.update(
                 address_bindings=dict(
                     required=False,
-                    type='dict',
+                    type='list',
+                    elements='dict',
                     options=dict(
                         ip_address=dict(
                             required=False,

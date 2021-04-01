@@ -45,7 +45,7 @@ options:
         required: true
         type: str
     cluster_profile_bindings:
-        description: 'Edge Cluster profile bindings'
+        description: 'Edge cluster profile bindings'
         required: false
         type: 'array of ClusterProfileTypeIdEntry'
     display_name:
@@ -188,9 +188,13 @@ def check_for_update(module, manager_url, mgr_username, mgr_password, validate_c
         return True
     if not existing_edge_cluster.__contains__('members') and edge_cluster_with_id.__contains__('members'):
         return True
-    if existing_edge_cluster.__contains__('members') and edge_cluster_with_id.__contains__('members') and \
-        existing_edge_cluster['members'] != edge_cluster_with_id['members']:
-        return True
+    if existing_edge_cluster.__contains__('members') and edge_cluster_with_id.__contains__('members'):
+        if len(existing_edge_cluster['members']) != len(edge_cluster_with_id['members']):
+            return True
+        for count, member in enumerate(existing_edge_cluster['members']):
+            if member['transport_node_id'] != edge_cluster_with_id['members'][count]['transport_node_id']:
+                module.fail_json(msg='Existing [%s] new [%s]' % (member['transport_node_id'], edge_cluster_with_id['members'][count]['transport_node_id']))
+                return True
     return False
 
 def update_params_with_id (module, manager_url, mgr_username, mgr_password, validate_certs, edge_cluster_params):
@@ -270,7 +274,7 @@ def main():
         module.exit_json(changed=True, debug_out=str(request_data), id='12345')
       try:
           if edge_cluster_id:
-            module.exit_json(changed=False, id=edge_cluster_id, message="Edge Cluster with display_name %s already exist."% module.params['display_name'])
+            module.exit_json(changed=False, id=edge_cluster_id, message="Edge cluster with display_name %s already exist."% module.params['display_name'])
           (rc, resp) = request(manager_url+ '/edge-clusters', data=request_data, headers=headers, method='POST',
                                 url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
       except Exception as err:
@@ -287,7 +291,7 @@ def main():
                                 url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
       except Exception as err:
           module.fail_json(msg="Failed to update edge cluster with id %s. Request body [%s]. Error[%s]." % (id, request_data, to_native(err)))
-      module.exit_json(changed=True, id=resp["id"], body= str(resp), message="Edge Cluster with edge cluster id %s updated." % id)
+      module.exit_json(changed=True, id=resp["id"], body= str(resp), message="Edge cluster with edge cluster id %s updated." % id)
 
   elif state == 'absent':
     # delete the edge cluster

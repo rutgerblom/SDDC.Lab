@@ -166,6 +166,16 @@ def main():
     except Exception as err:
       module.fail_json(msg='Pre upgrade checks were executed successfully but error'
                   ' occured while retrieving the results. Error [%s]' % (to_native(err)))
+    # Fail module in case any pre upgrade check fails
+    prechecks_failure = False
+    if  'results' in resp:
+      for result in resp['results']:
+        if  'type' in result and result['type'] == 'FAILURE':
+          prechecks_failure = True
+    if prechecks_failure:
+      module.fail_json(msg='Pre upgrade checks are performed successsfully. Found errors. '
+                            'Thus, you cannot proceed. To get full report run upgrade groups '
+                            'facts module. Precheck results: %s' % str(resp))
     module.exit_json(changed=changed, message='Pre upgrade checks are performed successfully:'
                      ' Failures are listed. To get full report run upgrade groups '
                      'facts module.' + str(resp))
