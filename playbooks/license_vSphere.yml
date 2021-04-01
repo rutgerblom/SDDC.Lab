@@ -106,7 +106,7 @@
                                  {{ LOCAL_LicenseFile }}
 
              For that reason, the following products will NOT be licensed, and
-             will operate with their respective default license(s):
+             will operate with their respective evaluation license(s):
 
                                  vCenter Server
                                  ESXi Hosts
@@ -119,6 +119,7 @@
     - name: If we are licensing products, read in license information
       ansible.builtin.include_vars:
         file: "{{ LOCAL_LicenseFile }}"
+      no_log: true
       when: LicenseProducts == True
 
 
@@ -144,6 +145,20 @@
 ##
 ## License ESXi Hosts
 ##
+    - name: Assume no usable ESXi License exists in License file
+      ansible.builtin.set_fact:
+        ESXi_License_Exists: False
+
+    - name: Check to see if a usable (i.e. non-XXXXX) ESXi license exists
+      ansible.builtin.set_fact:
+        ESXi_License_Exists: True
+      loop: "{{ License.VMware.ESXi.Licenses | default([]) }}"
+      no_log: true
+      when:
+        - Deploy.Software.ESXi.Version is match( item.Version )
+        - LicenseProducts == True
+        - item.KeyCode != "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+
     - name: Create list of all applicable ESXi licenses
       ansible.builtin.set_fact:
         ESXi_Licenses: "{{ (ESXi_Licenses | default([])) + [ item ] }}"
@@ -153,11 +168,15 @@
         - Deploy.Software.ESXi.Version is match( item.Version )
         - LicenseProducts == True
         - item.KeyCode != "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+        - ESXi_License_Exists
 
     - name: Assign an ESXi license to each deployed ESXi host
       ansible.builtin.set_fact:
         HostsToLicense: "{{ lookup('template', '{{ Target.TemplateFolder }}/vars_License_ESXi.j2') | from_yaml }}"
-      when: LicenseProducts == True
+      no_log: true
+      when:
+        - LicenseProducts == True
+        - ESXi_License_Exists
 
     - name: DEBUG -- Display ESXi Hosts and assigned Licenses (Pause)
       ansible.builtin.pause:
@@ -171,6 +190,7 @@
       when:
         - DEBUG.DisplayVariables == true
         - LicenseProducts == True
+        - ESXi_License_Exists
 
     - name: License ESXi Hosts
       community.vmware.vcenter_license:
@@ -184,12 +204,29 @@
       loop: "{{ HostsToLicense }}"
       ignore_errors: yes                                                             # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
       no_log: true
-      when: LicenseProducts == True
+      when:
+        - LicenseProducts == True
+        - ESXi_License_Exists
 
 
 ##
 ## License vSAN
 ##
+    - name: Assume no usable vSAN License exists in License file
+      ansible.builtin.set_fact:
+        vSAN_License_Exists: False
+
+    # Use ESXi version to match against vSAN License Version
+    - name: Check to see if a usable (i.e. non-XXXXX) vSAN license exists
+      ansible.builtin.set_fact:
+        vSAN_License_Exists: True
+      loop: "{{ License.VMware.vSAN.Licenses | default([]) }}"
+      no_log: true
+      when:
+        - Deploy.Software.vCenter.Version is match( item.Version )
+        - LicenseProducts == True
+        - item.KeyCode != "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+
     # Use ESXi version to match against vSAN License Version
     - name: Create list of all applicable vSAN licenses
       ansible.builtin.set_fact:
@@ -200,12 +237,15 @@
         - Deploy.Software.vCenter.Version is match( item.Version )
         - LicenseProducts == True
         - item.KeyCode != "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+        - vSAN_License_Exists
 
     - name: Assign a vSAN license to each deployed vSAN Cluster
       ansible.builtin.set_fact:
         ClustersToLicense: "{{ lookup('template', '{{ Target.TemplateFolder }}/vars_License_vSAN.j2') | from_yaml }}"
+      no_log: true
       when:
         - LicenseProducts == True
+        - vSAN_License_Exists
 
     - name: DEBUG - Display vSAN Clusters and assigned Licenses (Pause)
       ansible.builtin.pause:
@@ -219,6 +259,7 @@
       when:
         - DEBUG.DisplayVariables == true
         - LicenseProducts == True
+        - vSAN_License_Exists
 
     - name: License each vSAN Cluster
       community.vmware.vcenter_license:
@@ -234,4 +275,5 @@
       no_log: true
       when:
         - LicenseProducts == True
+        - vSAN_License_Exists
 
