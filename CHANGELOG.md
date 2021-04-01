@@ -17,4 +17,4 @@
 - Added "SetAsDefault" option to existing TransportZones in sample_config.yml file.
 - Modified RAM configuration for Nested_ESXi hosts.  Changed all clusters to use 16GB RAM per host.
 - Updated sample_config.yml to use the latest versions of ESXi (v7.0U2), NSX-T (v3.1.1), and vRLI (v8.3.0).
-
+- Corrected issue with license_vSphere.yml module where it would fail if a product didn't have licenses.
