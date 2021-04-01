@@ -156,7 +156,7 @@ TargetConfig:
         VLAN: 4095
   vCenter:                                                                    # Settings used when "vCenter" deployment is chosen (TargetConfig.Deployment == "vCenter")
     FQDN: NetLab-vCenter.NetLab.Local                                         # FQDN - The FQDN to your physical vCenter Server
-    User: administrator@vsphere.local                                         # User - vCenter Server user account
+    User: administrator@vsphere.local                                         # User - vCenter Server user account.  We suggest you create a dedicate account for deployments, such as SDDCLab@vsphere.local
     Password: "{{ Common.Password.Physical }}"                                # Password - Password used by User to authenticate to the physical vCenter Server
     vSwitch: SDDCLab_vDS                                                      # vSwitch - Name of the vDS which is automatically provisioned by the playbooks, and where all the Pod Port-Groups are crated
     vSwitchVersion: 6.6.0                                                     # vSwitchVersion - vDS version used for the given vSwitch
