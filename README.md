@@ -120,7 +120,9 @@ Here are some known items to be aware of:
 
    This is important understand if you need to configure conditional forwarding to reach your SDDC.Lab environment.
 
-
+3. SDDC.Lab v3 requires Ansible version 2.10.1 (or later).  Thus, if you are upgrading from SDDC.Lab v2, make 
+   sure you upgrade your Ansible to the latest version.  To see your current Ansible version, run the following
+   command: ansible --version
 
 ## More Information
 For detailed installation, preparation, and deployment steps, please see the "[Deploying your first SDDC.Lab Pod](FirstPod.md)" document.
