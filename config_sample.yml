@@ -1912,6 +1912,12 @@ Nested_NSXT:
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
               Hostname: "{{ SiteCode }}-T0-EdgeVM-01.{{ Common.DNS.Domain }}" 
               Datastore: "{{ Nested_Clusters.Edge.vsanDatastore }}"
+              Reservations:
+                CPU:
+                  Megahertz: 0
+                  Shares: HIGH_PRIORITY
+                Memory:
+                  Percentage: 100
             Tags:
               - Tag: Auto-Created
                 Scope: SDDC.Lab
@@ -1952,6 +1958,12 @@ Nested_NSXT:
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
               Hostname: "{{ SiteCode }}-T0-EdgeVM-02.{{ Common.DNS.Domain }}" 
               Datastore: "{{ Nested_Clusters.Edge.vsanDatastore }}"
+              Reservations:
+                CPU:
+                  Megahertz: 0
+                  Shares: HIGH_PRIORITY
+                Memory:
+                  Percentage: 100
             Tags:
               - Tag: Auto-Created
                 Scope: SDDC.Lab

@@ -84,4 +84,10 @@
           compute: "{{ Nested_NSXT.System.Fabric.Nodes.vSphereEdgeCluster }}"
           storage: "{{ EdgeTransportNode.Deployment.Datastore }}"
           host: "{{ EdgeHosts[(loop.index0 % (EdgeHosts|length))] }}"
+          reservation_info:
+            cpu_reservation:
+              reservation_in_mhz: "{{ EdgeTransportNode.Deployment.Reservations.CPU.Megahertz }}"
+              reservation_in_shares: "{{ EdgeTransportNode.Deployment.Reservations.CPU.Shares }}"
+            memory_reservation:
+              reservation_percentage: "{{ EdgeTransportNode.Deployment.Reservations.Memory.Percentage }}"
 {% endfor %}{# EdgeTransportNode #}
