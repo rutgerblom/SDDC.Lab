@@ -18,3 +18,10 @@
 - Modified RAM configuration for Nested_ESXi hosts.  Changed all clusters to use 16GB RAM per host.
 - Updated sample_config.yml to use the latest versions of ESXi (v7.0U2), NSX-T (v3.1.1), and vRLI (v8.3.0).
 - Corrected issue with license_vSphere.yml module where it would fail if a product didn't have licenses.
+
+## Dev-v3.0.0 02-APRIL-2021
+
+### Added
+
+- Added new variables to sample_config.yml that enable configuration of NSX-T Edge VM resource reservation settings.
+- Updated the diagram in README.md.
