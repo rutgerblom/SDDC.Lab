@@ -2,14 +2,14 @@
 
 ## Dev-v3.0.0 16-MARCH-2021
 
-### Added
+### Added by Luis
 
 - Changed Lab-Routers area from 666 to 0 (i.e. Backbone area) to facilitate sharing of routes between sites if NSX-T is reconfigured to use OSPF versus eBGP.
   This reconfiguration to use OSPF is not supported by automation, and would have to be done manually afterwards by the user.
 
 ## Dev-v3.0.0 31-MARCH-2021
 
-### Added
+### Added by Luis
 
 - Commented Flash/HHD drive type configuration in ESXi kickstart templates.  Implemented Flash/HDD configuration in custom Ansible module called set_drive_type.  This was needed to support ESXi v7.0 Update 2.
 - Updated NSX-T Ansible modules to latest versions found in VMware's NSX-T repository in GitHub.
@@ -21,7 +21,20 @@
 
 ## Dev-v3.0.0 02-APRIL-2021
 
-### Added
+### Added by Rutger
 
 - Added new variables to sample_config.yml that enable configuration of NSX-T Edge VM resource reservation settings.
 - Updated the diagram in README.md.
+
+## Dev-v3.0.0 06-APRIL-2021
+
+### Added by Luis
+
+- Added support for eBGP peering with physical Layer-3 Lab-Router.
+- Both IPv4 and IPv6 peering implemented.
+- Modified config_sample.yml configuration.
+- Default ASN Values are as follows:
+  - Lab-Router ASN is 65000
+  - Pod-Router ASN is 65000 + Pod.Network
+  - NSX-T EdgeVMs ASN is 65000 + Pod.Network + 1
+
