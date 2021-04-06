@@ -411,41 +411,45 @@ Nested_Router:
     Area: 0
     RouterID: "{{ Net.RouterUplink.IPv4.Network }}.{{ Pod.Number }}"
   BGP:
-    ASN: 65000
+    ASN: "{{ 65000 + Pod.Number }}"
     RouterID: "{{ Net.Management.IPv4.Network }}.1"
     Neighbors:
-    - Name: "{{ SiteCode }}-T0-EdgeVM-01-1"
-      ASN: 65001
-      IPv4:
-        Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"
-        Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
-      IPv6:
-        Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(2) }}"
-        Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
-    - Name: "{{ SiteCode }}-T0-EdgeVM-01-2"
-      ASN: 65001
-      IPv4:
-        Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"
-        Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
-      IPv6:
-        Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(2) }}"
-        Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
-    - Name: "{{ SiteCode }}-T0-EdgeVM-02-1"
-      ASN: 65001
-      IPv4:
-        Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"
-        Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
-      IPv6:
-        Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(3) }}"
-        Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
-    - Name: "{{ SiteCode }}-T0-EdgeVM-02-2"
-      ASN: 65001
-      IPv4:
-        Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.3"
-        Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
-      IPv6:
-        Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(3) }}"
-        Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
+##
+## Physical Lab-Routers (a.k.a. North Bound Routers)
+##
+      - Name: "Lab-Router"
+        ASN: 65000
+        IPv4:
+          Address: "{{ Net.RouterUplink.IPv4.Network }}.1"
+        IPv6:
+          Address: "{{ Net.RouterUplink.IPv6.Network }}::{{ '%04x'|format(1) }}"
+##
+## NSX-T Edges (a.k.a. South Bound Routers)
+##
+      - Name: "{{ SiteCode }}-T0-EdgeVM-01-1"
+        ASN: "{{ 65000 + Pod.Number + 1 }}"
+        IPv4:
+          Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"
+        IPv6:
+          Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(2) }}"
+      - Name: "{{ SiteCode }}-T0-EdgeVM-01-2"
+        ASN: "{{ 65000 + Pod.Number + 1 }}"
+        IPv4:
+          Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"
+        IPv6:
+          Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(2) }}"
+      - Name: "{{ SiteCode }}-T0-EdgeVM-02-1"
+        ASN: "{{ 65000 + Pod.Number + 1 }}"
+        IPv4:
+          Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"
+        IPv6:
+          Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(3) }}"
+      - Name: "{{ SiteCode }}-T0-EdgeVM-02-2"
+        ASN: "{{ 65000 + Pod.Number + 1 }}"
+        IPv4:
+          Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.3"
+        IPv6:
+          Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(3) }}"
 
 
 Nested_vRLI:
@@ -1453,7 +1457,7 @@ Nested_NSXT:
                     - TIER1_SEGMENT
         BGP:
           Enabled: true
-          LocalASN: 65001
+          LocalASN: "{{ 65000 + Pod.Number + 1 }}"
           ECMP: true
           InterSRiBGP: true
           MultiPathRelax: true
