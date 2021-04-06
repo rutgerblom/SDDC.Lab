@@ -111,6 +111,7 @@
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
         annotation: | 
                     {{ Common.Annotation }}
+                    {{ Deploy.Software.ESXi.Vendor }} {{ Deploy.Software.ESXi.Product }} {{ Deploy.Software.ESXi.Version }}
                     Username: {{ item.value.User }}
                     Password: {{ item.value.Password }}
       loop: "{{ Nested_ESXi.Host | dict2items }}"

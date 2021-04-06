@@ -250,6 +250,7 @@
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.DNSServer.File }}"
         annotation: | 
                     {{ Nested_DNSServer.VM.Annotation }}
+                    {{ Deploy.Software.DNSServer.Vendor }} {{ Deploy.Software.DNSServer.Product }} {{ Deploy.Software.DNSServer.Version }}
                     Username: {{ Nested_DNSServer.OS.Credential.User }}
                     Password: {{ Nested_DNSServer.OS.Credential.Password }}
       when: 
