@@ -30,9 +30,13 @@
 
 ### Added by Luis
 
-- Added support for eBGP peering with physical Layer-3 Lab-Router.
+- Added support for eBGP peering with physical Layer-3 Lab-Router, and it is currently ALWAYS enabled.  This functionality may change in the future, especially while in a 'dev' branch.  That said, keep a close eye out for changes around this feature.
 - Both IPv4 and IPv6 peering implemented.
 - Modified config_sample.yml configuration.
+- Added flags to control the origination of Default Routes to eBGP Peers
+- Corrected filename used for Pod-Router configuration during deployment
+- Added "mtu 1500" statement to Eth0 in Pod-Router configuration
+- Corrected type-O in config_sample.yml file
 - Default ASN Values are as follows:
   - Lab-Router ASN is 65000
   - Pod-Router ASN is 65000 + Pod.Network
