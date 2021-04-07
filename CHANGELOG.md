@@ -30,7 +30,7 @@
 
 ### Added by Luis
 
-- Added support for eBGP peering with physical Layer-3 Lab-Router.
+- Added support for eBGP peering with physical Layer-3 Lab-Router, and it is currently ALWAYS enabled.  This functionality may change in the future, especially while in a 'dev' branch.  That said, keep a close eye out for changes around this feature.
 - Both IPv4 and IPv6 peering implemented.
 - Modified config_sample.yml configuration.
 - Added flags to control the origination of Default Routes to eBGP Peers
