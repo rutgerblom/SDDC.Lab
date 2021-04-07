@@ -309,7 +309,7 @@ Net:
 
 Nested_Router:
   Name: "{{ SiteCode }}-Router"
-  Protocol: OSPF                                                      # Protocol - Options include "OSPF" or "Static"
+  Protocol: BOTH                                                      # Protocol - Options are "Static", "BGP", "OSPF" or "BOTH" (OSPF and BGP)
   Interface:
     Uplink:
       PortGroup: "{{ Target.PortGroup.RouterUplink }}"
@@ -413,48 +413,44 @@ Nested_Router:
   BGP:
     ASN: "{{ 65000 + Pod.Number }}"
     RouterID: "{{ Net.Management.IPv4.Network }}.1"
-    Neighbors:
-##
-## Physical Lab-Routers (a.k.a. North Bound Routers)
-##
-      - Name: "Lab-Router"
-        ASN: 65000
-        SendDefault: False
-        IPv4:
-          Address: "{{ Net.RouterUplink.IPv4.Network }}.1"
-        IPv6:
-          Address: "{{ Net.RouterUplink.IPv6.Network }}::{{ '%04x'|format(1) }}"
-##
-## NSX-T Edges (a.k.a. South Bound Routers)
-##
-      - Name: "{{ SiteCode }}-T0-EdgeVM-01-1"
-        ASN: "{{ 65000 + Pod.Number + 1 }}"
-        SendDefault: True
-        IPv4:
-          Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"
-        IPv6:
-          Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(2) }}"
-      - Name: "{{ SiteCode }}-T0-EdgeVM-01-2"
-        ASN: "{{ 65000 + Pod.Number + 1 }}"
-        SendDefault: True
-        IPv4:
-          Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"
-        IPv6:
-          Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(2) }}"
-      - Name: "{{ SiteCode }}-T0-EdgeVM-02-1"
-        ASN: "{{ 65000 + Pod.Number + 1 }}"
-        SendDefault: True
-        IPv4:
-          Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"
-        IPv6:
-          Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(3) }}"
-      - Name: "{{ SiteCode }}-T0-EdgeVM-02-2"
-        ASN: "{{ 65000 + Pod.Number + 1 }}"
-        SendDefault: True
-        IPv4:
-          Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.3"
-        IPv6:
-          Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(3) }}"
+    Neighbor:
+      Routers:
+        - Name: "Lab-Router"
+          ASN: 65000
+          SendDefault: False
+          IPv4:
+            Address: "{{ Net.RouterUplink.IPv4.Network }}.1"
+          IPv6:
+            Address: "{{ Net.RouterUplink.IPv6.Network }}::{{ '%04x'|format(1) }}"
+      NSXEdges:
+        - Name: "{{ SiteCode }}-T0-EdgeVM-01-1"
+          ASN: "{{ 65000 + Pod.Number + 1 }}"
+          SendDefault: True
+          IPv4:
+            Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"
+          IPv6:
+            Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(2) }}"
+        - Name: "{{ SiteCode }}-T0-EdgeVM-01-2"
+          ASN: "{{ 65000 + Pod.Number + 1 }}"
+          SendDefault: True
+          IPv4:
+            Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"
+          IPv6:
+            Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(2) }}"
+        - Name: "{{ SiteCode }}-T0-EdgeVM-02-1"
+          ASN: "{{ 65000 + Pod.Number + 1 }}"
+          SendDefault: True
+          IPv4:
+            Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"
+          IPv6:
+            Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(3) }}"
+        - Name: "{{ SiteCode }}-T0-EdgeVM-02-2"
+          ASN: "{{ 65000 + Pod.Number + 1 }}"
+          SendDefault: True
+          IPv4:
+            Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.3"
+          IPv6:
+            Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(3) }}"
 
 
 Nested_vRLI:

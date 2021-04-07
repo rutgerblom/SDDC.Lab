@@ -228,7 +228,9 @@ nat {
 {% endif %}
 protocols {
     bgp {{ Nested_Router.BGP.ASN }} {
-{% for Neighbor in Nested_Router.BGP.Neighbors %}
+{#################### "Physical" North-Bound Neighbors ####################}
+{% if Nested_Router.Protocol == "BGP" or Nested_Router.Protocol == "BOTH" %}{# Only include if BGP is to be used #}
+{% for Neighbor in Nested_Router.BGP.Neighbor.Routers %}
 {% if Deploy.Setting.IPv4 %}
         neighbor {{ Neighbor.IPv4.Address }} {
 {% if Deploy.Software.Router.Version == "Legacy" and Neighbor.SendDefault %}
@@ -269,12 +271,56 @@ protocols {
             remote-as {{ Neighbor.ASN }}
         }
 {% endif %}{# Deploy.Setting.IPv6 #}
-{% endfor %}{# Neighbor #}
+{% endfor %}{# Neighbor (Routers) #}
+{% endif %}{# Nested_Router.Protocol #}
+{#################### NSX-T EdgeVM SR Neighbors ####################}
+{% for Neighbor in Nested_Router.BGP.Neighbor.NSXEdges %}
+{% if Deploy.Setting.IPv4 %}
+        neighbor {{ Neighbor.IPv4.Address }} {
+{% if Deploy.Software.Router.Version == "Legacy" and Neighbor.SendDefault %}
+            default-originate {
+            }
+{% endif %}{# Legacy and SendDefault #}
+{% if Deploy.Software.Router.Version == "Latest" %}
+            address-family {
+                ipv4-unicast {
+{% if Neighbor.SendDefault %}
+                    default-originate {
+                    }
+{% endif %}{# SendDefault #}
+                }
+            }
+{% endif %}{# Latest #}
+            description {{ Neighbor.Name }}
+            remote-as {{ Neighbor.ASN }}
+        }
+{% endif %}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 %}
+        neighbor {{ Neighbor.IPv6.Address }} {
+{% if Deploy.Software.Router.Version == "Legacy" and Neighbor.SendDefault %}
+            default-originate {
+            }
+{% endif %}{# Legacy and SendDefault #}
+{% if Deploy.Software.Router.Version == "Latest" %}
+            address-family {
+                ipv6-unicast {
+{% if Neighbor.SendDefault %}
+                    default-originate {
+                    }
+{% endif %}{# SendDefault #}
+                }
+            }
+{% endif %}{# Latest #}
+            description {{ Neighbor.Name }}
+            remote-as {{ Neighbor.ASN }}
+        }
+{% endif %}{# Deploy.Setting.IPv6 #}
+{% endfor %}{# Neighbor (NSXEdges) #}
         parameters {
             router-id {{ Nested_Router.BGP.RouterID }}
         }
     }
-{% if Nested_Router.Protocol == "OSPF" %}
+{% if Nested_Router.Protocol == "OSPF" or Nested_Router.Protocol == "BOTH" %}
 {% if Deploy.Setting.IPv4 %}
     ospf {
         area {{ Nested_Router.OSPF.Area }} {
@@ -313,8 +359,7 @@ protocols {
         }
     }
 {% endif %}{# Deploy.Setting.IPv6 #}
-{% endif %}{# Nested_Router.Protocol == OSPF #}
-{# % if Nested_Router.Protocol == "Static" % #}
+{% endif %}{# Nested_Router.Protocol == OSPF or BOTH #}
     static {
         route 0.0.0.0/0 {
             next-hop {{ Nested_Router.Interface.Uplink.IPv4.Gateway }} {
@@ -322,7 +367,6 @@ protocols {
             }
         }
     }
-{# % endif %}{# Nested_Router.Protocol == Static #}
 }
 service {
     dhcp-server {
