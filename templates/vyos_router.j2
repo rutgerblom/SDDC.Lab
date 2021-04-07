@@ -1,5 +1,6 @@
 interfaces {
     ethernet eth0 {
+        mtu 1500
 {% if Deploy.Setting.IPv4 %}
         address {{ Nested_Router.Interface.Uplink.IPv4.Address }}/{{ Nested_Router.Interface.Uplink.IPv4.Prefix }}
 {% endif %}{# Deploy.Setting.IPv4 #}
@@ -230,15 +231,17 @@ protocols {
 {% for Neighbor in Nested_Router.BGP.Neighbors %}
 {% if Deploy.Setting.IPv4 %}
         neighbor {{ Neighbor.IPv4.Address }} {
-{% if Deploy.Software.Router.Version == "Legacy" %}
+{% if Deploy.Software.Router.Version == "Legacy" and Neighbor.SendDefault %}
             default-originate {
             }
-{% endif %}{# Legacy #}
+{% endif %}{# Legacy and SendDefault #}
 {% if Deploy.Software.Router.Version == "Latest" %}
             address-family {
                 ipv4-unicast {
+{% if Neighbor.SendDefault %}
                     default-originate {
                     }
+{% endif %}{# SendDefault #}
                 }
             }
 {% endif %}{# Latest #}
@@ -248,15 +251,17 @@ protocols {
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
         neighbor {{ Neighbor.IPv6.Address }} {
-{% if Deploy.Software.Router.Version == "Legacy" %}
+{% if Deploy.Software.Router.Version == "Legacy" and Neighbor.SendDefault %}
             default-originate {
             }
-{% endif %}{# Legacy #}
+{% endif %}{# Legacy and SendDefault #}
 {% if Deploy.Software.Router.Version == "Latest" %}
             address-family {
                 ipv6-unicast {
+{% if Neighbor.SendDefault %}
                     default-originate {
                     }
+{% endif %}{# SendDefault #}
                 }
             }
 {% endif %}{# Latest #}
