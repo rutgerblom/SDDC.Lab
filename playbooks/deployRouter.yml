@@ -152,7 +152,7 @@
     - name: Create configuration template file for VyOS router
       ansible.builtin.template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}"
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Template }}"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
         mode: "666"
       when: 
         - Deploy.Product.Router == true
@@ -199,7 +199,7 @@
         vm_username: "vyos"
         vm_password: "vyos"
         copy:
-            src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Template }}"
+            src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
             dest: "/config/config.boot"
             overwrite: true
       when: 
@@ -504,7 +504,7 @@
         vm_username: "vyos"
         vm_password: "vyos"
         copy:
-            src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Template }}"
+            src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
             dest: "/config/config.boot"
             overwrite: true
       when: 
@@ -584,7 +584,7 @@
 
     - name: Delete the temporary template file for VyOS router
       ansible.builtin.file: 
-        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Template }}"
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
         state: absent
       when: 
         - Deploy.Product.Router == true
