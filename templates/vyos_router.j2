@@ -360,7 +360,6 @@ protocols {
     }
 {% endif %}{# Deploy.Setting.IPv6 #}
 {% endif %}{# Nested_Router.Protocol == OSPF or BOTH #}
-{% if Nested_Router.Protocol == "Static" %}
     static {
         route 0.0.0.0/0 {
             next-hop {{ Nested_Router.Interface.Uplink.IPv4.Gateway }} {
@@ -368,7 +367,6 @@ protocols {
             }
         }
     }
-{% endif %}{# Nested_Router.Protocol == Static #}
 }
 service {
     dhcp-server {
