@@ -26,6 +26,12 @@
 - Added new variables to sample_config.yml that enable configuration of NSX-T Edge VM resource reservation settings.
 - Updated the diagram in README.md.
 
+## Dev-v3.0.0 6-APRIL-2021
+
+### Added by Rutger
+
+- Vendor, product and product version information is added to the annotation of the deployed virtual machines
+
 ## Dev-v3.0.0 06-APRIL-2021
 
 ### Added by Luis
