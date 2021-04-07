@@ -42,3 +42,12 @@
   - Pod-Router ASN is 65000 + Pod.Network
   - NSX-T EdgeVMs ASN is 65000 + Pod.Network + 1
 
+## Dev-v3.0.0 07-APRIL-2021
+
+### Added by Luis
+
+- Changes have been made the config_sample.yml configuration file with this change.
+- Added additional options to Nested_Router.Protocol variable.  Valid options are now "Static", "OSPF", "BGP", and "BOTH" (BGP and OSPF).  This determines the routing protocol(s) used by the Pod-Router into the Lab-Routers network segment (i.e. North Bound).
+- Within Nested_Router, the Neighboring BGP routers are now broken up into two (2) sections: Routers and NSXEdges.  Each of these sections are a list, so you can add additional neighbors to fit your needs.  The "Routers" list of bgp neighbors is only instantiated when Nested_Router.Protocol == BGP or BOTH.  The "NSXEdges" is always instantiated when a dynamic routing protocol is chosen.
+- Changed the Nested_Router.Protocol value in config_sample.yml from OSPF to BOTH.
+
