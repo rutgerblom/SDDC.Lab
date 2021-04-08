@@ -23,7 +23,7 @@
 ## Configure your physical network (TBD)
 
 ## Configure your physical ESXi host(s)
-The scripts support deploying Pods on a standalone ESXi host or to vCenter Server that is managing one or more hosts. ESXi/vCenter must be on version 6.7 or newer. Regardless of deployment target you need to make sure that the following is availble to the ESXi host(s):
+The scripts support deploying Pods on a standalone ESXi host or on ESXi managed by vCenter. ESXi/vCenter must be on version 6.7 or newer. Regardless of the deployment target you need to make sure that the following is availble to the ESXi host(s):
 
 * A datastore where the Pod VMs will be stored
 * A portgroup configured with the VLAN ID of the Router Uplink segment (i.e. Lab-Routers)
