@@ -57,3 +57,8 @@
 - Within Nested_Router, the Neighboring BGP routers are now broken up into two (2) sections: Routers and NSXEdges.  Each of these sections are a list, so you can add additional neighbors to fit your needs.  The "Routers" list of bgp neighbors is only instantiated when Nested_Router.Protocol == BGP or BOTH.  The "NSXEdges" is always instantiated when a dynamic routing protocol is chosen.
 - Changed the Nested_Router.Protocol value in config_sample.yml from OSPF to BOTH.
 
+## Dev-v3.0.0 10-APRIL-2021
+
+### Added by Rutger
+
+- Added utility "utils/util_UpdateConfig.sh" that can update/create a "config.yml" file with settings based on user input.
