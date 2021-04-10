@@ -31,7 +31,7 @@ read -p 'Enter the name of the Datastore where the Pod VMs will be stored [Share
 read -p 'Enter the name of the Portgroup that connects your Pod to the physical network (e.g. transit segment) [Lab-Routers]: ' portgroup
 read -p 'Enter the routing protocol to be used for routing between your Pod and the physical network. Valid options are "Static", "BGP", "OSPF" or "BOTH" (OSPF and BGP) [BOTH]: ' routing
 
-# Populate the variables with the default values
+# Populate the variables with default values if empty
 sourcepath=${sourcepath:-$HOME/SDDC.Lab/config_sample.yml}
 destinationpath=${destinationpathpath:-$HOME/SDDC.Lab/config.yml}
 podnumber=${podnumber:-240}
