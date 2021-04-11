@@ -73,7 +73,7 @@
 
 
     - name: Remove VyOS router VM
-      vmware_guest:
+      community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -84,7 +84,7 @@
       ignore_errors: true
 
     - name: Remove vRLI VM
-      vmware_guest:
+      community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -95,7 +95,7 @@
       ignore_errors: true
 
     - name: Remove ESXi VMs
-      vmware_guest:
+      community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -109,7 +109,7 @@
       ignore_errors: true
 
     - name: Remove vCenter VM
-      vmware_guest:
+      community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -120,7 +120,7 @@
       ignore_errors: true
 
     - name: Remove NSX Manager VM(s)
-      vmware_guest:
+      community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -135,7 +135,7 @@
 ##
 
     - name: Remove trunk port group for the nested environment
-      vmware_portgroup:
+      community.vmware.vmware_portgroup:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -149,7 +149,7 @@
         - Target.Deployment == "Host"
 
     - name: Remove management port group for the nested environment
-      vmware_portgroup:
+      community.vmware.vmware_portgroup:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -163,7 +163,7 @@
         - Target.Deployment == "Host"
 
     - name: Remove VMware vSwitch on the ESXi host for the nested environment
-      vmware_vswitch:
+      community.vmware.vmware_vswitch:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -182,7 +182,7 @@
 ##
 
     - name: Remove a Management Distributed Port-Group in vCenter
-      vmware_dvs_portgroup:
+      community.vmware.vmware_dvs_portgroup:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -197,7 +197,7 @@
       when: Target.Deployment == "vCenter"
 
     - name: Remove a Trunk Distributed Port-Group in vCenter
-      vmware_dvs_portgroup:
+      community.vmware.vmware_dvs_portgroup:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -217,7 +217,7 @@
 
 # REMINDER: Can not remove parent folder because other Pods are using it
     - name: Remove Child VM Folder
-      vcenter_folder:
+      community.vmware.vcenter_folder:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
