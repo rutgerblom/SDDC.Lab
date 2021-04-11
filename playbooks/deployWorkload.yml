@@ -115,7 +115,7 @@
         username: "{{  Nested_vCenter.User }}"
         password: "{{  Nested_vCenter.Password }}"
         validate_certs: false
-        datastore: "{{ Nested_Workload.Deployment.Datastore }}"
+        datastore: "{{ item.value.Deployment.Datastore }}"
         allow_duplicates: false
         datacenter: "{{ item.value.Deployment.DataCenter }}"
         cluster: "{{ item.value.Deployment.Cluster }}"
