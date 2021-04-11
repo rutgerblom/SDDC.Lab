@@ -7,7 +7,8 @@
 - hosts: localhost
   name: deployDNSServer.yml
   vars:
-      LOCAL_Ubuntu_Template: "{{ Target.TemplateFolder }}/{{ Deploy.Software.DNSServer.Template }}"
+    LOCAL_Ubuntu_Template: "{{ Target.TemplateFolder }}/{{ Deploy.Software.DNSServer.Template }}"
+    ISOMountPoint: "{{ Target.ISOMount }}/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}"
   tasks:
     - name: deployDNSServer_Playbook
       ansible.builtin.debug:
@@ -55,6 +56,8 @@
                                      Ansible Playbook: {{ ansible_play_name }}
 
                                     Target.Deployment: {{ Target.Deployment }}
+
+                                        ISOMountPoint: {{ ISOMountPoint }}
 
                                           Target.FQDN: {{ Target.FQDN }}
                                           Target.User: {{ Target.User }}
@@ -152,15 +155,26 @@
         - ubuntu_status is failed
         - Deploy.Product.DNSServer == true 
         
-    - name: Mount Ubuntu ISO file
-      action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}" opts=loop fstype=iso9660 state=mounted
+#    - name: Mount Ubuntu ISO file
+#      action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}" opts=loop fstype=iso9660 state=mounted
+#      when: 
+#        - ubuntu_status is failed
+#        - Deploy.Product.DNSServer == true  
+
+    - name: Mount Ubuntu ISO as read-only and do not automatically mount with 'mount -a'
+      mount:
+        path:   "{{ ISOMountPoint }}"
+        src:    "{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}"
+        fstype: iso9660
+        opts:   ro,noauto
+        state:  mounted
       when: 
         - ubuntu_status is failed
         - Deploy.Product.DNSServer == true  
 
     - name: Copy txt.cfg from Ubuntu ISO
       ansible.builtin.copy: 
-        src: "{{ Target.ISOMount }}/isolinux/txt.cfg"
+        src: "{{ ISOMountPoint }}/isolinux/txt.cfg"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/isolinux/"
         mode: "666"
       when: 
@@ -195,18 +209,27 @@
         - Deploy.Product.DNSServer == true  
 
     - name: Create custom Ubuntu ISO
-      ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table  {{ Target.ISOMount }}/ {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
+      ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table  {{ ISOMountPoint }}/ {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
       args:
         chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
       when: 
         - ubuntu_status is failed
         - Deploy.Product.DNSServer == true
 
+#    - name: Unmount Ubuntu ISO
+#      action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}" fstype=iso9660 state=absent
+#      when: 
+#        - ubuntu_status is failed
+#        - Deploy.Product.DNSServer == true  
+
     - name: Unmount Ubuntu ISO
-      action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}" fstype=iso9660 state=absent
+      mount:
+        path:   "{{ ISOMountPoint }}"
+        state:  absent
       when: 
         - ubuntu_status is failed
         - Deploy.Product.DNSServer == true  
+        - Deploy.Software.Options.UnmountISO
 
     - name: Upload the custom Ubuntu ISO to the datastore
       community.vmware.vsphere_copy: 
