@@ -511,7 +511,7 @@ Nested_Workload:
             Address: "{{ Net.VMNetwork.IPv6.Network }}::{{ '%04x'|format(101) }}"
             Prefix:  "{{ Net.VMNetwork.IPv6.Prefix }}"
   Workload2:
-    VMName: "{{ SiteCode }}-Workload-1"
+    VMName: "{{ SiteCode }}-Workload-2"
     FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Workload-2.{{ Common.DNS.Domain }}{% else %}{{ Net.VMNetwork.IPv4.Network }}.102{% endif %}"
     Credential:
       root:
