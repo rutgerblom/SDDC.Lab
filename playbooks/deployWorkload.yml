@@ -141,8 +141,8 @@
         annotation: | 
                     {{ Common.Annotation }}
                     {{ Deploy.Software.Workload.Vendor }} {{ Deploy.Software.Workload.Product }} {{ Deploy.Software.Workload.Version }}
-                    Username: "{{ item.value.Credential.root.Name }}"
-                    Password: "{{ item.value.Credential.root.Password }}"
+                    Username: {{ item.value.Credential.root.Name }}
+                    Password: {{ item.value.Credential.root.Password }}
       loop: "{{ Nested_Workload | dict2items }}"
       when:
         - Deploy.Product.Workload == true
