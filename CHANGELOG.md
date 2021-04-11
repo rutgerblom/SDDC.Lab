@@ -74,3 +74,9 @@
 - TargetConfig.ISOMount is now the base location where all ISOs are now mounted.  Individual ISOs are mounted in subdirectories below this location in the form of: Vendor_Product_Version.  So, vCenter would be: VMware_vCenter_7.00U2
 - Converted all modules which mount ISOs to this new ISO mounting scheme.
 - Pod_Config.j2 template modified to support the new variable
+
+## Dev-v3.0.0 11-APRIL-2021
+
+### Added by Rutger
+
+- Convert to Ansible FQCN in script "undeploy.yml"
