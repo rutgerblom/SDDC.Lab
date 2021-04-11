@@ -79,4 +79,4 @@
 
 ### Added by Rutger
 
-- Convert to Ansible FQCN in script "undeploy.yml"
+- Converted to Ansible FQCN in script "undeploy.yml"
