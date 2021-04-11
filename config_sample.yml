@@ -28,6 +28,7 @@ Deploy:
     Router: true                                          # Router - Deploy a router as part of the Pod deployment (recommended).
     vRLI: true                                            # vRLI - Deploy vRealize Log Insight as part of the Pod deployment.
     DNSServer: false                                      # DNSServer - Deploy a pre-configured DNS/NTP server as part of the Pod deployment. This DNS/NTP server is not Pod specific and can serve multiple Pods.
+    Workload: false
     NSXT:
       GlobalManager: false                                # GlobalManager - PLANNED FOR FUTURE - NOT YET IMPLEMENTED
       LocalManager: true                                  # LocalManager - Deploy NSX-T Local Manager as part of the Pod deployment.
@@ -484,6 +485,57 @@ Nested_vRLI:
       Prefix:  "{{ Net.Management.IPv6.Prefix }}"
 
 
+Nested_Workload:
+  Workload1:
+    VMName: "{{ SiteCode }}-Workload-1"
+    FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Workload-1.{{ Common.DNS.Domain }}{% else %}{{ Net.VMNetwork.IPv4.Network }}.101{% endif %}"
+    Credential:
+      root:
+        Name: root
+        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+    Deployment:
+      DataCenter: "{{ Nested_vCenter.DataCenter }}"
+      Cluster: "{{ Nested_Clusters.Compute-A.Name }}"
+      Datastore: "{{ Nested_Clusters.Compute-A.vsanDatastore }}"
+      AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
+    Interface:
+      eth0:
+        PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.Name }}"
+        DHCP: true
+        Address:
+          IPv4:
+            Address: "{{ Net.VMNetwork.IPv4.Network }}.101"
+            Prefix:  "{{ Net.VMNetwork.IPv4.Prefix }}"
+            Gateway: "{{ Net.VMNetwork.IPv4.Network }}.1"
+          IPv6:
+            Address: "{{ Net.VMNetwork.IPv6.Network }}::{{ '%04x'|format(101) }}"
+            Prefix:  "{{ Net.VMNetwork.IPv6.Prefix }}"
+  Workload2:
+    VMName: "{{ SiteCode }}-Workload-1"
+    FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Workload-2.{{ Common.DNS.Domain }}{% else %}{{ Net.VMNetwork.IPv4.Network }}.102{% endif %}"
+    Credential:
+      root:
+        Name: root
+        Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+    Deployment:
+      DataCenter: "{{ Nested_vCenter.DataCenter }}"
+      Cluster: "{{ Nested_Clusters.Compute-A.Name }}"
+      Datastore: "{{ Nested_Clusters.Compute-A.vsanDatastore }}"
+      AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
+    Interface:
+      eth0:
+        PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.Name }}"
+        DHCP: true
+        Address:
+          IPv4:
+            Address: "{{ Net.VMNetwork.IPv4.Network }}.102"
+            Prefix:  "{{ Net.VMNetwork.IPv4.Prefix }}"
+            Gateway: "{{ Net.VMNetwork.IPv4.Network }}.1"
+          IPv6:
+            Address: "{{ Net.VMNetwork.IPv6.Network }}::{{ '%04x'|format(102) }}"
+            Prefix:  "{{ Net.VMNetwork.IPv6.Prefix }}"
+
+
 Nested_DNSServer:
   FQDN: "DNS.{{ Common.DNS.Domain }}"
   VM:
@@ -522,6 +574,7 @@ Nested_DNSServer:
 
 Nested_Clusters:
   Management:
+    Name: Management
     DRS: true
     HA: false
     vSAN: true
@@ -530,6 +583,7 @@ Nested_Clusters:
     NSXT_TransportNodeProfile:
     DeployHosts: false                                                                  # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
   Compute-A:
+    Name: Compute-A
     DRS: true
     HA: false
     vSAN: true
@@ -538,6 +592,7 @@ Nested_Clusters:
     NSXT_TransportNodeProfile: TNP-ESXi-Hosts
     DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
   Edge:                                                                                 # 'Edge' is where NSX-T ETN's are deployed.  HIGHLY suggest you always have an 'Edge' cluster.
+    Name: Edge
     DRS: true
     HA: false
     vSAN: true
