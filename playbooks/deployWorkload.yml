@@ -1,0 +1,148 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/deployWorkload.yml
+##
+---
+- hosts: localhost
+  name: deployVrli.yml
+  tasks:
+    - name: deployWorkload.yml
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+
+                                         vRLI Version: {{ Deploy.Software.vRLI.Version }}
+                                            vRLI FQDN: {{ Nested_Workload.FQDN }}
+                                          vRLI VMName: {{ Nested_Workload.VMName }}
+                                      vRLI Admin User: {{ Nested_Workload.Credential.admin.Name }}
+                                  vRLI Admin Password: {{ Nested_Workload.Credential.admin.Password }}
+
+
+                                                OVF Variables
+                                                =============
+
+                                            vRLI Size: {{ Nested_Workload.Deployment.Size }}
+                                    Network PortGroup: {{ Target.PortGroup.Management.Name }}
+
+                                 Network IPv4 Address: {{ Nested_Workload.Address.IPv4.Address }}
+                                      Network Netmask: {{ (Nested_Workload.Address.IPv4.Address + '/' + Nested_Workload.Address.IPv4.Prefix) | ipaddr('netmask') }}
+                                      Network Gateway: {{ Nested_Workload.Address.IPv4.Gateway }}
+
+                                   Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                   Network DNS Domain: {{ Common.DNS.Domain }}
+
+                                   vRLI Root Password: {{ Nested_Workload.Credential.root.Password }}
+
+                                      vRLI Media Path: {{ Deploy.Software.Workload.Directory }}
+                                      vRLI Media File: {{ Deploy.Software.Workload.File }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Check if Photon OS OVA file exists locally in the software repository
+      ansible.builtin.stat:
+        path: "{{ Deploy.Software.Workload.Directory }}/{{ Deploy.Software.Workload.File }}"
+      register: InstallerFileCheck
+      when:
+        - Deploy.Product.Workload == true
+
+    - name: Update Photon OS OVA file in the local software repository (overwrite if exists)
+      ansible.builtin.get_url:
+        url:  "{{ Deploy.Software.Workload.URL }}/{{ Deploy.Software.Workload.File }}"
+        dest: "{{ Deploy.Software.Workload.Directory }}/{{ Deploy.Software.Workload.File }}"
+        force: yes
+      when: 
+        - (InstallerFileCheck.stat.exists != true) or (Deploy.Software.Options.UseLocalInstaller != true)
+        - Deploy.Software.Options.KeepNewInstallers == true
+        - Deploy.Product.Workload == true 
+
+    - name: Deploy Workload from OVA
+      community.vmware.vmware_deploy_ovf:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{  Nested_vCenter.User }}"
+        password: "{{  Nested_vCenter.Password }}"
+        validate_certs: false
+        datastore: "{{ Nested_Workload.Deployment.Datastore }}"
+        allow_duplicates: false
+        datacenter: "{{ Nested_Workload.Deployment.DataCenter }}"
+        cluster: "{{ Nested_Workload.Deployment.Cluster }}"
+        name: "{{ Nested_Workload.VMName }}"
+        ovf: "{{ Deploy.Software.Workload.Directory }}/{{ Deploy.Software.Workload.File }}"
+        networks:
+          "None": "{{ Target.PortGroup.Management.Name }}"
+        disk_provisioning: "{{ Common.DiskProvisioning }}"
+        power_on: true
+      loop: "{{ Nested_Workload | dict2items }}"
+      when:
+        - Deploy.Product.Workload == true
+
+    - name: Write annotation on the Workload VMs
+      community.vmware.vmware_guest:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{  Nested_vCenter.User }}"
+        password: "{{  Nested_vCenter.Password }}"
+        validate_certs: false
+        datacenter: "{{ Nested_Workload.Deployment.DataCenter }}"
+        cluster: "{{ Nested_Workload.Deployment.Cluster }}"
+        name: "{{ Nested_Workload.VMName }}"
+        annotation: | 
+                    {{ Common.Annotation }}
+                    {{ Deploy.Software.Workload.Vendor }} {{ Deploy.Software.Workload.Product }} {{ Deploy.Software.Workload.Version }}
+                    Username: {{ Nested_Workload.Credential.admin.Name }}
+                    Password: {{ Nested_Workload.Credential.admin.Password }}
+      loop: "{{ Nested_Workload | dict2items }}"
+      when:
+        - Deploy.Product.Workload == true
