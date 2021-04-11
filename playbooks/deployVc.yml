@@ -6,6 +6,8 @@
 ---
 - hosts: localhost
   name: deployVc.yml
+  vars:
+    ISOMountPoint: "{{ Target.ISOMount }}/{{ Deploy.Software.vCenter.Vendor }}_{{ Deploy.Software.vCenter.Product }}_{{ Deploy.Software.vCenter.Version }}"
   tasks:
     - name: deployVc_Playbook
       ansible.builtin.debug:
@@ -61,9 +63,8 @@
                                     Target.DataCenter: {{ Target.DataCenter }}
                                      Target.Datastore: {{ Target.Datastore }}
                                       Target.VMFolder: {{ Target.VMFolder }}
-                                      Target.ISOMount: {{ Target.ISOMount }}
 
-                                 Full ISO Mount Point: {{ Target.ISOMount }}/VCSA
+                                        ISOMountPoint: {{ ISOMountPoint }}
 
                                                Vendor: {{ Deploy.Software.vCenter.Vendor }}
                                               Product: {{ Deploy.Software.vCenter.Product }}
@@ -138,8 +139,17 @@
         - Target.Deployment == "vCenter"
         - Nested_vCenter.SSO.ReplicationPartner != ""
 
-    - name: Mount vCenter ISO
-      action: mount name='{{ Target.ISOMount }}/VCSA' src="{{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }}" opts=loop fstype=iso9660 state=mounted
+#    - name: Mount vCenter ISO
+#      action: mount name='{{ Target.ISOMount }}/VCSA' src="{{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }}" opts=loop fstype=iso9660 state=mounted
+#      when: vcenter_check.status != 200
+
+    - name: Mount vCenter ISO as read-only and do not automatically mount with 'mount -a'
+      mount:
+        path:   "{{ ISOMountPoint }}"
+        src:    "{{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }}"
+        fstype: iso9660
+        opts:   ro,noauto
+        state:  mounted
       when: vcenter_check.status != 200
 
     - name: Notify user of vCenter install time
@@ -150,13 +160,21 @@
     - name: Perform vCenter CLI-based installation
       ansible.builtin.command: "./vcsa-deploy install --accept-eula --no-ssl-certificate-verification --acknowledge-ceip {{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
       args:
-        chdir: "{{ Target.ISOMount }}/VCSA/vcsa-cli-installer/lin64/"
+        chdir: "{{ ISOMountPoint }}/vcsa-cli-installer/lin64/"
       register: vcdeploy
       when: vcenter_check.status != 200
 
+#    - name: Unmount vCenter ISO
+#      action: mount name='{{ Target.ISOMount }}/VCSA' src="{{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }}" opts=loop fstype=iso9660 state=absent
+#      when: vcenter_check.status != 200
+
     - name: Unmount vCenter ISO
-      action: mount name='{{ Target.ISOMount }}/VCSA' src="{{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }}" opts=loop fstype=iso9660 state=absent
-      when: vcenter_check.status != 200
+      mount:
+        path:   "{{ ISOMountPoint }}"
+        state:  absent
+      when:
+        - vcenter_check.status != 200
+        - Deploy.Software.Options.UnmountISO
 
     - name: Delete the temporary vCenter with embedded PSC installation template
       ansible.builtin.file: "path={{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }} state=absent"
