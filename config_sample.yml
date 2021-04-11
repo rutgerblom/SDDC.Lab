@@ -86,6 +86,13 @@ Deploy:
       Patch:   false
       Config:  "{{ SiteCode }}-Ubuntu.conf"
       Installer: "{{ SiteCode }}-Installer-Ubuntu"
+    Workload:                                             # Label used for selection of which template to use during deployment (templates.yml)
+      Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
+      Product: PhotonOS                                   # Indicates software product you want to deploy from the software repository (software.yml)
+      Version: '4.0.0'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
+      Patch:   false
+      Config:  "{{ SiteCode }}-PhotonOS.conf"
+      Installer: "{{ SiteCode }}-Installer-PhotonOS"
 
 
 ##
