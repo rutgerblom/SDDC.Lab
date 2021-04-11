@@ -62,7 +62,7 @@
 ### Added by Rutger
 
 - Added utility "utils/util_UpdateConfig.sh" that can be used to update/create a "config.yml" file with settings based on user input.
-- Added utility "utils/util_ChangePodState.yml" that can be used to change virtual machine state of all VMs in a Pod.
+- Added utility "utils/util_PodState.yml" that can be used to change virtual machine state of all VMs in a Pod.
 
 ## Dev-v3.0.0 10-APRIL-2021
 
