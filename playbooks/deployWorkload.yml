@@ -53,40 +53,17 @@
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
-                                    Target.Deployment: {{ Target.Deployment }}
+                                  Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN  }}
+                                  Nested_vCenter.User: {{ Nested_vCenter.User }}
+                              Nested_vCenter.Password: {{ Nested_vCenter.Password }}
 
-                                          Target.FQDN: {{ Target.FQDN }}
-                                          Target.User: {{ Target.User }}
-                                      Target.Password: {{ Target.Password }}
-                                       Target.Cluster: {{ Target.Cluster }}
-                                    Target.DataCenter: {{ Target.DataCenter }}
-                                     Target.Datastore: {{ Target.Datastore }}
-                                      Target.VMFolder: {{ Target.VMFolder }}
-
-                                         Workload Version: {{ Deploy.Software.Workload.Version }}
-                                            Workload FQDN: {{ Nested_Workload.FQDN }}
-                                          Workload VMName: {{ Nested_Workload.VMName }}
-                                      Workload Admin User: {{ Nested_Workload.Credential.admin.Name }}
-                                  Workload Admin Password: {{ Nested_Workload.Credential.admin.Password }}
-
+                                     Workload Version: {{ Deploy.Software.Workload.Version }}
 
                                                 OVF Variables
                                                 =============
 
-                                            Workload Size: {{ Nested_Workload.Deployment.Size }}
-                                    Network PortGroup: {{ Target.PortGroup.Management.Name }}
-
-                                 Network IPv4 Address: {{ Nested_Workload.Address.IPv4.Address }}
-                                      Network Netmask: {{ (Nested_Workload.Address.IPv4.Address + '/' + Nested_Workload.Address.IPv4.Prefix) | ipaddr('netmask') }}
-                                      Network Gateway: {{ Nested_Workload.Address.IPv4.Gateway }}
-
-                                   Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
-                                   Network DNS Domain: {{ Common.DNS.Domain }}
-
-                                   Workload Root Password: {{ Nested_Workload.Credential.root.Password }}
-
-                                      Workload Media Path: {{ Deploy.Software.Workload.Directory }}
-                                      Workload Media File: {{ Deploy.Software.Workload.File }}
+                                  Workload Media Path: {{ Deploy.Software.Workload.Directory }}
+                                  Workload Media File: {{ Deploy.Software.Workload.File }}
 
           =================================================================================================
       when:
