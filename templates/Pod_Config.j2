@@ -134,7 +134,15 @@ Deploy:
       Directory: "{{ Software[Deploy.Software.DNSServer.Vendor][Deploy.Software.DNSServer.Product]['Installers'][Deploy.Software.DNSServer.Version]['Location'].Local }}"
       File:      "{{ Software[Deploy.Software.DNSServer.Vendor][Deploy.Software.DNSServer.Product]['Installers'][Deploy.Software.DNSServer.Version].File }}"
       URL:       "{{ Software[Deploy.Software.DNSServer.Vendor][Deploy.Software.DNSServer.Product]['Installers'][Deploy.Software.DNSServer.Version]['Location'].URL }}"
-
+    Workload:
+      Vendor:    "{{ Deploy.Software.Workload.Vendor }}"
+      Product:   "{{ Deploy.Software.Workload.Product }}"
+      Version:   "{{ Deploy.Software.Workload.Version }}"
+      Patch:     {{ Deploy.Software.Workload.Patch }}
+      Config:    "{{ Deploy.Software.Workload.Config }}"
+      Installer: "{{ Deploy.Software.Workload.Installer }}"
+      Directory: "{{ Software[Deploy.Software.Workload.Vendor][Deploy.Software.Workload.Product]['Installers'][Deploy.Software.Workload.Version]['Location'].Local }}"
+      File:      "{{ Software[Deploy.Software.Workload.Vendor][Deploy.Software.Workload.Product]['Installers'][Deploy.Software.Workload.Version].File }}"
 
 
 Common:

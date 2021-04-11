@@ -39,6 +39,13 @@
         mode: "0775"
       loop: "{{ Software.VMware.vRLI.Installers | dict2items }}"
 
+    - name: Create VMware Photon OS directories
+      file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0775"
+      loop: "{{ Software.VMware.PhotonOS.Installers | dict2items }}"
+
     - name: Create Ubuntu directories
       file:
         path: "{{ item.value.Location.Local }}"
