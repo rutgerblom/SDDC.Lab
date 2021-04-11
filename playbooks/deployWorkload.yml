@@ -5,7 +5,7 @@
 ##
 ---
 - hosts: localhost
-  name: deployVrli.yml
+  name: deployWorkload.yml
   tasks:
     - name: deployWorkload.yml
       ansible.builtin.debug:
@@ -63,17 +63,17 @@
                                      Target.Datastore: {{ Target.Datastore }}
                                       Target.VMFolder: {{ Target.VMFolder }}
 
-                                         vRLI Version: {{ Deploy.Software.vRLI.Version }}
-                                            vRLI FQDN: {{ Nested_Workload.FQDN }}
-                                          vRLI VMName: {{ Nested_Workload.VMName }}
-                                      vRLI Admin User: {{ Nested_Workload.Credential.admin.Name }}
-                                  vRLI Admin Password: {{ Nested_Workload.Credential.admin.Password }}
+                                         Workload Version: {{ Deploy.Software.Workload.Version }}
+                                            Workload FQDN: {{ Nested_Workload.FQDN }}
+                                          Workload VMName: {{ Nested_Workload.VMName }}
+                                      Workload Admin User: {{ Nested_Workload.Credential.admin.Name }}
+                                  Workload Admin Password: {{ Nested_Workload.Credential.admin.Password }}
 
 
                                                 OVF Variables
                                                 =============
 
-                                            vRLI Size: {{ Nested_Workload.Deployment.Size }}
+                                            Workload Size: {{ Nested_Workload.Deployment.Size }}
                                     Network PortGroup: {{ Target.PortGroup.Management.Name }}
 
                                  Network IPv4 Address: {{ Nested_Workload.Address.IPv4.Address }}
@@ -83,10 +83,10 @@
                                    Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                    Network DNS Domain: {{ Common.DNS.Domain }}
 
-                                   vRLI Root Password: {{ Nested_Workload.Credential.root.Password }}
+                                   Workload Root Password: {{ Nested_Workload.Credential.root.Password }}
 
-                                      vRLI Media Path: {{ Deploy.Software.Workload.Directory }}
-                                      vRLI Media File: {{ Deploy.Software.Workload.File }}
+                                      Workload Media Path: {{ Deploy.Software.Workload.Directory }}
+                                      Workload Media File: {{ Deploy.Software.Workload.File }}
 
           =================================================================================================
       when:
