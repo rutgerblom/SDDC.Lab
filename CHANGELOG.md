@@ -80,3 +80,9 @@
 ### Added by Rutger
 
 - Converted to Ansible FQCN in script "undeploy.yml"
+
+## Dev-v3.0.0 11-APRIL-2021
+
+### Added by Luis Chanu
+
+- Modified ESXi syslog firewall rule entry to permit the server to source from all local IP addresses.
