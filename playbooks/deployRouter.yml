@@ -116,6 +116,9 @@
       ansible.builtin.stat:
         path: "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
       register: InstallerFileCheck
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
 
     - name: Create temp directory for installation file
       ansible.builtin.file:
