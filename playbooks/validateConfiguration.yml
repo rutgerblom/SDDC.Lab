@@ -24,6 +24,30 @@
 ##
 
 ##
+## Verify Deploy.Software.Router.Version
+##
+    - name: Verifying Deploy.Software.Router.Version is 'Latest'
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Deploy.Software.Router.Version must be 'Latest'.  Other options are no longer supported.
+
+             Configured Value: {{ Deploy.Software.Router.Version }}
+
+          =================================================================================================
+      when:
+        - Deploy.Software.Router.Version != "Latest"
+
+    - name: Set flag if issue found with Deploy.Software.Router.Version
+      ansible.builtin.set_fact:
+        IssueFound: true
+      when:
+        - Deploy.Software.Router.Version != "Latest"
+
+
+##
 ## Verify Pod.Number
 ##
     - name: Verifying Pod.Number is within valid range
@@ -50,7 +74,7 @@
 ##
 ## Verify Pod.VLANOffset
 ##
-    - name: Verifying Pod.VLANOffset iw within valid range
+    - name: Verifying Pod.VLANOffset is within valid range
       ansible.builtin.pause:
         seconds: 5
         prompt: |
@@ -153,7 +177,7 @@
 ##
 ## Verify Target.Deployment
 ##
-    - name: Verify Target.Deployment is valid
+    - name: Verify Target.Deployment type is valid
       ansible.builtin.pause:
         seconds: 5
         prompt: |
