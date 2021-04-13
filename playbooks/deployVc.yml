@@ -216,7 +216,7 @@
         datacenter_name: "{{ Nested_vCenter.DataCenter }}"
         cluster_name: "{{ item.key }}"
         validate_certs: False
-      with_dict: "{{ Nested_Clusters }}"
+      loop: "{{ Nested_Clusters | dict2items }}"
       when: 
         - vcenter_check.status != 200
         - item.value.DeployHosts == true
@@ -230,7 +230,7 @@
         cluster_name: "{{ item.key }}"
         validate_certs: False
         enable_drs: "{{ item.value.DRS }}"
-      with_dict: "{{ Nested_Clusters }}"
+      loop: "{{ Nested_Clusters | dict2items }}"
       when: 
         - vcenter_check.status != 200
         - item.value.DeployHosts == true
