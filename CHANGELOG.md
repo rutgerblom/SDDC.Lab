@@ -86,3 +86,9 @@
 ### Added by Luis Chanu
 
 - Modified ESXi syslog firewall rule entry to permit the server to source from all local IP addresses.
+
+## Dev-v3.0.0 12-APRIL-2021
+
+### Added by Luis Chanu
+
+- Support for "Legacy" VyOS image (v1.1.8) has been removed/deprecated.  All deployments must now use "Latest" version.
