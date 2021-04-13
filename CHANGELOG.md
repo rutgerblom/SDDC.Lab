@@ -91,4 +91,10 @@
 
 ### Added by Luis Chanu
 
-- Support for "Legacy" VyOS image (v1.1.8) has been removed/deprecated.  All deployments must now use "Latest" version.
+- Changes have been made to the Pod_Config.j2 template, so please re-run createPodConfig playbook against all of your config files.
+- Support for "Legacy" VyOS image (v1.1.8) has been removed/deprecated.  All deployments must now use "Latest" for the Router version.  If you have existing configuration files that are using "Legacy", please be sure to update them.
+- ValidateConfiguration.yml playbook updated to verify that the Router version is "Latest".
+- Added "FileExt" to all "Software" entries via the Jinja2 template.  This has been added to simplify the ability for an installation process to determine if the installation source is "iso" or "ova".
+- The following files were updated, so please update your non-sample files:
+  - software_sample.yml
+  - templates_sample.yml
