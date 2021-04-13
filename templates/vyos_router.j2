@@ -6,14 +6,6 @@ interfaces {
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
         address {{ Nested_Router.Interface.Uplink.IPv6.Address }}/{{ Nested_Router.Interface.Uplink.IPv6.Prefix }}
-{% if Deploy.Software.Router.Version == "Legacy" %}
-        ipv6 {
-            router-advert {
-                prefix {{ "{}/{}".format(Nested_Router.Interface.Uplink.IPv6.Address, Nested_Router.Interface.Uplink.IPv6.Prefix) | ipaddr('network/prefix') }} {
-                }
-            }
-        }
-{% endif %}{# Legacy #}
 {% endif %}{# Deploy.Setting.IPv6 #}
     }
     ethernet eth1 {
@@ -24,14 +16,6 @@ interfaces {
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
             address {{ Nested_Router.Interface.Management.IPv6.Address }}/{{ Nested_Router.Interface.Management.IPv6.Prefix }}
-{% if Deploy.Software.Router.Version == "Legacy" %}
-            ipv6 {
-                router-advert {
-                    prefix {{ "{}/{}".format(Nested_Router.Interface.Management.IPv6.Address, Nested_Router.Interface.Management.IPv6.Prefix) | ipaddr('network/prefix') }} {
-                    }
-                }
-            }
-{% endif %}{# Legacy #}
 {% endif %}{# Deploy.Setting.IPv6 #}
             description Management
             mtu 1500
@@ -42,14 +26,6 @@ interfaces {
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
             address {{ Nested_Router.Interface.vMotion.IPv6.Address }}/{{ Nested_Router.Interface.vMotion.IPv6.Prefix }}
-{% if Deploy.Software.Router.Version == "Legacy" %}
-            ipv6 {
-                router-advert {
-                    prefix {{ "{}/{}".format(Nested_Router.Interface.vMotion.IPv6.Address, Nested_Router.Interface.vMotion.IPv6.Prefix) | ipaddr('network/prefix') }} {
-                    }
-                }
-            }
-{% endif %}{# Legacy #}
 {% endif %}{# Deploy.Setting.IPv6 #}
             description vMotion
             mtu 9000
@@ -60,14 +36,6 @@ interfaces {
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
             address {{ Nested_Router.Interface.vSAN.IPv6.Address }}/{{ Nested_Router.Interface.vSAN.IPv6.Prefix }}
-{% if Deploy.Software.Router.Version == "Legacy" %}
-            ipv6 {
-                router-advert {
-                    prefix {{ "{}/{}".format(Nested_Router.Interface.vSAN.IPv6.Address, Nested_Router.Interface.vSAN.IPv6.Prefix) | ipaddr('network/prefix') }} {
-                    }
-                }
-            }
-{% endif %}{# Legacy #}
 {% endif %}{# Deploy.Setting.IPv6 #}
             description vSAN
             mtu 9000
@@ -78,14 +46,6 @@ interfaces {
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
             address {{ Nested_Router.Interface.IPStorage.IPv6.Address }}/{{ Nested_Router.Interface.IPStorage.IPv6.Prefix }}
-{% if Deploy.Software.Router.Version == "Legacy" %}
-            ipv6 {
-                router-advert {
-                    prefix {{ "{}/{}".format(Nested_Router.Interface.IPStorage.IPv6.Address, Nested_Router.Interface.IPStorage.IPv6.Prefix) | ipaddr('network/prefix') }} {
-                    }
-                }
-            }
-{% endif %}{# Legacy #}
 {% endif %}{# Deploy.Setting.IPv6 #}
             description "IP Storage"
             mtu 9000
@@ -96,14 +56,6 @@ interfaces {
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
             address {{ Nested_Router.Interface.Transport.IPv6.Address }}/{{ Nested_Router.Interface.Transport.IPv6.Prefix }}
-{% if Deploy.Software.Router.Version == "Legacy" %}
-            ipv6 {
-                router-advert {
-                    prefix {{ "{}/{}".format(Nested_Router.Interface.Transport.IPv6.Address, Nested_Router.Interface.Transport.IPv6.Prefix) | ipaddr('network/prefix') }} {
-                    }
-                }
-            }
-{% endif %}{# Legacy #}
 {% endif %}{# Deploy.Setting.IPv6 #}
             description "Overlay Transport"
             mtu 9000
@@ -114,14 +66,6 @@ interfaces {
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
             address {{ Nested_Router.Interface.ServiceVM.IPv6.Address }}/{{ Nested_Router.Interface.ServiceVM.IPv6.Prefix }}
-{% if Deploy.Software.Router.Version == "Legacy" %}
-            ipv6 {
-                router-advert {
-                    prefix {{ "{}/{}".format(Nested_Router.Interface.ServiceVM.IPv6.Address, Nested_Router.Interface.ServiceVM.IPv6.Prefix) | ipaddr('network/prefix') }} {
-                    }
-                }
-            }
-{% endif %}{# Legacy #}
 {% endif %}{# Deploy.Setting.IPv6 #}
             description "Service VM Management"
             mtu 1500
@@ -132,14 +76,6 @@ interfaces {
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
             address {{ Nested_Router.Interface.NSXEdgeUplink1.IPv6.Address }}/{{ Nested_Router.Interface.NSXEdgeUplink1.IPv6.Prefix }}
-{% if Deploy.Software.Router.Version == "Legacy" %}
-            ipv6 {
-                router-advert {
-                    prefix {{ "{}/{}".format(Nested_Router.Interface.NSXEdgeUplink1.IPv6.Address, Nested_Router.Interface.NSXEdgeUplink1.IPv6.Prefix) | ipaddr('network/prefix') }} {
-                    }
-                }
-            }
-{% endif %}{# Legacy #}
 {% endif %}{# Deploy.Setting.IPv6 #}
             description "NSX Edge Uplink #1"
             mtu 1500
@@ -150,14 +86,6 @@ interfaces {
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
             address {{ Nested_Router.Interface.NSXEdgeUplink2.IPv6.Address }}/{{ Nested_Router.Interface.NSXEdgeUplink2.IPv6.Prefix }}
-{% if Deploy.Software.Router.Version == "Legacy" %}
-            ipv6 {
-                router-advert {
-                    prefix {{ "{}/{}".format(Nested_Router.Interface.NSXEdgeUplink2.IPv6.Address, Nested_Router.Interface.NSXEdgeUplink2.IPv6.Prefix) | ipaddr('network/prefix') }} {
-                    }
-                }
-            }
-{% endif %}{# Legacy #}
 {% endif %}{# Deploy.Setting.IPv6 #}
             description "NSX Edge Uplink #2"
             mtu 1500
@@ -168,14 +96,6 @@ interfaces {
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
             address {{ Nested_Router.Interface.RTEP.IPv6.Address }}/{{ Nested_Router.Interface.RTEP.IPv6.Prefix }}
-{% if Deploy.Software.Router.Version == "Legacy" %}
-            ipv6 {
-                router-advert {
-                    prefix {{ "{}/{}".format(Nested_Router.Interface.RTEP.IPv6.Address, Nested_Router.Interface.RTEP.IPv6.Prefix) | ipaddr('network/prefix') }} {
-                    }
-                }
-            }
-{% endif %}{# Legacy #}
 {% endif %}{# Deploy.Setting.IPv6 #}
             description "RTEP Transport"
             mtu 1500
@@ -186,14 +106,6 @@ interfaces {
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
             address {{ Nested_Router.Interface.VMNetwork.IPv6.Address }}/{{ Nested_Router.Interface.VMNetwork.IPv6.Prefix }}
-{% if Deploy.Software.Router.Version == "Legacy" %}
-            ipv6 {
-                router-advert {
-                    prefix {{ "{}/{}".format(Nested_Router.Interface.VMNetwork.IPv6.Address, Nested_Router.Interface.VMNetwork.IPv6.Prefix) | ipaddr('network/prefix') }} {
-                    }
-                }
-            }
-{% endif %}{# Legacy #}
 {% endif %}{# Deploy.Setting.IPv6 #}
             description "VM Network"
             mtu 1500
@@ -233,10 +145,6 @@ protocols {
 {% for Neighbor in Nested_Router.BGP.Neighbor.Routers %}
 {% if Deploy.Setting.IPv4 %}
         neighbor {{ Neighbor.IPv4.Address }} {
-{% if Deploy.Software.Router.Version == "Legacy" and Neighbor.SendDefault %}
-            default-originate {
-            }
-{% endif %}{# Legacy and SendDefault #}
 {% if Deploy.Software.Router.Version == "Latest" %}
             address-family {
                 ipv4-unicast {
@@ -253,10 +161,6 @@ protocols {
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
         neighbor {{ Neighbor.IPv6.Address }} {
-{% if Deploy.Software.Router.Version == "Legacy" and Neighbor.SendDefault %}
-            default-originate {
-            }
-{% endif %}{# Legacy and SendDefault #}
 {% if Deploy.Software.Router.Version == "Latest" %}
             address-family {
                 ipv6-unicast {
@@ -277,10 +181,6 @@ protocols {
 {% for Neighbor in Nested_Router.BGP.Neighbor.NSXEdges %}
 {% if Deploy.Setting.IPv4 %}
         neighbor {{ Neighbor.IPv4.Address }} {
-{% if Deploy.Software.Router.Version == "Legacy" and Neighbor.SendDefault %}
-            default-originate {
-            }
-{% endif %}{# Legacy and SendDefault #}
 {% if Deploy.Software.Router.Version == "Latest" %}
             address-family {
                 ipv4-unicast {
@@ -297,10 +197,6 @@ protocols {
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
         neighbor {{ Neighbor.IPv6.Address }} {
-{% if Deploy.Software.Router.Version == "Legacy" and Neighbor.SendDefault %}
-            default-originate {
-            }
-{% endif %}{# Legacy and SendDefault #}
 {% if Deploy.Software.Router.Version == "Latest" %}
             address-family {
                 ipv6-unicast {
@@ -436,18 +332,6 @@ system {
         }
 {% endfor %}
     }
-{% if Deploy.Software.Router.Version == "Legacy" %}
-    package {
-        auto-sync 1
-        repository community {
-            components main
-            distribution helium
-            password ""
-            url http://packages.vyos.net/vyos
-            username ""
-        }
-    }
-{% endif %}
     syslog {
         global {
             facility all {
@@ -463,9 +347,6 @@ system {
 
 
 /* Warning: Do not remove the following line. */
-{% if Deploy.Software.Router.Version == "Legacy" %}
-/* === vyatta-config-version: "cluster@1:config-management@1:conntrack-sync@1:conntrack@1:cron@1:dhcp-relay@1:dhcp-server@4:firewall@5:ipsec@4:nat@4:qos@1:quagga@2:system@6:vrrp@1:wanloadbalance@3:webgui@1:webproxy@1:zone-policy@1" === */
-{% endif %}
 {% if Deploy.Software.Router.Version == "Latest" %}
 // vyos-config-version: "broadcast-relay@1:cluster@1:config-management@1:conntrack@1:conntrack-sync@1:dhcp-relay@2:dhcp-server@5:dhcpv6-server@1:dns-forwarding@2:firewall@5:https@2:interfaces@11:ipoe-server@1:ipsec@5:l2tp@3:lldp@1:mdns@1:nat@5:ntp@1:pppoe-server@3:pptp@2:qos@1:quagga@6:salt@1:snmp@1:ssh@1:sstp@2:system@17:vrrp@2:vyos-accel-ppp@2:wanloadbalance@3:webgui@1:webproxy@2:zone-policy@1"
 {% endif %}
