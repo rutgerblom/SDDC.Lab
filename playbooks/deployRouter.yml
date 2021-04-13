@@ -3,6 +3,12 @@
 ##    Authors: Luis Chanu & Rutger Blom
 ##   Filename: playbooks/deployRouter.yml
 ##
+##   Comments: Even though the only option for Deploy.Software.Router.Version is "Latest", which implies "iso", the original checks for "Latest" have been left in.
+##             The plan is to convert these over to use the newly added "FileExt" Software varialble.  This will make it easier in the future to support "ova"
+##             sources should they become available.
+##
+##       ToDo: Finish converting Deploy.Software.Router.Version == "Latest" to Deploy.Software.Router.FileExt == "iso", then fully test.
+##
 ---
 - hosts: localhost
   name: deployRouter.yml
@@ -106,7 +112,7 @@
         - Deploy.Product.Router == true
         - status is failed
 
-    - name: Check if VyOS installation file exists locally in the software repository (Legacy and Latest)
+    - name: Check if VyOS installation file exists locally in the software repository
       ansible.builtin.stat:
         path: "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
       register: InstallerFileCheck
@@ -160,72 +166,10 @@
 
 
 ##
-## The below tasks are for the deploying the VyOS **LEGACY**  release
+## The Below tasks are for deploying the VyOS rolling release (ISO)
 ##
 
-    - name: Deploy VyOS router (Legacy)
-      community.vmware.vmware_deploy_ovf:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: no
-        allow_duplicates: no
-        cluster: "{{ Target.Cluster }}"
-        datacenter: "{{ Target.DataCenter }}"
-        folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}{% else %}{{ Target.VMFolder }}{% endif %}"         # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
-        datastore: "{{ Target.Datastore }}"
-        name: "{{ Nested_Router.Name }}"
-        ovf: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
-        networks:
-          "public": "{{ Nested_Router.Interface.Uplink.PortGroup }}"
-          "internal": "{{ Target.PortGroup.Trunk.Name }}"
-        disk_provisioning: "{{ Common.DiskProvisioning }}"
-        power_on: true
-        wait: true
-        wait_for_ip_address: yes
-      delegate_to: localhost
-      when: 
-        - Deploy.Product.Router == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Legacy"
-
-    - name: Configure VyOS router (Legacy)
-      community.vmware.vmware_guest_file_operation:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: no
-        vm_id: "{{ Nested_Router.Name }}"
-        vm_username: "vyos"
-        vm_password: "vyos"
-        copy:
-            src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
-            dest: "/config/config.boot"
-            overwrite: true
-      when: 
-        - Deploy.Product.Router == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Legacy"
-
-    - name: Reboot VyOS VM (Legacy)
-      community.vmware.vmware_guest_powerstate:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: no
-        name: "{{ Nested_Router.Name }}"
-        state: reboot-guest
-      when: 
-        - Deploy.Product.Router == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Legacy"
-
-
-##
-## The Below tasks are for the deploying the VyOS rolling ('**Latest**') release
-##
-
-    - name: Upload the VyOS ISO to the datastore (Latest)
+    - name: Upload the VyOS ISO to the datastore
       community.vmware.vsphere_copy: 
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -241,7 +185,7 @@
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
-    - name: Create VyOS router VM on vCenter (Latest)
+    - name: Create VyOS router VM on vCenter from ISO
       community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -272,6 +216,7 @@
           iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
         annotation: | 
                     {{ Common.Annotation }}
+                    { Deploy.Software.Router.Vendor }} {{ Deploy.Software.Router.Product }} { Deploy.Software.Router.Version }}
                     Username: vyos
                     Password: {{ Common.Password.Nested }}
       when: 
@@ -577,11 +522,6 @@
         - Deploy.Software.Router.Version == "Latest"
         - DEBUG.KeepInstallerFiles != true
 
-
-##
-## Below tasks are for both the VyOS legacy and rolling release
-##
-
     - name: Delete the temporary template file for VyOS router
       ansible.builtin.file: 
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
@@ -599,26 +539,6 @@
         - Deploy.Product.Router == true
         - status is failed
         - DEBUG.KeepInstallerFiles != true
-
-    - name: Write annotation on the VyOS VM
-      community.vmware.vmware_guest:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: no
-        cluster: "{{ Target.Cluster }}"
-        datacenter: "{{ Target.DataCenter }}"
-        folder: "{{ Target.VMFolder }}"
-        name: "{{ Nested_Router.Name }}"
-        annotation: | 
-                    {{ Common.Annotation }}
-                    { Deploy.Software.Router.Vendor }} {{ Deploy.Software.Router.Product }} { Deploy.Software.Router.Version }}
-                    Username: vyos
-                    Password: {{ Common.Password.Nested }}
-      when: 
-        - Deploy.Product.Router == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Legacy"
 
     - name: Add static route on the Ansible control node
       ansible.builtin.command: ./ip route add "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}" via "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
