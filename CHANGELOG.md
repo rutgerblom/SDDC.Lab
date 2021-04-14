@@ -112,3 +112,4 @@
 ### Added by Luis Chanu
 
 - Converted module references within deploy.yml to use FQCNs
+- Correct issue with deployRouter.yml playbook where it would fail if router was already deployed
