@@ -139,10 +139,6 @@
         - Target.Deployment == "vCenter"
         - Nested_vCenter.SSO.ReplicationPartner != ""
 
-#    - name: Mount vCenter ISO
-#      action: mount name='{{ Target.ISOMount }}/VCSA' src="{{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }}" opts=loop fstype=iso9660 state=mounted
-#      when: vcenter_check.status != 200
-
     - name: Mount vCenter ISO as read-only and do not automatically mount with 'mount -a'
       mount:
         path:   "{{ ISOMountPoint }}"
@@ -163,10 +159,6 @@
         chdir: "{{ ISOMountPoint }}/vcsa-cli-installer/lin64/"
       register: vcdeploy
       when: vcenter_check.status != 200
-
-#    - name: Unmount vCenter ISO
-#      action: mount name='{{ Target.ISOMount }}/VCSA' src="{{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }}" opts=loop fstype=iso9660 state=absent
-#      when: vcenter_check.status != 200
 
     - name: Unmount vCenter ISO
       mount:
