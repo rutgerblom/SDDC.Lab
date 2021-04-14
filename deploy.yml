@@ -32,6 +32,12 @@
 # Deploy nested vSphere
 - import_playbook: playbooks/prepareISOInstaller.yml
 - import_playbook: playbooks/deployNestedEsxi.yml
+
+- name: Verify Replication Partner vCenter Server is ready
+  ansible.builtin.import_playbook: playbooks/checkVcReplicationPartner.yml
+  when:
+    - Nested_vCenter.SSO.ReplicationPartner != ""
+
 - import_playbook: playbooks/deployVc.yml
 - import_playbook: playbooks/configureNestedEsxi.yml
 - import_playbook: playbooks/createVds.yml
