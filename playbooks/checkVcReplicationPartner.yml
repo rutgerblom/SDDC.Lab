@@ -1,0 +1,194 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/checkVcReplicationPartner.yml
+##    Purpose: This Ansbile playbook verifies that the Replication Partner's vCenter Server is on-line and ready to process requests.
+##             If the Replication Partner vCenter Server is not responding, then it continues to check for up to two (2) hours.
+##             Once the Replication Partner vCenter Server responds, we make sure it's healthy.  If it is not healthy, then we
+##             continue to check for it to become healthy for up to thirty (30) minutes.
+##             If no Replication Partner vCenter Server is configured, then all the actionable plays are skipped.
+##
+---
+- hosts: localhost
+  name: checkVcReplicationPartner.yml
+  tasks:
+    - name: checkVcReplicationPartner_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                  Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN }}
+                                  Nested_vCenter.User: {{ Nested_vCenter.User }}
+                              Nested_vCenter.Password: {{ Nested_vCenter.Password }}
+
+                Nested_vCenter.SSO.ReplicationPartner: {{ Nested_vCenter.SSO.ReplicationPartner }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+##
+## Authenticate to Replication Partner vCenter Server and obtain Session ID
+##
+
+    - name: Authenticate to Replication Partner vCenter Server to obtain a Session ID
+      ansible.builtin.uri:
+        url: "https://{{ Nested_vCenter.SSO.ReplicationPartner }}/rest/com/vmware/cis/session"
+        headers: "{ 'vmware-use-header-authn':'test' }"
+        method: POST
+        validate_certs: no
+        timeout: 10
+        force_basic_auth: yes
+        url_username: "{{ Nested_vCenter.User }}"                             # Assumes all Nested_vCenter servers use the same credentials
+        url_password: "{{ Nested_vCenter.Password }}"                         # Assumes all Nested_vCenter servers use the same credentials
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: vcenter_auth_result
+      until:    vcenter_auth_result.status == 200
+      retries: 120
+      delay: 60
+      when:
+        - Nested_vCenter.SSO.ReplicationPartner != ""
+
+    - name: DEBUG -- Display result from Replication Partner vCenter Server authentication
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: vcenter_auth_result
+          =============================
+          {{ vcenter_auth_result | to_nice_yaml }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - vcenter_auth_result is defined
+        - Nested_vCenter.SSO.ReplicationPartner != ""
+
+    - name: Store Replication Partner vCenter Session ID for later use
+      ansible.builtin.set_fact:
+        vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
+      when:
+        - Nested_vCenter.SSO.ReplicationPartner != ""
+
+    - name: DEBUG -- Display Replication Partner vCenter_SessionID
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          =================================================================================================
+
+          Variable: vCenter_SessionID
+          ===========================
+          {{ vCenter_SessionID | to_nice_yaml }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - vCenter_SessionID is defined
+        - Nested_vCenter.SSO.ReplicationPartner != ""
+
+##
+## Get Add vSphere Cluster's Member Servers to the vDS
+##
+
+    - name: Wait until Replication Partner vCenter Server appliance is healthy
+      ansible.builtin.uri:
+        url: "https://{{ Nested_vCenter.SSO.ReplicationPartner }}/rest/appliance/health/system"
+        headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
+        method: GET
+        validate_certs: no
+        timeout: 10
+        force_basic_auth: yes
+        url_username: "{{ Nested_vCenter.User }}"                             # Assumes all Nested_vCenter servers use the same credentials
+        url_password: "{{ Nested_vCenter.Password }}"                         # Assumes all Nested_vCenter servers use the same credentials
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: health_result
+      until:    health_result.status == 200 and health_result.json.value == "green"
+      retries: 30
+      delay: 60
+      when:
+        - vCenter_SessionID is defined
+        - Nested_vCenter.SSO.ReplicationPartner != ""
+
+    - name: DEBUG -- Display Replication Partner vCenter Server health information
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: health_result
+          ======================
+          {{ health_result | to_nice_yaml }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - health_result is defined
+        - Nested_vCenter.SSO.ReplicationPartner != ""
+
+
+##
+## Logout of Replication Partner vCenter Server by invalidating API Token
+##
+
+    - name: Logout of Replication Partner vCenter Server
+      ansible.builtin.uri:
+        url: "https://{{ Nested_vCenter.SSO.ReplicationPartner }}/rest/com/vmware/cis/session"
+        headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
+        method: DELETE
+        validate_certs: no
+        timeout: 10
+#        force_basic_auth: yes
+#        url_username: "{{ Nested_vCenter.User }}"                             # Assumes all Nested_vCenter servers use the same credentials
+#        url_password: "{{ Nested_vCenter.Password }}"                         # Assumes all Nested_vCenter servers use the same credentials
+        status_code: 200
+      when:
+        - vCenter_SessionID is defined
+        - Nested_vCenter.SSO.ReplicationPartner != ""
+
