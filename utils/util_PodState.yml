@@ -1,19 +1,19 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: util_ChangePodState.yml
+##   Filename: util_PodState.yml
 ##   
 ##   Purpose: 
 ##   Change the state of all virtual machines in a Pod. 
 ##
 ##   Example: Initiate a graceful shutdown of Pod 220's virtual machines 
-##   ansible-playbook -e "@/home/ubuntu/Pod-220-Config.yml" utils/util_ChangePodState.yml --extra-vars "state=shutdownguest"
+##   ansible-playbook -e "@/home/ubuntu/Pod-220-Config.yml" utils/util_PodState.yml --extra-vars "state=shutdownguest"
 ##
-##   Valid options for state are: "poweredon", "poweredoff", "rebootguest", "restarted", "shutdownguest", "suspended"
+##   Valid options for state are: "poweredon", "poweredoff", "rebootguest", "restarted", "shutdownguest", "suspended", and "absent" (deletes VMs)
 ##
 ---
 - hosts: localhost
-  name: util_ChangePodState.yml
+  name: util_PodState.yml
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
       pause:
@@ -71,15 +71,24 @@
       when:
         - DEBUG.DisplayVariables == true
 
-
-    - name: Change state of VyOS router VM
-      community.vmware.vmware_guest:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
+    - name: Gather info about virtual machines in the nested vSphere environment
+      community.vmware.vmware_vm_info:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User  }}"
+        password: "{{ Nested_vCenter.Password }}"
         validate_certs: no
-        name: "{{ Nested_Router.Name }}"
+      register: vminfo
+      ignore_errors: true
+
+    - name: Change state of VMs in the nested vSphere environment
+      community.vmware.vmware_guest:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User  }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: no
+        name: "{{ item.guest_name }}"
         state: "{{ state }}"
+      loop: "{{ vminfo.virtual_machines }}"
       ignore_errors: true
 
     - name: Change state of vRLI VM
@@ -122,5 +131,15 @@
         password: "{{ Target.Password }}"
         validate_certs: no
         name: "{{ Nested_NSXT.Components.LocalManager.VMName }}"
+        state: "{{ state }}"
+      ignore_errors: true
+
+    - name: Change state of VyOS router VM
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
         state: "{{ state }}"
       ignore_errors: true
