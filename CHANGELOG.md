@@ -98,3 +98,17 @@
 - The following files were updated, so please update your non-sample files:
   - software_sample.yml
   - templates_sample.yml
+
+## Dev-v3.0.0 13-APRIL-2021
+
+### Added by Luis Chanu
+
+- Added support in concurrent Pod deployment to support vCenter Server Replication Partners.
+- Created new 'checkVcReplicationPartner.yml' playbook to verify Replication Partner vCenter Server is operational.  It pauses the Pod with the Replication Partner until the Replication Partner vCenter Server is operational.
+- Added new 'checkVcReplicationPartner.yml' playbook to deploy.yml playbook.
+
+## Dev-v3.0.0 14-APRIL-2021
+
+### Added by Luis Chanu
+
+- Converted module references within deploy.yml to use FQCNs
