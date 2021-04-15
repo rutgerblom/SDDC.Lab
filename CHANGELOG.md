@@ -109,6 +109,12 @@
 
 ## Dev-v3.0.0 14-APRIL-2021
 
+### Added by Rutger
+
+- Added a variable that controls the hardware version of the DNS server virtual machine. Default value is set to 13.
+
+## Dev-v3.0.0 14-APRIL-2021
+
 ### Added by Luis Chanu
 
 - Converted module references within deploy.yml to use FQCNs
