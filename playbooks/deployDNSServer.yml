@@ -162,7 +162,7 @@
 #        - Deploy.Product.DNSServer == true  
 
     - name: Mount Ubuntu ISO as read-only and do not automatically mount with 'mount -a'
-      mount:
+      ansible.posix.mount:
         path:   "{{ ISOMountPoint }}"
         src:    "{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}"
         fstype: iso9660
@@ -223,7 +223,7 @@
 #        - Deploy.Product.DNSServer == true  
 
     - name: Unmount Ubuntu ISO
-      mount:
+      ansible.posix.mount:
         path:   "{{ ISOMountPoint }}"
         state:  absent
       when: 
