@@ -121,3 +121,11 @@
 
 - Converted module references within deploy.yml to use FQCNs
 - Correct issue with deployRouter.yml playbook where it would fail if router was already deployed
+
+## Dev-v3.0.0 15-APRIL-2021
+
+### Added by Rutger
+
+- The generated Pod documentation will now contain information on whether NSX-T Edge was deployed or not.
+- Converted module references within prepareISOInstaller.yml, deployVc.yml, and deployDNSServer.yml to use FQCNs (ansible.posix.mount).
+- Updated project documentation regarding the ansible.posix collection which is now required by some playbooks. Install this collection by running: **ansible-galaxy collection install ansible.posix** on your Ansible controller.
