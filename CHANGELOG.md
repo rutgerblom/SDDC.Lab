@@ -112,6 +112,8 @@
 ### Added by Rutger
 
 - Added a variable that controls the hardware version of the DNS server virtual machine. Default value is set to 13.
+- The following file was updated so please update your non-sample file:
+  - config_sample.yml
 
 ## Dev-v3.0.0 14-APRIL-2021
 
