@@ -140,7 +140,7 @@
         - Nested_vCenter.SSO.ReplicationPartner != ""
 
     - name: Mount vCenter ISO as read-only and do not automatically mount with 'mount -a'
-      mount:
+      ansible.posix.mount:
         path:   "{{ ISOMountPoint }}"
         src:    "{{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }}"
         fstype: iso9660
@@ -161,7 +161,7 @@
       when: vcenter_check.status != 200
 
     - name: Unmount vCenter ISO
-      mount:
+      ansible.posix.mount:
         path:   "{{ ISOMountPoint }}"
         state:  absent
       when:
