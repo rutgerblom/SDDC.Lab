@@ -81,6 +81,7 @@ The following are recommendations based on our experience with deploying Pods:
   * sudo pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython
   * ansible-galaxy collection install community.general
   * ansible-galaxy collection install community.vmware
+  * ansible-galaxy collection install ansible.posix
   * git clone https://github.com/rutgerblom/SDDC.Lab.git 
 
 * Copy/rename the sample files:
