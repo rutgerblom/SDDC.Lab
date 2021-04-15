@@ -78,7 +78,7 @@
         state: directory
 
     - name: Mount ESXi ISO as read-only and do not automatically mount with 'mount -a'
-      mount:
+      ansible.posix.mount:
         path:   "{{ ISOMountPoint }}"
         src:    "{{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }}"
         fstype: iso9660
@@ -126,7 +126,7 @@
       tags: esxi-install-media
 
     - name: Unmount ESXi ISO
-      mount:
+      ansible.posix.mount:
         path:  "{{ ISOMountPoint }}"
         state: absent
       when: Deploy.Software.Options.UnmountISO
