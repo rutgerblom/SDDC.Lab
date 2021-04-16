@@ -112,7 +112,7 @@ At the heart of each Pod is a software-based [VyOS](https://vyos.io/) router, wh
 1. Connectivity to the physical environment
 2. The gateway interfaces for the various SDDC.Lab networks
 
-Connectivity to the physical environment is achieved via the Pod-Router's eth0 interface.  This interface is a an untagged interface, and is connected to the "Lab-Routers" port-group (discussed later).  It's over this interface that the Pod-Router peers with other deployed Pods and the physical environment.
+Connectivity to the physical environment is achieved via the Pod-Router's eth0 interface.  This interface is a an untagged interface, and is connected to the "Lab-Routers" portgroup (discussed later).  It's over this interface that the Pod-Router peers with other deployed Pods and the physical environment.
 
 The Pod-Router provides gateways services for all of the SDDC.Lab's networks via it's eth1 interface.  Eth1 is configured as a tagged interface, and a unique layer-3 sub-interface (VyOS calls them vif's) is created for each of the SDDC.Lab networks.  These sub-interfaces act as the IPv4/IPv6 gateway for its respective SDDC.Lab network.
 
