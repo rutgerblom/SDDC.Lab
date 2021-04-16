@@ -21,7 +21,7 @@
 * [Access your Pod's components](#Access-your-Pod's-components)
 
 ## Configure your network
-For detailed information regarding the Pod networking, please see the README file.
+For detailed information regarding the Pod networking, please see the [README](README.md) file.
 
 As setting up the physical networking is one area where many of our users run into issues, we are providing a sample configuration from a working environment.  The configuration is provided "as-is", without any support, warranty, or guarantees.  The configuration may require additional modifications for your environment.
 
