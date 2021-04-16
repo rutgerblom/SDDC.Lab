@@ -147,3 +147,4 @@
 - The following file was updated so please update your non-sample file:
   - software_sample.yml
 - vRLI is now configured to use the NTP server specified in config.yml.
+- Updated the header in the generated Pod HTML documentation.
