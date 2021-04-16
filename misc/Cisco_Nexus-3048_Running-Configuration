@@ -1,0 +1,1350 @@
+!!
+!! IMPORTANT: Although this running-configuration is very complete, some fields, including passwords and
+!!            serial numbers, were removed/modified. This example running-configuration is meant to be 
+!!            used as an example framework, which you can then use to help develop your switch configuration
+!!            to get up-and-running quickly.  It is NOT meant to be used as a "Ready-To-Use" configuration.
+!!
+
+
+!!
+!! Here is the output of SHOW VERSION so you can see the platform and code version that used this configuration.
+!!
+
+NetLab-L3-Switch# 
+NetLab-L3-Switch# show version
+Cisco Nexus Operating System (NX-OS) Software
+TAC support: http://www.cisco.com/tac
+Documents: http://www.cisco.com/en/US/products/ps9372/tsd_products_support_series_home.html
+Copyright (c) 2002-2014, Cisco Systems, Inc. All rights reserved.
+The copyrights to certain works contained herein are owned by
+other third parties and are used and distributed under license.
+Some parts of this software are covered under the GNU Public
+License. A copy of the license is available at
+http://www.gnu.org/licenses/gpl.html.
+
+Software
+  BIOS:      version 1.2.0
+  loader:    version N/A
+  kickstart: version 6.0(2)U3(5)
+  system:    version 6.0(2)U3(5)
+  Power Sequencer Firmware: 
+             Module 1: version v4.4
+  BIOS compile time:       08/25/2011
+  kickstart image file is: bootflash:///n3000-uk9-kickstart.6.0.2.U3.5.bin
+  kickstart compile time:  10/29/2014 22:00:00 [10/30/2014 08:18:41]
+  system image file is:    bootflash:///n3000-uk9.6.0.2.U3.5.bin
+  system compile time:     10/29/2014 22:00:00 [10/30/2014 11:33:56]
+
+
+Hardware
+  cisco Nexus 3048 Chassis ("48x1GE + 4x10G Supervisor")
+  Intel(R) Celeron(R) CPU        P450 with 3785024 kB of memory.
+  Processor Board ID ***REMOVED***
+
+  Device name: NetLab-L3-Switch
+  bootflash:    2007040 kB
+
+Kernel uptime is 15 day(s), 9 hour(s), 31 minute(s), 0 second(s)
+
+Last reset 
+  Reason: Unknown
+  System version: 6.0(2)U3(5)
+  Service: 
+
+plugin
+  Core Plugin, Ethernet Plugin
+NetLab-L3-Switch# 
+NetLab-L3-Switch# 
+NetLab-L3-Switch# 
+
+
+
+!!
+!! This running configuration is configured to support SDDC.Lab v3 (and later), as it is configured with OSPF Area 0 and BGP support.
+!! The configuration for SDDC.Lab v2 would be different, as it uses OSPF Area 666.  SDDC.Lab v2 has no BGP support.
+!!
+
+NetLab-L3-Switch# 
+NetLab-L3-Switch# 
+NetLab-L3-Switch# 
+NetLab-L3-Switch# show running-config 
+
+!Command: show running-config
+!Time: Wed Apr  7 01:37:38 2021
+
+version 6.0(2)U3(5)
+hostname NetLab-L3-Switch
+
+no feature telnet
+feature ospf
+feature bgp
+feature ospfv3
+feature interface-vlan
+feature lldp
+
+username admin password 5 ***REMOVED***  role network-admin
+ssh key rsa 2048 
+ip domain-lookup
+ip domain-name NetLab.Local
+ip name-server ***PRIMARY_DNS_SERVER*** ***SECONDARY_DNS_SERVER***
+logging event link-status default
+ip access-list copp-system-acl-eigrp
+  10 permit eigrp any 224.0.0.10/32
+ipv6 access-list copp-system-acl-eigrp6
+  10 permit 88 any ff02::000a/128
+ip access-list copp-system-acl-icmp
+  10 permit icmp any any
+ip access-list copp-system-acl-igmp
+  10 permit igmp any any
+ip access-list copp-system-acl-ntp
+  10 permit udp any any eq ntp
+  20 permit udp any eq ntp any
+ip access-list copp-system-acl-pimreg
+  10 permit pim any any
+ip access-list copp-system-acl-ping
+  10 permit icmp any any echo
+  20 permit icmp any any echo-reply
+ip access-list copp-system-acl-routingproto1
+  10 permit tcp any gt 1024 any eq bgp
+  20 permit tcp any eq bgp any gt 1024
+  30 permit udp any 224.0.0.0/24 eq rip
+  40 permit tcp any gt 1024 any eq 639
+  50 permit tcp any eq 639 any gt 1024
+  70 permit ospf any any
+  80 permit ospf any 224.0.0.5/32
+  90 permit ospf any 224.0.0.6/32
+ip access-list copp-system-acl-routingproto2
+  10 permit udp any 224.0.0.0/24 eq 1985
+  20 permit 112 any 224.0.0.0/24
+ip access-list copp-system-acl-snmp
+  10 permit udp any any eq snmp
+  20 permit udp any any eq snmptrap
+ip access-list copp-system-acl-ssh
+  10 permit tcp any any eq 22
+  20 permit tcp any eq 22 any
+ip access-list copp-system-acl-stftp
+  10 permit udp any any eq tftp
+  20 permit udp any any eq 1758
+  30 permit udp any eq tftp any
+  40 permit udp any eq 1758 any
+  50 permit tcp any any eq 115
+  60 permit tcp any eq 115 any
+ip access-list copp-system-acl-tacacsradius
+  10 permit tcp any any eq tacacs
+  20 permit tcp any eq tacacs any
+  30 permit udp any any eq 1812
+  40 permit udp any any eq 1813
+  50 permit udp any any eq 1645
+  60 permit udp any any eq 1646
+  70 permit udp any eq 1812 any
+  80 permit udp any eq 1813 any
+  90 permit udp any eq 1645 any
+  100 permit udp any eq 1646 any
+ip access-list copp-system-acl-telnet
+  10 permit tcp any any eq telnet
+  20 permit tcp any any eq 107
+  30 permit tcp any eq telnet any
+  40 permit tcp any eq 107 any
+ipv6 access-list copp-system-acl-v6routingProto2
+  10 permit udp any ff02::0066/128 eq 2029
+  20 permit udp any ff02::00fb/128 eq 5353
+ipv6 access-list copp-system-acl-v6routingproto1
+  10 permit 89 any ff02::0005/128
+  20 permit 89 any ff02::0006/128
+  30 permit udp any ff02::0009/128 eq 521
+ip access-list copp-system-dhcp-relay
+  10 permit udp any eq bootps any eq bootps
+policy-map type network-qos JumboFrames
+  class type network-qos class-default
+    mtu 9216
+system qos
+  service-policy type network-qos JumboFrames
+class-map type control-plane match-any copp-icmp
+  match access-group name copp-system-acl-icmp
+class-map type control-plane match-any copp-ntp
+  match access-group name copp-system-acl-ntp
+class-map type control-plane match-any copp-s-arp
+class-map type control-plane match-any copp-s-bfd
+class-map type control-plane match-any copp-s-bpdu
+class-map type control-plane match-any copp-s-dai
+class-map type control-plane match-any copp-s-default
+class-map type control-plane match-any copp-s-dhcpreq
+class-map type control-plane match-any copp-s-dhcpresp
+  match access-group name copp-system-dhcp-relay
+class-map type control-plane match-any copp-s-dpss
+class-map type control-plane match-any copp-s-eigrp
+  match access-group name copp-system-acl-eigrp
+  match access-group name copp-system-acl-eigrp6
+class-map type control-plane match-any copp-s-glean
+class-map type control-plane match-any copp-s-igmp
+  match access-group name copp-system-acl-igmp
+class-map type control-plane match-any copp-s-ipmcmiss
+class-map type control-plane match-any copp-s-l2switched
+class-map type control-plane match-any copp-s-l3destmiss
+class-map type control-plane match-any copp-s-l3mtufail
+class-map type control-plane match-any copp-s-l3slowpath
+class-map type control-plane match-any copp-s-pimautorp
+class-map type control-plane match-any copp-s-pimreg
+  match access-group name copp-system-acl-pimreg
+class-map type control-plane match-any copp-s-ping
+  match access-group name copp-system-acl-ping
+class-map type control-plane match-any copp-s-ptp
+class-map type control-plane match-any copp-s-routingProto1
+  match access-group name copp-system-acl-routingproto1
+  match access-group name copp-system-acl-v6routingproto1
+class-map type control-plane match-any copp-s-routingProto2
+  match access-group name copp-system-acl-routingproto2
+class-map type control-plane match-any copp-s-selfIp
+class-map type control-plane match-any copp-s-ttl1
+class-map type control-plane match-any copp-s-v6routingProto2
+  match access-group name copp-system-acl-v6routingProto2
+class-map type control-plane match-any copp-s-vxlan
+class-map type control-plane match-any copp-snmp
+  match access-group name copp-system-acl-snmp
+class-map type control-plane match-any copp-ssh
+  match access-group name copp-system-acl-ssh
+class-map type control-plane match-any copp-stftp
+  match access-group name copp-system-acl-stftp
+class-map type control-plane match-any copp-tacacsradius
+  match access-group name copp-system-acl-tacacsradius
+class-map type control-plane match-any copp-telnet
+  match access-group name copp-system-acl-telnet
+policy-map type control-plane copp-system-policy 
+  class copp-s-selfIp
+    police pps 500 
+  class copp-s-default
+    police pps 400 
+  class copp-s-l2switched
+    police pps 200 
+  class copp-s-ping
+    police pps 100 
+  class copp-s-l3destmiss
+    police pps 100 
+  class copp-s-glean
+    police pps 500 
+  class copp-s-l3mtufail
+    police pps 100 
+  class copp-s-ttl1
+    police pps 100 
+  class copp-s-ipmcmiss
+    police pps 400 
+  class copp-s-l3slowpath
+    police pps 100 
+  class copp-s-dhcpreq
+    police pps 300 
+  class copp-s-dhcpresp
+    police pps 300 
+  class copp-s-dai
+    police pps 300 
+  class copp-s-igmp
+    police pps 400 
+  class copp-s-eigrp
+    police pps 200 
+  class copp-s-pimreg
+    police pps 200 
+  class copp-s-pimautorp
+    police pps 200 
+  class copp-s-routingProto2
+    police pps 1300 
+  class copp-s-v6routingProto2
+    police pps 1300 
+  class copp-s-routingProto1
+    police pps 1000 
+  class copp-s-arp
+    police pps 200 
+  class copp-s-ptp
+    police pps 1000 
+  class copp-s-vxlan
+    police pps 1000 
+  class copp-s-bfd
+    police pps 350 
+  class copp-s-bpdu
+    police pps 12000 
+  class copp-s-dpss
+    police pps 1000 
+  class copp-icmp
+    police pps 200 
+  class copp-telnet
+    police pps 500 
+  class copp-ssh
+    police pps 500 
+  class copp-snmp
+    police pps 500 
+  class copp-ntp
+    police pps 100 
+  class copp-tacacsradius
+    police pps 400 
+  class copp-stftp
+    police pps 400 
+control-plane
+  service-policy input copp-system-policy 
+ip dns source-interface loopback0
+snmp-server user admin network-admin auth md5 ***REMOVED*** priv ***REMOVED*** localizedkey
+ntp source-interface  loopback0
+
+vrf context management
+  ip route 0.0.0.0/0 ***REMOVED_MGMT_IP_GATEWAY***
+vlan configuration 2
+vlan 1
+vlan 2
+  name 10.203.0.0/24___Lab-Routers
+vlan 3
+  name 10.203.1.0/24___Network-Mgmt
+vlan 5
+  name 10.203.5.0/24___ESXi-Mgmt
+vlan 6
+  name 10.203.6.0/23___vMotion
+vlan 8
+  name 10.203.8.0/24___IPStorage-1
+vlan 9
+  name 10.203.9.0/24___IPStorage-2
+vlan 10
+  name 10.203.10.0/24__Pod-010_Mgmt
+vlan 11
+  name 10.203.11.0/24__Pod-010_vMotion
+vlan 12
+  name 10.203.12.0/24__Pod-010_vSAN
+vlan 13
+  name 10.203.13.0/24__Pod-010_IPStorag
+vlan 14
+  name 10.203.14.0/24__Pod-010_Overlay
+vlan 15
+  name 10.203.15.0/24__Pod-010_SvcVM
+vlan 16
+  name 10.203.16.0/24__Pod-010_Uplink1
+vlan 17
+  name 10.203.17.0/24__Pod-010_Uplink2
+vlan 18
+  name 10.203.18.0/24__Pod-010_RTEP
+vlan 19
+  name 10.203.19.0/24__Pod-010_VMNet
+vlan 20
+  name 10.203.20.0/24__Pod-020_Mgmt
+vlan 21
+  name 10.203.21.0/24__Pod-020_vMotion
+vlan 22
+  name 10.203.22.0/24__Pod-020_vSAN
+vlan 23
+  name 10.203.23.0/24__Pod-020_IPStorag
+vlan 24
+  name 10.203.24.0/24__Pod-020_Overlay
+vlan 25
+  name 10.203.25.0/24__Pod-020_SvcVM
+vlan 26
+  name 10.203.26.0/24__Pod-020_Uplink1
+vlan 27
+  name 10.203.27.0/24__Pod-020_Uplink2
+vlan 28
+  name 10.203.28.0/24__Pod-020_RTEP
+vlan 29
+  name 10.203.29.0/24__Pod-020_VMNet
+vlan 30
+  name 10.203.30.0/24__Pod-030_Mgmt
+vlan 31
+  name 10.203.31.0/24__Pod-030_vMotion
+vlan 32
+  name 10.203.32.0/24__Pod-030_vSAN
+vlan 33
+  name 10.203.33.0/24__Pod-030_IPStorag
+vlan 34
+  name 10.203.34.0/24__Pod-030_Overlay
+vlan 35
+  name 10.203.35.0/24__Pod-030_SvcVM
+vlan 36
+  name 10.203.36.0/24__Pod-030_Uplink1
+vlan 37
+  name 10.203.37.0/24__Pod-030_Uplink2
+vlan 38
+  name 10.203.38.0/24__Pod-030_RTEP
+vlan 39
+  name 10.203.39.0/24__Pod-030_VMNet
+vlan 40
+  name 10.203.40.0/24__Pod-040_Mgmt
+vlan 41
+  name 10.203.41.0/24__Pod-040_vMotion
+vlan 42
+  name 10.203.42.0/24__Pod-040_vSAN
+vlan 43
+  name 10.203.43.0/24__Pod-040_IPStorag
+vlan 44
+  name 10.203.44.0/24__Pod-040_Overlay
+vlan 45
+  name 10.203.45.0/24__Pod-040_SvcVM
+vlan 46
+  name 10.203.46.0/24__Pod-040_Uplink1
+vlan 47
+  name 10.203.47.0/24__Pod-040_Uplink2
+vlan 48
+  name 10.203.48.0/24__Pod-040_RTEP
+vlan 49
+  name 10.203.49.0/24__Pod-040_VMNet
+vlan 50
+  name 10.203.50.0/24__Pod-050_Mgmt
+vlan 51
+  name 10.203.51.0/24__Pod-050_vMotion
+vlan 52
+  name 10.203.52.0/24__Pod-050_vSAN
+vlan 53
+  name 10.203.53.0/24__Pod-050_IPStorag
+vlan 54
+  name 10.203.54.0/24__Pod-050_Overlay
+vlan 55
+  name 10.203.55.0/24__Pod-050_SvcVM
+vlan 56
+  name 10.203.56.0/24__Pod-050_Uplink1
+vlan 57
+  name 10.203.57.0/24__Pod-050_Uplink2
+vlan 58
+  name 10.203.58.0/24__Pod-050_RTEP
+vlan 59
+  name 10.203.59.0/24__Pod-050_VMNet
+vlan 60
+  name 10.203.60.0/24__Pod-060_Mgmt
+vlan 61
+  name 10.203.61.0/24__Pod-060_vMotion
+vlan 62
+  name 10.203.62.0/24__Pod-060_vSAN
+vlan 63
+  name 10.203.63.0/24__Pod-060_IPStorag
+vlan 64
+  name 10.203.64.0/24__Pod-060_Overlay
+vlan 65
+  name 10.203.65.0/24__Pod-060_SvcVM
+vlan 66
+  name 10.203.66.0/24__Pod-060_Uplink1
+vlan 67
+  name 10.203.67.0/24__Pod-060_Uplink2
+vlan 68
+  name 10.203.68.0/24__Pod-060_RTEP
+vlan 69
+  name 10.203.69.0/24__Pod-060_VMNet
+vlan 70
+  name 10.203.70.0/24__Pod-070_Mgmt
+vlan 71
+  name 10.203.71.0/24__Pod-070_vMotion
+vlan 72
+  name 10.203.72.0/24__Pod-070_vSAN
+vlan 73
+  name 10.203.73.0/24__Pod-070_IPStorag
+vlan 74
+  name 10.203.74.0/24__Pod-070_Overlay
+vlan 75
+  name 10.203.75.0/24__Pod-070_SvcVM
+vlan 76
+  name 10.203.76.0/24__Pod-070_Uplink1
+vlan 77
+  name 10.203.77.0/24__Pod-070_Uplink2
+vlan 78
+  name 10.203.78.0/24__Pod-070_RTEP
+vlan 79
+  name 10.203.79.0/24__Pod-070_VMNet
+vlan 80
+  name 10.203.80.0/24__Pod-080_Mgmt
+vlan 81
+  name 10.203.81.0/24__Pod-080_vMotion
+vlan 82
+  name 10.203.82.0/24__Pod-080_vSAN
+vlan 83
+  name 10.203.83.0/24__Pod-080_IPStorag
+vlan 84
+  name 10.203.84.0/24__Pod-080_Overlay
+vlan 85
+  name 10.203.85.0/24__Pod-080_SvcVM
+vlan 86
+  name 10.203.86.0/24__Pod-080_Uplink1
+vlan 87
+  name 10.203.87.0/24__Pod-080_Uplink2
+vlan 88
+  name 10.203.88.0/24__Pod-080_RTEP
+vlan 89
+  name 10.203.89.0/24__Pod-080_VMNet
+vlan 90
+  name 10.203.90.0/24__Pod-090_Mgmt
+vlan 91
+  name 10.203.91.0/24__Pod-090_vMotion
+vlan 92
+  name 10.203.92.0/24__Pod-090_vSAN
+vlan 93
+  name 10.203.93.0/24__Pod-090_IPStorag
+vlan 94
+  name 10.203.94.0/24__Pod-090_Overlay
+vlan 95
+  name 10.203.95.0/24__Pod-090_SvcVM
+vlan 96
+  name 10.203.96.0/24__Pod-090_Uplink1
+vlan 97
+  name 10.203.97.0/24__Pod-090_Uplink2
+vlan 98
+  name 10.203.98.0/24__Pod-090_RTEP
+vlan 99
+  name 10.203.99.0/24__Pod-090_VMNet
+vlan 100
+  name 10.203.100.0/24_Pod-100_Mgmt
+vlan 101
+  name 10.203.101.0/24_Pod-100_vMotion
+vlan 102
+  name 10.203.102.0/24_Pod-100_vSAN
+vlan 103
+  name 10.203.103.0/24_Pod-100_IPStorag
+vlan 104
+  name 10.203.104.0/24_Pod-100_Overlay
+vlan 105
+  name 10.203.105.0/24_Pod-100_SvcVM
+vlan 106
+  name 10.203.106.0/24_Pod-100_Uplink1
+vlan 107
+  name 10.203.107.0/24_Pod-100_Uplink2
+vlan 108
+  name 10.203.108.0/24_Pod-100_RTEP
+vlan 109
+  name 10.203.109.0/24_Pod-100_VMNet
+vlan 110
+  name 10.203.110.0/24_Pod-110_Mgmt
+vlan 111
+  name 10.203.111.0/24_Pod-110_vMotion
+vlan 112
+  name 10.203.112.0/24_Pod-110_vSAN
+vlan 113
+  name 10.203.113.0/24_Pod-110_IPStorag
+vlan 114
+  name 10.203.114.0/24_Pod-110_Overlay
+vlan 115
+  name 10.203.115.0/24_Pod-110_SvcVM
+vlan 116
+  name 10.203.116.0/24_Pod-110_Uplink1
+vlan 117
+  name 10.203.117.0/24_Pod-110_Uplink2
+vlan 118
+  name 10.203.118.0/24_Pod-110_RTEP
+vlan 119
+  name 10.203.119.0/24_Pod-110_VMNet
+vlan 120
+  name 10.203.120.0/24_Pod-120_Mgmt
+vlan 121
+  name 10.203.121.0/24_Pod-120_vMotion
+vlan 122
+  name 10.203.122.0/24_Pod-120_vSAN
+vlan 123
+  name 10.203.123.0/24_Pod-120_IPStorag
+vlan 124
+  name 10.203.124.0/24_Pod-120_Overlay
+vlan 125
+  name 10.203.125.0/24_Pod-120_SvcVM
+vlan 126
+  name 10.203.126.0/24_Pod-120_Uplink1
+vlan 127
+  name 10.203.127.0/24_Pod-120_Uplink2
+vlan 128
+  name 10.203.128.0/24_Pod-120_RTEP
+vlan 129
+  name 10.203.129.0/24_Pod-120_VMNet
+vlan 130
+  name 10.203.130.0/24_Pod-130_Mgmt
+vlan 131
+  name 10.203.131.0/24_Pod-130_vMotion
+vlan 132
+  name 10.203.132.0/24_Pod-130_vSAN
+vlan 133
+  name 10.203.133.0/24_Pod-130_IPStorag
+vlan 134
+  name 10.203.134.0/24_Pod-130_Overlay
+vlan 135
+  name 10.203.135.0/24_Pod-130_SvcVM
+vlan 136
+  name 10.203.136.0/24_Pod-130_Uplink1
+vlan 137
+  name 10.203.137.0/24_Pod-130_Uplink2
+vlan 138
+  name 10.203.138.0/24_Pod-130_RTEP
+vlan 139
+  name 10.203.139.0/24_Pod-130_VMNet
+vlan 140
+  name 10.203.140.0/24_Pod-140_Mgmt
+vlan 141
+  name 10.203.141.0/24_Pod-140_vMotion
+vlan 142
+  name 10.203.142.0/24_Pod-140_vSAN
+vlan 143
+  name 10.203.143.0/24_Pod-140_IPStorag
+vlan 144
+  name 10.203.144.0/24_Pod-140_Overlay
+vlan 145
+  name 10.203.145.0/24_Pod-140_SvcVM
+vlan 146
+  name 10.203.146.0/24_Pod-140_Uplink1
+vlan 147
+  name 10.203.147.0/24_Pod-140_Uplink2
+vlan 148
+  name 10.203.148.0/24_Pod-140_RTEP
+vlan 149
+  name 10.203.149.0/24_Pod-140_VMNet
+vlan 150
+  name 10.203.150.0/24_Pod-150_Mgmt
+vlan 151
+  name 10.203.151.0/24_Pod-150_vMotion
+vlan 152
+  name 10.203.152.0/24_Pod-150_vSAN
+vlan 153
+  name 10.203.153.0/24_Pod-150_IPStorag
+vlan 154
+  name 10.203.154.0/24_Pod-150_Overlay
+vlan 155
+  name 10.203.155.0/24_Pod-150_SvcVM
+vlan 156
+  name 10.203.156.0/24_Pod-150_Uplink1
+vlan 157
+  name 10.203.157.0/24_Pod-150_Uplink2
+vlan 158
+  name 10.203.158.0/24_Pod-150_RTEP
+vlan 159
+  name 10.203.159.0/24_Pod-150_VMNet
+vlan 160
+  name 10.203.160.0/24_Pod-160_Mgmt
+vlan 161
+  name 10.203.161.0/24_Pod-160_vMotion
+vlan 162
+  name 10.203.162.0/24_Pod-160_vSAN
+vlan 163
+  name 10.203.163.0/24_Pod-160_IPStorag
+vlan 164
+  name 10.203.164.0/24_Pod-160_Overlay
+vlan 165
+  name 10.203.165.0/24_Pod-160_SvcVM
+vlan 166
+  name 10.203.166.0/24_Pod-160_Uplink1
+vlan 167
+  name 10.203.167.0/24_Pod-160_Uplink2
+vlan 168
+  name 10.203.168.0/24_Pod-160_RTEP
+vlan 169
+  name 10.203.169.0/24_Pod-160_VMNet
+vlan 170
+  name 10.203.170.0/24_Pod-170_Mgmt
+vlan 171
+  name 10.203.171.0/24_Pod-170_vMotion
+vlan 172
+  name 10.203.172.0/24_Pod-170_vSAN
+vlan 173
+  name 10.203.173.0/24_Pod-170_IPStorag
+vlan 174
+  name 10.203.174.0/24_Pod-170_Overlay
+vlan 175
+  name 10.203.175.0/24_Pod-170_SvcVM
+vlan 176
+  name 10.203.176.0/24_Pod-170_Uplink1
+vlan 177
+  name 10.203.177.0/24_Pod-170_Uplink2
+vlan 178
+  name 10.203.178.0/24_Pod-170_RTEP
+vlan 179
+  name 10.203.179.0/24_Pod-170_VMNet
+vlan 180
+  name 10.203.180.0/24_Pod-180_Mgmt
+vlan 181
+  name 10.203.181.0/24_Pod-180_vMotion
+vlan 182
+  name 10.203.182.0/24_Pod-180_vSAN
+vlan 183
+  name 10.203.183.0/24_Pod-180_IPStorag
+vlan 184
+  name 10.203.184.0/24_Pod-180_Overlay
+vlan 185
+  name 10.203.185.0/24_Pod-180_SvcVM
+vlan 186
+  name 10.203.186.0/24_Pod-180_Uplink1
+vlan 187
+  name 10.203.187.0/24_Pod-180_Uplink2
+vlan 188
+  name 10.203.188.0/24_Pod-180_RTEP
+vlan 189
+  name 10.203.189.0/24_Pod-180_VMNet
+vlan 190
+  name 10.203.190.0/24_Pod-190_Mgmt
+vlan 191
+  name 10.203.191.0/24_Pod-190_vMotion
+vlan 192
+  name 10.203.192.0/24_Pod-190_vSAN
+vlan 193
+  name 10.203.193.0/24_Pod-190_IPStorag
+vlan 194
+  name 10.203.194.0/24_Pod-190_Overlay
+vlan 195
+  name 10.203.195.0/24_Pod-190_SvcVM
+vlan 196
+  name 10.203.196.0/24_Pod-190_Uplink1
+vlan 197
+  name 10.203.197.0/24_Pod-190_Uplink2
+vlan 198
+  name 10.203.198.0/24_Pod-190_RTEP
+vlan 199
+  name 10.203.199.0/24_Pod-190_VMNet
+vlan 200
+  name 10.203.200.0/24_Pod-200_Mgmt
+vlan 201
+  name 10.203.201.0/24_Pod-200_vMotion
+vlan 202
+  name 10.203.202.0/24_Pod-200_vSAN
+vlan 203
+  name 10.203.203.0/24_Pod-200_IPStorag
+vlan 204
+  name 10.203.204.0/24_Pod-200_Overlay
+vlan 205
+  name 10.203.205.0/24_Pod-200_SvcVM
+vlan 206
+  name 10.203.206.0/24_Pod-200_Uplink1
+vlan 207
+  name 10.203.207.0/24_Pod-200_Uplink2
+vlan 208
+  name 10.203.208.0/24_Pod-200_RTEP
+vlan 209
+  name 10.203.209.0/24_Pod-200_VMNet
+vlan 210
+  name 10.203.210.0/24_Pod-210_Mgmt
+vlan 211
+  name 10.203.211.0/24_Pod-210_vMotion
+vlan 212
+  name 10.203.212.0/24_Pod-210_vSAN
+vlan 213
+  name 10.203.213.0/24_Pod-210_IPStorag
+vlan 214
+  name 10.203.214.0/24_Pod-210_Overlay
+vlan 215
+  name 10.203.215.0/24_Pod-210_SvcVM
+vlan 216
+  name 10.203.216.0/24_Pod-210_Uplink1
+vlan 217
+  name 10.203.217.0/24_Pod-210_Uplink2
+vlan 218
+  name 10.203.218.0/24_Pod-210_RTEP
+vlan 219
+  name 10.203.219.0/24_Pod-210_VMNet
+vlan 220
+  name 10.203.220.0/24_Pod-220_Mgmt
+vlan 221
+  name 10.203.221.0/24_Pod-220_vMotion
+vlan 222
+  name 10.203.222.0/24_Pod-220_vSAN
+vlan 223
+  name 10.203.223.0/24_Pod-220_IPStorag
+vlan 224
+  name 10.203.224.0/24_Pod-220_Overlay
+vlan 225
+  name 10.203.225.0/24_Pod-220_SvcVM
+vlan 226
+  name 10.203.226.0/24_Pod-220_Uplink1
+vlan 227
+  name 10.203.227.0/24_Pod-220_Uplink2
+vlan 228
+  name 10.203.228.0/24_Pod-220_RTEP
+vlan 229
+  name 10.203.229.0/24_Pod-220_VMNet
+vlan 230
+  name 10.203.230.0/24_Pod-230_Mgmt
+vlan 231
+  name 10.203.231.0/24_Pod-230_vMotion
+vlan 232
+  name 10.203.232.0/24_Pod-230_vSAN
+vlan 233
+  name 10.203.233.0/24_Pod-230_IPStorag
+vlan 234
+  name 10.203.234.0/24_Pod-230_Overlay
+vlan 235
+  name 10.203.235.0/24_Pod-230_SvcVM
+vlan 236
+  name 10.203.236.0/24_Pod-230_Uplink1
+vlan 237
+  name 10.203.237.0/24_Pod-230_Uplink2
+vlan 238
+  name 10.203.238.0/24_Pod-230_RTEP
+vlan 239
+  name 10.203.239.0/24_Pod-230_VMNet
+vlan 240
+  name 10.203.240.0/24_Pod-240_Mgmt
+vlan 241
+  name 10.203.241.0/24_Pod-240_vMotion
+vlan 242
+  name 10.203.242.0/24_Pod-240_vSAN
+vlan 243
+  name 10.203.243.0/24_Pod-240_IPStorag
+vlan 244
+  name 10.203.244.0/24_Pod-240_Overlay
+vlan 245
+  name 10.203.245.0/24_Pod-240_SvcVM
+vlan 246
+  name 10.203.246.0/24_Pod-240_Uplink1
+vlan 247
+  name 10.203.247.0/24_Pod-240_Uplink2
+vlan 248
+  name 10.203.248.0/24_Pod-240_RTEP
+vlan 249
+  name 10.203.249.0/24_Pod-240_VMNet
+spanning-tree vlan 1-3967,4048-4093 priority 24576
+
+
+interface Vlan1
+
+interface Vlan2
+  description Lab-Routers
+  no shutdown
+  ip address 10.203.0.1/24
+  ipv6 address fd00::1/64
+  no ip ospf passive-interface
+  ip ospf priority 255
+  ip router ospf ospfv2 area 0.0.0.0
+  no ospfv3 passive-interface
+  ospfv3 priority 255
+  ipv6 router ospfv3 ospfv3 area 0.0.0.0
+
+interface Vlan3
+  description Network Management
+  no shutdown
+  ip address 10.203.1.1/24
+
+interface Vlan5
+  description ESXi Management
+  no shutdown
+  ip address 10.203.5.1/24
+
+interface Vlan6
+  description vMotion
+  no shutdown
+  mtu 9216
+  ip address 10.203.6.1/23
+
+interface Vlan8
+  description IP Storage #1
+  no shutdown
+  mtu 9216
+  ip address 10.203.8.1/24
+
+interface Vlan9
+  description IP Storage #2
+  no shutdown
+  mtu 9216
+  ip address 10.203.9.1/24
+
+interface Ethernet1/1
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/2
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/3
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/4
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/5
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/6
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/7
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/8
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/9
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/10
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/11
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/12
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/13
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/14
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/15
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/16
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/17
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/18
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/19
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/20
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/21
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/22
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/23
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/24
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/25
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/26
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/27
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/28
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/29
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/30
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/31
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/32
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/33
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/34
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/35
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/36
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/37
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/38
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/39
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/40
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/41
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/42
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/43
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/44
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/45
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/46
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/47
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/48
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/49
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/50
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/51
+  description *** 802.1Q Trunk To NetLab Devices ***
+  switchport mode trunk
+  spanning-tree port type edge trunk
+
+interface Ethernet1/52
+  description Uplink to Network Core
+  no switchport
+  ip address 10.0.0.2/30
+
+interface mgmt0
+  ip address ***REMOVED_MGMT_IP_ADDRESS***
+
+interface loopback0
+  ip address 10.203.255.1/32
+line console
+line vty
+boot kickstart bootflash:/n3000-uk9-kickstart.6.0.2.U3.5.bin 
+boot system bootflash:/n3000-uk9.6.0.2.U3.5.bin 
+router ospf ospfv2
+  router-id 10.203.255.1
+  default-information originate
+  log-adjacency-changes
+  passive-interface default
+router ospfv3 ospfv3
+  router-id 10.203.255.1
+  log-adjacency-changes
+  address-family ipv6 unicast
+    default-information originate
+  passive-interface default
+router bgp 65000
+  neighbor fd00::a remote-as 65010
+    description Pod-010-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::14 remote-as 65020
+    description Pod-020-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::1e remote-as 65030
+    description Pod-030-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::28 remote-as 65040
+    description Pod-040-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::32 remote-as 65050
+    description Pod-050-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::3c remote-as 65060
+    description Pod-060-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::46 remote-as 65070
+    description Pod-070-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::50 remote-as 65080
+    description Pod-080-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::5a remote-as 65090
+    description Pod-090-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::64 remote-as 65100
+    description Pod-100-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::6e remote-as 65110
+    description Pod-110-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::78 remote-as 65120
+    description Pod-120-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::82 remote-as 65130
+    description Pod-130-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::8c remote-as 65140
+    description Pod-140-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::96 remote-as 65150
+    description Pod-150-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::a0 remote-as 65160
+    description Pod-160-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::aa remote-as 65170
+    description Pod-170-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::b4 remote-as 65180
+    description Pod-180-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::be remote-as 65190
+    description Pod-190-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::c8 remote-as 65200
+    description Pod-200-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::d2 remote-as 65210
+    description Pod-210-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::dc remote-as 65220
+    description Pod-220-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::e6 remote-as 65230
+    description Pod-230-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor fd00::f0 remote-as 65240
+    description Pod-240-Router (IPv6)
+    address-family ipv6 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.10 remote-as 65010
+    description Pod-010-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.20 remote-as 65020
+    description Pod-020-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.30 remote-as 65030
+    description Pod-030-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.40 remote-as 65040
+    description Pod-040-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.50 remote-as 65050
+    description Pod-050-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.60 remote-as 65060
+    description Pod-060-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.70 remote-as 65070
+    description Pod-070-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.80 remote-as 65080
+    description Pod-080-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.90 remote-as 65090
+    description Pod-090-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.100 remote-as 65100
+    description Pod-100-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.110 remote-as 65110
+    description Pod-110-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.120 remote-as 65120
+    description Pod-120-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.130 remote-as 65130
+    description Pod-130-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.140 remote-as 65140
+    description Pod-140-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.150 remote-as 65150
+    description Pod-150-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.160 remote-as 65160
+    description Pod-160-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.170 remote-as 65170
+    description Pod-170-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.180 remote-as 65180
+    description Pod-180-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.190 remote-as 65190
+    description Pod-190-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.200 remote-as 65200
+    description Pod-200-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.210 remote-as 65210
+    description Pod-210-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.220 remote-as 65220
+    description Pod-220-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.230 remote-as 65230
+    description Pod-230-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+  neighbor 10.203.0.240 remote-as 65240
+    description Pod-240-Router (IPv4)
+    address-family ipv4 unicast
+      send-community
+      default-originate
+ip route 0.0.0.0/0 10.0.0.1
+ip route 10.203.0.0/16 Null0 name BlackHole 250
+ip route 10.204.0.0/16 Null0 name BlackHole 250
+ip source loopback0 icmp-errors

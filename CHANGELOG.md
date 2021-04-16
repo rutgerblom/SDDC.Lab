@@ -129,3 +129,12 @@
 - The generated Pod documentation will now contain information on whether NSX-T Edge was deployed or not.
 - Converted module references within prepareISOInstaller.yml, deployVc.yml, and deployDNSServer.yml to use FQCNs (ansible.posix.mount).
 - Updated project documentation regarding the ansible.posix collection which is now required by some playbooks. Install this collection by running: **ansible-galaxy collection install ansible.posix** on your Ansible controller.
+
+## Dev-v3.0.0 15-APRIL-2021
+
+### Added by Luis Chanu
+
+- Added additional documentation around Pod networking to the README.md file.
+- Created Pod Logical Networking Overview network diagram to clearly show the networking components included in a Pod deployment.
+- Added a santized Cisco Nexus 3048 running configuration for users to use as reference.
+- Added table of switch configurations to the FirstPod.md document.

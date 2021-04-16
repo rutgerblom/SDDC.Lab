@@ -20,7 +20,14 @@
 * [Start your Pod deployment](#Start-your-Pod-deployment)
 * [Access your Pod's components](#Access-your-Pod's-components)
 
-## Configure your physical network (TBD)
+## Configure your network
+For detailed information regarding the Pod networking, please see the README file.
+
+As setting up the physical networking is one area where many of our users run into issues, we are providing a sample configuration from a working environment.  The configuration is provided "as-is", without any support, warranty, or guarantees.  The configuration may require additional modifications for your environment.
+
+| Manufacture | Switch Model | Configuration File |
+|-------------|--------------|--------------------|
+| Cisco Systems | [Nexus 3048](https://www.cisco.com/c/en/us/products/collateral/switches/nexus-3000-series-switches/data_sheet_c78-685363.html?dtid=osscdc000283) | [Cisco Nexus 3048 Configuration](misc/Cisco_Nexus-3048_Running-Configuration) |
 
 ## Configure your physical ESXi host(s)
 The scripts support deploying Pods on a standalone ESXi host or on ESXi managed by vCenter. ESXi/vCenter must be on version 6.7 or newer. Regardless of deployment target you need to make sure that the following is availble to the ESXi host(s):
