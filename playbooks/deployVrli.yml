@@ -205,6 +205,24 @@
         - Deploy.Product.vRLI == true
         - vrli_check.status != 200
 
+    - name: Configure NTP
+      ansible.builtin.uri:
+        url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/time/config
+        validate_certs: no
+        method: PUT
+        timeout: 240
+        headers:
+          Authorization: "Bearer {{ vrli_session.json.sessionId }}"
+        body:
+          timeReference: NTP_SERVER
+          ntpServers:
+            - "{{ Common.NTP.Server1.IPv4 }}"
+        body_format: json
+        status_code: 200
+      when:
+        - Deploy.Product.vRLI == true
+        - vrli_check.status != 200
+
     - name: Write annotation on the vRLI VM
       community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
