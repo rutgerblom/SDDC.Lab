@@ -97,6 +97,66 @@ The following are recommendations based on our experience with deploying Pods:
 
 * Add installation media to the corresponding directories in the Software Library (/Software)
 
+## Networking
+The network configuration is where many users experience issues with the setup of the SDDC.Lab solution.  For that reason, the focus of this section is to give a deep dive into how the SDDC.Lab solution "connects" to the physical network, and what networking components it requires.  We will also give overviews of how the network connectivity is different if you're running:
+* 1 Physical Server
+* 2 Physical Servers
+* 3 (or more) Physical Servers
+
+### Logical Networking Overview
+Before we dive into the physical network environment, it's important to understand logically how everything is configured and connected.  This is the **KEY** to understanding how SDDC.Lab works from a networking perspective.
+
+Each SDDC.Lab that is deployed is referred to as a Pod.  Every Pod is assigned a number between 10-240 which is evenly divisble by 10.  So, valid Pod numbers include 10, 20, 30, ..., 220, 230, and 240.  The Pod number drives **ALL** networking elements used by that lab, includng, VLAN IDs, IP networks (IPv4 and IPv6), and Autonomous System Numbers (ASNx).  This ensures that no duplicate networking components exist between any of the Pods.
+
+At the heart of each Pod is a software-based [VyOS](https://vyos.io/) router, which we call the Pod-Router.  The Pod-Router provides these main functions:
+1. Connectivity to the physical environment
+2. The gateway interfaces for the various SDDC.Lab networks
+
+Connectivity to the physical environment is achieved via the Pod-Router's eth0 interface.  This interface is a an untagged interface, and is connected to the "Lab-Routers" portgroup (discussed later).  It's over this interface that the Pod-Router peers with other deployed Pods and the physical environment.
+
+The Pod-Router provides gateways services for all of the SDDC.Lab's networks via it's eth1 interface.  Eth1 is configured as a tagged interface, and a unique layer-3 sub-interface (VyOS calls them vif's) is created for each of the SDDC.Lab networks.  These sub-interfaces act as the IPv4/IPv6 gateway for its respective SDDC.Lab network.
+
+Each Pod is comprised of ten (10) SDDC.Lab networks, numbered 0 through 9.  These SDDC.Lab network numbers are added to the Pod number to create unique VLAN IDs for each Pod.  This explains why the Pod Numbers are divisible by 10.  Below are the SDDC.Lab networks that are deployed within each Pod (Pod Number 100 shown):
+
+| Pod.Number | Network Number | VLAN ID |    Description    |
+|------------|----------------|---------|-------------------|
+|    100     |       0        |   100   | Management (ESXi, NSX-T Edges, etc.) |
+|    100     |       1        |   101   | vMotion |
+|    100     |       2        |   102   | vSAN |
+|    100     |       3        |   103   | IPStorage |
+|    100     |       4        |   104   | Overlay Transport (i.e. GENEVE Traffic) |
+|    100     |       5        |   105   | Service VM Management Interfaces |
+|    100     |       6        |   106   | NSX-T Edge Uplink #1 |
+|    100     |       7        |   107   | NSX-T Edge Uplink #2 |
+|    100     |       8        |   108   | Remote Tunnel Endpoint (RTEP) |
+|    100     |       9        |   109   | VM Network |
+
+In order to be able to deploy multiple Pods, VLAN ID's 10-249 should be reserved for SDDC.Lab use.
+
+Here is a network diagram showing the Pod Logical Networking described above:
+![PodLogicalNetworkingOverview](images/Pod_Logical_Networking_Overview_001.png)
+
+### Physical Networking Overview
+When we refer to physical networking, we are referring to the "NetLab-L3-Switch" in the network diagram shown above, along with the "Lab-Routers" portgroup to which it connects.  The "Lab-Routers" portgroup is the central "meet-me" network segment which all Pods connect to.  It's here where the various Pods establish OSPFv2, OSPFv3, and BGP neighbor peerings and share routes.  Because OSPF uses multicast to discovery neighbors, there is no additional configuration required for it.  BGP on the other hand, by default, is only configured to peer with the "NetLab-L3-Switch".  This behavior can be changed by adding additional neighbors to the Pod Configuration file, but that is left up to the user to setup.  The routing protocols configured on the "NetLab-L3-Switch" should be configured to originate and advertise the default route to the [VyOS](https://vyos.io/) routers on the "Lab-Routers" segment.
+
+To ensure VLAN IDs created on the "NetLab-L3-Switch" do not pollute other networking environments, and to protect the production network from the SDDC.Lab environment, it's **HIGHLY** recommended that the following guidelines are followed:
+1. The VLAN IDs used by the SDDC.Lab environment (i.e. VLANs 10-249) should not be stretched to other switches outside of the SDDC.Lab environment.  Those VLANs should be local to the SDDC.Lab.
+2. The uplink from the "NetLab-L3-Switch" to the core network should be a **ROUTED** connection.
+3. Reachability between the SDDC.Lab environment and the Core Network should be via static routes, and **NOT** use any dynamic routing protocol.  This will ensure that SDDC.Lab routes don't accidentally "leak" into the production network.
+
+All interfaces, both virtual and physical, that are connected to the "Lab-Routers" segment should be configured with a 1500 byte MTU.  This ensures that OSPF neighbors can properly establish peering relationships.  That said, the "NetLab-L3-Switch" must be configured to support jumbo mtu frames, as multiple SDDC.Lab segments require jumbo frame support.  Jumbo frame size of 9000 (or higher) is suggested.
+
+### Physical Network Considerations - One ESXi Server
+When only one physical ESXi server is being used to run Pod workloads, as all workloads will be running on the same vSwitch on that host, there is no requirement to configure an Uplink on the SDDCLab_vDS switch to the physical environment.
+
+### Physical Network Considerations - Two ESXi Servers
+When exactly two physical ESXi servers are being used to run Pod workloads, you can use a cross-over cable to connect the SDDCLab_vDS vswitches together via their Uplinks.  This cable between the two servers to connect the SDDCLab_vDS Uplink interface from each server.
+
+### Physical Network Considerations - Three or more ESXi Servers
+When three or more physical ESXi servers are being used to run Pod workloads, you have two options:
+1. Use a single "NetLab-L3-Switch" and connect all servers to it (Suggested)
+2. If the number of available ports on the "NetLab-L3-Switch" is limited, you can use two switches as is shown in the Pod Logical Networking Overview above.  In this configuration, a layer-2 only switch is used for the SDDCLab_vDS vswitch, and a layer-3 switch is used to connect to the "Lab-Routers" segment.
+
 ## Usage
 
 To deploy a Pod:
