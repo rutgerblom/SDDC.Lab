@@ -261,12 +261,12 @@ A populated software library could look something like this:
             ├── Latest
             └── v1.1.8
 
-## Generate your Pod configuration (TBD)
+## Generate your Pod configuration
 You can now continue with generating your Pod configuration. This is the process where all of your settings are combined into a static configuration file. To generate this configuration file you run:
 
 * **ansible-playbook playbooks/createPodConfig.yml**
 
-The script needs to know where your **config.yml** is located:
+The script needs to know where your configuration file is located:
 
     In which directory is the Pod-Config file you want to have prepared located? [/home/ubuntu/SDDC.Lab/]: 
 
@@ -276,9 +276,11 @@ The script then wants to know the name of your configuration file:
 
     What is the name of the configuration file that you would like to have prepared? [config.yml]:
 
-If you have been following this guide, the filename will indeed be **config.yml** and you can press **\<Enter>** to accept the default.
+If you have been following this guide, the name of your configuration file will be **config.yml** and you can simply press **\<Enter>** here.
 
-The static configuration file is now generated. On average this process will take between 5-15 minutes, but may vary depending on the size of your lab, and the speed of your Ansible controller.
+The static configuration file is now generated. On average this process will take between 5-15 minutes, but may vary depending on the size of your lab, and the speed of your Ansible controller. 
+
+The static configuration file will have the following name format **Pod-\<SiteCode>-Config.yml**.
 
 ## Start your Pod deployment (TBD)
 
