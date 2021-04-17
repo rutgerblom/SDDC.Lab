@@ -138,3 +138,13 @@
 - Created Pod Logical Networking Overview network diagram to clearly show the networking components included in a Pod deployment.
 - Added a santized Cisco Nexus 3048 running configuration for users to use as reference.
 - Added table of switch configurations to the FirstPod.md document.
+
+## Dev-v3.0.0 16-APRIL-2021
+
+### Added by Rutger Blom
+
+- Added support for deploying vRealize Log Insight 8.4.
+- The following file was updated so please update your non-sample file:
+  - software_sample.yml
+- vRLI is now configured to use the NTP server specified in config.yml.
+- Updated the header in the generated Pod HTML documentation.
