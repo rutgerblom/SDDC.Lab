@@ -148,3 +148,10 @@
   - software_sample.yml
 - vRLI is now configured to use the NTP server specified in config.yml.
 - Updated the header in the generated Pod HTML documentation.
+
+## Dev-v3.0.0 18-APRIL-2021
+
+### Added by Rutger Blom
+
+- Added support for deploying NSX-T 3.1.2
+- Updates to the documentation.
