@@ -175,16 +175,16 @@ tr:nth-child(even) {
     <td><a href="ssh://root@{{ Nested_vCenter.Address.IPv6.Address }}:5480">ssh://root@{{ Nested_vCenter.Address.IPv6.Address }}:5480</a></td>
 {% endif %}{# Deploy.Setting.IPv6 #}  
   </tr>
-{% for item in Nested_ESXi.Host %}
+{% for Host in Nested_ESXi.Host %}
   <tr>
-    <td>ESXi Host Client {{ Nested_ESXi.Host[item].VMName }}</td>
+    <td>ESXi Host Client {{ Nested_ESXi.Host[Host].VMName }}</td>
     <td>{{ Deploy.Software.ESXi.Version }}</td>
-    <td><a href="https://{{ Nested_ESXi.Host[item].FQDN }}">https://{{ Nested_ESXi.Host[item].FQDN }}</a></td>
+    <td><a href="https://{{ Nested_ESXi.Host[Host].FQDN }}">https://{{ Nested_ESXi.Host[item].FQDN }}</a></td>
 {% if Deploy.Setting.IPv4 %}
-    <td><a href="https://{{ Nested_ESXi.Host[item].vmk.vmk0.Address.IPv4.Address }}">https://{{ Nested_ESXi.Host[item].vmk.vmk0.Address.IPv4.Address }}</a></td>
+    <td><a href="https://{{ Nested_ESXi.Host[Host].vmk.vmk0.Address.IPv4.Address }}">https://{{ Nested_ESXi.Host[item].vmk.vmk0.Address.IPv4.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
-    <td><a href="https://{{ Nested_ESXi.Host[item].vmk.vmk0.Address.IPv6.Address }}">https://{{ Nested_ESXi.Host[item].vmk.vmk0.Address.IPv6.Address }}</a></td>
+    <td><a href="https://{{ Nested_ESXi.Host[Host].vmk.vmk0.Address.IPv6.Address }}">https://{{ Nested_ESXi.Host[item].vmk.vmk0.Address.IPv6.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
 {% endfor %}{# Nested_ESXi.Host #}
