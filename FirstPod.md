@@ -54,9 +54,7 @@ version 2.10.x.
 **sudo pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython**
 
 1. The required Ansible modules
-**ansible-galaxy collection install community.general**
-**ansible-galaxy collection install community.vmware**
-**ansible-galaxy collection install ansible.posix**
+**ansible-galaxy collection install community.general community.vmware ansible.posix**
 
 1. The SDDC.Lab repository cloned to an appropriate location on your Ubuntu machine (e.g. $HOME) with:  
 **git clone https://github.com/rutgerblom/SDDC.Lab.git**
