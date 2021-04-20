@@ -155,3 +155,9 @@
 
 - Added support for deploying NSX-T 3.1.2
 - Updates to the documentation.
+
+## Dev-v3.0.0 19-APRIL-2021
+
+### Added by Luis Chanu
+
+- Modified createPodConfig.yml playbook to redisplay the Pod deployment command at the end of the playbook.
