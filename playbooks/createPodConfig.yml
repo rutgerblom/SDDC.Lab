@@ -94,9 +94,9 @@
       ansible.builtin.pause:
         seconds: 2
         prompt: |
-          =====================================================================================================
-          =============================================  NOTICE  ==============================================
-          =====================================================================================================
+          ====================================================================================================
+          =============================================  NOTICE  =============================================
+          ====================================================================================================
 
           Generating static configuration file for Pod {{ Pod.Number }}.   Please be patient, as this can take
           some time.  On average, it takes between 5-15 minutes to complete, but this time may vary depending
@@ -108,7 +108,7 @@
           Once prepared, you can deploy the Pod using the following command:
                           sudo ansible-playbook -e "@{{ lookup('env','HOME') }}/{{ PodConfigFile }}" deploy.yml
 
-          =====================================================================================================
+          ====================================================================================================
 
 
     - name: Delete existing temp configuration file if it exists
@@ -144,3 +144,16 @@
     - name: Move/Rename Temp Pod Config to Pod Config
       ansible.builtin.command: mv {{ lookup('env','HOME') }}/{{ PodTempConfigFile }} {{ lookup('env','HOME') }}/{{ PodConfigFile }}
       when: result.stat.exists
+
+    - name: Display command to deploy SDDC.Lab Pod
+      ansible.builtin.pause:
+        seconds: 2
+        prompt: |
+          ====================================================================================================
+          =============================================  NOTICE  =============================================
+          ====================================================================================================
+
+             You can deploy the Pod using the following command:
+                      sudo ansible-playbook -e "@{{ lookup('env','HOME') }}/{{ PodConfigFile }}" deploy.yml
+
+          ====================================================================================================
