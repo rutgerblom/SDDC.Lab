@@ -1,8 +1,9 @@
 Example on how to add 'A' and 'PTR' records to DNS using 'nsupdate':
 
 # nsupdate
-> update add newhost.sddc.lab 86400 A 10.203.100.10
-> update add 10.100.203.10.in-addr.arpa. 86400 PTR newhost.sddc.lab.
+> server 10.203.0.5
+> update add newhost.sddc.lab 3600 A 10.203.100.10
+> update add 10.100.203.10.in-addr.arpa. 3600 PTR newhost.sddc.lab.
 > send
 > quit
 
@@ -11,6 +12,11 @@ Example on how to add 'A' and 'PTR' records to DNS using 'nsupdate':
 Example on how to delete a record from DNS using 'nsupdate':
 
 # nsupdate
+> server 10.203.0.5
 > update delete oldhost.sddc.lab A
+> update delete 5.210.203.10.in-addr.arpa
 > send
 > quit
+
+
+
