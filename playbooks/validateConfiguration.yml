@@ -24,6 +24,32 @@
 ##
 
 ##
+## Verify SDDCLab.Version
+##
+    - name: Verifying SDDCLab.Version is 3
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: The Pod configuration file being used is not for SDDC.Lab version 3.
+                               Please update the configuration file to version 3 and run it through 
+                               the createPodConfig.yml playbook.
+
+               Detected Value: {{ SDDCLab.Version }}
+
+          =================================================================================================
+      when:
+        - SDDCLab.Version != 3
+
+    - name: Set flag if issue found with SDDCLab.Version
+      ansible.builtin.set_fact:
+        IssueFound: true
+      when:
+        - SDDCLab.Version != 3
+
+
+##
 ## Verify Deploy.Software.Router.Version
 ##
     - name: Verifying Deploy.Software.Router.Version is 'Latest'
