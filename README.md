@@ -95,6 +95,14 @@ The following are recommendations based on our experience with deploying Pods:
 
 * Add installation media to the corresponding directories in the Software Library (/Software)
 
+## Upgrade Considerations
+Consider the following when upgrading SDDC.Lab to a newer version
+
+* v2 to v3
+  * Clone the v3 branch to its own directory. For example: git clone https://github.com/rutgerblom/SDDC.Lab.git SDDC.Lab_v3
+  * Use copies of the v3 sample files and update these with your settings. Don't copy any v2 files into the v3 directory.
+
+
 ## Networking
 The network configuration is where many users experience issues with the setup of the SDDC.Lab solution.  For that reason, the focus of this section is to give a deep dive into how the SDDC.Lab solution "connects" to the physical network, and what networking components it requires.  We will also give overviews of how the network connectivity is different if you're running:
 * 1 Physical Server
