@@ -96,7 +96,7 @@ The following are recommendations based on our experience with deploying Pods:
 * Add installation media to the corresponding directories in the Software Library (/Software)
 
 ## Upgrade Considerations
-Consider the following when upgrading SDDC.Lab to a newer version
+Consider the following when upgrading SDDC.Lab to a newer version.
 
 * v2 to v3
   * Clone the v3 branch to its own directory. For example: git clone https://github.com/rutgerblom/SDDC.Lab.git SDDC.Lab_v3
