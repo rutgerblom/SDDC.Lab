@@ -60,11 +60,13 @@ The following are recommendations based on our experience with deploying Pods:
 * Hardware configuration of the physical ESXi host(s):
   * 2 CPUs (10 cores per CPU)
   * 320 GB RAM
-  * 1 TB storage capacity (preferably SSD). Either DAS or 10 Gbit NFS/iSCSI
+  * 1 TB storage capacity (preferably SSD). Either DAS or 10 Gbit NFS/iSCSI.  More space required if multiple labs are deployed.
 * Virtual hardware configuration of the Ansible controller VM:
-  * 1 CPUs
-  * 8 GB RAM
-  * 150 GB hard disk
+  * 1 vCPU (4 vCPUs recommended)
+  * 8 GB RAM (16GB RAM recommended)
+  * Hard disk
+    * 64 GB for Linux boot drive
+    * 300 GB for /Software (Recommend this be on it's own drive)
   * VMware Paravirtual SCSI controller
   * VMXNET 3 network adapter
 * Deploy the pre-configured DNS server for DNS name resolution within Pods instead of using your own.
@@ -100,6 +102,7 @@ Consider the following when upgrading SDDC.Lab to a newer version.
 
 * v2 to v3
   * Clone the v3 branch to its own directory. For example: git clone https://github.com/rutgerblom/SDDC.Lab.git SDDC.Lab_v3
+  * As additional PIP and Ansible modules are required by v3, please follow the instructions in the "Preparations" section to ensure all of the required software is installed on the Ansible controller.
   * Use copies of the v3 sample files and update these with your settings. Don't copy any v2 files into the v3 directory.
 
 
