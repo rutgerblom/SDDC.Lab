@@ -12,6 +12,8 @@
 * [Requirements](#Requirements)
   * [Recommendations](#Recommendations)
 * [Preparations](#Preparations)
+* [Networking](#Networking)
+* [IP Address Assignments](#IP-Address-Assignments)
 * [Usage](#Usage)
 * [Known Items](#Known-Items)
 * [More Information](#More-Information)
@@ -60,11 +62,13 @@ The following are recommendations based on our experience with deploying Pods:
 * Hardware configuration of the physical ESXi host(s):
   * 2 CPUs (10 cores per CPU)
   * 320 GB RAM
-  * 1 TB storage capacity (preferably SSD). Either DAS or 10 Gbit NFS/iSCSI
+  * 1 TB storage capacity (preferably SSD). Either DAS or 10 Gbit NFS/iSCSI.  More space required if multiple labs are deployed.
 * Virtual hardware configuration of the Ansible controller VM:
-  * 1 CPUs
-  * 8 GB RAM
-  * 150 GB hard disk
+  * 1 vCPU (4 vCPUs recommended)
+  * 8 GB RAM (16GB RAM recommended)
+  * Hard disk
+    * 64 GB for Linux boot disk
+    * 300 GB for /Software repository (Recommend this be on it's own disk)
   * VMware Paravirtual SCSI controller
   * VMXNET 3 network adapter
 * Deploy the pre-configured DNS server for DNS name resolution within Pods instead of using your own.
@@ -94,6 +98,15 @@ The following are recommendations based on our experience with deploying Pods:
   * sudo ansible-playbook utils/util_CreateSoftwareDir.yml
 
 * Add installation media to the corresponding directories in the Software Library (/Software)
+
+## Upgrade Considerations
+Consider the following when upgrading SDDC.Lab to a newer version.
+
+* v2 to v3
+  * Clone the v3 branch to its own directory. For example: git clone https://github.com/rutgerblom/SDDC.Lab.git SDDC.Lab_v3
+  * As additional PIP and Ansible modules are required by v3, please follow the instructions in the "Preparations" section to ensure all of the required software is installed on the Ansible controller.
+  * Use copies of the v3 sample files and update these with your settings. Don't copy any v2 files into the v3 directory.
+
 
 ## Networking
 The network configuration is where many users experience issues with the setup of the SDDC.Lab solution.  For that reason, the focus of this section is to give a deep dive into how the SDDC.Lab solution "connects" to the physical network, and what networking components it requires.  We will also give overviews of how the network connectivity is different if you're running:
@@ -154,6 +167,43 @@ When exactly two physical ESXi servers are being used to run Pod workloads, you 
 When three or more physical ESXi servers are being used to run Pod workloads, you have two options:
 1. Use a single "NetLab-L3-Switch" and connect all servers to it (Suggested)
 2. If the number of available ports on the "NetLab-L3-Switch" is limited, you can use two switches as is shown in the Pod Logical Networking Overview above.  In this configuration, a layer-2 only switch is used for the SDDCLab_vDS vswitch, and a layer-3 switch is used to connect to the "Lab-Routers" segment.
+
+## IP Address Assignments
+When a Pod is deployed, various components are deployed as part of that Pod.  Each of those components are connected to the Pod's Management subnet.  Here is a listing of those components along with their respective host IP address:
+
+| IPv4 Address | Component | Description | Part of Default Deployment |
+|-------------------|-----------|-------------|----------------------------|
+| 1 | Gateway | VyOS Router | Yes |
+| 2 | Reserved | Reserved for Future Use | |
+| 3 | Reserved | Reserved for Future Use | |
+| 4 | Reserved | Reserved for Future Use | |
+| 5 | vCenter | vCenter Appliance | Yes |
+| 6 | vRLI | vRealize Log Insight Appliance | Yes |
+| 7 | GM VIP | NSX-T Global Manager VIP (Future) | No |
+| 8 | GM1 | NSX-T Global Manager Node 1 (Future) | No |
+| 9 | GM2 | NSX-T Global Manager Node 2 (Future) | No |
+| 10 | GM3 | NSX-T Global Manager Node 3 (Future) | No |
+| 11 | LM VIP | NSX-T Local Manager VIP | No |
+| 12 | LM1 | NSX-T Local Manager Node 1 | Yes |
+| 13 | LM2 | NSX-T Local Manager Node 2 | No |
+| 14 | LM3 | NSX-T Local Manager Node 3 | No |
+| 15 | CSM | NSX-T Cloud Services Manager | No |
+| 16 | vRNI Platform | vRealize Network Insight Platform Appliance | Yes |
+| 17 | vRNI Collector | vRealize Network Insight Collector Node | Yes |
+| 18 | Reserved | Reserved for Future Use | |
+| 19 | Reserved | Reserved for Future Use | |
+| 20 | Reserved | Reserved for Future Use | |
+| 21 | Mgmt-1 | Nested ESXi Host in Management Cluster | No |
+| 22 | Mgmt-2 | Nested ESXi Host in Management Cluster | No |
+| 23 | Mgmt-3 | Nested ESXi Host in Management Cluster | No |
+| 31 | ComputeA-1 | Nested ESXi Host in Compute-A Cluster | Yes |
+| 32 | ComputeA-2 | Nested ESXi Host in Compute-A Cluster | Yes |
+| 33 | ComputeA-3 | Nested ESXi Host in Compute-A Cluster | Yes |
+| 91 | Edge-1 | Nested ESXi Host in Edge Cluster | Yes |
+| 92 | Edge-2 | Nested ESXi Host in Edge Cluster | Yes |
+| 93 | Edge-3 | Nested ESXi Host in Edge Cluster | Yes |
+| 253 | EdgeVM-02 | NSX-T Edge Transport Node 2 | Yes |
+| 254 | EdgeVM-01 | NSX-T Edge Transport Node 1 | Yes |
 
 ## Usage
 
