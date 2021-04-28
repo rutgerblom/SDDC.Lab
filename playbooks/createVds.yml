@@ -228,6 +228,7 @@
         portgroup_name: "{{ item.value.vmk.vmk1.PortGroup }}"
         dvswitch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         enable_vmotion: true
+        mtu: "{{ item.value.vmk.vmk1.MTU }}"
         network:
           type: 'static'
           ip_address: "{{ item.value.vmk.vmk1.Address.IPv4.Address }}"
@@ -266,6 +267,7 @@
         portgroup_name: "{{ item.value.vmk.vmk2.PortGroup }}"
         dvswitch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         enable_vsan: true
+        mtu: "{{ item.value.vmk.vmk2.MTU }}"
         network:
           type: 'static'
           ip_address: "{{ item.value.vmk.vmk2.Address.IPv4.Address }}"
@@ -285,6 +287,7 @@
         esxi_hostname: "{{ item.value.FQDN | lower }}"
         portgroup_name: "{{ item.value.vmk.vmk3.PortGroup }}"
         dvswitch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
+        mtu: "{{ item.value.vmk.vmk3.MTU }}"
         network:
           type: 'static'
           ip_address: "{{ item.value.vmk.vmk3.Address.IPv4.Address }}"
