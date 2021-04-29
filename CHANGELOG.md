@@ -163,3 +163,9 @@
 - Modified createPodConfig.yml playbook to redisplay the Pod deployment command at the end of the playbook.
 - Due to failure while preparing vSphere 7.0U2 host with NSX-T v3.1.2 due to RAM disk running out of space, increased RAM in config_sample.yml for all clusters to 17GB.  In reality, only needs to be on hosts being prepared for NSX-T, but changed all for consistency.
 
+## Dev-v3.0.0 28-APRIL-2021
+
+### Added by Rutger Blom
+
+- Added support for deploying vCenter 7.0U2A.
+- The configured MTU settings for the nested ESXi vmkernel adapters are now applied.
