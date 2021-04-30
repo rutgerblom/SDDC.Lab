@@ -139,7 +139,8 @@ nat {
 }
 {% endif %}
 protocols {
-    bgp {{ Nested_Router.BGP.ASN }} {
+    bgp {
+        local-as {{ Nested_Router.BGP.ASN }}
 {#################### "Physical" North-Bound Neighbors ####################}
 {% if Nested_Router.Protocol == "BGP" or Nested_Router.Protocol == "BOTH" %}{# Only include if BGP is to be used #}
 {% for Neighbor in Nested_Router.BGP.Neighbor.Routers %}
