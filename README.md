@@ -106,6 +106,7 @@ Consider the following when upgrading SDDC.Lab to a newer version.
   * Clone the v3 branch to its own directory. For example: git clone https://github.com/rutgerblom/SDDC.Lab.git SDDC.Lab_v3
   * As additional PIP and Ansible modules are required by v3, please follow the instructions in the "Preparations" section to ensure all of the required software is installed on the Ansible controller.
   * Use copies of the v3 sample files and update these with your settings. Don't copy any v2 files into the v3 directory.
+  * Remove the VyOS ISO file from your software library and let the router deployment script download the latest version of the rolling release.
 
 
 ## Networking
