@@ -169,3 +169,11 @@
 
 - Added support for deploying vCenter 7.0U2A.
 - The configured MTU settings for the nested ESXi vmkernel adapters are now applied.
+
+## Dev-v3.0.0 30-APRIL-2021
+
+### Added by Rutger Blom
+
+- Updated the VyOS Router configuration j2 template with the new syntax for BGP configuration.
+- A new version of the VyOS Rolling release is required so please remove or replace the following file with the latest version in your software library (if removed the router deployment script will download the latest version during deployment):
+  - vyos-rolling-latest.iso  
