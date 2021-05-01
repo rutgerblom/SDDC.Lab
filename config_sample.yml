@@ -47,7 +47,7 @@ Deploy:
     vCenter:                                              # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: vCenter                                    # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '7.00U2'                                   # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '7.00U2A'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-vCenter.conf"
       Installer: "{{ SiteCode }}-Installer-vCenter"
@@ -61,7 +61,7 @@ Deploy:
     NSXT:                                                 # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: NSXT                                       # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '3.1.1'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '3.1.2'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-NSXT.conf"
       Installer: "{{ SiteCode }}-Installer-NSXT"
@@ -75,7 +75,7 @@ Deploy:
     vRLI:                                                 # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: vRLI                                       # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '8.3.0'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '8.4.0'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-vRLI.conf"
       Installer: "{{ SiteCode }}-Installer-vRLI"
@@ -521,7 +521,7 @@ Nested_Clusters:
     vSAN: true
     Prep_NSX: false
     vsanDatastore: Management_vSAN
-    NSXT_TransportNodeProfile:
+    NSXT_TransportNodeProfile: TNP-ESXi-Hosts
     DeployHosts: false                                                                  # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
   Compute-A:
     DRS: true
@@ -537,7 +537,7 @@ Nested_Clusters:
     vSAN: true
     Prep_NSX: false
     vsanDatastore: Edge_vSAN
-    NSXT_TransportNodeProfile:
+    NSXT_TransportNodeProfile: TNP-ESXi-Hosts
     DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
 
 
