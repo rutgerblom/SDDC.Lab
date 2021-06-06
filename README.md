@@ -77,7 +77,7 @@ The following are recommendations based on our experience with deploying Pods:
 
 * Configure your physical network:
   * Create an Lab-Routers VLAN used as transit segment between your layer-3 switch and the Pod [VyOS](https://www.vyos.io/) router.
-  * Configure OSPFv2/OSPFv3 on the Lab-Routers segment.
+  * Configure routing (OSPFv2/OSPFv3/BGP/static) on the Lab-Routers segment.
   * Add the Pod VLANs to your layer-3 switch in case you are deploying the Pod to a vSphere cluster. 
 
 * Install the required software on your Ansible controller:
@@ -189,8 +189,8 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 13 | LM2 | NSX-T Local Manager Node 2 | No |
 | 14 | LM3 | NSX-T Local Manager Node 3 | No |
 | 15 | CSM | NSX-T Cloud Services Manager | No |
-| 16 | vRNI Platform | vRealize Network Insight Platform Appliance | Yes |
-| 17 | vRNI Collector | vRealize Network Insight Collector Node | Yes |
+| 16 | vRNI Platform | vRealize Network Insight Platform Appliance | No |
+| 17 | vRNI Collector | vRealize Network Insight Collector Node | No |
 | 18 | Reserved | Reserved for Future Use | |
 | 19 | Reserved | Reserved for Future Use | |
 | 20 | Reserved | Reserved for Future Use | |
