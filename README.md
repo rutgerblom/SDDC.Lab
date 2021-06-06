@@ -58,7 +58,7 @@ The following are the requirements for successful Pod deployments:
 ### Recommendations
 The following are recommendations based on our experience with deploying Pods:
 
-* Use a physical layer-3 switch with appropriate OSPF configuration matching the OSPF settings in your config.yml file. Dynamic routing between your Pods and your physical network will make for a better experience.
+* Use a physical layer-3 switch with appropriate OSPF/BGP configuration matching the OSPF/BGP settings in your config.yml file. Dynamic routing between your Pods and your physical network will make for a better experience.
 * Hardware configuration of the physical ESXi host(s):
   * 2 CPUs (10 cores per CPU)
   * 320 GB RAM
