@@ -58,7 +58,7 @@ The following are the requirements for successful Pod deployments:
 ### Recommendations
 The following are recommendations based on our experience with deploying Pods:
 
-* Use a physical layer-3 switch with appropriate OSPF configuration matching the OSPF settings in your config.yml file. Dynamic routing between your Pods and your physical network will make for a better experience.
+* Use a physical layer-3 switch with appropriate OSPF/BGP configuration matching the OSPF/BGP settings in your config.yml file. Dynamic routing between your Pods and your physical network will make for a better experience.
 * Hardware configuration of the physical ESXi host(s):
   * 2 CPUs (10 cores per CPU)
   * 320 GB RAM
@@ -189,8 +189,8 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 13 | LM2 | NSX-T Local Manager Node 2 | No |
 | 14 | LM3 | NSX-T Local Manager Node 3 | No |
 | 15 | CSM | NSX-T Cloud Services Manager | No |
-| 16 | vRNI Platform | vRealize Network Insight Platform Appliance | Yes |
-| 17 | vRNI Collector | vRealize Network Insight Collector Node | Yes |
+| 16 | vRNI Platform | vRealize Network Insight Platform Appliance | No |
+| 17 | vRNI Collector | vRealize Network Insight Collector Node | No |
 | 18 | Reserved | Reserved for Future Use | |
 | 19 | Reserved | Reserved for Future Use | |
 | 20 | Reserved | Reserved for Future Use | |
