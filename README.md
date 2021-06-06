@@ -77,7 +77,7 @@ The following are recommendations based on our experience with deploying Pods:
 
 * Configure your physical network:
   * Create an Lab-Routers VLAN used as transit segment between your layer-3 switch and the Pod [VyOS](https://www.vyos.io/) router.
-  * Configure OSPFv2/OSPFv3 on the Lab-Routers segment.
+  * Connfigure routing (OSPFv2/OSPFv3/BGP/static) on the Lab-Routers segment.
   * Add the Pod VLANs to your layer-3 switch in case you are deploying the Pod to a vSphere cluster. 
 
 * Install the required software on your Ansible controller:
