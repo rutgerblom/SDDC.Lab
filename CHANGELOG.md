@@ -192,4 +192,4 @@
 - Updated utils/util_CreateConfig.sh
 - Renamed all instances of "RouterUplink" to "Uplink" in config_sample.yml
 - IMPORTANT: Please recreate static Pod-Config files using createPodConfig.yml
-
+- Added "Net.<Intf>.MTU" and "NET.<Intf>.Description" fields to config_sample.yml
