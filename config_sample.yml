@@ -100,15 +100,15 @@ Common:
   DNS:
     Domain: SDDC.Lab                                                          # Domain - Default DNS Domain used by all nested components.
     Server1:
-      IPv4: "{{ Net.RouterUplink.IPv4.Network }}.5"                           # Replace this IP if using a different DNS server than the suggested .5  server in the Router Uplink segment (MUST support Dynamic DNS Updates)
-      IPv6: "{{ Net.RouterUplink.IPv6.Network }}::{{ '%04x'|format(5) }}"     # Replace this IP if using a different DNS server than the suggested ::5 server in the Router Uplink segment (MUST support Dynamic DNS Updates)
+      IPv4: "{{ Net.Uplink.IPv4.Network }}.5"                                 # Replace this IP if using a different DNS server than the suggested .5  server in the Router Uplink segment (MUST support Dynamic DNS Updates)
+      IPv6: "{{ Net.Uplink.IPv6.Network }}::{{ '%04x'|format(5) }}"           # Replace this IP if using a different DNS server than the suggested ::5 server in the Router Uplink segment (MUST support Dynamic DNS Updates)
     Server2:
       IPv4: 
       IPv6: 
   NTP:
     Server1:
-      IPv4: "{{ Net.RouterUplink.IPv4.Network }}.5"                           # Replace this IP if using a different NTP server than the suggested .5  server in the Router Uplink segment
-      IPv6: "{{ Net.RouterUplink.IPv6.Network }}::{{ '%04x'|format(5) }}"     # Replace this IP if using a different NTP server than the suggested ::5 server in the Router Uplink segment
+      IPv4: "{{ Net.Uplink.IPv4.Network }}.5"                                 # Replace this IP if using a different NTP server than the suggested .5  server in the Router Uplink segment
+      IPv6: "{{ Net.Uplink.IPv6.Network }}::{{ '%04x'|format(5) }}"           # Replace this IP if using a different NTP server than the suggested ::5 server in the Router Uplink segment
     Server2:
       IPv4: "{{ Net.Management.IPv4.Network }}.1"                             
       IPv6: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(1) }}"       
@@ -148,7 +148,7 @@ TargetConfig:
     TempFolder: "/tmp/{{ SiteCode }}"
     TemplateFolder: ../templates
     PortGroup:
-      RouterUplink: Lab-Routers                                               # RouterUplink - The portgroup for your Router Uplink segment 
+      Uplink: Lab-Routers                                                     # Uplink - The portgroup for your Router Uplink segment 
       Management:
         Name: "{{ SiteCode }}-Mgmt"
         VLAN: "{{ Net.Management.VLAN }}"
@@ -170,7 +170,7 @@ TargetConfig:
     TempFolder: "/tmp/{{ SiteCode }}"                                         # TempFolder - Temporary folder location used for temporary files created during the deployment process
     TemplateFolder: ../templates                                              # TemplateFolder - The location of the "templates" folder, relative to teh "playbooks" directory
     PortGroup:                                                                # Various PortGroups used during deployment
-      RouterUplink: Lab-Routers                                               # RouterUplink - PortGroup which the VyOS lab Pod router attaches it's northbound/outside interface to.
+      Uplink: Lab-Routers                                                     # Uplink - PortGroup which the VyOS lab Pod router attaches it's northbound/outside interface to.
       Management:                                                             # Management PortGroup Information
         Name: "{{ SiteCode }}-Mgmt"                                           # Name - Pod specific Management PortGroup name
         VLAN: "{{ Net.Management.VLAN }}"                                     # VLAN - Pod specific Management VLAN
@@ -198,7 +198,7 @@ Target:
   TempFolder:     "{{ TargetConfig[TargetConfig.Deployment].TempFolder }}"
   TemplateFolder: "{{ TargetConfig[TargetConfig.Deployment].TemplateFolder }}"
   PortGroup:
-    RouterUplink: "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].RouterUplink }}"
+    Uplink: "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].Uplink }}"
     Management:
       Name:       "{{ TargetConfig[TargetConfig.Deployment]['PortGroup']['Management'].Name }}"
       VLAN:       "{{ TargetConfig[TargetConfig.Deployment]['PortGroup']['Management'].VLAN }}"
@@ -207,7 +207,7 @@ Target:
       VLAN:       "{{ TargetConfig[TargetConfig.Deployment]['PortGroup']['Trunk'].VLAN }}"
 
 Net:
-  RouterUplink:
+  Uplink:
     Offset: None
     VLAN: None
     IPv4:
@@ -313,14 +313,14 @@ Nested_Router:
   Protocol: BOTH                                                      # Protocol - Options are "Static", "BGP", "OSPF" or "BOTH" (OSPF and BGP)
   Interface:
     Uplink:
-      PortGroup: "{{ Target.PortGroup.RouterUplink }}"
+      PortGroup: "{{ Target.PortGroup.Uplink }}"
       IPv4:
-        Address: "{{ Net.RouterUplink.IPv4.Network }}.{{ Pod.Number }}"
-        Prefix:  "{{ Net.RouterUplink.IPv4.Prefix }}"
-        Gateway: "{{ Net.RouterUplink.IPv4.Network }}.1"
+        Address: "{{ Net.Uplink.IPv4.Network }}.{{ Pod.Number }}"
+        Prefix:  "{{ Net.Uplink.IPv4.Prefix }}"
+        Gateway: "{{ Net.Uplink.IPv4.Network }}.1"
       IPv6:
-        Address: "{{ Net.RouterUplink.IPv6.Network }}::{{ '%04x'|format(Pod.Number|int) }}"
-        Prefix:  "{{ Net.RouterUplink.IPv6.Prefix }}"
+        Address: "{{ Net.Uplink.IPv6.Network }}::{{ '%04x'|format(Pod.Number|int) }}"
+        Prefix:  "{{ Net.Uplink.IPv6.Prefix }}"
     Management:
       VLAN: "{{ Net.Management.VLAN }}"
       IPv4:
@@ -410,7 +410,7 @@ Nested_Router:
         Address: "{{ Common.NTP.Server1.IPv6 }}"
   OSPF:
     Area: 0
-    RouterID: "{{ Net.RouterUplink.IPv4.Network }}.{{ Pod.Number }}"
+    RouterID: "{{ Net.Uplink.IPv4.Network }}.{{ Pod.Number }}"
   BGP:
     ASN: "{{ 65000 + Pod.Number }}"
     RouterID: "{{ Net.Management.IPv4.Network }}.1"
@@ -420,9 +420,9 @@ Nested_Router:
           ASN: 65000
           SendDefault: False
           IPv4:
-            Address: "{{ Net.RouterUplink.IPv4.Network }}.1"
+            Address: "{{ Net.Uplink.IPv4.Network }}.1"
           IPv6:
-            Address: "{{ Net.RouterUplink.IPv6.Network }}::{{ '%04x'|format(1) }}"
+            Address: "{{ Net.Uplink.IPv6.Network }}::{{ '%04x'|format(1) }}"
       NSXEdges:
         - Name: "{{ SiteCode }}-T0-EdgeVM-01-1"
           ASN: "{{ 65000 + Pod.Number + 1 }}"
@@ -487,7 +487,7 @@ Nested_DNSServer:
       CoresPerSocket: 1
       Memory: 2048
       DiskSize: 20
-      PortGroup: "{{ Target.PortGroup.RouterUplink }}"
+      PortGroup: "{{ Target.PortGroup.Uplink }}"
     Annotation: "{{ Common.Annotation }}"
   OS:
     Credential:
@@ -495,13 +495,13 @@ Nested_DNSServer:
       Password: "{{ Common.Password.Nested }}"
     Network:    
       IPv4:
-        Address: "{{ Net.RouterUplink.IPv4.Network }}.5" 
-        Prefix:  "{{ Net.RouterUplink.IPv4.Prefix }}"
-        Gateway: "{{ Net.RouterUplink.IPv4.Network }}.1"
+        Address: "{{ Net.Uplink.IPv4.Network }}.5" 
+        Prefix:  "{{ Net.Uplink.IPv4.Prefix }}"
+        Gateway: "{{ Net.Uplink.IPv4.Network }}.1"
         DNS: 8.8.8.8                                                                    # DNS server reachable by OS to resolve names.  Update as required for your environment.
       IPv6:
-        Address: "{{ Net.RouterUplink.IPv6.Network }}::{{ '%04x'|format(5) }}" 
-        Prefix:  "{{ Net.RouterUplink.IPv6.Prefix }}"
+        Address: "{{ Net.Uplink.IPv6.Network }}::{{ '%04x'|format(5) }}" 
+        Prefix:  "{{ Net.Uplink.IPv6.Prefix }}"
         DNS: 2001:4860:4860::8888
     Locale: en_US
     Keyboard:
