@@ -183,3 +183,13 @@
 ### Added by Rutger Blom & Luis Chanu
 
 - Released version 3 of the SDDC.Lab project.
+
+## Dev-v4.0.0 13-MAY-2021
+
+### Added by Luis Chanu
+
+- Updated FirstPod.MD file
+- Updated utils/util_CreateConfig.sh
+- Renamed all instances of "RouterUplink" to "Uplink" in config_sample.yml
+- IMPORTANT: Please recreate static Pod-Config files using createPodConfig.yml
+
