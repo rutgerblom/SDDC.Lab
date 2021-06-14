@@ -183,3 +183,14 @@
 ### Added by Rutger Blom & Luis Chanu
 
 - Released version 3 of the SDDC.Lab project.
+
+## Dev-v4.0.0 13-MAY-2021
+
+### Added by Luis Chanu
+
+- Updated FirstPod.MD file
+- Updated utils/util_CreateConfig.sh
+- Renamed all instances of "RouterUplink" to "Uplink" in config_sample.yml
+- IMPORTANT: Please recreate static Pod-Config files using createPodConfig.yml
+- Added "Net.<Intf>.MTU" and "NET.<Intf>.Description" fields to config_sample.yml
+- Added new "vyos_router_commands.j2" template to project (Name my change).  This is a work in progress of developing the VyOS configuration via the "SET" commands used by VyOS.

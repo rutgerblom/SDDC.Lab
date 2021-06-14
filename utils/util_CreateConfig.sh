@@ -107,8 +107,8 @@ if [[ $choice =~ ^[Yy]$ ]] ; then
     # Update config.yml with the user supplied settings 
     sed -i -e "19s/Number: 240/Number: $podnumber/g" $destinationpath
     sed -i -e "99s/Physical: VMware1\!/Physical: $physicalpassword/g" $destinationpath
-    sed -i -e "103s/IPv4: \"{{ Net.RouterUplink.IPv4.Network }}.5\"/IPv4: $dnsserver/g" $destinationpath
-    sed -i -e "110s/IPv4: \"{{ Net.RouterUplink.IPv4.Network }}.5\"/IPv4: $ntpserver/g" $destinationpath
+    sed -i -e "103s/IPv4: \"{{ Net.Uplink.IPv4.Network }}.5\"/IPv4: $dnsserver/g" $destinationpath
+    sed -i -e "110s/IPv4: \"{{ Net.Uplink.IPv4.Network }}.5\"/IPv4: $ntpserver/g" $destinationpath
     sed -i -e "135s/Deployment: Host/Deployment: $target/g" $destinationpath
     
     # Check deployment target so that we update "FQDN" at the right line number
@@ -131,11 +131,11 @@ if [[ $choice =~ ^[Yy]$ ]] ; then
         sed -i -e "166s/Datastore: Shared_VMs/Datastore: $datastore/g" $destinationpath
     fi
     
-    # Check deployment target so that we update "RouterUplink" at the right line number
+    # Check deployment target so that we update "Uplink" at the right line number
     if [[ $target == 'Host' ]] ; then
-        sed -i -e "151s/RouterUplink: Lab-Routers/RouterUplink: $portgroup/g" $destinationpath
+        sed -i -e "151s/Uplink: Lab-Routers/Uplink: $portgroup/g" $destinationpath
     else
-        sed -i -e "173s/RouterUplink: Lab-Routers/RouterUplink: $portgroup/g" $destinationpath
+        sed -i -e "173s/Uplink: Lab-Routers/Uplink: $portgroup/g" $destinationpath
     fi
     
     sed -i -e "313s/Protocol: BOTH /Protocol: $routing/g" $destinationpath

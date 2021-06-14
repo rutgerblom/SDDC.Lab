@@ -1,0 +1,237 @@
+{#
+ #     Filename: vyos_router_commands.j2
+ #   Written By: Luis Chanu
+ #  Description: This Jinja2 template develops the configuration commands for the VyOS router
+ #
+ # This configuration assumes the following:
+ #   1) eth0 is configured with an IP address
+ #   2) eth0 is reachable (May require a floating default static route)
+ #
+ #}
+
+##
+## Target Platform: VyOS
+##      Pod Number: {{ Pod.Number }}
+##     Router Name: {{ Nested_Router.Name }}
+##
+
+##
+## Router Name
+##
+set system host-name {{ Nested_Router.Name }}
+
+
+##
+## Loopback Interface Configuration
+##
+set interfaces loopback lo
+
+
+##
+## Set MTU on Physical Interfaces
+##
+set interfaces ethernet eth0 mtu {{ Net.Uplink.MTU }}
+set interfaces ethernet eth1 mtu 9000
+
+
+##
+## Physical Interface configuration (Including Enabling IPv6 Router Advertisements)
+##
+{% for InterfaceName, NetworkSettings in Nested_Router.Interface.items() %}
+{% if InterfaceName == "Uplink" %}{# Uplink is eth0 #}
+{% if Deploy.Settings.IPv4 %}
+set interfaces ethernet eth0 address {{ "{}/{}".format(NetworkSettings.IPv4.Address, NetworkSettings.IPv4.Prefix) | ipaddr('network/prefix') }}
+{% endif %}{# IPv4 #}
+{% if Deploy.Settings.IPv6 %}
+set interfaces ethernet eth0 address {{ "{}/{}".format(NetworkSettings.IPv6.Address, NetworkSettings.IPv6.Prefix) | ipaddr('network/prefix') }}
+set service router-advert interface eth0 prefix {{ "{}/{}".format(NetworkSettings.IPv6.Address, NetworkSettings.IPv6.Prefix) | ipaddr('network/prefix') }}
+{% endif %}{# IPv6 #}
+set interfaces ethernet eth0 description {{ Net[InterfaceName].Description }}
+{% else %}{# InterfaceName - If not 'Uplink', then it's a sub-interface on eth1 #}
+set interfaces ethernet eth1 vif {{ NetworkSettings.VLAN }} description {{ InterfaceName }}
+{% if Deploy.Settings.IPv4 %}
+set interfaces ethernet eth1 vif {{ NetworkSettings.VLAN }} address {{ "{}/{}".format(NetworkSettings.IPv4.Address, NetworkSettings.IPv4.Prefix) | ipaddr('network/prefix') }}
+{% endif %}{# IPv4 #}
+{% if Deploy.Settings.IPv6 %}
+set interfaces ethernet eth1 vif {{ NetworkSettings.VLAN }} address {{ "{}/{}".format(NetworkSettings.IPv6.Address, NetworkSettings.IPv6.Prefix) | ipaddr('network/prefix') }}
+set service router-advert interface {{ NetworkSettings.VLAN }} prefix {{ "{}/{}".format(NetworkSettings.IPv6.Address, NetworkSettings.IPv6.Prefix) | ipaddr('network/prefix') }}
+{% endif %}{# IPv6 #}
+set interfaces ethernet eth1 vif {{ NetworkSettings.VLAN }} mtu {{ Net[InterfaceName].MTU }}
+set interfaces ethernet eth1 vif {{ NetworkSettings.VLAN }} description {{ Net[InterfaceName].Description }}
+{% endfor %}{# InterfaceName #}
+
+
+##
+## IPv4 Static Routes (Deploy floating for all deployments as a safeguard)
+##
+{% if Deploy.Settings.IPv4 %}
+set protocols static route 0.0.0.0/0 next-hop {{ Nested_Router.Interface.Uplink.IPv4.Gateway }} distance 250
+{% endif %}{# Deploy.Setting.IPv4 #}
+
+
+##
+## IPv6 Static Routes
+##
+# None - Assume IPv6 router is learned via Router Advertisements on the local datalink
+
+
+##
+## BGP (IPv4 & IPv6)
+##
+{% if Nested_Router.Protocol == "BGP" or Nested_Router.Protocol == "BOTH" %}
+set protcols bgp local-as {{ Nested_Router.BGP.ASN }}
+set protocols bgp parameters router-id {{ Nested_Router.BGP.RouterID }}
+
+#
+# BGP Neighbors - Northbound (Peering ToR Routers)
+#
+{% for Router in Nested_Router.BGP.Neighbor.Routers %}
+{% if Deploy.Setting.IPv4 %}
+set protocols bgp neighbor {{ Router.IPv4.Address }} address-family ipv4-unicast {% if Router.SendDefault %}default-originate{% endif %}
+set protocols bgp neighbor {{ Router.IPv4.Address }} description {{ Router.Name }}
+set protocols bgp neighbor {{ Router.IPv4.Address }} remote-as {{ Router.ASN }}
+{% endif %}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 %}
+set protocols bgp neighbor {{ Router.IPv6.Address }} address-family ipv6-unicast {% if Router.SendDefault %}default-originate{% endif %}
+set protocols bgp neighbor {{ Router.IPv6.Address }} description {{ Router.Name }}
+set protocols bgp neighbor {{ Router.IPv6.Address }} remote-as {{ Router.ASN }}
+{% endif %}{# Deploy.Setting.IPv6 #}
+{% endfor %}{# Router #}
+
+#
+# BGP Neighbors - Southbound (Peering NSX-T Edge Service Routers)
+#
+{% for NSXEdge in Nested_Router.BGP.Neighbor.NSXEdges %}
+{% if Deploy.Setting.IPv4 %}
+set protocols bgp neighbor {{ NSXEdge.IPv4.Address }} address-family ipv4-unicast {% if NSXEdge.SendDefault %}default-originate{% endif %}
+set protocols bgp neighbor {{ NSXEdge.IPv4.Address }} description {{ NSXEdge.Name }}
+set protocols bgp neighbor {{ NSXEdge.IPv4.Address }} remote-as {{ NSXEdge.ASN }}
+{% endif %}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 %}
+set protocols bgp neighbor {{ NSXEdge.IPv6.Address }} address-family ipv6-unicast {% if NSXEdge.SendDefault %}default-originate{% endif %}
+set protocols bgp neighbor {{ NSXEdge.IPv6.Address }} description {{ NSXEdge.Name }}
+set protocols bgp neighbor {{ NSXEdge.IPv6.Address }} remote-as {{ NSXEdge.ASN }}
+{% endif %}{# Deploy.Setting.IPv6 #}
+{% endfor %}{# NSXEdge #}
+
+{% endif %}{# Nested_Router.Protocol == BGP or BOTH #}
+
+
+##
+## OSPFv2 (IPv4) -- Northbound Only
+##
+{% if Nested_Router.Protocol == "OSPF" or Nested_Router.Protocol == "BOTH" %}
+{% if Deploy.Setting.IPv4 %}
+set protocols ospf parameters router-id {{ Nested_Router.OSPF.RouterID }}
+set protocols ospf area {{ Nested_Router.OSPF.Area }} network {{ Nested_Router.Interface.Uplink.IPv4.Prefix }}
+set protocols ospf log-adjacency-changes
+set protocols ospf redistribute bgp
+set protocols ospf redistribute connected metric-type '2'
+{% endif %}{# Deploy.Setting.IPv4 #}
+{% endif %}{# Nested_Router.Protocol == OSPF or BOTH #}
+
+
+##
+## OSPFv3 (IPv6) - Northbound Only
+##
+{% if Nested_Router.Protocol == "OSPF" or Nested_Router.Protocol == "BOTH" %}
+{% if Deploy.Setting.IPv6 %}
+set protocols ospfv3 parameters router-id {{ Nested_Router.OSPF.RouterID }}
+set protocols ospfv3 area {{ (((Nested_Router.OSPF.Area / (256 | pow(3)))|int) % 256)|int }}.{{ (((Nested_Router.OSPF.Area / (256 | pow(2)))|int) % 256)|int }}.{{ (((Nested_Router.OSPF.Area / 256)|int) % 256)|int }}.{{ (Nested_Router.OSPF.Area % 256)|int }} interface eth0
+set protocols ospfv3 redistribute bgp
+set protocols ospfv3 redistribute connected
+{% endif %}{# Deploy.Setting.IPv6 #}
+{% endif %}{# Nested_Router.Protocol == OSPF or BOTH #}
+
+
+
+
+
+##
+## Service - DNS (IPv4 & IPv6)
+##
+{% if Deploy.Setting.IPv4 %}
+set system name-server {{ Common.DNS.Server1.IPv4 }}
+{% endif %}{# Deploy.Setting.IPv4 #}
+
+{% if Deploy.Setting.IPv6 %}
+set system name-server {{ Common.DNS.Server1.IPv6 }}
+{% endif %}{# Deploy.Setting.IPv6 #}
+
+
+
+##
+## Service - SSHv2
+##
+set service ssh port 22
+
+
+
+##
+## Serivce - DHCPv4
+##
+{% if Deploy.Setting.IPv4 %}
+set service dhcp-server shared-network-name vmnetwork authoritative
+set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} default-router {{ Nested_Router.Interface.VMNetwork.IPv4.Address }}
+set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} dns-server {{ Common.DNS.Server1.IPv4 }}
+set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} lease 300
+set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} range VMNetworkRange start {{ Net.VMNetwork.IPv4.Network }}.20
+set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} range VMNetworkRange stop  {{ Net.VMNetwork.IPv4.Network }}.50
+{% endif %}{# Deploy.Setting.IPv4 #}
+
+
+
+##
+## Service - LLDP (Listen on CDP, too)
+##
+set service lldp
+set service lldp interface all
+set service lldp legacy-protocols cdp
+
+
+##
+## System - Timezone
+##
+set system time-zone 'UTC'
+
+
+##
+## System - NTP (IPv4 & IPv6)
+##
+set system ntp listen-address {{ Nested_Router.Interface.Management.IPv4.Address }}
+{% for NTPServer in Nested_Router.NTP.Servers %}
+{% if Deploy.Setting.IPv4 %}
+set system ntp server {{ NTPServer.IPv4.Address }}
+{% endif %}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 %}
+set system ntp server {{ NTPServer.IPv6.Address }}
+{% endif %}{# Deploy.Setting.IPv6 #}
+{% endfor %}{# NTPServer #}
+
+
+
+##
+## System - Syslog (IPv4 & IPv6)
+##
+set system syslog global facility all level notice
+set system syslog global facility protocols level debug
+{% if Deploy.Setting.IPv4 %}
+set system syslog host {{ Common.Syslog.Server1.IPv4 }} facility all level notice
+set system syslog host {{ Common.Syslog.Server1.IPv4 }} facility all protocol {{ Common.Syslog.Protocol }}
+{% if Deploy.Setting.IPv4 %}
+{% if Deploy.Setting.IPv6 %}
+set system syslog host {{ Common.Syslog.Server1.IPv6 }} facility all level notice
+set system syslog host {{ Common.Syslog.Server1.IPv6 }} facility all protocol {{ Common.Syslog.Protocol }}
+{% if Deploy.Setting.IPv6 %}
+
+
+##
+## System - Revisions to keep on disk
+##
+set system config-management commit-revisions 100
+
+
+##
+## System - Set User Login Credentials
+##
+set system login user vyos authentication plaintext-password {{ Common.Password.Nested }}
