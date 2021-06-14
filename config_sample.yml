@@ -211,7 +211,7 @@ Net:
     Offset: None
     VLAN: None
     MTU: 1500
-    Description: Uplink
+    Description: Router Uplink
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.0"
@@ -255,7 +255,7 @@ Net:
     Offset: 3
     VLAN: "{{ Pod.Number + 3 + Pod.VLANOffset }}"
     MTU: 9000
-    Description: IPStorage
+    Description: IP Storage
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 3 }}"
@@ -266,7 +266,7 @@ Net:
     Offset: 4
     VLAN: "{{ Pod.Number + 4 + Pod.VLANOffset }}"
     MTU: 9000
-    Description: Transport
+    Description: Overlay Transport
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 4 }}"
@@ -277,7 +277,7 @@ Net:
     Offset: 5
     VLAN: "{{ Pod.Number + 5 + Pod.VLANOffset }}"
     MTU: 1500
-    Description: ServiceVM
+    Description: Service VM Management
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 5 }}"
@@ -288,7 +288,7 @@ Net:
     Offset: 6
     VLAN: "{{ Pod.Number + 6 + Pod.VLANOffset }}"
     MTU: 1500
-    Description: NSXEdgeUplink1
+    Description: "NSX Edge Uplink #1"
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 6 }}"
@@ -299,7 +299,7 @@ Net:
     Offset: 7
     VLAN: "{{ Pod.Number + 7 + Pod.VLANOffset }}"
     MTU: 1500
-    Description: NSXEdgeUplink2
+    Description: "NSX Edge Uplink #2"
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 7 }}"
@@ -310,7 +310,7 @@ Net:
     Offset: 8
     VLAN: "{{ Pod.Number + 8 + Pod.VLANOffset }}"
     MTU: 1500
-    Description: RTEP
+    Description: RTEP Transport
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 8 }}"
@@ -321,7 +321,7 @@ Net:
     Offset: 9
     VLAN: "{{ Pod.Number + 9 + Pod.VLANOffset }}"
     MTU: 1500
-    Description: VMNetwork
+    Description: VM Network
     IPv4:
       Prefix: 24
       Network: "{{ Pod.BaseNetwork.IPv4 }}.{{ Pod.Number + 9 }}"
