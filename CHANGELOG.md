@@ -184,7 +184,7 @@
 
 - Released version 3 of the SDDC.Lab project.
 
-## Dev-v4.0.0 13-MAY-2021
+## Dev-v4.0.0 13-JUNE-2021
 
 ### Added by Luis Chanu
 
@@ -194,3 +194,9 @@
 - IMPORTANT: Please recreate static Pod-Config files using createPodConfig.yml
 - Added "Net.<Intf>.MTU" and "NET.<Intf>.Description" fields to config_sample.yml
 - Added new "vyos_router_commands.j2" template to project (Name my change).  This is a work in progress of developing the VyOS configuration via the "SET" commands used by VyOS.
+
+## Dev-v4.0.0 15-JUNE-2021
+
+### Added by Luis Chanu
+
+- Added "vyos.vyos" to the list of Ansible collections to install in the [README](README.md) file

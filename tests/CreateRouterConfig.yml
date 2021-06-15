@@ -1,18 +1,9 @@
 ---
 - hosts: localhost
   tasks:
-    - name: Create temp directory in case it doesn't already exist
-      file:
-        path: "{{ Target.TempFolder }}"
-        state: directory
 
-    - name: Delete the temporary template file for VyOS router
-      file: 
-        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Template }}"
-        state: absent
-
-    - name: Create configuration template file for VyOS router
-      template: 
-        src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}"
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
-
+    - name: Create configuration file for VyOS router
+      ansible.builtin.template: 
+        src:  "{{ Target.TemplateFolder }}/vyos_router_commands.j2"
+        dest: "/tmp/vyos_router_commands"
+        mode: "666"
