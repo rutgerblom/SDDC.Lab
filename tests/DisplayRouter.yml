@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+
+  tasks:
+    - name: Display Nested_Router Interfaces
+      debug:
+        msg: Interface={{ item.key }}  |  IPv4={{ item.value.IPv4.Address }}/{{ item.value.IPv4.Prefix }}  |  IPv6={{ item.value.IPv6.Address }}/{{ item.value.IPv6.Prefix }}
+      loop: "{{ Nested_Router.Interface | dict2items }}"
