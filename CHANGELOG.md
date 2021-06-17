@@ -200,3 +200,9 @@
 ### Added by Luis Chanu
 
 - Added "vyos.vyos" to the list of Ansible collections to install in the [README](README.md) file
+
+## Dev-v4.0.0 15-JUNE-2021
+
+### Added by Rutger Blom
+
+- Added support for deploying NSX-T 3.1.2.1, vCenter 7.0 U2b, and ESXi 7.0 U2a
