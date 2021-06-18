@@ -206,3 +206,10 @@
 ### Added by Rutger Blom
 
 - Added support for deploying NSX-T 3.1.2.1, vCenter 7.0 U2b, and ESXi 7.0 U2a
+
+## Dev-v4.0.0 18-JUNE-2021
+
+### Added by Rutger Blom
+
+- Added VMware Tanzu to licenses_sample.yml (for future use)
+- Removed some redundant example entries in licenses_sample.yml
