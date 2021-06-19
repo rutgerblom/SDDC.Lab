@@ -77,7 +77,12 @@
         datacenter_name: "{{ Nested_vCenter.DataCenter }}"
         cluster_name: "{{ item.key }}"
         validate_certs: False
-        enable: "{{ item.value.HA }}"
+        enable: "{{ item.value.HA.Enable }}"
+        ha_host_monitoring: "{{ item.value.HA.Host_Monitoring }}"
+        ha_vm_monitoring: "{{ item.value.HA.VM_Monitoring }}"
+        apd_response: "{{ item.value.HA.APD_Response }}"
+        pdl_response: "{{ item.value.HA.PDL_Response }}"
+        host_isolation_response: "{{ item.value.HA.Host_Isolation_Response }}"
       loop: "{{ Nested_Clusters | dict2items }}"
       when: 
         - item.value.DeployHosts == true
