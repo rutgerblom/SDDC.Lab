@@ -539,7 +539,13 @@ Nested_DNSServer:
 Nested_Clusters:
   Management:
     DRS: true
-    HA: false
+    HA:
+      Enable: false
+      Host_Monitoring: enabled
+      VM_Monitoring: vmMonitoringDisabled
+      APD_Response: disabled
+      PDL_Response: disabled
+      Host_Isolation_Response: none
     vSAN: true
     Prep_NSX: false
     vsanDatastore: Management_vSAN
@@ -547,7 +553,13 @@ Nested_Clusters:
     DeployHosts: false                                                                  # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
   Compute-A:
     DRS: true
-    HA: false
+    HA:
+      Enable: true
+      Host_Monitoring: enabled
+      VM_Monitoring: vmMonitoringDisabled
+      APD_Response: disabled
+      PDL_Response: disabled
+      Host_Isolation_Response: none
     vSAN: true
     Prep_NSX: true
     vsanDatastore: Compute-A_vSAN
@@ -555,7 +567,13 @@ Nested_Clusters:
     DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
   Edge:                                                                                 # 'Edge' is where NSX-T ETN's are deployed.  HIGHLY suggest you always have an 'Edge' cluster.
     DRS: true
-    HA: false
+    HA:
+      Enable: false
+      Host_Monitoring: enabled
+      VM_Monitoring: vmMonitoringDisabled
+      APD_Response: disabled
+      PDL_Response: disabled
+      Host_Isolation_Response: none
     vSAN: true
     Prep_NSX: false
     vsanDatastore: Edge_vSAN
