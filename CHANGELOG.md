@@ -213,3 +213,11 @@
 
 - Added VMware Tanzu to licenses_sample.yml (for future use)
 - Removed some redundant example entries in licenses_sample.yml
+
+## Dev-v4.0.0 20-JUNE-2021
+
+### Added by Rutger Blom
+
+ - Added a playbook that configures HA on the nested vSphere clusters.
+ - The following file was updated so please update your non-sample file:
+  - config_sample.yml
