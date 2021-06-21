@@ -221,3 +221,11 @@
  - Added a playbook that configures HA on the nested vSphere clusters.
  - The following file was updated so please update your non-sample file:
   - config_sample.yml
+
+## Dev-v4.0.0 21-JUNE-2021
+
+### Added by Rutger Blom
+
+ - The nested ESXi vmkernel adapter MTU value is now fetched from the respective router interface (e.g. the vmkernel's default gateway)
+ - The following file was updated so please update your non-sample file:
+  - config_sample.yml
