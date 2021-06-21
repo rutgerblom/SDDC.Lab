@@ -226,6 +226,8 @@
 
 ### Added by Rutger Blom
 
- - The nested ESXi vmkernel adapter MTU value is now fetched from the respective router interface (e.g. the vmkernel's default gateway)
- - The following file was updated so please update your non-sample file:
+ - The nested ESXi vmkernel adapter MTU value is now fetched from the router interface (e.g. the vmkernel's default gateway)
+ - Add support for deploying vRLI 8.4.1
+ - The following files were updated so please update your non-sample files:
   - config_sample.yml
+  - software_sample.yml
