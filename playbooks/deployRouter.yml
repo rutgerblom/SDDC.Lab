@@ -216,6 +216,7 @@
             unit_number: 0
             type: iso
             iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
+            state: present
         annotation: | 
                     {{ Common.Annotation }}
                     {{ Deploy.Software.Router.Vendor }} {{ Deploy.Software.Router.Product }} { Deploy.Software.Router.Version }}
@@ -488,7 +489,11 @@
         validate_certs: no
         name: "{{ Nested_Router.Name }}"
         cdrom:
-          type: "none"
+          - controller_number: 0
+            unit_number: 0
+            type: iso
+            iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
+            state: absent
       when: 
         - Deploy.Product.Router == true
         - status is failed
