@@ -12,6 +12,7 @@
 * [Requirements](#Requirements)
   * [Recommendations](#Recommendations)
 * [Preparations](#Preparations)
+* [Upgrade Considerations](#Upgrade-Considerations)
 * [Networking](#Networking)
 * [IP Address Assignments](#IP-Address-Assignments)
 * [Usage](#Usage)
