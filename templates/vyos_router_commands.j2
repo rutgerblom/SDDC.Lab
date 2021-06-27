@@ -204,6 +204,7 @@ set system time-zone 'UTC'
 ##
 ## System - NTP (IPv4 & IPv6)
 ##
+delete system ntp server
 set system ntp listen-address {{ Nested_Router.Interface.Management.IPv4.Address }}
 {% for NTPServer in Nested_Router.NTP.Servers -%}
 {% if Deploy.Setting.IPv4 -%}
@@ -229,6 +230,12 @@ set system syslog host {{ Common.Syslog.IPv4 }} facility all protocol {{ Common.
 set system syslog host {{ Common.Syslog.IPv6 }} facility all level notice
 set system syslog host {{ Common.Syslog.IPv6 }} facility all protocol {{ Common.Syslog.Protocol }}
 {% endif -%}{# Deploy.Setting.IPv6 #}
+
+
+##
+## System - Banner (Pre-Login)
+##
+set system login banner pre-login "********************\\n*  {{ Nested_Router.Name }}  *\\n*  Username: vyos  *\\n********************\\n"
 
 
 ##
