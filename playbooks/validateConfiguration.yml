@@ -26,7 +26,7 @@
 ##
 ## Verify SDDCLab.Version
 ##
-    - name: Verifying SDDCLab.Version is 3
+    - name: Verifying SDDCLab.Version is 4
       ansible.builtin.pause:
         seconds: 5
         prompt: |
@@ -40,13 +40,13 @@
 
           =================================================================================================
       when:
-        - SDDCLab.Version != 3
+        - SDDCLab.Version != 4
 
     - name: Set flag if issue found with SDDCLab.Version
       ansible.builtin.set_fact:
         IssueFound: true
       when:
-        - SDDCLab.Version != 3
+        - SDDCLab.Version != 4
 
 
 ##
