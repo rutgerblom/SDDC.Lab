@@ -232,6 +232,12 @@ set system syslog host {{ Common.Syslog.IPv6 }} facility all protocol {{ Common.
 
 
 ##
+## System - Banner (Pre-Login)
+##
+set system login banner pre-login "********************\\n*  {{ Nested_Router.Name }}  *\\n*  Username: vyos  *\\n********************\\n"
+
+
+##
 ## System - Revisions to keep on disk
 ##
 set system config-management commit-revisions 100
