@@ -204,6 +204,7 @@ set system time-zone 'UTC'
 ##
 ## System - NTP (IPv4 & IPv6)
 ##
+delete system ntp server
 set system ntp listen-address {{ Nested_Router.Interface.Management.IPv4.Address }}
 {% for NTPServer in Nested_Router.NTP.Servers -%}
 {% if Deploy.Setting.IPv4 -%}
