@@ -663,6 +663,45 @@
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
+    - name: Enable SSH (Send 'SET' command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        string_send: "set service ssh port 22"
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Wait 5 seconds
+      ansible.builtin.pause:
+        seconds: 5
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Enable SSH (Send 'ENTER' after SET command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+##
+## Bootstrap configuration complete -- Proceed with saving everything
+##
+
     - name: Commit configuration to active it (Send 'COMMIT' command)
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
@@ -755,6 +794,41 @@
         - Deploy.Software.Router.Version == "Latest"
 
     - name: Exit configuration mode (Send 'ENTER' after EXIT command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: PING Lab-Router to populate ARP tables (Send 'PING' command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        string_send: "ping {{ Nested_Router.Interface.Uplink.IPv4.Gateway }} count 4"
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Wait 5 seconds
+      ansible.builtin.pause:
+        seconds: 5
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: PING Lab-Router to populate ARP tables (Send 'ENTER' after PING command)
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
