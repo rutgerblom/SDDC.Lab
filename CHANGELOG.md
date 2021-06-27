@@ -231,3 +231,11 @@
  - The following files were updated so please update your non-sample files:
   - config_sample.yml
   - software_sample.yml
+
+## Dev-v4.0.0 27-JUNE-2021
+
+### Added by Rutger Blom
+
+  - Due to failure while preparing nested ESXi 7.0 U2a hosts with NSX-T v3.1.2.1 due to RAM disk running out of space, increased RAM in config_sample.yml for all clusters to 18GB.  In reality, only needs to be on hosts being prepared for NSX-T, but changed all for consistency.
+  - The following file was updated so please update your non-sample file:
+    - config_sample.yml
