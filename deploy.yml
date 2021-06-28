@@ -28,6 +28,10 @@
   when: 
     - Deploy.Product.Router == true
 
+# Configure router
+- ansible.builtin.import_playbook: playbooks/configureRouter.yml
+  when: 
+    - Deploy.Product.Router == true
 
 # Deploy nested vSphere
 - ansible.builtin.import_playbook: playbooks/prepareISOInstaller.yml
