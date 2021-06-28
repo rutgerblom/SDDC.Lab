@@ -244,6 +244,7 @@
 
 ### Added by Luis Chanu
 
+  - VyOS Ansible modules requires the "Paramiko" module, so please be sure to use PIP3 to install it.  The README.MD has been updated to now include this module as a requirement.
   - Due to SSH authentication failure with VyOS module, added "host_key_checking = false" to ansible.cfg file to permit SSH connections to succeed without first importing the hash.
   - Changes to VyOS router playboks
     - Module deployRouter.yml now not only deploys the VyOS router, but also performs basic configuration (Name, Eth0 IP Address, Floating default route, enable SSH).
