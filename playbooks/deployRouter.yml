@@ -78,6 +78,7 @@
                     Target.PortGroup.Management.VLAN : {{ Target.PortGroup.Management.VLAN }}
 
                        Deploy.Software.Router.Version: {{ Deploy.Software.Router.Version }}
+                     Deploy.Software.Router.Installer: {{ Deploy.Software.Router.Installer }}
 
             Deploy.Software.Options.UseLocalInstaller: {{ Deploy.Software.Options.UseLocalInstaller }}
             Deploy.Software.Options.KeepNewInstallers: {{ Deploy.Software.Options.KeepNewInstallers }}
@@ -212,11 +213,8 @@
           - name: "{{ Target.PortGroup.Trunk.Name }}"
             device_type: vmxnet3
         cdrom:
-          - controller_number: 0
-            unit_number: 0
-            type: iso
-            iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
-            state: present
+          type: "iso"
+          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
         annotation: | 
                     {{ Common.Annotation }}
                     {{ Deploy.Software.Router.Vendor }} {{ Deploy.Software.Router.Product }} { Deploy.Software.Router.Version }}
@@ -413,48 +411,9 @@
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
-    - name: Wait 30 seconds before rebooting the VyOS router
+    - name: Wait 30 seconds before shutting down the VyOS router
       ansible.builtin.pause: 
         seconds: 30
-      when: 
-        - Deploy.Product.Router == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Latest"
-
-    - name: Reboot VyOS VM
-      community.vmware.vmware_guest_powerstate:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: no
-        name: "{{ Nested_Router.Name }}"
-        state: reboot-guest
-      when: 
-        - Deploy.Product.Router == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Latest"
-
-    - name: Wait 1 minute for the VyOS router to boot
-      ansible.builtin.pause: 
-        minutes: 1
-      when: 
-        - Deploy.Product.Router == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Latest"
-
-    - name: Copy configuration to VyOS router (Latest)
-      community.vmware.vmware_guest_file_operation:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: no
-        vm_id: "{{ Nested_Router.Name }}"
-        vm_username: "vyos"
-        vm_password: "vyos"
-        copy:
-            src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
-            dest: "/config/config.boot"
-            overwrite: true
       when: 
         - Deploy.Product.Router == true
         - status is failed
@@ -489,11 +448,7 @@
         validate_certs: no
         name: "{{ Nested_Router.Name }}"
         cdrom:
-          - controller_number: 0
-            unit_number: 0
-            type: iso
-            iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
-            state: absent
+          type: "none"
       when: 
         - Deploy.Product.Router == true
         - status is failed
@@ -511,6 +466,431 @@
         - Deploy.Product.Router == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
+
+    - name: Wait 1 minute for the VyOS router to boot
+      ansible.builtin.pause: 
+        minutes: 1
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+##
+## Provisioning complete -- Begin bootstrap configuration to push configuration via IP
+##
+
+    - name: Login after powering on VM (Send 'vyos' username)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        string_send: "vyos"
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Wait 5 seconds
+      ansible.builtin.pause:
+        seconds: 5
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Login after powering on VM (Press 'ENTER' after username)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Wait 5 seconds
+      ansible.builtin.pause:
+        seconds: 5
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Login after powering on VM (Send 'vyos' password)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        string_send: "vyos"
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Wait 5 seconds
+      ansible.builtin.pause:
+        seconds: 5
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Login after powering on VM (Send 'ENTER' after password)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+          - ENTER
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Get into configuration mode (Send 'configure' command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        string_send: "configure"
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Wait 5 seconds
+      ansible.builtin.pause:
+        seconds: 5
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Get into configuration mode (Send 'ENTER' after command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Configure Eth0 IP address (Send 'SET' command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        string_send: "set interfaces ethernet eth0 address {{ Nested_Router.Interface.Uplink.IPv4.Address }}/{{ Nested_Router.Interface.Uplink.IPv4.Prefix }}"
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Wait 5 seconds
+      ansible.builtin.pause:
+        seconds: 5
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Configure Eth0 IP address (Send 'ENTER' after SET command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Configure IPv4 Floating Static Default Route (Send 'SET' command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        string_send: "set protocols static route 0.0.0.0/0 next-hop {{ Nested_Router.Interface.Uplink.IPv4.Gateway }} distance 250"
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Wait 5 seconds
+      ansible.builtin.pause:
+        seconds: 5
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Configure IPv4 Floating Static Default Route (Send 'ENTER' after SET command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Enable SSH (Send 'SET' command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        string_send: "set service ssh port 22"
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Wait 5 seconds
+      ansible.builtin.pause:
+        seconds: 5
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Enable SSH (Send 'ENTER' after SET command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+##
+## Bootstrap configuration complete -- Proceed with saving everything
+##
+
+    - name: Commit configuration to active it (Send 'COMMIT' command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        string_send: "commit"
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Wait 5 seconds
+      ansible.builtin.pause:
+        seconds: 5
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Commit configuration to active it (Send 'ENTER' after COMMIT command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Save VyOS configuration to config.boot file (Send 'SAVE' command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        string_send: "save"
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Wait 5 seconds
+      ansible.builtin.pause:
+        seconds: 5
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Save VyOS configuration to config.boot file (Send 'ENTER' after SAVE command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Exit configuration mode (Send 'EXIT' command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        string_send: "exit"
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Wait 5 seconds
+      ansible.builtin.pause:
+        seconds: 5
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Exit configuration mode (Send 'ENTER' after EXIT command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: PING Lab-Router to populate ARP tables (Send 'PING' command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        string_send: "ping {{ Nested_Router.Interface.Uplink.IPv4.Gateway }} count 4"
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Wait 5 seconds
+      ansible.builtin.pause:
+        seconds: 5
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: PING Lab-Router to populate ARP tables (Send 'ENTER' after PING command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Logout of VyOS router (Send 'EXIT' command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        string_send: "exit"
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Wait 5 seconds
+      ansible.builtin.pause:
+        seconds: 5
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Logout of VyOS router (Send 'ENTER' after EXIT command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when: 
+        - Deploy.Product.Router == true
+        - status is failed
+        - Deploy.Software.Router.Version == "Latest"
+
+    - name: Add static route on the Ansible control node
+      ansible.builtin.command: ./ip route add "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}" via "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
+      args:
+        chdir: /bin/
+      register: iproute
+      ignore_errors: true
+      when: 
+        - Deploy.Product.Router == true
+        - Nested_Router.Protocol == "Static"
+        - status is failed
+
+##
+## Deployment Complete -- Begin cleaning things up
+##
 
     - name: Delete VyOS installer from vSphere datastore
       community.vmware.vsphere_file:
@@ -546,20 +926,3 @@
         - Deploy.Product.Router == true
         - status is failed
         - DEBUG.KeepInstallerFiles != true
-
-    - name: Add static route on the Ansible control node
-      ansible.builtin.command: ./ip route add "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}" via "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
-      args:
-        chdir: /bin/
-      register: iproute
-      ignore_errors: true
-      when: 
-        - Deploy.Product.Router == true
-        - Nested_Router.Protocol == "Static"
-        - status is failed
-
-    - name: Wait 10 seconds
-      ansible.builtin.pause: seconds=10
-      when: 
-        - Deploy.Product.Router == true
-        - status is failed
