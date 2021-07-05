@@ -1227,6 +1227,11 @@ Nested_vCenter:
     Site: "{{ SiteCode }}-Site"
     ReplicationPartner: ""                                                                 # If replication partner FQDN is provided, the Replication template will be used to configure vCenter.  Else, field should be left as an empty string ("").
   DataCenter: "{{ SiteCode }}-DataCenter"
+  ContentLibrary:
+    Name: "{{ SiteCode }}-ContentLibrary"
+    Description: "{{ SiteCode }} Content Library"
+    Type: local
+    Datastore: "{{ Nested_Clusters.Compute-A.vsanDatastore }}"
   Networking:
     vSwitch:
       Name: "{{ SiteCode }}-VDS"
