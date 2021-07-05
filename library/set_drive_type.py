@@ -88,13 +88,13 @@ EXAMPLES = '''
     set_drivetype_to_flash: true
   delegate_to: localhost
 
-- name: Modify all disks in 'Compute-A' cluster to be 'Flash' type devices
+- name: Modify all disks in 'Compute_A' cluster to be 'Flash' type devices
   set_drive_type:
     hostname: "Pod-200-vCenter.SDDC.Lab"
     username: "administrator@vsphere.local"
     password: "VMware1!"
     datacenter: "Pod-200-DataCenter"
-    cluster_name: "Compute-A"
+    cluster_name: "Compute_A"
     set_drivetype_to_flash: true
   delegate_to: localhost
 
