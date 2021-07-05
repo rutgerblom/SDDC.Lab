@@ -244,10 +244,19 @@
 
 ### Added by Luis Chanu
 
-  - VyOS Ansible modules requires the "Paramiko" module, so please be sure to use PIP3 to install it.  The README.MD has been updated to now include this module as a requirement.
+  - VyOS Ansible modules requires the "Paramiko" module, so please be sure to use PIP3 to install it.  The README.md has been updated to now include this module as a requirement.
   - Due to SSH authentication failure with VyOS module, added "host_key_checking = false" to ansible.cfg file to permit SSH connections to succeed without first importing the hash.
-  - Changes to VyOS router playboks
+  - Changes to VyOS router playbooks
     - Module deployRouter.yml now not only deploys the VyOS router, but also performs basic configuration (Name, Eth0 IP Address, Floating default route, enable SSH).
     - Due to changing syntax of the VyOS "/config/config.boot" file with newer versions of VyOS, instead of creating that file and copying it to the VyOS router (as was previously done), we now develop the individual VyOS "SET" commands for the target configuration, then send those commands to the provisioned VyOS router.  Once that's done, we then 'commit' and 'save' the configuration.  The creation of the VyOS router configuration is performed by the new configureRouter.yml playbook.
     - Added a pre-login message that shows the VyOS router name, along with a reminder that the login username is "vyos".
     - As a precaution, previous "deployRouter.yml" and "vyos_router.j2" files have been renamed to *_OLD, respectively.  They will be removed once the new VyOS router deployment has been throughly tested.
+
+## Dev-v4.0.0 05-JULY-2021
+
+### Added by Rutger Blom
+  
+  - A vSphere Content Library is now created in the nested vCenter as part of the deployment.
+  - Module "community.vmware.vmware_content_library_manager" requires the "setuptools" module and the "vSphere Automation SDK", so please be sure to use PIP3 to install them.  The README.md has been updated to now include these modules as a requirement. 
+  - The following file was updated so please update your non-sample file:
+    - config_sample.yml
