@@ -83,7 +83,7 @@ The following are recommendations based on our experience with deploying Pods:
 
 * Install the required software on your Ansible controller:
   * sudo apt install python3 python3-pip xorriso git
-  * sudo pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython paramiko
+  * sudo pip3 install --upgrade ansible pyvim pyvmomi netaddr jmespath dnspython paramiko setuptools git+https://github.com/vmware/vsphere-automation-sdk-python.git
   * ansible-galaxy collection install community.general community.vmware ansible.posix vyos.vyos
   * git clone https://github.com/rutgerblom/SDDC.Lab.git 
 
