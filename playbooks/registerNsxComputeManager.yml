@@ -81,13 +81,14 @@
           username: "{{ Nested_NSXT.Credential.admin.Name }}"
           password: "{{ Nested_NSXT.Credential.admin.Password }}"
           validate_certs: False
-          display_name: "{{ Nested_vCenter.VMName }}"                 # Using VMName as no need for full domain
-          server: "{{ Nested_vCenter.FQDN }}"
-          origin_type: vCenter
-          set_as_oidc_provider: true
+          display_name: "{{ item.Name }}"
+          server: "{{ item.Address }}"
+          origin_type: "{{ item.Type }}"
+          set_as_oidc_provider: "{% if Deploy.Software.vCenter.Version.startswith('6.') %}{{ omit }}{% else %}{{ item.Trust }}{% endif %}"
           credential:
-            credential_type: UsernamePasswordLoginCredential
-            username: "{{ Nested_vCenter.User }}"
-            password: "{{ Nested_vCenter.Password }}"
+            credential_type: "{{ item.Credential.Type }}"
+            username: "{{ item.Credential.User }}"
+            password: "{{ item.Credential.Password }}"
           state: present
+      loop: "{{ Nested_NSXT.System.Fabric.ComputeManagers }}"
       when: Deploy.Product.NSXT.LocalManager == true

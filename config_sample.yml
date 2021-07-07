@@ -1961,3 +1961,14 @@ Nested_NSXT:
             Tags:
               - Tag: Auto-Created
                 Scope: SDDC.Lab
+
+      ComputeManagers:
+        - Name: "{{ Nested_vCenter.VMName }}"
+          Type: vCenter
+          Address: "{{ Nested_vCenter.FQDN }}"
+          Trust: true
+          Credential:
+            Type: UsernamePasswordLoginCredential
+            User: "{{ Nested_vCenter.User }}"
+            Password: "{{ Nested_vCenter.Password }}"
+    
