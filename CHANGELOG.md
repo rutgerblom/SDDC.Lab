@@ -260,3 +260,12 @@
   - Module "community.vmware.vmware_content_library_manager" requires the "setuptools" module and the "vSphere Automation SDK", so please be sure to use PIP3 to install them.  The README.md has been updated to now include these modules as a requirement. 
   - The following file was updated so please update your non-sample file:
     - config_sample.yml
+
+## Dev-v4.0.0 07-JULY-2021
+
+### Added by Rutger Blom
+
+  - Added a data structure for NSX-T Compute Managers to config_sample.yml
+  - Compute Manager "Trust" enabled by default and configured if vCenter is not version 6
+  - The following file was updated so please update your non-sample file:
+    - config_sample.yml
