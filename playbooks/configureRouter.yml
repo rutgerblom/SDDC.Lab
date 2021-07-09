@@ -5,6 +5,7 @@
 ##
 ## ToDo Items: 1) Convert vyos module to use ansible.netcommon.network_cli
 ##             2) Move away from use of "Provider" in the vyos_config play below
+##             3) The "Apply {{ Nested_Router.Name }} VyOS Baseline Router Configuration" task has an "ignore_errors: true" on it so that it can be re-run.  This is a work-around.  Need to add logic which sets the password to use if the 'vyos' password fails. (Luis)
 ##
 ##   Comments: The purpose of this module is to configure an already deployed router that is configured with 
 ##             an IP address, and is reachable via SSH.
@@ -14,6 +15,9 @@
 - hosts: localhost
   name: configureRouter.yml
   connection: ansible.netcommon.network_cli
+  vars:
+    - LOCAL_HomeDirectory: "/home/{{ lookup('env','SUDO_USER') }}"
+    - LOCAL_UserConfigTempFile: "{{ Nested_Router.UserConfig.Template | regex_replace('^(.*).j2$', '\\1', ignorecase=True) }}.conf"
 
   tasks:
     - name: configureRouter_Playbook
@@ -63,7 +67,8 @@
 
                                     Target.Deployment: {{ Target.Deployment }}
 
-                        Router Configuration Template: {{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}
+               Router Baseline Configuration Template: {{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}
+                   Router User Configuration Template: {{ Nested_Router.UserConfig.Directory }}/{{ Nested_Router.UserConfig.Template }}
 
                         Deploy.Software.Router.Vendor: {{ Deploy.Software.Router.Vendor }}
                        Deploy.Software.Router.Version: {{ Deploy.Software.Router.Version }}
@@ -72,6 +77,9 @@
 
             Deploy.Software.Options.UseLocalInstaller: {{ Deploy.Software.Options.UseLocalInstaller }}
             Deploy.Software.Options.KeepNewInstallers: {{ Deploy.Software.Options.KeepNewInstallers }}
+
+                             LOCAL_UserConfigTempFile: {{ Target.TempFolder }}/{{ LOCAL_UserConfigTempFile }}
+
 
           =================================================================================================
       when:
@@ -91,7 +99,6 @@
     - name: Generate VyOS configuration SET and DELETE commands from template (removing comments and empty lines)
       ansible.builtin.set_fact:
         RouterConfig: "{{ lookup('template', '{{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}') | regex_findall('^set.+$|^delete.+$', multiline=true, ignorecase=true) | join('\n') }}"
-#        RouterConfig: "{{ lookup('template', '{{ Target.TemplateFolder }}/vyos_router_commands.j2') | regex_findall('^set.+$|^delete.+$', multiline=true, ignorecase=true) | join('\n') }}"
       when: 
         - Deploy.Product.Router == true
         - Deploy.Software.Router.Vendor == "VyOS"
@@ -127,18 +134,91 @@
           host: "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
         src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
         save: true
+      ignore_errors: true
       when: 
         - Deploy.Product.Router == true
         - Deploy.Software.Router.Vendor == "VyOS"
 
 ##
+## Apply Custom User Configuration Commands (if file exists)
+##
+
+    - name: Determine directory path to use for {{ Nested_Router.UserConfig.Template }} file
+      ansible.builtin.set_fact:
+        UserConfigDirectory: "{% if Nested_Router.UserConfig.Directory == '~' %}{{ LOCAL_HomeDirectory }}{% else %}{{ Nested_Router.UserConfig.Directory }}{% endif %}"
+
+    - name: See if the {{ Nested_Router.UserConfig.Template }} exists
+      ansible.builtin.stat:
+        path: "{{ UserConfigDirectory }}/{{ Nested_Router.UserConfig.Template }}"
+      register: UserConfigTemplate
+      when: 
+        - Deploy.Product.Router == true
+
+    - name: If UserConfig template exists, generate VyOS Pod-Router commands to apply (removing non-commands and empty lines)
+      ansible.builtin.set_fact:
+        RouterUserConfig: "{{ lookup('template', '{{ UserConfigDirectory }}/{{ Nested_Router.UserConfig.Template }}') | regex_findall('^set.+$|^delete.+$', multiline=true, ignorecase=true) | join('\n') }}"
+      when: 
+        - Deploy.Product.Router == true
+        - Deploy.Software.Router.Vendor == "VyOS"
+        - UserConfigTemplate.stat.exists
+
+    - name: DEBUG -- Display RouterUserConfig Variable (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================== Display RouterUserConfig Variable ==============================
+          {{ RouterUserConfig }}
+          ===============================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.Router == true
+        - Deploy.Software.Router.Vendor == "VyOS"
+        - UserConfigTemplate.stat.exists
+
+    - name: Write VyOS RouterUserConfig configuration to a file
+      ansible.builtin.copy:
+        content: "{{ RouterUserConfig }}"
+        dest: "{{ Target.TempFolder }}/{{ LOCAL_UserConfigTempFile }}"
+        mode: "666"
+        force: true
+      when: 
+        - Deploy.Product.Router == true
+        - Deploy.Software.Router.Vendor == "VyOS"
+        - UserConfigTemplate.stat.exists
+
+    - name: Apply VyOS router UserConfig configuration to {{ Nested_Router.Name }}
+      vyos.vyos.vyos_config:
+        provider:
+          username: vyos
+          password: "{{ Common.Password.Nested }}"
+          timeout: 20
+          host: "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
+        src: "{{ Target.TempFolder }}/{{ LOCAL_UserConfigTempFile }}"
+        save: true
+      when: 
+        - Deploy.Product.Router == true
+        - Deploy.Software.Router.Vendor == "VyOS"
+        - UserConfigTemplate.stat.exists
+
+
+##
 ## Clean Up -- All Routers
 ##
 
-    - name: Delete the router configuration for {{ Nested_Router.Name }}
+
+    - name: Delete the router baseline configuration for {{ Nested_Router.Name }}
       ansible.builtin.file: 
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
         state: absent
       when: 
         - Deploy.Product.Router == true
         - DEBUG.KeepConfigFiles != true
+
+    - name: Delete the UserConfig configuration for {{ Nested_Router.Name }}
+      ansible.builtin.file: 
+        path: "{{ Target.TempFolder }}/{{ LOCAL_UserConfigTempFile }}"
+        state: absent
+      when: 
+        - Deploy.Product.Router == true
+        - DEBUG.KeepConfigFiles != true
+        - UserConfigTemplate.stat.exists
