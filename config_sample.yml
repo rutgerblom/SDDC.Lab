@@ -334,7 +334,7 @@ Nested_Router:
   Name: "{{ SiteCode }}-Router"
   UserConfig:                                                         # Optional user specific Pod-Router configuration commands to send to router after SDDC.Lab configuration
     Directory: "~"                                                    # Must specify either '~' for home directory, a '.' for current directory, or an absolute directory path (without a '/' at the end)
-    File: "{{ SiteCode }}-Router-UserConfig.j2"                       # Filename where users place their Pod-Router configuration commands.  For VyOS, these should be 'SET' or 'DELETE' commands.  There is no syntax or command checking performed, so it is up to the user to ensure the commands are correct.
+    Template: "{{ SiteCode }}-Router-UserConfig.j2"                   # Filename where users place their Pod-Router configuration commands.  For VyOS, these should be 'SET' or 'DELETE' commands.  There is no syntax or command checking performed, so it is up to the user to ensure the commands are correct.
   Protocol: BOTH                                                      # Protocol - Options are "Static", "BGP", "OSPF" or "BOTH" (OSPF and BGP)
   Interface:
     Uplink:
