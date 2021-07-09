@@ -54,14 +54,14 @@ Deploy:
     ESXi:                                                 # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: ESXi                                       # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '7.00U2A'                                   # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '7.00U2A'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "KS.CFG"
       Installer: "{{ SiteCode }}-Installer-ESXi"
     NSXT:                                                 # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: NSXT                                       # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '3.1.2.1'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '3.1.2.1'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-NSXT.conf"
       Installer: "{{ SiteCode }}-Installer-NSXT"
@@ -332,6 +332,9 @@ Net:
 
 Nested_Router:
   Name: "{{ SiteCode }}-Router"
+  UserConfig:                                                         # Optional user specific Pod-Router configuration commands to send to router after SDDC.Lab configuration
+    Directory: "~"                                                    # Must specify either '~' for home directory, a '.' for current directory, or an absolute directory path (without a '/' at the end)
+    Template: "{{ SiteCode }}-Router-UserConfig.j2"                   # Filename where users place their Pod-Router configuration commands.  For VyOS, these should be 'SET' or 'DELETE' commands.  There is no syntax or command checking performed, so it is up to the user to ensure the commands are correct.
   Protocol: BOTH                                                      # Protocol - Options are "Static", "BGP", "OSPF" or "BOTH" (OSPF and BGP)
   Interface:
     Uplink:
