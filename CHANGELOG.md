@@ -275,5 +275,6 @@
 ### Added by Luis Chanu
 
   - Added a data structure for Nested_Router UserDefined commands to config_sample.yml
+  - Added the ability for users to modify the VyOS Pod-Router configuration after it's deployed and the Pod baseline configuration is applied.  Users put the commands they want to be applied in a special file.  By default (configured in Nested_Router.UserConfig), the Pod specific router user configuration file is placed in the user's home directory, and is called "{{ SiteCode }}-Router-UserConfig.j2".  So, for example, for Pod #10, the file would be called "Pod-010-Router-UserConfig.j2".  This file is a Jinja2 template, so users can also utilize all the templating power of Jinja2 to generate their commands.
   - The following file was updated so please update your non-sample file:
     - config_sample.yml
