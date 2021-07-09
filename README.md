@@ -198,9 +198,9 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 21 | Mgmt-1 | Nested ESXi Host in Management Cluster | No |
 | 22 | Mgmt-2 | Nested ESXi Host in Management Cluster | No |
 | 23 | Mgmt-3 | Nested ESXi Host in Management Cluster | No |
-| 31 | ComputeA-1 | Nested ESXi Host in Compute_A Cluster | Yes |
-| 32 | ComputeA-2 | Nested ESXi Host in Compute_A Cluster | Yes |
-| 33 | ComputeA-3 | Nested ESXi Host in Compute_A Cluster | Yes |
+| 31 | ComputeA-1 | Nested ESXi Host in ComputeA Cluster | Yes |
+| 32 | ComputeA-2 | Nested ESXi Host in ComputeA Cluster | Yes |
+| 33 | ComputeA-3 | Nested ESXi Host in ComputeA Cluster | Yes |
 | 91 | Edge-1 | Nested ESXi Host in Edge Cluster | Yes |
 | 92 | Edge-2 | Nested ESXi Host in Edge Cluster | Yes |
 | 93 | Edge-3 | Nested ESXi Host in Edge Cluster | Yes |

@@ -551,7 +551,7 @@ Nested_Clusters:
     vsanDatastore: Management_vSAN
     NSXT_TransportNodeProfile: TNP-ESXi-Hosts
     DeployHosts: false                                                                  # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
-  Compute_A:
+  ComputeA:
     DRS: true
     HA:
       Enable: true
@@ -562,7 +562,7 @@ Nested_Clusters:
       Host_Isolation_Response: none
     vSAN: true
     Prep_NSX: true
-    vsanDatastore: Compute_A_vSAN
+    vsanDatastore: ComputeA_vSAN
     NSXT_TransportNodeProfile: TNP-ESXi-Hosts
     DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
   Edge:                                                                                 # 'Edge' is where NSX-T ETN's are deployed.  HIGHLY suggest you always have an 'Edge' cluster.
@@ -591,7 +591,7 @@ Nested_ESXi:
       vSAN:
         CacheSize: 20                                                                   # CacheSize and CapacitySize MUST be different values.  Normally, CacheSize is smaller than CapacitySize.
         CapacitySize: 180                                                               # CacheSize and CapacitySize MUST be different values.  Normally, CapacitySize is larger than CacheSize.
-    Compute_A:
+    ComputeA:
       CPU: 8
       CoresPerSocket: 8
       Memory: 18432
@@ -811,7 +811,7 @@ Nested_ESXi:
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
     ComputeA1:
-      Cluster: Compute_A
+      Cluster: ComputeA
       FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeA-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.31{% endif %}"
       VMName: "{{ SiteCode }}-ComputeA-1"
       User: root
@@ -876,7 +876,7 @@ Nested_ESXi:
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
     ComputeA2:
-      Cluster: Compute_A
+      Cluster: ComputeA
       FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeA-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.32{% endif %}"
       VMName: "{{ SiteCode }}-ComputeA-2"
       User: root
@@ -941,7 +941,7 @@ Nested_ESXi:
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
     ComputeA3:
-      Cluster: Compute_A
+      Cluster: ComputeA
       FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeA-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.33{% endif %}"
       VMName: "{{ SiteCode }}-ComputeA-3"
       User: root
@@ -1231,13 +1231,13 @@ Nested_vCenter:
     Name: "{{ SiteCode }}-ContentLibrary"
     Description: "{{ SiteCode }} Content Library"
     Type: local
-    Datastore: "{{ Nested_Clusters.Compute_A.vsanDatastore }}"
+    Datastore: "{{ Nested_Clusters.ComputeA.vsanDatastore }}"
   Networking:
     vSwitch:
       Name: "{{ SiteCode }}-VDS"
       Clusters:
       - Management
-      - Compute_A
+      - ComputeA
       - Edge
       Config:
         NumberOfUplinks: 2
