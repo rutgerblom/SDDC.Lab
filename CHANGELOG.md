@@ -269,3 +269,11 @@
   - Compute Manager "Trust" enabled by default and configured if vCenter is not version 6
   - The following file was updated so please update your non-sample file:
     - config_sample.yml
+
+## Dev-v4.0.0 08-JULY-2021
+
+### Added by Luis Chanu
+
+  - Added a data structure for Nested_Router UserDefined commands to config_sample.yml
+  - The following file was updated so please update your non-sample file:
+    - config_sample.yml
