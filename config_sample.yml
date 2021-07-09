@@ -1975,4 +1975,37 @@ Nested_NSXT:
             Type: UsernamePasswordLoginCredential
             User: "{{ Nested_vCenter.User }}"
             Password: "{{ Nested_vCenter.Password }}"
-    
+
+
+Nested_Tanzu:
+  ControlPlane:
+    Config:
+      vSphereCluster: ComputeA                                                                    # vSphereCluster - The vSphere cluster on which to enable workload management
+      Size: TINY                                                                                  # Size - The size of the control plane virtual machines
+    Storage:
+      Policy:
+        Master: vSAN Default Storage Policy
+        Ephemeral: vSAN Default Storage Policy
+        Image: vSAN Default Storage Policy
+    Network:
+      Management:
+        PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+        StartingIP: "{{ Net.Management.IPv4.Network }}.61"                                        # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
+        Prefix: "{{ Net.Management.IPv4.Prefix }}"
+        Gateway: "{{ Net.Management.IPv4.Network }}.1"
+      Workload:
+        Pod:                                                                                      # POD - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
+          Network: 10.244.0.0
+          Prefix: 21
+        Service:                                                                                  # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components. 
+          Network: 10.96.0.0
+          Prefix: 24
+        Ingress:                                                                                  # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
+          Network: "{{ Net.VMNetwork.IPv4.Network }}.1".32
+          Prefix: 27
+        Egress:                                                                                   # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
+          Network: "{{ Net.VMNetwork.IPv4.Network }}.1".64
+          Prefix: 27
+    ContentLibrary:
+      Name: "{{ Nested_vCenter.ContentLibrary.Name }}"
+      
