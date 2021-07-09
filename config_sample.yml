@@ -2001,10 +2001,10 @@ Nested_Tanzu:
           Network: 10.96.0.0
           Prefix: 24
         Ingress:                                                                                  # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
-          Network: "{{ Net.VMNetwork.IPv4.Network }}.1".32
+          Network: "{{ Net.VMNetwork.IPv4.Network }}.32"
           Prefix: 27
         Egress:                                                                                   # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
-          Network: "{{ Net.VMNetwork.IPv4.Network }}.1".64
+          Network: "{{ Net.VMNetwork.IPv4.Network }}.64"
           Prefix: 27
     ContentLibrary:
       Name: "{{ Nested_vCenter.ContentLibrary.Name }}"
