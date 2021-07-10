@@ -57,6 +57,7 @@ Deploy:
       LocalManager: {{ Deploy.Product.NSXT.LocalManager }}
       CloudServicesManager: {{ Deploy.Product.NSXT.CloudServicesManager }}
       Edge: {{ Deploy.Product.NSXT.Edge }}
+    Tanzu: {{ Deploy.Product.Tanzu }}
   Setting:
     IPv4: {{ Deploy.Setting.IPv4 }}
     IPv6: {{ Deploy.Setting.IPv6 }}
@@ -181,3 +182,7 @@ Nested_vCenter:
 
 Nested_NSXT:
   {{ Nested_NSXT | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+
+Nested_Tanzu:
+  {{ Nested_Tanzu | to_nice_yaml(indent=2, width=99999) | indent(2) }}
