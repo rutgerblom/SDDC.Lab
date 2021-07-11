@@ -287,3 +287,8 @@
   - The following file was updated so please update your non-sample file:
     - config_sample.yml
 
+## Dev-v4.0.0 11-JULY-2021
+
+### Added by Rutger Blom
+
+  - Added a requirements.yml to the repository for easier installation of the required Ansible collections. The README.md has been updated to include an instruction on how to install the required Ansible collections using the repo's requirements.yml.
