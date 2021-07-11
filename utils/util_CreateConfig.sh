@@ -2,7 +2,7 @@
 
 # Print banner
 clear
-base64 -d <<<"H4sIAAAAAAAA/3VQy4oCQQy871cUCKuCMw0ifoC6t8WDgnhoiIKNu6CrqCMK+XjzsGVUtgI1SaaTSgII6BX3FBz5++rnSnyoGyxiexKdLaWBgMUy6r6G1uQppRilc9rs9mmFwdUUIhZFUTJqxiqrOrWu0kvGYB/f2CggPFoX/8KETEfknoTexg+ghXhN3zCKuUS8b6yYVKd1OmCw2W2BT+C7+j1i+LP8q/xmkUiLWIiNpaHm/IC2hezSIpuB2iYcMUMoySszxtM5zl+XfTqcLJ4NR3M0ur2+X04vHNhqnHNOerfdJR2mQ0yl/9cXIb+6AR8mUDcnAgAA" | gunzip
+base64 -d <<<"IF9fX19fX19fX19fX19fX19fICBfX19fXyAgICAgICBfICAgICAgICAgICBfICAgICAgICAgICAgICAgX19fIA0KLyAgX19ffCAgXyAgXCAgXyAgXC8gIF9fIFwgICAgIHwgfCAgICAgICAgIHwgfCAgICAgICAgICAgICAvICAgfCAgICAgICAgICAgICAgICAgRGV2ZWxvcGVkIEJ5DQpcIGAtLS58IHwgfCB8IHwgfCB8fCAvICBcLyAgICAgfCB8ICAgICBfXyBffCB8X18gICBfXyAgIF9fLyAvfCB8ICAgICAgICAgIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQogYC0tLiBcIHwgfCB8IHwgfCB8fCB8ICAgICAgICAgfCB8ICAgIC8gX2AgfCAnXyBcICBcIFwgLyAvIC9ffCB8ICAgICAgICAgIFJ1dGdlciBCbG9tICAmICBMdWlzIENoYW51DQovXF9fLyAvIHwvIC98IHwvIC8gfCBcX18vXCAgXyAgfCB8X19ffCAoX3wgfCB8XykgfCAgXCBWIC9cX19fICB8ICAgICAgICAgIE5TWCB2RXhwZXJ0ICAgICBWQ0RYICMyNDYNClxfX19fL3xfX18vIHxfX18vICAgXF9fX18vIChfKSBcX19fX18vXF9fLF98Xy5fXy8gICAgXF8vICAgICB8Xy8NCg=="
 echo
 echo
 
@@ -107,38 +107,38 @@ if [[ $choice =~ ^[Yy]$ ]] ; then
     # Update config.yml with the user supplied settings 
     sed -i -e "19s/Number: 240/Number: $podnumber/g" $destinationpath
     sed -i -e "99s/Physical: VMware1\!/Physical: $physicalpassword/g" $destinationpath
-    sed -i -e "103s/IPv4: \"{{ Net.Uplink.IPv4.Network }}.5\"/IPv4: $dnsserver/g" $destinationpath
-    sed -i -e "110s/IPv4: \"{{ Net.Uplink.IPv4.Network }}.5\"/IPv4: $ntpserver/g" $destinationpath
-    sed -i -e "135s/Deployment: Host/Deployment: $target/g" $destinationpath
+    sed -i -e "104s/IPv4: \"{{ Net.Uplink.IPv4.Network }}.5\"/IPv4: $dnsserver/g" $destinationpath
+    sed -i -e "111s/IPv4: \"{{ Net.Uplink.IPv4.Network }}.5\"/IPv4: $ntpserver/g" $destinationpath
+    sed -i -e "136s/Deployment: Host/Deployment: $target/g" $destinationpath
     
     # Check deployment target so that we update "FQDN" at the right line number
     if [[ $target == 'Host' ]] ; then
-        sed -i -e "137s/FQDN: Host32.NetLab.Home/FQDN: $fqdn/g" $destinationpath
+        sed -i -e "138s/FQDN: Host32.NetLab.Home/FQDN: $fqdn/g" $destinationpath
     else
-        sed -i -e "159s/FQDN: NetLab-vCenter.NetLab.Local/FQDN: $fqdn/g" $destinationpath
+        sed -i -e "160s/FQDN: NetLab-vCenter.NetLab.Local/FQDN: $fqdn/g" $destinationpath
     fi
     
     # Update "DataCenter" and "Cluster" only when the deployment target is vCenter
     if [[ $target == 'vCenter' ]] ; then
-        sed -i -e "164s/DataCenter: SDDC/DataCenter: $datacenter/g" $destinationpath
-        sed -i -e "165s/Cluster: Lab-Cluster/Cluster: $cluster/g" $destinationpath
+        sed -i -e "165s/DataCenter: SDDC/DataCenter: $datacenter/g" $destinationpath
+        sed -i -e "166s/Cluster: Lab-Cluster/Cluster: $cluster/g" $destinationpath
     fi
     
     # Check deployment target so that we update "Datastore" at the right line number
     if [[ $target == 'Host' ]] ; then
-        sed -i -e "144s/Datastore: Local_VMs/Datastore: $datastore/g" $destinationpath
+        sed -i -e "145s/Datastore: Local_VMs/Datastore: $datastore/g" $destinationpath
     else
-        sed -i -e "166s/Datastore: Shared_VMs/Datastore: $datastore/g" $destinationpath
+        sed -i -e "167s/Datastore: Shared_VMs/Datastore: $datastore/g" $destinationpath
     fi
     
     # Check deployment target so that we update "Uplink" at the right line number
     if [[ $target == 'Host' ]] ; then
-        sed -i -e "151s/Uplink: Lab-Routers/Uplink: $portgroup/g" $destinationpath
+        sed -i -e "152s/Uplink: Lab-Routers/Uplink: $portgroup/g" $destinationpath
     else
-        sed -i -e "173s/Uplink: Lab-Routers/Uplink: $portgroup/g" $destinationpath
+        sed -i -e "174s/Uplink: Lab-Routers/Uplink: $portgroup/g" $destinationpath
     fi
     
-    sed -i -e "313s/Protocol: BOTH /Protocol: $routing/g" $destinationpath
+    sed -i -e "339s/Protocol: BOTH /Protocol: $routing/g" $destinationpath
 else
     echo
     echo "Nothing updated. Exiting the script"
