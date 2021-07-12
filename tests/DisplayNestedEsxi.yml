@@ -6,7 +6,7 @@
     - ../software.yml
   tasks:
     - name: Display Nested ESXi
-      debug:
+      ansible.builtin.debug:
         msg: "Deploy={{ Nested_Clusters[item.value.Cluster]['DeployHosts'] }}"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: Nested_Clusters[item.value.Cluster]['DeployHosts']|bool 

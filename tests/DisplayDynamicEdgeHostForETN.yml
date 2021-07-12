@@ -10,7 +10,7 @@
 ## Get vCenter session ID
 ##
     - name: Authenticate to vCenter to obtain a Session ID
-      uri:
+      ansible.builtin.uri:
         url: "https://{{ Nested_vCenter.FQDN }}/rest/com/vmware/cis/session"
         headers: "{ 'vmware-use-header-authn':'test' }"
         method: POST
@@ -25,7 +25,7 @@
       register: vcenter_auth_result
 
     - name: DEBUG -- Display vcenter_auth_result
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           =================================================================================================
@@ -40,11 +40,11 @@
         - vcenter_auth_result is defined
 
     - name: Store vCenter Session ID for later use
-      set_fact:
+      ansible.builtin.set_fact:
         vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
 
     - name: DEBUG -- Display vCenter_SessionID
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           =================================================================================================
@@ -63,7 +63,7 @@
 ##
 
     - name: Get the vSphere Cluster's Object ID (MoREF)
-      uri:
+      ansible.builtin.uri:
         url: "https://{{ Nested_vCenter.FQDN }}/rest/vcenter/cluster?filter.names={{ Nested_NSXT.System.Fabric.Nodes.vSphereEdgeCluster }}"
         headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
         method: GET
@@ -78,7 +78,7 @@
       register: cluster_info
 
     - name: DEBUG -- Display cluster_info
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           =================================================================================================
@@ -93,11 +93,11 @@
         - cluster_info is defined
 
     - name: Store vSphere Cluster Object ID (MoREF) for later use
-      set_fact:
+      ansible.builtin.set_fact:
         Cluster_ID: "{{ cluster_info.json.value[0].cluster | default(None) }}"
 
     - name: DEBUG -- Display Cluster_ID
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           =================================================================================================
@@ -115,7 +115,7 @@
 ## Get all of the hosts in the vSphere cluster
 ##
     - name: Get ESXi hosts in vSphere Cluster
-      uri:
+      ansible.builtin.uri:
         url: "https://{{ Nested_vCenter.FQDN }}/rest/vcenter/host?filter.clusters={{ Cluster_ID }}"
         headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
         method: GET
@@ -130,7 +130,7 @@
       register: cluster_hosts
 
     - name: DEBUG -- Display cluster_hosts
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           =================================================================================================
@@ -145,12 +145,12 @@
         - cluster_hosts is defined
 
     - name: Create list containing just the FQDN EdgeHosts
-      set_fact:
+      ansible.builtin.set_fact:
         EdgeHosts: "{{ EdgeHosts | default([]) + [ item.name ] }}"
       loop: "{{ cluster_hosts.json.value }}"
 
     - name: DEBUG -- Display EdgeHosts
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           =================================================================================================
@@ -170,14 +170,14 @@
         - EdgeHosts is defined
 
     - name: Read the structure from template into a variable
-      set_fact:
+      ansible.builtin.set_fact:
         var_EdgeTransportNodes: "{{ lookup('template', LOCAL_EdgeTnTemplate) | from_yaml }}"
       when:
         - Deploy.Product.NSXT.LocalManager == true
         - Deploy.Product.NSXT.Edge == true
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ================================ Display var_EdgeTransportNodes Variable ===================================

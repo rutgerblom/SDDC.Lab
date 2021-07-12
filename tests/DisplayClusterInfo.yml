@@ -3,7 +3,7 @@
   name: DisplayClusterInfo.yml
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           *****************************************************************************************************
@@ -32,7 +32,7 @@
 
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ============================ Display Variables For Pod {{Pod.Number}} ===========================
@@ -53,7 +53,7 @@
         - DEBUG.DisplayVariables == true
 
     - name: Get vSphere Information for vSphere clusters
-      vmware_cluster_info:
+      community.vmware.vmware_cluster_info:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
@@ -65,5 +65,5 @@
        - item.value.DeployHosts == true
 
     - name: Display Cluster Info
-      debug:
+      ansible.builtin.debug:
         msg: "{{ cluster_info }}"

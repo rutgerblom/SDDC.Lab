@@ -23,11 +23,11 @@
 
   tasks:
     - name: util_SetNSXTags_Playbook
-      debug:
+      ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
     - name: Display error message if "VMList" is not defined
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           *****************************************************************************************************
@@ -49,11 +49,11 @@
         - VMList is not defined
 
     - name: Exit Ansible playbook if "VMList" is not defined
-      meta: end_play
+      ansible.builtin.meta: end_play
       when: VMList is not defined
 
     - name: DEBUG - Display VMs and Templates
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ================================== Show VM & Template Information ==================================
