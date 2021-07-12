@@ -186,7 +186,7 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 8 | GM1 | NSX-T Global Manager Node 1 (Future) | No |
 | 9 | GM2 | NSX-T Global Manager Node 2 (Future) | No |
 | 10 | GM3 | NSX-T Global Manager Node 3 (Future) | No |
-| 11 | LM VIP | NSX-T Local Manager VIP | No |
+| 11 | LM VIP | NSX-T Local Manager VIP | Yes |
 | 12 | LM1 | NSX-T Local Manager Node 1 | Yes |
 | 13 | LM2 | NSX-T Local Manager Node 2 | No |
 | 14 | LM3 | NSX-T Local Manager Node 3 | No |
