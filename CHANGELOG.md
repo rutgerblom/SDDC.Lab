@@ -299,3 +299,7 @@
 
   - Corrected missing "{" for annotation variable in deployRouter.yml
   - Updated all module references in tests and utils directory playbooks to use FCQN
+  - Added virtual IPv4 addresses variables to NSX-T GM and LM in config_sample.yml to prepare for future changes
+  - The following file was updated so please update your non-sample file:
+    - config_sample.yml
+
