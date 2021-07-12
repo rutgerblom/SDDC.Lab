@@ -292,3 +292,10 @@
 ### Added by Rutger Blom
 
   - Added a requirements.yml to the repository for easier installation of the required Ansible collections. The README.md has been updated to include an instruction on how to install the required Ansible collections using the repo's requirements.yml.
+
+## Dev-v4.0.0 1-JULY-2021
+
+### Added by Luis Chanu
+
+  - Corrected missing "{" for annotation variable in deployRouter.yml
+  - Updated all module references in tests and utils directory playbooks to use FCQN
