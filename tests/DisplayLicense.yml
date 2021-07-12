@@ -7,11 +7,11 @@
     - ../licenses.yml
   tasks:
     - name: Display License
-      debug:
+      ansible.builtin.debug:
         msg: "{{ License }}"
 
     - name: Display Licenses for vCenter
-      debug:
+      ansible.builtin.debug:
         msg: "Qty={{ item.Quantity }}, License={{ item.KeyCode }}"
       loop: "{{ License[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Licenses'] }}"
 

@@ -7,46 +7,46 @@
     - ../licenses.yml
   tasks:
     - name: Display software
-      debug:
+      ansible.builtin.debug:
         msg: "{{ Software }}"
 
     - name: Display Deploy.Software.vCenter.Vendor
-      debug:
+      ansible.builtin.debug:
         msg: "{{ Deploy.Software.vCenter.Vendor }}"
 
     - name: Display Deploy.Software.vCenter.Product
-      debug:
+      ansible.builtin.debug:
         msg: "{{ Deploy.Software.vCenter.Product }}"
 
     - name: Display Deploy.Software.vCenter.Version
-      debug:
+      ansible.builtin.debug:
         msg: "{{ Deploy.Software.vCenter.Version }}"
 
     - name: Display Deploy.Software.vCenter.Template
-      debug:
+      ansible.builtin.debug:
         msg: "{{ Deploy.Software.vCenter.Template }}"
 
     - name: Display Software Vendor
-      debug:
+      ansible.builtin.debug:
         msg: "{{ Software[Deploy.Software.vCenter.Vendor] }}"
 
     - name: Display Software Product
-      debug:
+      ansible.builtin.debug:
         msg: "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product] }}"
 
     - name: Display Software Installers
-      debug:
+      ansible.builtin.debug:
         msg: "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version] }}"
 
     - name: Display Software Location
-      debug:
+      ansible.builtin.debug:
         msg: "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].Location }}"
 
     - name: Display Software File
-      debug:
+      debansible.builtin.debugug:
         msg: "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].File }}"
 
     - name: Display Software Full Path
-      debug:
+      ansible.builtin.debug:
         msg: "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].Location }}/{{Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].File }}"
 

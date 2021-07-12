@@ -7,13 +7,13 @@
     - ../answerfile.yml
   tasks:
     - name: DEBUG before 'Check if the VyOS router is already deployed' module
-      debug:
+      ansible.builtin.debug:
         msg: "Target.FQDN=,   Target.User=,  Target.Password=, Target.DataCenter=,  Target.VMFolder=, Nested.Router.Name={{ Nested.Router.Name }},  Deploy.Product.Router={{ Deploy.Product.Router }}"
       when:
         - DEBUG.DisplayVariables == true
 
 #    - name: Check if the VyOS router is already deployed
-#      vmware_guest_info:
+#      community.vmware.vmware_guest_info:
 #        hostname: "{{ Target.FQDN }}"
 #        username: "{{ Target.User }}"
 #        password: "{{ Target.Password }}"
@@ -32,6 +32,6 @@
 #
 #
 #    - name: DEBUG before 'Check if the VyOS router is already deployed' module
-#      debug:
+#      ansible.builtin.debug:
 #        msg: "Target.FQDN={{ Target.FQDN }},   Target.User={{ Target.User }},  Target.Password={{ Target.Password }}, Target.DataCenter={{ Target.DataCenter }},  Target.VMFolder={{ Target.VMFolder }}, Nested.Router.Name={{ Nested.Router.Name }},  Deploy.Product.Router={{ Deploy.Product.Router }}"
 #      when:

@@ -6,7 +6,7 @@
 
 
 #    - name: Configure vMotion TCP/IP Stack Gateway Address on Nested_ESXi hosts
-#      vmware_vm_shell:
+#      community.vmware.vmware_vm_shell:
 #        hostname: "{{ Target.FQDN }}"
 #        username: "{{ Target.User }}"
 #        password: "{{ Target.Password }}"
@@ -38,7 +38,7 @@
       register: results
 
     - name: Display Results
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           =================================================================================================

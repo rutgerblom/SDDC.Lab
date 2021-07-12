@@ -17,7 +17,7 @@
   gather_facts: false
   tasks:
     - name: Generate  switch configuration
-      template: 
+      ansible.builtin.template: 
         src:  util_CreateSwitchConfig_Template.j2
         dest: "{{ lookup('env','HOME') }}/SwitchConfig.txt"
         force: yes

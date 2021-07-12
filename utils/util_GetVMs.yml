@@ -35,11 +35,11 @@
 
   tasks:
     - name: util_GetVMs_Playbook
-      debug:
+      ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
     - name: Get all registered VMs and Tempaltes on the given vCenter Server
-      vmware_vm_info:
+      community.vmware.vmware_vm_info:
         hostname: "{{ vCenter.Server }}"
         username: "{{ vCenter.User }}"
         password: "{{ vCenter.Password }}"
@@ -48,7 +48,7 @@
       register: vminfo
 
     - name: Display VMs and Templates Received From vCenter Server
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ================================== Show VM & Template Information ==================================
@@ -62,14 +62,14 @@
         - DEBUG.DisplayVMs == true
 
     - name: Only include 'vminfo' entries in FilterBy.vSphereClusters
-      set_fact:
+      ansible.builtin.set_fact:
         vmlist_filtered_by_clusters: "{{ (vmlist_filtered_by_clusters | default([])) + [ item ] }}"
       loop: "{{ vminfo.virtual_machines | default([]) }}"
       when:
         - FilterBy.vSphereClusters|length == 0 or item.cluster in FilterBy.vSphereClusters                           # If FilterBy.vSphereClusters is an empty list, or if item's cluster is one of the vSphereClusters
 
     - name: Display VMs and Templates That Are In The vSphere Clusters (Filtered)
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ======================== Show VM & Template Information In vSphere Clusters ========================
@@ -87,7 +87,7 @@
 ## Get vCenter Server Session ID for API calls
 ##
     - name: Authenticate to vCenter to obtain a Session ID
-      uri:
+      ansible.builtin.uri:
         url: "https://{{ vCenter.Server }}/rest/com/vmware/cis/session"
         headers: "{ 'vmware-use-header-authn':'test' }"
         method: POST
@@ -102,7 +102,7 @@
       register: vcenter_auth_result
 
     - name: Store vCenter Session ID for later use
-      set_fact:
+      ansible.builtin.set_fact:
         vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
 
 
@@ -110,7 +110,7 @@
 ## Develop list of PortGroup MoREF's To Filter On
 ##
     - name: Get info of each vCenter Network (==PortGroup)
-      uri:
+      ansible.builtin.uri:
         url: "https://{{ vCenter.Server }}/rest/vcenter/network?filter.names={{ item }}"
         headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
         method: GET
@@ -128,7 +128,7 @@
         - FilterBy.PortGroups|length > 0
 
     - name: Display 'network_info'
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           =================================== Show 'network_info' Structure ==================================
@@ -142,7 +142,7 @@
         - DEBUG.DisplayVMs == true
 
     - name: Create ListOfNetworkObjects (==list of Network MoREFs)
-      set_fact:
+      ansible.builtin.set_fact:
         ListOfNetworkObjects: "{{ (ListOfNetworkObjects | default([])) + [ item.json.value[0].network ] }}"
       loop: "{{ network_info.results | default([]) }}"
       when:
@@ -150,7 +150,7 @@
 
 
     - name: Display 'ListOfNetworkObjects'
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           =============================== Show 'ListOfNetworkObjects' Structure ==============================
@@ -168,7 +168,7 @@
 ## Develop Detailed List Of All The VMs
 ##
     - name: Get detailed information about each VM
-      vmware_guest_info:
+      community.vmware.vmware_guest_info:
         hostname: "{{ vCenter.Server }}"
         username: "{{ vCenter.User }}"
         password: "{{ vCenter.Password }}"
@@ -179,7 +179,7 @@
       register: guestinfo
 
     - name: Display 'guestinfo' Variable
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ================================== Show VM & Template Information ==================================
@@ -197,17 +197,17 @@
 ## Go through each Detailed VM to see if 
 ##
     - name: Remove VMs from 'guestinfo' list which do not have interfaces connected to any of the MoREFs in ListOfNetworkObjects'
-      template: 
+      ansible.builtin.template: 
         src:  "util_GetVMs_Filter_Template.j2"
         dest: "{{ LOCAL_DestinationFolder }}/{{ LOCAL_OutputFile }}"
         mode: "666"
 
     - name: Remove VMs from 'guestinfo' list which are not attached to any of the Port-Groups
-      set_fact:
+      ansible.builtin.set_fact:
         vmlist: "{{ lookup('template', 'util_GetVMs_Filter_Template.j2') | from_yaml }}"
 
     - name: Display 'vmlist' Variable
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           ================================== Show VM & Template Information ==================================
@@ -221,11 +221,11 @@
         - DEBUG.DisplayVMs == true
 
     - name: Create variable with current date and time for template
-      set_fact: 
+      ansible.builtin.set_fact: 
         time: "{{lookup('pipe','date \"+%d-%B-%Y %H:%M\"')}}"
 
     - name: Create VM List with Blank NSX-T tags
-      template: 
+      ansible.builtin.template: 
         src:  "{{ LOCAL_Template }}"
         dest: "{{ LOCAL_DestinationFolder }}/{{ LOCAL_OutputFile }}"
         mode: "666"
