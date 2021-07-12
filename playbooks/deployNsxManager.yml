@@ -201,6 +201,25 @@
       when:
         - Deploy.Product.NSXT.LocalManager == true
 
+    - name: Wait until the NSX-T API reports that the NSX-T Manager cluster is "STABLE" on the VIP
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Virtual }}/api/v1/cluster/status
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.detailed_cluster_status.overall_status == "STABLE"
+      retries: 60
+      delay: 60
+      when:
+        - Deploy.Product.NSXT.LocalManager == true
+
     - name: Write annotation on the NSX-T Local Manager VM
       community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
