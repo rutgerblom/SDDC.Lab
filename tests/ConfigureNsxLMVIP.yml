@@ -1,0 +1,32 @@
+---
+- hosts: localhost
+  tasks:
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+
+                            Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
+                                   Nested_NSXT.Credential.admin.name: {{ Nested_NSXT.Credential.admin.Name }}
+                               Nested_NSXT.Credential.admin.Password: {{ Nested_NSXT.Credential.admin.Password }}
+
+            Nested_NSXT.Components.LocalManager.Address.IPv4.Virtual: {{ Nested_NSXT.Components.LocalManager.Address.IPv4.Virtual }}
+
+          =================================================================================================
+#      when:
+#        - DEBUG.DisplayVariables == true
+
+##
+## Configure NSX-T Local Manager VIP
+##
+    - name: Configure NSX-T Local Manager Virtual IP (VIP) Address
+      nsxt_virtual_ip:
+        hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: false
+        virtual_ip_address: "{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Virtual }}"
+        state: present
+
