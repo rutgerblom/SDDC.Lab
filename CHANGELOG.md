@@ -302,4 +302,5 @@
   - Added virtual IPv4 addresses variables to NSX-T GM and LM in config_sample.yml to prepare for future changes
   - The following file was updated so please update your non-sample file:
     - config_sample.yml
-
+  - Created tests/ConfigureNsxLMVIP.yml to validate/verify VIP module functionality (Worked)
+  - Added NSX-T LM VIP configuration task to deployNexManager.yml playbook

@@ -68,6 +68,7 @@
                                    NSX-T Manager FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
                                          NSX-T VMName: {{ Nested_NSXT.Components.LocalManager.VMName }}
 
+                              NSX-T Local Manager VIP: {{ Nested_NSXT.Components.LocalManager.Address.IPv4.Virtual }}
 
                                                 OVF Variables
                                                 =============
@@ -186,7 +187,18 @@
       until: result.status == 200 and result.json.detailed_cluster_status.overall_status == "STABLE"
       retries: 60
       delay: 60
-      when: 
+      when:
+        - Deploy.Product.NSXT.LocalManager == true
+
+    - name: Configure NSX-T Local Manager Virtual IP (VIP) Address
+      nsxt_virtual_ip:
+        hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: false
+        virtual_ip_address: "{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Virtual }}"
+        state: present
+      when:
         - Deploy.Product.NSXT.LocalManager == true
 
     - name: Write annotation on the NSX-T Local Manager VM
