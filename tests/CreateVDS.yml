@@ -3,7 +3,7 @@
   gather_facts: false
   tasks:
     - name: Attempt to create Pod vDS on physical vCenter
-      vmware_dvswitch:
+      community.vmware.vmware_dvswitch:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -22,7 +22,7 @@
 ## if vDS was created, vds_result.result == "DVS created"
 
     - name: DEBUG - Display vds_result
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           =================================================================================================
@@ -38,7 +38,7 @@
         - vds_result is defined
 
     - name: Authenticate to vCenter to obtain a Session ID
-      uri:
+      ansible.builtin.uri:
         url: "https://{{ Target.FQDN }}/rest/com/vmware/cis/session"
         headers: "{ 'vmware-use-header-authn':'test' }"
         method: POST
@@ -56,7 +56,7 @@
         - vds_result.result == "DVS created"
 
     - name: DEBUG - Display vcenter_auth_result
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           =================================================================================================
@@ -72,7 +72,7 @@
         - vcenter_auth_result is defined
 
     - name: Store vCenter Session ID for later use
-      set_fact:
+      ansible.builtin.set_fact:
         vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
       when:
         - Target.Deployment == "vCenter"
@@ -80,7 +80,7 @@
 
 
     - name: DEBUG - Display vCenter_SessionID
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           =================================================================================================
@@ -101,7 +101,7 @@
 ##
 
     - name: Get the vSphere Cluster's Object ID (MoREF)
-      uri:
+      ansible.builtin.uri:
         url: "https://{{ Target.FQDN }}/rest/vcenter/cluster?filter.names={{ Target.Cluster }}"
         headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
         method: GET
@@ -119,7 +119,7 @@
         - vds_result.result == "DVS created"
 
     - name: Display cluster_info
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           =================================================================================================
@@ -136,14 +136,14 @@
         - cluster_info is defined
 
     - name: Store vSphere Cluster Object ID (MoREF) for later use
-      set_fact:
+      ansible.builtin.set_fact:
         Cluster_ID: "{{ cluster_info.json.value[0].cluster | default(None) }}"
       when:
         - Target.Deployment == "vCenter"
         - vds_result.result == "DVS created"
 
     - name: Display Cluster_ID
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           =================================================================================================
@@ -160,7 +160,7 @@
         - Cluster_ID is defined
 
     - name: Get ESXi hosts in vSphere Cluster
-      uri:
+      ansible.builtin.uri:
         url: "https://{{ Target.FQDN }}/rest/vcenter/host?filter.clusters={{ Cluster_ID }}"
         headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
         method: GET
@@ -178,7 +178,7 @@
         - vds_result.result == "DVS created"
 
     - name: Display cluster_hosts
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           =================================================================================================
@@ -195,7 +195,7 @@
         - cluster_hosts is defined
 
     - name: Add vSphere Cluster member hosts to vDS
-      vmware_dvs_host:
+      community.vmware.vmware_dvs_host:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -215,7 +215,7 @@
 ##
 
     - name: If vDS created, display Action Notice
-      pause:
+      ansible.builtin.pause:
         seconds: 10
         prompt: |
           =================================================================================================
@@ -240,7 +240,7 @@
         - vds_result.result == "DVS created"
 
     - name: Exit Ansible playbook so user can perform their required actons
-      meta: end_play
+      ansible.builtin.meta: end_play
       when:
         - Target.Deployment == "vCenter"
         - vds_result.result == "DVS created"
@@ -252,7 +252,7 @@
 ##
 
     - name: Create a Management Distributed Port-Group in vCenter
-      vmware_dvs_portgroup:
+      community.vmware.vmware_dvs_portgroup:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -272,7 +272,7 @@
         - Target.Deployment == "vCenter"
 
     - name: Create a Trunk Distributed Port-Group in vCenter
-      vmware_dvs_portgroup:
+      community.vmware.vmware_dvs_portgroup:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -295,7 +295,7 @@
 
 
     - name: Wait 10 seconds to see Port Groups
-      pause: seconds=10
+      ansible.builtin.pause: seconds=10
 
 
 ##
@@ -304,7 +304,7 @@
 
 
     - name: Remove a Management Distributed Port-Group in vCenter
-      vmware_dvs_portgroup:
+      community.vmware.vmware_dvs_portgroup:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -320,7 +320,7 @@
         - Target.Deployment == "vCenter"
 
     - name: Remove a Trunk Distributed Port-Group in vCenter
-      vmware_dvs_portgroup:
+      community.vmware.vmware_dvs_portgroup:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"

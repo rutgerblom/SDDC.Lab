@@ -2,7 +2,7 @@
 - hosts: localhost
   tasks:
     - name: Get vSphere Facts
-      vmware_host_facts:
+      community.vmware.vmware_host_facts:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -11,7 +11,7 @@
       register: host_result
 
     - name: Display Result
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           =================================================================================================
@@ -21,7 +21,7 @@
           =================================================================================================
 
     - name: Gather all registered VMs from vCenter Server (Host Deployment)
-      vmware_vm_info:
+      community.vmware.vmware_vm_info:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
@@ -30,7 +30,7 @@
       register: vcenter_result
 
     - name: Display Result
-      pause:
+      ansible.builtin.pause:
         seconds: 1
         prompt: |
           =================================================================================================

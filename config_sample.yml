@@ -119,7 +119,6 @@ Common:
     Port: 514
     IPv4: "{{ Net.Management.IPv4.Network }}.6"                               # Replace with your IP address if Deploy.Product.vRLI == false
     IPv6: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(6) }}"         # Replace with your IP address if Deploy.Product.vRLI == false
-  DiskProvisioning: thin
   NFS:                                                                        # NFS - The NFS settings below refer to a NFS share that can be used by the NESTED ESXi hosts for storage, and has nothing to do with physical ESXi server(s).  If possible, we suggest using vSAN storage on the nested ESXi hosts, which are backed by local physical storage.
     Server:
       IPv4: 192.168.0.12
@@ -127,6 +126,9 @@ Common:
     Datastore: nfs01
     Path: /nested_nfs01
     Type: nfs
+  PKI:
+    ValidateCerts: false                                                      # This indicates if PKI Certificates should be validated.  By default, self-signed certificates are used, so ValidateCerts should be set to 'false'
+  DiskProvisioning: thin
   Annotation: '*** Auto-Deployed by SDDC.Lab ***'
 
 
@@ -1365,6 +1367,7 @@ Nested_NSXT:
     GlobalManager:
       VMName: "{{ SiteCode }}-NSXT-GM-1"
       FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-NSXT-GM-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.8{% endif %}"
+      FQDN_VIP: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-NSXT-GM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.7{% endif %}"
       Deployment:
         Size: small
         role: NSX Global Manager
@@ -1372,6 +1375,7 @@ Nested_NSXT:
         AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
       Address:
         IPv4:
+          Virtual: "{{ Net.Management.IPv4.Network }}.7"
           Address: "{{ Net.Management.IPv4.Network }}.8"
           Prefix:  "{{ Net.Management.IPv4.Prefix }}"
           Gateway: "{{ Net.Management.IPv4.Network }}.1"
@@ -1381,6 +1385,7 @@ Nested_NSXT:
     LocalManager:
       VMName: "{{ SiteCode }}-NSXT-LM-1"
       FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-NSXT-LM-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.12{% endif %}"
+      FQDN_VIP: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-NSXT-LM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.11{% endif %}"
       Deployment:
         Size: small
         Role: NSX Manager
@@ -1389,6 +1394,7 @@ Nested_NSXT:
         AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
       Address:
         IPv4:
+          Virtual: "{{ Net.Management.IPv4.Network }}.11"
           Address: "{{ Net.Management.IPv4.Network }}.12"
           Prefix:  "{{ Net.Management.IPv4.Prefix }}"
           Gateway: "{{ Net.Management.IPv4.Network }}.1"
@@ -2014,4 +2020,3 @@ Nested_Tanzu:
           Prefix: 27
     ContentLibrary:
       Name: "{{ Nested_vCenter.ContentLibrary.Name }}"
-      

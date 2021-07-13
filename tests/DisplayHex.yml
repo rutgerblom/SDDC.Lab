@@ -2,19 +2,19 @@
 - hosts: localhost
   tasks:
     - name: Display Pod Number In Decimal
-      debug:
+      ansible.builtin.debug:
         msg: "{{ '%03d'|format( Pod.Number|int ) }}"
 
     - name: Display Pod Number In Hex (lower case)
-      debug:
+      ansible.builtin.debug:
         msg: "{{ '%02x'|format( Pod.Number|int ) }}"
 
     - name: Display Pod Number In Hex (upper case)
-      debug:
+      ansible.builtin.debug:
         msg: "{{ '%02X'|format( Pod.Number|int ) }}"
 
     - name: Display Pod.BaseNetwork + Pod.Number
-      debug:
+      ansible.builtin.debug:
         msg: "{{ Pod.BaseNetwork.IPv6 }}{{ '%02x'|format(Pod.Number+0|int) }}"
 
 
