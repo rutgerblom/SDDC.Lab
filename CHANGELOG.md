@@ -293,7 +293,7 @@
 
   - Added a requirements.yml to the repository for easier installation of the required Ansible collections. The README.md has been updated to include an instruction on how to install the required Ansible collections using the repo's requirements.yml.
 
-## Dev-v4.0.0 1-JULY-2021
+## Dev-v4.0.0 11-JULY-2021
 
 ### Added by Luis Chanu
 
@@ -304,3 +304,12 @@
     - config_sample.yml
   - Created tests/ConfigureNsxLMVIP.yml to validate/verify VIP module functionality (Worked)
   - Added NSX-T LM VIP configuration task to deployNexManager.yml playbook
+
+## Dev-v4.0.0 12-JULY-2021
+
+### Added by Luis Chanu
+
+  - The following changes were made to the config_sample.yml file:
+    - Added FQDN_VIP entries for NSX-T LocalManager and GlobalManager
+    - Added Common.PKI.ValidateCerts varilable with a default value of 'false'
+  - The config_sample.yml file was updated so please update your non-sample configuration files, then rerun the createPodConfig.yml playbook to regenerate your static configuration files.
