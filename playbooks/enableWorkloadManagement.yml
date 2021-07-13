@@ -90,7 +90,7 @@
         validate_certs: False
       register: cluster_info
       when:
-        - Deploy.Product.Tanzu == true
+        - Deploy.Product.Tanzu.WorkloadManagement == true
 
     - name: Store vSphere Cluster MoRef ID for later use
       ansible.builtin.set_fact:
@@ -98,7 +98,7 @@
       vars:
         query: 'clusters."{{ Nested_Tanzu.ControlPlane.Config.vSphereCluster }}".moid'
       when:
-        - Deploy.Product.Tanzu == true
+        - Deploy.Product.Tanzu.WorkloadManagement == true
 
 
 ##
@@ -113,7 +113,7 @@
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
       register: vds_info
       when:
-        - Deploy.Product.Tanzu == true
+        - Deploy.Product.Tanzu.WorkloadManagement == true
 
     - name: Store Distributed Switch ID for later use
       ansible.builtin.set_fact:
@@ -121,7 +121,7 @@
       vars:
         query: distributed_virtual_switches[*].uuid
       when:
-        - Deploy.Product.Tanzu == true
+        - Deploy.Product.Tanzu.WorkloadManagement == true
 
 
 ##
@@ -136,7 +136,7 @@
         validate_certs: false
       register: vdspg_info
       when:
-        - Deploy.Product.Tanzu == true
+        - Deploy.Product.Tanzu.WorkloadManagement == true
 
     - name: Store Management Port Group ID for later use
       ansible.builtin.set_fact:
@@ -144,7 +144,7 @@
       vars:
         query: dvs_portgroup_info."{{ Nested_vCenter.Networking.vSwitch.Name }}"[?portgroup_name=='{{ Nested_Tanzu.ControlPlane.Network.Management.PortGroup }}'].key
       when:
-        - Deploy.Product.Tanzu == true
+        - Deploy.Product.Tanzu.WorkloadManagement == true
       
 
 ##
@@ -158,7 +158,7 @@
         validate_certs: false
       register: sp_info
       when:
-        - Deploy.Product.Tanzu == true
+        - Deploy.Product.Tanzu.WorkloadManagement == true
 
     - name: Store Storage Policy ID for later use
       ansible.builtin.set_fact:
@@ -166,7 +166,7 @@
       vars:
         query: spbm_profiles[?name=='vSAN Default Storage Policy'].id
       when:
-        - Deploy.Product.Tanzu == true
+        - Deploy.Product.Tanzu.WorkloadManagement == true
 
 
 ##
@@ -180,7 +180,7 @@
         validate_certs: False
       register: ec_info
       when:
-        - Deploy.Product.Tanzu == true
+        - Deploy.Product.Tanzu.WorkloadManagement == true
 
     - name: Store NSX-T Edge Cluster ID for later use
       ansible.builtin.set_fact:
@@ -188,7 +188,7 @@
       vars:
         query: results[?display_name=='{{ Nested_Tanzu.ControlPlane.Config.EdgeCluster }}'].id
       when:
-        - Deploy.Product.Tanzu == true
+        - Deploy.Product.Tanzu.WorkloadManagement == true
 
 
 ##
@@ -202,7 +202,7 @@
         validate_certs: false
       register: cl_info
       when:
-        - Deploy.Product.Tanzu == true
+        - Deploy.Product.Tanzu.WorkloadManagement == true
 
     - name: Store vSphere Content Library ID for later use
       ansible.builtin.set_fact:
@@ -210,7 +210,7 @@
       vars:
         query: content_libs
       when:
-        - Deploy.Product.Tanzu == true
+        - Deploy.Product.Tanzu.WorkloadManagement == true
 
 #    - name: DEBUG -- Print return information from the previous task
 #      ansible.builtin.debug:
@@ -236,13 +236,13 @@
         status_code: 200
       register: vcenter_auth_result
       when:
-        - Deploy.Product.Tanzu == true
+        - Deploy.Product.Tanzu.WorkloadManagement == true
 
     - name: Store vCenter Session ID for later use
       set_fact:
         vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
       when:
-        - Deploy.Product.Tanzu == true
+        - Deploy.Product.Tanzu.WorkloadManagement == true
 
 
 ##
@@ -258,4 +258,4 @@
         body_format: json
         status_code: 204
       when:
-        - Deploy.Product.Tanzu == true
+        - Deploy.Product.Tanzu.WorkloadManagement == true
