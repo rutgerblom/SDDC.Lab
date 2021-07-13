@@ -13,53 +13,53 @@
 {% endfor %}{# vds_id #}
         "pod_cidrs": [
             {
-                "address": "{{ Nested_Tanzu.ControlPlane.Network.Workload.Pod.Network }}",
-                "prefix": "{{ Nested_Tanzu.ControlPlane.Network.Workload.Pod.Prefix }}"
+                "address": "{{ Nested_Tanzu.WorkloadManagement.Network.Workload.Pod.Network }}",
+                "prefix": "{{ Nested_Tanzu.WorkloadManagement.Network.Workload.Pod.Prefix }}"
             }
         ],
         "ingress_cidrs": [
             {
-                "address": "{{ Nested_Tanzu.ControlPlane.Network.Workload.Ingress.Network }}",
-                "prefix": "{{ Nested_Tanzu.ControlPlane.Network.Workload.Ingress.Prefix }}"
+                "address": "{{ Nested_Tanzu.WorkloadManagement.Network.Workload.Ingress.Network }}",
+                "prefix": "{{ Nested_Tanzu.WorkloadManagement.Network.Workload.Ingress.Prefix }}"
             }
         ],
         "egress_cidrs": [
             {
-                "address": "{{ Nested_Tanzu.ControlPlane.Network.Workload.Egress.Network }}",
-                "prefix": "{{ Nested_Tanzu.ControlPlane.Network.Workload.Egress.Prefix }}"
+                "address": "{{ Nested_Tanzu.WorkloadManagement.Network.Workload.Egress.Network }}",
+                "prefix": "{{ Nested_Tanzu.WorkloadManagement.Network.Workload.Egress.Prefix }}"
             }
         ]
     },
     "master_NTP_servers": [
-        "{{ Nested_Tanzu.ControlPlane.Network.Management.NTP }}"
+        "{{ Nested_Tanzu.WorkloadManagement.Network.Management.NTP }}"
     ],
 {% for sp_id in sp_id %}
     "ephemeral_storage_policy": "{{ sp_id }}",
 {% endfor %}{# sp_id #}
     "service_cidr": {
-        "address": "{{ Nested_Tanzu.ControlPlane.Network.Workload.Service.Network }}",
-        "prefix": "{{ Nested_Tanzu.ControlPlane.Network.Workload.Service.Prefix }}"
+        "address": "{{ Nested_Tanzu.WorkloadManagement.Network.Workload.Service.Network }}",
+        "prefix": "{{ Nested_Tanzu.WorkloadManagement.Network.Workload.Service.Prefix }}"
     },
-    "size_hint": "{{ Nested_Tanzu.ControlPlane.Config.Size }}",
+    "size_hint": "{{ Nested_Tanzu.WorkloadManagement.Config.Size }}",
     "worker_DNS": [
-        "{{ Nested_Tanzu.ControlPlane.Network.Workload.DNS }}"
+        "{{ Nested_Tanzu.WorkloadManagement.Network.Workload.DNS }}"
     ],
     "master_DNS": [
-        "{{ Nested_Tanzu.ControlPlane.Network.Management.DNS }}"
+        "{{ Nested_Tanzu.WorkloadManagement.Network.Management.DNS }}"
     ],
     "network_provider": "NSXT_CONTAINER_PLUGIN",
 {% for sp_id in sp_id %}
     "master_storage_policy": "{{ sp_id }}",
 {% endfor %}{# sp_id #}
     "master_DNS_search_domains": [
-        "{{ Nested_Tanzu.ControlPlane.Network.Management.Domain }}"
+        "{{ Nested_Tanzu.WorkloadManagement.Network.Management.Domain }}"
     ],
     "master_management_network": {
         "mode": "STATICRANGE",
         "address_range": {
-            "subnet_mask": "{{ (Nested_Tanzu.ControlPlane.Network.Management.StartingIP + '/' + Nested_Tanzu.ControlPlane.Network.Management.Prefix) | ipaddr('netmask') }}",
-            "starting_address": "{{ Nested_Tanzu.ControlPlane.Network.Management.StartingIP }}",
-            "gateway": "{{ Nested_Tanzu.ControlPlane.Network.Management.Gateway }}",
+            "subnet_mask": "{{ (Nested_Tanzu.WorkloadManagement.Network.Management.StartingIP + '/' + Nested_Tanzu.WorkloadManagement.Network.Management.Prefix) | ipaddr('netmask') }}",
+            "starting_address": "{{ Nested_Tanzu.WorkloadManagement.Network.Management.StartingIP }}",
+            "gateway": "{{ Nested_Tanzu.WorkloadManagement.Network.Management.Gateway }}",
             "address_count": 5
         },
 {% for vdspg_id in vdspg_id %}

@@ -65,14 +65,14 @@
                                       Target.VMFolder: {{ Target.VMFolder }}
 
                                   Nested vCenter FQDN: {{ Nested_vCenter.FQDN | lower }}
-                         Nested Tanzu vSphere Cluster: {{ Nested_Tanzu.ControlPlane.Config.vSphereCluster }}
-                   Nested Tanzu Management Port Group: {{ Nested_Tanzu.ControlPlane.Network.Management.PortGroup }}
-                            Nested Tanzu Edge Cluster: {{ Nested_Tanzu.ControlPlane.Config.EdgeCluster }}
-                  Nested Tanzu Management Starting IP: {{ Nested_Tanzu.ControlPlane.Network.Management.StartingIP }}
-                             Nested Tanzu Pod Network: {{ Nested_Tanzu.ControlPlane.Network.Workload.Pod.Network }}
-                         Nested Tanzu Ingress Network: {{ Nested_Tanzu.ControlPlane.Network.Workload.Ingress.Network }}
-                          Nested Tanzu Egress Network: {{ Nested_Tanzu.ControlPlane.Network.Workload.Egress.Network }}
-                         Nested Tanzu Service Network: {{ Nested_Tanzu.ControlPlane.Network.Workload.Service.Network }}
+                         Nested Tanzu vSphere Cluster: {{ Nested_Tanzu.WorkloadManagement.Config.vSphereCluster }}
+                   Nested Tanzu Management Port Group: {{ Nested_Tanzu.WorkloadManagement.Network.Management.PortGroup }}
+                            Nested Tanzu Edge Cluster: {{ Nested_Tanzu.WorkloadManagement.Config.EdgeCluster }}
+                  Nested Tanzu Management Starting IP: {{ Nested_Tanzu.WorkloadManagement.Network.Management.StartingIP }}
+                             Nested Tanzu Pod Network: {{ Nested_Tanzu.WorkloadManagement.Network.Workload.Pod.Network }}
+                         Nested Tanzu Ingress Network: {{ Nested_Tanzu.WorkloadManagement.Network.Workload.Ingress.Network }}
+                          Nested Tanzu Egress Network: {{ Nested_Tanzu.WorkloadManagement.Network.Workload.Egress.Network }}
+                         Nested Tanzu Service Network: {{ Nested_Tanzu.WorkloadManagement.Network.Workload.Service.Network }}
 
           =================================================================================================
       when:
@@ -86,7 +86,7 @@
         hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        cluster_name: "{{ Nested_Tanzu.ControlPlane.Config.vSphereCluster }}"
+        cluster_name: "{{ Nested_Tanzu.WorkloadManagement.Config.vSphereCluster }}"
         validate_certs: False
       register: cluster_info
       when:
@@ -96,7 +96,7 @@
       ansible.builtin.set_fact:
         cluster_id: "{{ cluster_info | community.general.json_query(query) }}"
       vars:
-        query: 'clusters."{{ Nested_Tanzu.ControlPlane.Config.vSphereCluster }}".moid'
+        query: 'clusters."{{ Nested_Tanzu.WorkloadManagement.Config.vSphereCluster }}".moid'
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
 
@@ -142,7 +142,7 @@
       ansible.builtin.set_fact:
         vdspg_id: "{{ vdspg_info | community.general.json_query(query) }}"
       vars:
-        query: dvs_portgroup_info."{{ Nested_vCenter.Networking.vSwitch.Name }}"[?portgroup_name=='{{ Nested_Tanzu.ControlPlane.Network.Management.PortGroup }}'].key
+        query: dvs_portgroup_info."{{ Nested_vCenter.Networking.vSwitch.Name }}"[?portgroup_name=='{{ Nested_Tanzu.WorkloadManagement.Network.Management.PortGroup }}'].key
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
       
@@ -186,7 +186,7 @@
       ansible.builtin.set_fact:
         ec_id: "{{ ec_info | community.general.json_query(query) }}"
       vars:
-        query: results[?display_name=='{{ Nested_Tanzu.ControlPlane.Config.EdgeCluster }}'].id
+        query: results[?display_name=='{{ Nested_Tanzu.WorkloadManagement.Config.EdgeCluster }}'].id
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
 
