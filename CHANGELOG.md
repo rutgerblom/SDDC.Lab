@@ -313,3 +313,9 @@
     - Added FQDN_VIP entries for NSX-T LocalManager and GlobalManager
     - Added Common.PKI.ValidateCerts varilable with a default value of 'false'
   - The config_sample.yml file was updated so please update your non-sample configuration files, then rerun the createPodConfig.yml playbook to regenerate your static configuration files.
+
+## Dev-v4.0.0 16-JULY-2021
+
+### Added by Luis Chanu
+
+  - Created test module "tests/updateDNSVIP.yml" module to populate NSX-T VIP entries into DNS.  This module is working, and the code is ready to be integrated into the two modules with touch DNS records.
