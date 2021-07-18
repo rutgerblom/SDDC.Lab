@@ -195,6 +195,17 @@ set service lldp interface all
 set service lldp legacy-protocols cdp
 
 
+
+##
+## Service - DNS Forwarding 
+##
+{% if Deploy.Product.Tanzu.WorkloadManagement -%}
+set service dns forwarding allow-from 0.0.0.0/0
+set service dns forwarding listen-address {{ Nested_Router.Interface.VMNetwork.IPv4.Address }}
+set service dns forwarding name-server {{ Common.DNS.Server1.IPv4 }}
+{% endif -%}{# Deploy.Product.Tanzu.WorkloadManagement #}
+
+
 ##
 ## System - Timezone
 ##
