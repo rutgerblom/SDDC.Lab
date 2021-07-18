@@ -319,3 +319,9 @@
 ### Added by Luis Chanu
 
   - Created test module "tests/updateDNSVIP.yml" module to populate NSX-T VIP entries into DNS.  This module is working, and the code is ready to be integrated into the two modules with touch DNS records.
+
+## Dev-v4.0.0 17-JULY-2021
+
+### Added by Luis Chanu
+
+  - Integrated DNS VIP code into both "updateDNS.yml" and "cleanupDNS.yml" playbooks.  Tested both playbooks, and they completed without any issues.  Verified using utils/showdns that the NSX-T Global Manager and Local Manager VIPs were populated in DNS.
