@@ -135,7 +135,11 @@
 - ansible.builtin.import_playbook: playbooks/enableWorkloadManagement.yml
   when: 
     - Deploy.Product.Tanzu.WorkloadManagement == true
+    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.Edge == true
 
 - ansible.builtin.import_playbook: playbooks/license_Tanzu.yml
   when: 
     - Deploy.Product.Tanzu.WorkloadManagement == true
+    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.Edge == true
