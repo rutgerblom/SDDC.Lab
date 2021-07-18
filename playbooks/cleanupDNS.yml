@@ -732,10 +732,161 @@
         - False
 
 
+
 ##
-## Process Nested_NSXT Related Items
+## Process Nested_NSXT Global Manager VIP
 ##
-    - name: DEBUG -- Display IPv4 'A' records for Nested_NSXT
+    - name: DEBUG -- Display IPv4 'A' record for Nested_NSXT {{ Nested_NSXT.Components.GlobalManager.FQDN_VIP }}
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ============================ Display NSX-T Global Manager VIP DNS "A" Record ================================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ (Nested_NSXT.Components.GlobalManager.FQDN_VIP).split('.')[0] }}
+                                                Value: {{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Virtual }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+    - name: IPv4 'A' record for Nested_NSXT {{ Nested_NSXT.Components.GlobalManager.FQDN_VIP }}
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     A
+        protocol: udp
+        zone:     "{{ Common.DNS.Domain }}"
+        record:   "{{ (Nested_NSXT.Components.GlobalManager.FQDN_VIP).split('.')[0] }}"
+        value:    "{{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Virtual }}"
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+
+
+    - name: DEBUG -- Display IPv4 'PTR' record for Nested_NSXT {{ Nested_NSXT.Components.GlobalManager.FQDN_VIP }}
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ========================== Display NSX-T Global Manager VIP DNS IPv4 "PTR" Record ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ IPv4_Reverse_Zone }}
+                                               Record: {{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Virtual | ipaddr('revdns') }}
+                                                Value: {{ (Nested_NSXT.Components.GlobalManager.FQDN_VIP).split('.')[0] }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+    - name: IPv4 'PTR' record for Nested_NSXT {{ Nested_NSXT.Components.GlobalManager.FQDN_VIP }}
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ IPv4_Reverse_Zone }}"
+        record:   "{{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Virtual | ipaddr('revdns') }}"
+        value:    "{{ (Nested_NSXT.Components.GlobalManager.FQDN_VIP).split('.')[0] }}.{{ Common.DNS.Domain }}."
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+
+
+##
+## Process Nested_NSXT Local Manager VIP
+##
+    - name: DEBUG -- Display IPv4 'A' record for Nested_NSXT {{ Nested_NSXT.Components.LocalManager.FQDN_VIP }}
+      ansible.builtin.pause:
+        seconds: 10
+        prompt: |
+          ============================ Display NSX-T Local Manager VIP DNS "A" Record ================================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ (Nested_NSXT.Components.LocalManager.FQDN_VIP).split('.')[0] }}
+                                                Value: {{ Nested_NSXT.Components.LocalManager.Address.IPv4.Virtual }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+    - name: IPv4 'A' record for Nested_NSXT {{ Nested_NSXT.Components.LocalManager.FQDN_VIP }}
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     A
+        protocol: udp
+        zone:     "{{ Common.DNS.Domain }}"
+        record:   "{{ (Nested_NSXT.Components.LocalManager.FQDN_VIP).split('.')[0] }}"
+        value:    "{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Virtual }}"
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+
+
+    - name: DEBUG -- Display IPv4 'PTR' record for Nested_NSXT {{ Nested_NSXT.Components.LocalManager.FQDN_VIP }}
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ========================== Display NSX-T Local Manager VIP DNS IPv4 "PTR" Record ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ IPv4_Reverse_Zone }}
+                                               Record: {{ Nested_NSXT.Components.LocalManager.Address.IPv4.Virtual | ipaddr('revdns') }}
+                                                Value: {{ (Nested_NSXT.Components.LocalManager.FQDN_VIP).split('.')[0] }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+    - name: IPv4 'PTR' record for Nested_NSXT {{ Nested_NSXT.Components.LocalManager.FQDN_VIP }}
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ IPv4_Reverse_Zone }}"
+        record:   "{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Virtual | ipaddr('revdns') }}"
+        value:    "{{ (Nested_NSXT.Components.LocalManager.FQDN_VIP).split('.')[0] }}.{{ Common.DNS.Domain }}."
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+
+
+##
+## Process Remaining Nested_NSXT Items (Non-VIP)
+##
+    - name: DEBUG -- Display IPv4 'A' records for Nested_NSXT Components (Non-VIP)
       ansible.builtin.pause:
         seconds: 1
         prompt: |
@@ -757,7 +908,7 @@
         - Deploy.Setting.UseDNS == true
         - Deploy.Setting.IPv4 == true
 
-    - name: IPv4 'A' records for Nested_NSXT Components
+    - name: IPv4 'A' records for Nested_NSXT Components (Non-VIP)
       community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     A
@@ -773,7 +924,7 @@
 
 
 
-    - name: DEBUG -- Display IPv4 'PTR' records for Nested_NSXT
+    - name: DEBUG -- Display IPv4 'PTR' records for Nested_NSXT Components (Non-VIP)
       ansible.builtin.pause:
         seconds: 1
         prompt: |
@@ -795,7 +946,7 @@
         - Deploy.Setting.UseDNS == true
         - Deploy.Setting.IPv4 == true
 
-    - name: IPv4 'PTR' records for Nested_NSXT Components
+    - name: IPv4 'PTR' records for Nested_NSXT Components (Non-VIP)
       community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
@@ -871,7 +1022,7 @@
         - Deploy.Setting.UseDNS == true
         - Deploy.Setting.IPv4 == true
 
-    - name: IPv4 'PTR' records for Nested_NSXT Components
+    - name: IPv4 'PTR' records for Nested_NSXT Edge Transport Nodes
       community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
@@ -887,7 +1038,7 @@
 
  
 
-    - name: DEBUG -- Display IPv6 'AAAA' records for Nested_NSXT
+    - name: DEBUG -- Display IPv6 'AAAA' records for Nested_NSXT Components
       ansible.builtin.pause:
         seconds: 1
         prompt: |
