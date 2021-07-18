@@ -331,7 +331,7 @@
 ### Added by Rutger Blom
 
   - Added the vSphere with Tanzu Workload Management playbooks to the deployment playbook.  Automated deployment of Workload Management is controlled in "config.yml" at "Deploy.Product.Tanzu.WorkloadManagement".  The default setting is "false" meaning that vSphere with Tanzu Workload Management is not deployed by default.
-  - DNS forwarding is configured on the VyOS router's VMNetwork VLAN interface if "Deploy.Product.Tanzu.WorkloadManagement" is set to "true".
+  - DNS forwarding is configured on the VyOS router's "VMNetwork" VLAN interface if "Deploy.Product.Tanzu.WorkloadManagement" is set to "true".
   - NSX-T is required for vSphere with Tanzu Workload Management (in this project) and as such conditionals have been added to the vSphere with Tanzu Workload Management playbooks that check whether NSX-T is deployed.
   - The following file was updated so please update your non-sample file:
     - config_sample.yml
