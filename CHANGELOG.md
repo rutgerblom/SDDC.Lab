@@ -325,3 +325,11 @@
 ### Added by Luis Chanu
 
   - Integrated DNS VIP code into both "updateDNS.yml" and "cleanupDNS.yml" playbooks.  Tested both playbooks, and they completed without any issues.  Verified using utils/showdns that the NSX-T Global Manager and Local Manager VIPs were populated in DNS.
+
+## Dev-v4.0.0 18-JULY-2021
+
+### Added by Rutger Blom
+
+  - The playbooks that enable vSphere with Tanzu Workload Management are now included in the deployment playbook. Automated configuration of Workload Management is controlled in config.yml under "Deploy.Product.Tanzu.WorkloadManagement". The default setting is "false" meaning vSphere with Tanzu Workload Management is not configured.
+  - The following file was updated so please update your non-sample file:
+    - config_sample.yml
