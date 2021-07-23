@@ -335,3 +335,11 @@
   - NSX-T is required for vSphere with Tanzu Workload Management (in this project) and as such conditionals have been added to the vSphere with Tanzu Workload Management playbooks that check whether NSX-T is deployed.
   - The following file was updated so please update your non-sample file:
     - config_sample.yml
+
+## Dev-v4.0.0 23-JULY-2021
+
+### Added by Rutger Blom
+
+  - Added support for deploying NSX-T 3.1.3
+  - The following file was updated so please update your non-sample file:
+    - software_sample.yml
