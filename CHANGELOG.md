@@ -354,3 +354,8 @@
     - config_sample.yml
   - After updating your non-sample configuration files, be sure to recreate your static Pod configuration files by running "createPodConfig.yml" against each of the updated config files.
 
+## Dev-v4.0.0 24-JULY-2021
+
+### Added by Luis Chanu
+
+  - Modifed createVds.yml to prune VLAN ID range on NSXEdgeUplink1 and NSXEdgeUplink2 uplinks to the VLAN ID range of the Pod being deployed.  Previously, it was allowing all VLANs (0-4094).
