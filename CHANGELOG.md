@@ -343,3 +343,14 @@
   - Added support for deploying NSX-T 3.1.3
   - The following file was updated so please update your non-sample file:
     - software_sample.yml
+
+## Dev-v4.0.0 23-JULY-2021
+
+### Added by Luis Chanu
+
+  - Moved NSX-T GlobalManager and LocalManager VIP information to an entry below Nested_NSXT.Components in the config_sample.yml file.
+  - Updated DNS playbooks, along with deployNsxManager.yml to use the newly created variables.
+  - The following file was updated so please update your non-sample file:
+    - config_sample.yml
+  - After updating your non-sample configuration files, be sure to recreate your static Pod configuration files by running "createPodConfig.yml" against each of the updated config files.
+
