@@ -65,6 +65,7 @@
       when:
         - DEBUG.DisplayVariables == true
 
+
     - name: Create distributed switch in the nested vCenter
       community.vmware.vmware_dvswitch:
         hostname: "{{ Nested_vCenter.FQDN }}"
@@ -145,6 +146,13 @@
         portgroup_type: earlyBinding
         state: present
 
+    - name: Create list of VLAN IDs used by the Pod
+      ansible.builtin.set_fact:
+        VLAN_List: "{{ (VLAN_List | default([])) + [ item.value.VLAN ] }}"
+      loop: "{{ Net | dict2items }}"
+      when:
+        - item.value.VLAN.isnumeric()
+
     - name: Create Uplink1 port group
       community.vmware.vmware_dvs_portgroup:
         hostname: "{{ Nested_vCenter.FQDN }}"
@@ -154,7 +162,7 @@
         portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Name }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vlan_trunk: true
-        vlan_id: "0-4094"
+        vlan_id: "{{ VLAN_List | min }}-{{ VLAN_List | max }}"
         num_ports: 8
         portgroup_type: earlyBinding
         state: present
@@ -168,7 +176,7 @@
         portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Name }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vlan_trunk: true
-        vlan_id: "0-4094"
+        vlan_id: "{{ VLAN_List | min }}-{{ VLAN_List | max }}"
         num_ports: 8
         portgroup_type: earlyBinding
         state: present

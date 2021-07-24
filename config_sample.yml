@@ -1364,10 +1364,20 @@ Nested_NSXT:
       Name: audit
       Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
   Components:
+    GlobalManager_VIP:
+      VMName: "{{ SiteCode }}-NSXT-GM"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-NSXT-GM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.7{% endif %}"
+      Address:
+        IPv4:
+          Address: "{{ Net.Management.IPv4.Network }}.7"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+          Gateway: "{{ Net.Management.IPv4.Network }}.1"
+        IPv6:
+          Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(7) }}"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     GlobalManager:
       VMName: "{{ SiteCode }}-NSXT-GM-1"
       FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-NSXT-GM-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.8{% endif %}"
-      FQDN_VIP: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-NSXT-GM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.7{% endif %}"
       Deployment:
         Size: small
         role: NSX Global Manager
@@ -1375,17 +1385,26 @@ Nested_NSXT:
         AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
       Address:
         IPv4:
-          Virtual: "{{ Net.Management.IPv4.Network }}.7"
           Address: "{{ Net.Management.IPv4.Network }}.8"
           Prefix:  "{{ Net.Management.IPv4.Prefix }}"
           Gateway: "{{ Net.Management.IPv4.Network }}.1"
         IPv6:
           Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(8) }}"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+    LocalManager_VIP:
+      VMName: "{{ SiteCode }}-NSXT-LM"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-NSXT-LM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.11{% endif %}"
+      Address:
+        IPv4:
+          Address: "{{ Net.Management.IPv4.Network }}.11"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+          Gateway: "{{ Net.Management.IPv4.Network }}.1"
+        IPv6:
+          Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(11) }}"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     LocalManager:
       VMName: "{{ SiteCode }}-NSXT-LM-1"
       FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-NSXT-LM-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.12{% endif %}"
-      FQDN_VIP: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-NSXT-LM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.11{% endif %}"
       Deployment:
         Size: small
         Role: NSX Manager
@@ -1394,7 +1413,6 @@ Nested_NSXT:
         AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
       Address:
         IPv4:
-          Virtual: "{{ Net.Management.IPv4.Network }}.11"
           Address: "{{ Net.Management.IPv4.Network }}.12"
           Prefix:  "{{ Net.Management.IPv4.Prefix }}"
           Gateway: "{{ Net.Management.IPv4.Network }}.1"
