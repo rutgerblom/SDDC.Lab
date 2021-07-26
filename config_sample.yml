@@ -438,8 +438,12 @@ Nested_Router:
       IPv6:
         Address: "{{ Common.NTP.Server1.IPv6 }}"
   OSPF:
-    Area: 0
     RouterID: "{{ Net.Uplink.IPv4.Network }}.{{ Pod.Number }}"
+    Uplink:
+      Area: 0
+    NSXEdge:
+      Area: "{{ Pod.Number }}"
+      AreaType: normal                                                                  # AreaType must be either 'normal' or 'nssa'
   BGP:
     ASN: "{{ 65000 + Pod.Number }}"
     RouterID: "{{ Net.Management.IPv4.Network }}.1"

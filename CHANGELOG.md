@@ -359,3 +359,14 @@
 ### Added by Luis Chanu
 
   - Modifed createVds.yml to prune VLAN ID range on NSXEdgeUplink1 and NSXEdgeUplink2 uplinks to the VLAN ID range of the Pod being deployed.  Previously, it was allowing all VLANs (0-4094).
+
+## Dev-v4.0.0 25-JULY-2021
+
+### Added by Luis Chanu
+
+  - Enabled OSPFv2 on Pod-Router NSX-T Edge facing interfaces (NSXEdgeUplink1 and NSXEdgeUplink2).
+  - Moved OSPFv2 area configuration information below interface sections in Nested_Router.
+  - OSPFv2 configuration was not added to NSX-T's Tier-0 Gateway within the configuration file.  If the user wants to configure OSPFv2 within NSX-T, they will have to do it manually.  There are currently no plans to add OSPFv2 configuration to the SDDC.Lab project given BGP is fully functional, supports IPv6, and is the protocol used by Federation.
+  - The following file was updated so please update your non-sample file:
+    - config_sample.yml
+  - After updating your non-sample configuration files, be sure to recreate your static Pod configuration files by running "createPodConfig.yml" against each of the updated config files.
