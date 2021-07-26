@@ -125,26 +125,31 @@ set protocols bgp neighbor {{ NSXEdge.IPv6.Address }} address-family ipv6-unicas
 
 
 ##
-## OSPFv2 (IPv4) -- Northbound Only
+## OSPFv2 (IPv4) -- Uplink and NSX-T Edges
 ##
 {% if Nested_Router.Protocol == "OSPF" or Nested_Router.Protocol == "BOTH" -%}
 {% if Deploy.Setting.IPv4 -%}
 set protocols ospf parameters router-id {{ Nested_Router.OSPF.RouterID }}
-set protocols ospf area {{ Nested_Router.OSPF.Area }} network {{ "{}/{}".format(Nested_Router.Interface.Uplink.IPv4.Address, Nested_Router.Interface.Uplink.IPv4.Prefix) | ipaddr('network/prefix') }}
 set protocols ospf log-adjacency-changes
 set protocols ospf redistribute bgp
 set protocols ospf redistribute connected metric-type 2
+{# Uplink To Lab-Routers #}
+set protocols ospf area {{ Nested_Router.OSPF.Uplink.Area }} network {{ "{}/{}".format(Nested_Router.Interface.Uplink.IPv4.Address, Nested_Router.Interface.Uplink.IPv4.Prefix) | ipaddr('network/prefix') }}
+{# NSX Edges #}
+set protocols ospf area {{ Nested_Router.OSPF.NSXEdge.Area }} area-type {{ Nested_Router.OSPF.NSXEdge.AreaType }}
+set protocols ospf area {{ Nested_Router.OSPF.NSXEdge.Area }} network {{ "{}/{}".format(Nested_Router.Interface.NSXEdgeUplink1.IPv4.Address, Nested_Router.Interface.NSXEdgeUplink1.IPv4.Prefix) | ipaddr('network/prefix') }}
+set protocols ospf area {{ Nested_Router.OSPF.NSXEdge.Area }} network {{ "{}/{}".format(Nested_Router.Interface.NSXEdgeUplink2.IPv4.Address, Nested_Router.Interface.NSXEdgeUplink2.IPv4.Prefix) | ipaddr('network/prefix') }}
 {% endif -%}{# Deploy.Setting.IPv4 #}
 {% endif -%}{# Nested_Router.Protocol == OSPF or BOTH #}
 
 
 ##
-## OSPFv3 (IPv6) - Northbound Only
+## OSPFv3 (IPv6) - Uplink Only
 ##
 {% if Nested_Router.Protocol == "OSPF" or Nested_Router.Protocol == "BOTH" -%}
 {% if Deploy.Setting.IPv6 -%}
 set protocols ospfv3 parameters router-id {{ Nested_Router.OSPF.RouterID }}
-set protocols ospfv3 area {{ (((Nested_Router.OSPF.Area / (256 | pow(3)))|int) % 256)|int }}.{{ (((Nested_Router.OSPF.Area / (256 | pow(2)))|int) % 256)|int }}.{{ (((Nested_Router.OSPF.Area / 256)|int) % 256)|int }}.{{ (Nested_Router.OSPF.Area % 256)|int }} interface eth0
+set protocols ospfv3 area {{ (((Nested_Router.OSPF.Uplink.Area / (256 | pow(3)))|int) % 256)|int }}.{{ (((Nested_Router.OSPF.Uplink.Area / (256 | pow(2)))|int) % 256)|int }}.{{ (((Nested_Router.OSPF.Uplink.Area / 256)|int) % 256)|int }}.{{ (Nested_Router.OSPF.Uplink.Area % 256)|int }} interface eth0
 set protocols ospfv3 redistribute bgp
 set protocols ospfv3 redistribute connected
 {% endif -%}{# Deploy.Setting.IPv6 #}
