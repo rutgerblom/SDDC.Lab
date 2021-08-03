@@ -48,7 +48,7 @@ After you've installed the Ubuntu OS and applied the latest updates, some additi
 version 2.10.x.
 
 1. Python, pip, and xorriso:  
-**udo apt install python3 python3-pip xorriso git**
+**sudo apt install python3 python3-pip xorriso git**
 
 1. Ansible and the required Python modules:  
 **sudo pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython**
