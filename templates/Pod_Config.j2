@@ -53,7 +53,9 @@ Deploy:
     vRLI: {{ Deploy.Product.vRLI }}
     DNSServer: {{ Deploy.Product.DNSServer }}
     NSXT:
-      GlobalManager: {{ Deploy.Product.NSXT.GlobalManager }}
+      GlobalManager:
+        Deploy: {{ Deploy.Product.NSXT.GlobalManager.Deploy }}
+        SiteCode: {{ Deploy.Product.NSXT.GlobalManager.SiteCode }}
       LocalManager: {{ Deploy.Product.NSXT.LocalManager }}
       CloudServicesManager: {{ Deploy.Product.NSXT.CloudServicesManager }}
       Edge: {{ Deploy.Product.NSXT.Edge }}

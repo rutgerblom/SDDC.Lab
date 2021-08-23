@@ -29,7 +29,9 @@ Deploy:
     vRLI: true                                            # vRLI - Deploy vRealize Log Insight as part of the Pod deployment.
     DNSServer: false                                      # DNSServer - Deploy a pre-configured DNS/NTP server as part of the Pod deployment. This DNS/NTP server is not Pod specific and can serve multiple Pods.
     NSXT:
-      GlobalManager: false                                # GlobalManager - PLANNED FOR FUTURE - NOT YET IMPLEMENTED
+      GlobalManager:
+        Deploy: false                                     # GlobalManager - PLANNED FOR FUTURE - NOT YET IMPLEMENTED
+        SiteCode: "{{ SiteCode }}"                        # Change this SiteCode to indicate the SiteCode (i.e. 'Pod-###') where the Global Manager is deployed if not deploying in this SiteCode.  If the Global Manager is in a different SiteCode than this configuration, it must be deployed either before or concurrently with this deployment.
       LocalManager: true                                  # LocalManager - Deploy NSX-T Local Manager as part of the Pod deployment.
       CloudServicesManager: false                         # CloudServicesManager - PLANNED FOR FUTURE - NOT YET IMPLEMENTED
       Edge: true                                          # Edge - Deploy NSX-T Edge Transport Nodes as part of the Pod deployment.
@@ -1384,7 +1386,7 @@ Nested_NSXT:
       FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-NSXT-GM-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.8{% endif %}"
       Deployment:
         Size: small
-        role: NSX Global Manager
+        Role: NSX Global Manager
         EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
         AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
       Address:
