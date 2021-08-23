@@ -377,3 +377,16 @@
 
   - Renamed playbooks\deployNsxManager.yml to playbooks\deployNsxLocalManager.yml to prepare for the development of Global Manager specific playbooks.
   - Updated deploy.yml with updated deployNsxLocalManager.yml playbook.
+
+## Dev-v4.0.0 22-AUG-2021
+
+### Added by Luis Chanu
+  - Began development on playbooks\deployNsxGlobalManager.yml
+  - Updated the following files to support changes to Deploy.Product.NSXT.GlobalManager structure
+    - templates\Pod_Config.j2
+    - tempaltes\Pod_Doc.j2
+  - The following file was updated so please update your non-sample file:
+    - config_sample.yml
+  - After updating your non-sample configuration files, be sure to recreate your static Pod configuration files by running "createPodConfig.yml" against each of the updated config files.
+
+
