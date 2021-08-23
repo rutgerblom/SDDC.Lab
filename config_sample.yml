@@ -31,7 +31,7 @@ Deploy:
     NSXT:
       GlobalManager:
         Deploy: false                                     # GlobalManager - PLANNED FOR FUTURE - NOT YET IMPLEMENTED
-        SiteCode: "{{ SiteCode }}"                        # Change this SiteCode to indicate the SiteCode (i.e. 'Pod-###') where the Global Manager is deployed if not deploying in this SiteCode.  If the Global Manager is in a different SiteCode than this configuration, it must be deployed either before or concurrently with this deployment.
+        SiteCode: "{{ SiteCode }}"                        # If not deploying Global Manager in this SiteCode (i.e. 'Pod-###') as part of this deployment, change to indicate in which SiteCode Global Manager has been deployed to.  If the Global Manager is in a different SiteCode than this deployment, it must be deployed either before or concurrently with this deployment.
       LocalManager: true                                  # LocalManager - Deploy NSX-T Local Manager as part of the Pod deployment.
       CloudServicesManager: false                         # CloudServicesManager - PLANNED FOR FUTURE - NOT YET IMPLEMENTED
       Edge: true                                          # Edge - Deploy NSX-T Edge Transport Nodes as part of the Pod deployment.
