@@ -1,0 +1,293 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/deployNsxGlobalManager.yml
+##
+##   Notes: All "LocalManager" references changed to "GlobalManager".  REST calls and module references still need to be updated.
+##          This module is NOT YET FUNCTIONAL.
+---
+- hosts: localhost
+  name: deployNsxGlobalManager.yml
+  tasks:
+    - name: deployNsxGlobalManager_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+
+                                   NSX-T Manager Role: {{ Nested_NSXT.Components.GlobalManager.Deployment.Role }}
+                                        NSX-T Version: {{ Deploy.Software.NSXT.Version }}
+                                         NSX-T VMName: {{ Nested_NSXT.Components.GlobalManager.VMName }}
+                            NSX-T Global Manager FQDN: {{ Nested_NSXT.Components.GlobalManager.FQDN }}
+                        NSX-T Global Manager SiteCode: {{ Deploy.Product.NSXT.GlobalManager.SiteCode }}
+
+                             NSX-T Global Manager VIP: {{ Nested_NSXT.Components.GlobalManager_VIP.Address.IPv4.Address }}
+
+                                                OVF Variables
+                                                =============
+
+                                   NSX-T Manager Role: {{ Nested_NSXT.Components.GlobalManager.Deployment.Role }}
+                                           NSX-T Size: {{ Nested_NSXT.Components.GlobalManager.Deployment.Size }}
+                                         NSX-T VMName: {{ Nested_NSXT.Components.GlobalManager.VMName }}
+                                    Network PortGroup: {{ Target.PortGroup.Management.Name }}
+
+                                           Audit User: {{ Nested_NSXT.Credential.audit.Name }}
+                                       Audit Password: {{ Nested_NSXT.Credential.audit.Password }}
+
+                                             CLI User: {{ Nested_NSXT.Credential.admin.Name }}
+                                         CLI Password: {{ Nested_NSXT.Credential.admin.Password }}
+
+                                 Network IPv4 Address: {{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Address }}
+                                      Network Netmask: {{ (Nested_NSXT.Components.GlobalManager.Address.IPv4.Address + '/' + Nested_NSXT.Components.GlobalManager.Address.IPv4.Prefix) | ipaddr('netmask') }}
+                                      Network Gateway: {{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Gateway }}
+
+                                   Network NTP Server: {{ Common.NTP.Server1.IPv4 }}
+                                   Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                   Network DNS Domain: {{ Common.DNS.Domain }}
+
+                                     NSX-T Media Path: {{ Deploy.Software.NSXT.Directory }}
+                                     NSX-T Media File: {{ Deploy.Software.NSXT.File }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+
+    - name: If NSX-T Global Manager is part of this deployment, check if it is already installed
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.GlobalManager.FQDN }}
+        validate_certs: False
+        timeout: 5
+      register: nsxman_check
+      ignore_errors: true
+      failed_when: false
+      no_log: true
+      when:
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+
+    - name: Deploy NSX-T Global Manager from OVA
+      community.vmware.vmware_deploy_ovf:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        datastore: "{{ Target.Datastore }}"
+        allow_duplicates: no
+        folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}{% else %}{{ Target.VMFolder }}{% endif %}"         # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
+        datacenter: "{{ Target.DataCenter }}"
+        cluster: "{{ Target.Cluster }}"
+        name: "{{ Nested_NSXT.Components.GlobalManager.VMName }}"
+        ovf:  "{{ Deploy.Software.NSXT.Directory }}/{{ Deploy.Software.NSXT.File }}"
+        deployment_option: "{{ Nested_NSXT.Components.GlobalManager.Deployment.Size }}"
+        networks:
+          "Network 1": "{{ Target.PortGroup.Management.Name }}"
+        disk_provisioning: "{{ Common.DiskProvisioning }}"
+        power_on: yes
+        fail_on_spec_warnings: yes
+        wait: yes
+        wait_for_ip_address: yes
+        inject_ovf_env: yes
+        properties:
+          nsx_cli_audit_username: "{{ Nested_NSXT.Credential.audit.Name }}"
+          nsx_cli_audit_passwd_0: "{{ Nested_NSXT.Credential.audit.Password }}"
+          nsx_cli_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+          nsx_cli_passwd_0: "{{ Nested_NSXT.Credential.admin.Password }}"
+          nsx_allowSSHRootLogin: "{{ Nested_NSXT.Components.GlobalManager.Deployment.EnableSSH }}"
+          nsx_isSSHEnabled: "{{ Nested_NSXT.Components.GlobalManager.Deployment.EnableSSH }}"
+          nsx_dns1_0: "{{ Common.DNS.Server1.IPv4 }}"
+          nsx_domain_0: "{{ Common.DNS.Domain }}"
+          nsx_gateway_0: "{{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Gateway }}"
+          nsx_hostname:  "{{ Nested_NSXT.Components.GlobalManager.FQDN }}"
+          nsx_ip_0:      "{{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Address }}"
+          nsx_netmask_0: "{{ (Nested_NSXT.Components.GlobalManager.Address.IPv4.Address + '/' + Nested_NSXT.Components.GlobalManager.Address.IPv4.Prefix) | ipaddr('netmask') }}"
+          nsx_ntp_0:     "{{ Common.NTP.Server1.IPv4 }}"
+          nsx_passwd_0:  "{{ Nested_NSXT.Credential.admin.Password }}"
+          nsx_role:      "{{ Nested_NSXT.Components.GlobalManager.Deployment.Role }}"
+      delegate_to: localhost
+      when:
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+        - nsxman_check.status != 200
+      async: 7200
+      poll: 0
+      register: deployment
+
+    - name: Wait 3 seconds before start checking whether the NSX-T Global Manager node is ready
+      ansible.builtin.pause: seconds=3
+      when: 
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+        - deployment.changed == true
+
+    - name: Result check for NSX-T Global Manager node deployment
+      ansible.builtin.async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: job_result
+      with_items: "{{ deployment.results }}"
+      when:
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+        - deployment.changed == true
+        - item.started is defined
+
+    - name: Wait until the NSX-T API reports that the NSX-T Manager cluster is "STABLE"
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.GlobalManager.FQDN | lower }}/api/v1/cluster/status
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.detailed_cluster_status.overall_status == "STABLE"
+      retries: 60
+      delay: 60
+      when:
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+
+    - name: Configure NSX-T Local Manager Virtual IP (VIP) Address
+      nsxt_virtual_ip:
+        hostname: "{{ Nested_NSXT.Components.GlobalManager.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: false
+        virtual_ip_address: "{{ Nested_NSXT.Components.GlobalManager_VIP.Address.IPv4.Address }}"
+        state: present
+      when:
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+
+    - name: Wait until the NSX-T API reports that the NSX-T Manager cluster is "STABLE" on the VIP
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.Address.IPv4.Address }}/api/v1/cluster/status
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.detailed_cluster_status.overall_status == "STABLE"
+      retries: 60
+      delay: 60
+      when:
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+
+    - name: Write annotation on the NSX-T Local Manager VM
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
+        name: "{{ Nested_NSXT.Components.GlobalManager.VMName }}"
+        annotation: | 
+                    {{ Common.Annotation }}
+                    {{ Deploy.Software.NSXT.Vendor }} {{ Deploy.Software.NSXT.Product}} {{ Deploy.Software.NSXT.Version }}
+                    Username: {{ Nested_NSXT.Credential.admin.Name }}
+                    Password: {{ Nested_NSXT.Credential.admin.Password }}
+      when: 
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+
+
+##
+## Disable Password Expiration for all users except for root (API does not permit disabling for 'root' user)
+##
+    - name: Obtain NSX-T Global Manager User List
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.GlobalManager.FQDN | lower }}/api/v1/node/users
+        validate_certs: no
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: UserList
+      when: 
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+
+    - name: Disable Password Expiration Of All NSX-T Users (except for 'root')
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.GlobalManager.FQDN | lower }}/api/v1/node/users/{{ item.userid }}
+        validate_certs: no
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: PUT
+        body_format: json
+        body: '{ "password_change_frequency": 0 }'
+        return_content: yes
+        status_code: 200
+      loop: "{{ UserList.json.results }}"
+      when: 
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+        - item.userid > 0
