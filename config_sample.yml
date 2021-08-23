@@ -1371,8 +1371,8 @@ Nested_NSXT:
       Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
   Components:
     GlobalManager_VIP:
-      VMName: "{{ SiteCode }}-NSXT-GM"
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-NSXT-GM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.7{% endif %}"
+      VMName: "{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-NSXT-GM"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-NSXT-GM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.7{% endif %}"
       Address:
         IPv4:
           Address: "{{ Net.Management.IPv4.Network }}.7"
@@ -1382,8 +1382,8 @@ Nested_NSXT:
           Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(7) }}"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     GlobalManager:
-      VMName: "{{ SiteCode }}-NSXT-GM-1"
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-NSXT-GM-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.8{% endif %}"
+      VMName: "{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-NSXT-GM-1"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-NSXT-GM-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.8{% endif %}"
       Deployment:
         Size: small
         Role: NSX Global Manager
