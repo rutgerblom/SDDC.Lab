@@ -389,4 +389,7 @@
     - config_sample.yml
   - After updating your non-sample configuration files, be sure to recreate your static Pod configuration files by running "createPodConfig.yml" against each of the updated config files.
 
+## Dev-v4.0.0 23-AUG-2021
 
+### Added by Luis Chanu
+  - Added removal of Global Manager to undeploy.yml playbook
