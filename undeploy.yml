@@ -119,13 +119,24 @@
         state: absent
       ignore_errors: true
 
-    - name: Remove NSX Manager VM(s)
+    - name: Remove NSX Local Manager VM
       community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
         name: "{{ Nested_NSXT.Components.LocalManager.VMName }}"
+        force: true
+        state: absent
+      ignore_errors: true
+
+    - name: Remove NSX Global Manager VM
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: no
+        name: "{{ Nested_NSXT.Components.GlobalManager.VMName }}"
         force: true
         state: absent
       ignore_errors: true
