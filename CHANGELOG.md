@@ -400,4 +400,4 @@
   - Added task to enable and activate Global Manager within deployNsxGlobalManager.yml
   - Created "tests/ShowURI.yml" playbook
   - Began working on "registerNsxLocalWithNsxGlobal.yml" playbook
-  
+  - Updated software_sample.yml and templates_sample.yml with vCenter Server v7.0 Update 2C details
