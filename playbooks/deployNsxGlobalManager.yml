@@ -233,6 +233,18 @@
         - Deploy.Product.NSXT.GlobalManager.Deploy == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
+    - name: Enable and Activate NSX-T Global Manager
+      nsxt_global_manager_enable_service:
+        hostname: "{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: False
+        display_name: "{{ Nested_NSXT.Components.GlobalManager_VIP.VMName }}"
+        id: "{{ Nested_NSXT.Components.GlobalManager_VIP.VMName }}"
+      when:
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+
     - name: Write annotation on the NSX-T Global Manager VM
       community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
