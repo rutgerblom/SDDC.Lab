@@ -393,3 +393,11 @@
 
 ### Added by Luis Chanu
   - Added removal of Global Manager to undeploy.yml playbook
+
+  ## Dev-v4.0.0 25-AUG-2021
+
+### Added by Luis Chanu
+  - Added task to enable and activate Global Manager within deployNsxGlobalManager.yml
+  - Created "tests/ShowURI.yml" playbook
+  - Began working on "registerNsxLocalWithNsxGlobal.yml" playbook
+  
