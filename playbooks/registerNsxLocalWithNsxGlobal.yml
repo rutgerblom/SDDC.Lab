@@ -1,0 +1,157 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/registerNsxLocalWithNsxGlobal.yml
+##
+##      Notes: This module registers the NSX-T Local Manager to the NSX-T Global Manager
+##
+##       ToDo: Need to obtain the Thumbprint of the LM Cluster certificate, to then use in the NSX-T Ansible Modules to perform the tasks.
+##
+---
+- hosts: localhost
+  name: registerNsxLocalWithNsxGlobal.yml
+  tasks:
+    - name: registerNsxLocalWithNsxGlobal_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                          Ansible Playbook: {{ ansible_play_name }}
+
+             Nested_NSXT.Components.GlobalManager_VIP.FQDN: {{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}
+           Nested_NSXT.Components.GlobalManager_VIP.VMName: {{ Nested_NSXT.Components.GlobalManager_VIP.VMName }}
+
+              Nested_NSXT.Components.LocalManager_VIP.FQDN: {{ Nested_NSXT.Components.LocalManager_VIP.FQDN }}
+            Nested_NSXT.Components.LocalManager_VIP.VMName: {{ Nested_NSXT.Components.LocalManager_VIP.VMName }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+
+##
+## Need to obtain the LM Cluster Certificate Thumbprint here
+##
+
+
+    - name: Verify that the NSX-T Global Manager cluster is "STABLE"
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN | lower }}/api/v1/cluster/status
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.detailed_cluster_status.overall_status == "STABLE"
+      retries: 60
+      delay: 60
+      when:
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+
+    - name: Verify NSX-T Local Manager is compatible with NSX-T Global Manager
+      nsxt_local_managers_compatibility:
+        hostname: "{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: False
+        site_connection_info:
+          fqdn: "{{ Nested_NSXT.Components.LocalManager_VIP.FQDN }}"
+          username: "{{ Nested_NSXT.Credential.admin.Name }}"
+          password: "{{ Nested_NSXT.Credential.admin.Password }}"
+#          thumbprint: 6e281fa134b6418edcf19618783f34d552d79db49e04df9503a7c280ad2bffdc
+      register: compatible_result
+      when:
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+
+    - name: DEBUG -- Display "nsxt_local_managers_compatibility" result (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display "compatible_result" ==================================
+
+          {{ compatible_result }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+
+    - name: Register NSX-T Local Manager with NSX-T Global Manager
+      nsxt_local_managers_compatibility:
+        hostname: "{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: False
+        display_name: "{{ Nested_NSXT.Components.LocalManager_VIP.VMName }}"
+        id: "{{ Nested_NSXT.Components.LocalManager_VIP.VMName }}"
+        site_connection_info:
+          fqdn: "{{ Nested_NSXT.Components.LocalManager_VIP.FQDN }}"
+          username: "{{ Nested_NSXT.Credential.admin.Name }}"
+          password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        state: present
+      when:
+        - compatible_result.version_compatible == true
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+
+    - name: Wait until the NSX-T API reports that the NSX-T Global Manager cluster is "STABLE"
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN | lower }}/api/v1/cluster/status
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.detailed_cluster_status.overall_status == "STABLE"
+      retries: 60
+      delay: 10
+      when:
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+
