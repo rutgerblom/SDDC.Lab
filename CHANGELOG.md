@@ -408,4 +408,6 @@
   - Changed NSX-T version to 3.1.3
   - The following file was updated so please update your non-sample file:
     - config_sample.yml
-    
+
+### Added by Luis Chanu
+  - Updated registerNsxLocalWithNsxGlobal.yml, and tested against deployed labs.
