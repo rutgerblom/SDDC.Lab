@@ -411,3 +411,4 @@
 
 ### Added by Luis Chanu
   - Updated registerNsxLocalWithNsxGlobal.yml, and tested against deployed labs.
+  - Updated ansible-galaxy to include community.crypto, as it's needed by community.crypto.x509_certificate_info module in registerNsxLocalWithNsxGlobal.yml playbook.
