@@ -203,11 +203,11 @@
           fqdn: "{{ Nested_NSXT.Components.LocalManager_VIP.FQDN }}"
           username: "{{ Nested_NSXT.Credential.admin.Name }}"
           password: "{{ Nested_NSXT.Credential.admin.Password }}"
+          thumbprint: "{{ lm_cluster_api_cert_thumbprint }}"
         state: present
       when:
         - compatible_result.version_compatible == true
         - Deploy.Product.NSXT.GlobalManager.Deploy == true
-        - false
 
     - name: Wait until the NSX-T API reports that the NSX-T Global Manager cluster is "STABLE"
       ansible.builtin.uri:
