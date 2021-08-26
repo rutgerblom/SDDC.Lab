@@ -68,9 +68,80 @@
 
 
 ##
-## Need to obtain the LM Cluster Certificate Thumbprint here
+## Steps to obtain the NSX-T Local Manager Cluster API Certificate Thumbprint
 ##
 
+    - name: Obtain NSX-T Local Manager API Cluster Certificate ID
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.LocalManager_VIP.FQDN }}/api/v1/cluster/api-certificate
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: lm_api_cluster_cert_id_result
+      until: lm_api_cluster_cert_id_result.status == 200
+      retries: 10
+      delay: 10
+      when:
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+
+    - name: Store Local Manager Cluster Certificate ID into variable for easier use
+      ansible.builtin.set_fact:
+        lm_cluster_cert_id: "{{ lm_api_cluster_cert_id_result.json.certificate_id }}"
+      when:
+        - lm_api_cluster_cert_id_result.status == 200
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+
+    - name: Obtain API Cluster Certificate using ID
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.LocalManager_VIP.FQDN }}/api/v1/trust-management/certificates/{{ lm_cluster_cert_id }}
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: lm_cluster_cert_result
+      when:
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+
+    - name: Store Local Manager Cluster Certificate (PEM format) into variable for easier use
+      ansible.builtin.set_fact:
+        lm_cluster_cert_pem: "{{ lm_cluster_cert_result.json.pem_encoded }}"
+      when:
+        - lm_cluster_cert_result.status == 200
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+
+    - name: Obtain Information about Local Manager Cluster Certificate
+      community.crypto.x509_certificate_info:
+# Works correctly if I read the PEM certificate in from the file
+#        content: "{{ lookup('file','/tmp/cert.crt') }}"
+        content: "{{ lm_cluster_cert_pem }}"
+      register: lm_cluster_cert_info
+
+    - name: Store Local Manager Cluster Certificate SHA256 Thumbprint (without colons) for easier use
+      ansible.builtin.set_fact:
+        lm_cluster_api_cert_thumbprint: "{{ lm_cluster_cert_info.fingerprints['sha256'].replace(':','') | lower }}"
+
+    - name: DEBUG -- Display Local Manager Cluster Certificate Thumbprint (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+           Local Manager Cluster Certificate Thumbprint: {{ lm_cluster_api_cert_thumbprint | default(None) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
 
     - name: Verify that the NSX-T Global Manager cluster is "STABLE"
       ansible.builtin.uri:
@@ -101,6 +172,7 @@
           fqdn: "{{ Nested_NSXT.Components.LocalManager_VIP.FQDN }}"
           username: "{{ Nested_NSXT.Credential.admin.Name }}"
           password: "{{ Nested_NSXT.Credential.admin.Password }}"
+          thumbprint: "{{ lm_cluster_api_cert_thumbprint }}"
 #          thumbprint: 6e281fa134b6418edcf19618783f34d552d79db49e04df9503a7c280ad2bffdc
       register: compatible_result
       when:
@@ -135,6 +207,7 @@
       when:
         - compatible_result.version_compatible == true
         - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - false
 
     - name: Wait until the NSX-T API reports that the NSX-T Global Manager cluster is "STABLE"
       ansible.builtin.uri:
