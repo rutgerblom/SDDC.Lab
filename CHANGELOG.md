@@ -401,3 +401,11 @@
   - Created "tests/ShowURI.yml" playbook
   - Began working on "registerNsxLocalWithNsxGlobal.yml" playbook
   - Updated software_sample.yml and templates_sample.yml with vCenter Server v7.0 Update 2C details
+
+## Dev-v4.0.0 26-AUG-2021
+
+### Added by Rutger Blom
+  - Changed NSX-T version to 3.1.3
+  - The following file was updated so please update your non-sample file:
+    - config_sample.yml
+    
