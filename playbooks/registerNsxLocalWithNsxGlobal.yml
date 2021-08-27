@@ -5,8 +5,6 @@
 ##
 ##      Notes: This module registers the NSX-T Local Manager to the NSX-T Global Manager
 ##
-##       ToDo: Need to obtain the Thumbprint of the LM Cluster certificate, to then use in the NSX-T Ansible Modules to perform the tasks.
-##
 ---
 - hosts: localhost
   name: registerNsxLocalWithNsxGlobal.yml
@@ -122,14 +120,18 @@
 
     - name: Obtain Information about Local Manager Cluster Certificate
       community.crypto.x509_certificate_info:
-# Works correctly if I read the PEM certificate in from the file
-#        content: "{{ lookup('file','/tmp/cert.crt') }}"
         content: "{{ lm_cluster_cert_pem }}"
       register: lm_cluster_cert_info
+      when:
+        - lm_cluster_cert_result.status == 200
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
 
     - name: Store Local Manager Cluster Certificate SHA256 Thumbprint (without colons) for easier use
       ansible.builtin.set_fact:
         lm_cluster_api_cert_thumbprint: "{{ lm_cluster_cert_info.fingerprints['sha256'].replace(':','') | lower }}"
+      when:
+        - lm_cluster_cert_result.status == 200
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
 
     - name: DEBUG -- Display Local Manager Cluster Certificate Thumbprint (Pause)
       ansible.builtin.pause:
@@ -142,6 +144,11 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
+
+
+##
+## Now that we have the Thumbprint, let's go use it
+##
 
     - name: Verify that the NSX-T Global Manager cluster is "STABLE"
       ansible.builtin.uri:
@@ -173,7 +180,6 @@
           username: "{{ Nested_NSXT.Credential.admin.Name }}"
           password: "{{ Nested_NSXT.Credential.admin.Password }}"
           thumbprint: "{{ lm_cluster_api_cert_thumbprint }}"
-#          thumbprint: 6e281fa134b6418edcf19618783f34d552d79db49e04df9503a7c280ad2bffdc
       register: compatible_result
       when:
         - Deploy.Product.NSXT.GlobalManager.Deploy == true

@@ -408,4 +408,7 @@
   - Changed NSX-T version to 3.1.3
   - The following file was updated so please update your non-sample file:
     - config_sample.yml
-    
+
+### Added by Luis Chanu
+  - Updated registerNsxLocalWithNsxGlobal.yml, and tested against deployed labs.
+  - Updated ansible-galaxy to include community.crypto, as it's needed by community.crypto.x509_certificate_info module in registerNsxLocalWithNsxGlobal.yml playbook.
