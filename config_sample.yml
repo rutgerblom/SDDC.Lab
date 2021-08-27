@@ -578,6 +578,20 @@ Nested_Clusters:
     vsanDatastore: ComputeA_vSAN
     NSXT_TransportNodeProfile: TNP-ESXi-Hosts
     DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
+  ComputeB:
+    DRS: true
+    HA:
+      Enable: true
+      Host_Monitoring: enabled
+      VM_Monitoring: vmMonitoringDisabled
+      APD_Response: disabled
+      PDL_Response: disabled
+      Host_Isolation_Response: none
+    vSAN: true
+    Prep_NSX: true
+    vsanDatastore: ComputeB_vSAN
+    NSXT_TransportNodeProfile: TNP-ESXi-Hosts
+    DeployHosts: false   
   Edge:                                                                                 # 'Edge' is where NSX-T ETN's are deployed.  HIGHLY suggest you always have an 'Edge' cluster.
     DRS: true
     HA:
@@ -612,6 +626,14 @@ Nested_ESXi:
       vSAN:
         CacheSize: 20                                                                   # CacheSize and CapacitySize MUST be different values.  Normally, CacheSize is smaller than CapacitySize.
         CapacitySize: 180                                                               # CacheSize and CapacitySize MUST be different values.  Normally, CapacitySize is larger than CacheSize.
+    ComputeB:
+      CPU: 8
+      CoresPerSocket: 8
+      Memory: 18432
+      BootDiskSize: 8
+      vSAN:
+        CacheSize: 20                                                                   # CacheSize and CapacitySize MUST be different values.  Normally, CacheSize is smaller than CapacitySize.
+        CapacitySize: 180  
     Edge:
       CPU: 8
       CoresPerSocket: 8
@@ -1016,6 +1038,201 @@ Nested_ESXi:
               Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
             IPv6:
               Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(33) }}"
+              Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
+    ComputeB1:
+      Cluster: ComputeB
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeB-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.41{% endif %}"
+      VMName: "{{ SiteCode }}-ComputeB-1"
+      User: root
+      Password: "{{ Common.Password.Nested }}"
+      EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
+      vmk:
+        vmk0:
+          PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+          VLAN: "{{ Net.Management.VLAN }}"
+          MTU: "{{ Net.Management.MTU }}"
+          IPSettings: ipv4
+          Stack: default
+          Address:
+            IPv4:
+              Address: "{{ Net.Management.IPv4.Network }}.41"
+              Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+              Gateway: "{{ Net.Management.IPv4.Network }}.1"
+            IPv6:
+              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format.41) }}"
+              Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+        vmk1:
+          PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
+          VLAN: "{{ Net.vMotion.VLAN }}"
+          MTU: "{{ Net.vMotion.MTU }}"
+          IPSettings: ipv4
+          Stack: vmotion
+          Address:
+            IPv4:
+              Address: "{{ Net.vMotion.IPv4.Network }}.41"
+              Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
+              Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
+            IPv6:
+              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(41) }}"
+              Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
+        vmk2:
+          PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
+          VLAN: "{{ Net.vSAN.VLAN }}"
+          MTU: "{{ Net.vSAN.MTU }}"
+          IPSettings: ipv4
+          Stack: default
+          Address:
+            IPv4:
+              Address: "{{ Net.vSAN.IPv4.Network }}.41"
+              Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
+              Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
+            IPv6:
+              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(41) }}"
+              Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
+        vmk3:
+          PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
+          VLAN: "{{ Net.IPStorage.VLAN }}"
+          MTU: "{{ Net.IPStorage.MTU }}"
+          IPSettings: ipv4
+          Stack: default
+          Address:
+            IPv4:
+              Address: "{{ Net.IPStorage.IPv4.Network }}.41"
+              Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
+              Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
+            IPv6:
+              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(41) }}"
+              Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
+    ComputeB2:
+      Cluster: ComputeB
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeB-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.42{% endif %}"
+      VMName: "{{ SiteCode }}-ComputeB-2"
+      User: root
+      Password: "{{ Common.Password.Nested }}"
+      EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
+      vmk:
+        vmk0:
+          PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+          VLAN: "{{ Net.Management.VLAN }}"
+          MTU: "{{ Net.Management.MTU }}"
+          IPSettings: ipv4
+          Stack: default
+          Address:
+            IPv4:
+              Address: "{{ Net.Management.IPv4.Network }}.42"
+              Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+              Gateway: "{{ Net.Management.IPv4.Network }}.1"
+            IPv6:
+              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(42) }}"
+              Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+        vmk1:
+          PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
+          VLAN: "{{ Net.vMotion.VLAN }}"
+          MTU: "{{ Net.vMotion.MTU }}"
+          IPSettings: ipv4
+          Stack: vmotion
+          Address:
+            IPv4:
+              Address: "{{ Net.vMotion.IPv4.Network }}.42"
+              Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
+              Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
+            IPv6:
+              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(42) }}"
+              Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
+        vmk2:
+          PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
+          VLAN: "{{ Net.vSAN.VLAN }}"
+          MTU: "{{ Net.vSAN.MTU }}"
+          IPSettings: ipv4
+          Stack: default
+          Address:
+            IPv4:
+              Address: "{{ Net.vSAN.IPv4.Network }}.42"
+              Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
+              Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
+            IPv6:
+              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(42) }}"
+              Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
+        vmk3:
+          PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
+          VLAN: "{{ Net.IPStorage.VLAN }}"
+          MTU: "{{ Net.IPStorage.MTU }}"
+          IPSettings: ipv4
+          Stack: default
+          Address:
+            IPv4:
+              Address: "{{ Net.IPStorage.IPv4.Network }}.42"
+              Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
+              Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
+            IPv6:
+              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(42) }}"
+              Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
+
+    ComputeB3:
+      Cluster: ComputeB
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeB-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.43{% endif %}"
+      VMName: "{{ SiteCode }}-ComputeB-3"
+      User: root
+      Password: "{{ Common.Password.Nested }}"
+      EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
+      vmk:
+        vmk0:
+          PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+          VLAN: "{{ Net.Management.VLAN }}"
+          MTU: "{{ Net.Management.MTU }}"
+          IPSettings: ipv4
+          Stack: default
+          Address:
+            IPv4:
+              Address: "{{ Net.Management.IPv4.Network }}.43"
+              Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+              Gateway: "{{ Net.Management.IPv4.Network }}.1"
+            IPv6:
+              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(43) }}"
+              Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+        vmk1:
+          PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
+          VLAN: "{{ Net.vMotion.VLAN }}"
+          MTU: "{{ Net.vMotion.MTU }}"
+          IPSettings: ipv4
+          Stack: vmotion
+          Address:
+            IPv4:
+              Address: "{{ Net.vMotion.IPv4.Network }}.43"
+              Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
+              Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
+            IPv6:
+              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(43) }}"
+              Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
+        vmk2:
+          PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
+          VLAN: "{{ Net.vSAN.VLAN }}"
+          MTU: "{{ Net.vSAN.MTU }}"
+          IPSettings: ipv4
+          Stack: default
+          Address:
+            IPv4:
+              Address: "{{ Net.vSAN.IPv4.Network }}.43"
+              Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
+              Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
+            IPv6:
+              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(43) }}"
+              Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
+        vmk3:
+          PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
+          VLAN: "{{ Net.IPStorage.VLAN }}"
+          MTU: "{{ Net.IPStorage.MTU }}"
+          IPSettings: ipv4
+          Stack: default
+          Address:
+            IPv4:
+              Address: "{{ Net.IPStorage.IPv4.Network }}.43"
+              Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
+              Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
+            IPv6:
+              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(43) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
     Edge1:

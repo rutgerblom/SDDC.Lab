@@ -412,3 +412,10 @@
 ### Added by Luis Chanu
   - Updated registerNsxLocalWithNsxGlobal.yml, and tested against deployed labs.
   - Updated ansible-galaxy to include community.crypto, as it's needed by community.crypto.x509_certificate_info module in registerNsxLocalWithNsxGlobal.yml playbook.
+
+## Dev-v4.0.0 27-AUG-2021
+
+### Added by Rutger Blom
+  - Added data structure to config_sample.yml for an optional "ComputeB" nested cluster
+  - The following file was updated so please update your non-sample file:
+    - config_sample.yml

@@ -202,6 +202,9 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 31 | ComputeA-1 | Nested ESXi Host in ComputeA Cluster | Yes |
 | 32 | ComputeA-2 | Nested ESXi Host in ComputeA Cluster | Yes |
 | 33 | ComputeA-3 | Nested ESXi Host in ComputeA Cluster | Yes |
+| 41 | ComputeB-1 | Nested ESXi Host in ComputeA Cluster | No |
+| 42 | ComputeB-2 | Nested ESXi Host in ComputeA Cluster | No |
+| 43 | ComputeB-3 | Nested ESXi Host in ComputeA Cluster | No |
 | 91 | Edge-1 | Nested ESXi Host in Edge Cluster | Yes |
 | 92 | Edge-2 | Nested ESXi Host in Edge Cluster | Yes |
 | 93 | Edge-3 | Nested ESXi Host in Edge Cluster | Yes |
