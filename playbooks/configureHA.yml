@@ -85,4 +85,5 @@
         host_isolation_response: "{{ item.value.HA.Host_Isolation_Response }}"
       loop: "{{ Nested_Clusters | dict2items }}"
       when: 
+        - item.value.HA.Enable == true
         - item.value.DeployHosts == true
