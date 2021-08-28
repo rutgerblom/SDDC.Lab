@@ -419,3 +419,10 @@
   - Added data structure to config_sample.yml for an optional "ComputeB" nested cluster
   - The following file was updated so please update your non-sample file:
     - config_sample.yml
+
+## Dev-v4.0.0 28-AUG-2021
+
+### Added by Rutger Blom
+  - Began work on making Tanzu configuration cluster-based. 
+  - The following file was updated so please update your non-sample file:
+    - config_sample.yml
