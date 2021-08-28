@@ -570,11 +570,6 @@ Nested_Clusters:
         Network:
           Management:
             StartingIP: "{{ Net.Management.IPv4.Network }}.51"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
-            Prefix: "{{ Net.Management.IPv4.Prefix }}"
-            Gateway: "{{ Net.Management.IPv4.Network }}.1"
-            DNS: "{{ Common.DNS.Server1.IPv4 }}"                                        # DNS - DNS server used on Kubernetes API server
-            NTP:  "{{ Common.NTP.Server1.IPv4 }}"
-            Domain: "{{ Common.DNS.Domain }}"
           Workload:
             DNS: "{{ Nested_Router.Interface.VMNetwork.IPv4.Address }}"                 # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
@@ -610,11 +605,6 @@ Nested_Clusters:
         Network:
           Management:
             StartingIP: "{{ Net.Management.IPv4.Network }}.56"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
-            Prefix: "{{ Net.Management.IPv4.Prefix }}"
-            Gateway: "{{ Net.Management.IPv4.Network }}.1"
-            DNS: "{{ Common.DNS.Server1.IPv4 }}"                                        # DNS - DNS server used on Kubernetes API server
-            NTP:  "{{ Common.NTP.Server1.IPv4 }}"
-            Domain: "{{ Common.DNS.Domain }}"
           Workload:
             DNS: "{{ Nested_Router.Interface.VMNetwork.IPv4.Address }}"                 # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
@@ -650,11 +640,6 @@ Nested_Clusters:
         Network:
           Management:
             StartingIP: "{{ Net.Management.IPv4.Network }}.61"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
-            Prefix: "{{ Net.Management.IPv4.Prefix }}"
-            Gateway: "{{ Net.Management.IPv4.Network }}.1"
-            DNS: "{{ Common.DNS.Server1.IPv4 }}"                                        # DNS - DNS server used on Kubernetes API server
-            NTP:  "{{ Common.NTP.Server1.IPv4 }}"
-            Domain: "{{ Common.DNS.Domain }}"
           Workload:
             DNS: "{{ Nested_Router.Interface.VMNetwork.IPv4.Address }}"                 # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
@@ -690,11 +675,6 @@ Nested_Clusters:
         Network:
           Management:
             StartingIP: "{{ Net.Management.IPv4.Network }}.66"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
-            Prefix: "{{ Net.Management.IPv4.Prefix }}"
-            Gateway: "{{ Net.Management.IPv4.Network }}.1"
-            DNS: "{{ Common.DNS.Server1.IPv4 }}"                                        # DNS - DNS server used on Kubernetes API server
-            NTP:  "{{ Common.NTP.Server1.IPv4 }}"
-            Domain: "{{ Common.DNS.Domain }}"
           Workload:
             DNS: "{{ Nested_Router.Interface.VMNetwork.IPv4.Address }}"                 # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
