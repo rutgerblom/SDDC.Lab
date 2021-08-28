@@ -86,24 +86,36 @@
         hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        cluster_name: "{{ Nested_Tanzu.WorkloadManagement.Config.vSphereCluster }}"
+        cluster_name: "{{ item.key }}"
         validate_certs: False
       register: cluster_info
+      loop: "{{ Nested_Clusters | dict2items }}"
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
+        - item.value.DeployHosts == true
+        - item.value.Tanzu.SupervisorCluster.Enable == true
         - Deploy.Product.NSXT.LocalManager == true
         - Deploy.Product.NSXT.Edge == true
+      tags:
+        - test
 
     - name: Store vSphere Cluster MoRef ID for later use
       ansible.builtin.set_fact:
-        cluster_id: "{{ cluster_info | community.general.json_query(query) }}"
+        cluster_id: "{{ cluster_info.results | community.general.json_query(query) }}"
       vars:
-        query: 'clusters."{{ Nested_Tanzu.WorkloadManagement.Config.vSphereCluster }}".moid'
+        query: "[*].clusters.[*.moid][][]"
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
         - Deploy.Product.NSXT.LocalManager == true
         - Deploy.Product.NSXT.Edge == true
+      tags:
+        - test
 
+#    - name: DEBUG -- Print return information from the previous task
+#      ansible.builtin.debug:
+#        msg: "{{ cluster_id }}"
+#      tags:
+#        - test
 
 ##
 ## Get and store Distributed Switch ID
@@ -152,7 +164,7 @@
       ansible.builtin.set_fact:
         vdspg_id: "{{ vdspg_info | community.general.json_query(query) }}"
       vars:
-        query: dvs_portgroup_info."{{ Nested_vCenter.Networking.vSwitch.Name }}"[?portgroup_name=='{{ Nested_Tanzu.WorkloadManagement.Network.Management.PortGroup }}'].key
+        query: dvs_portgroup_info."{{ Nested_vCenter.Networking.vSwitch.Name }}"[?portgroup_name=='{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}'].key
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
         - Deploy.Product.NSXT.LocalManager == true
@@ -204,7 +216,7 @@
       ansible.builtin.set_fact:
         ec_id: "{{ ec_info | community.general.json_query(query) }}"
       vars:
-        query: results[?display_name=='{{ Nested_Tanzu.WorkloadManagement.Config.EdgeCluster }}'].id
+        query: results[?display_name=='{{ SiteCode }}-T0-Edge-Cluster-01'].id
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
         - Deploy.Product.NSXT.LocalManager == true
@@ -236,14 +248,9 @@
         - Deploy.Product.NSXT.LocalManager == true
         - Deploy.Product.NSXT.Edge == true
 
-#    - name: DEBUG -- Print return information from the previous task
-#      ansible.builtin.debug:
-#        var: cl_id
-#      tags:
-#        - test
 
 ##
-## Get and store vCenter session ID
+## Get vCenter session ID
 ##
     - name: Authenticate to vCenter to obtain a Session ID
       ansible.builtin.uri:
@@ -278,13 +285,14 @@
 ##
     - name: POST payload to vCenter REST API
       ansible.builtin.uri:
-        url: "https://{{ Nested_vCenter.FQDN }}/api/vcenter/namespace-management/clusters/{{ cluster_id }}?action=enable"
+        url: "https://{{ Nested_vCenter.FQDN }}/api/vcenter/namespace-management/clusters/{{ item }}?action=enable"
         validate_certs: no
         headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
         method: POST
         body: "{{ lookup('template', LOCAL_TanzuPayload) | to_json }}"
         body_format: json
         status_code: 204
+      loop: "{{ cluster_id }}"
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
         - Deploy.Product.NSXT.LocalManager == true
