@@ -566,35 +566,27 @@ Nested_Clusters:
     Tanzu:
       SupervisorCluster: 
         Enable: false                                                                   # If set to "true" the cluster will be configured as a Tanzu Supervisor Cluster
-        Config:
-          EdgeCluster: "{{ SiteCode }}-T0-Edge-Cluster-01"                              # EdgeCluster - The NSX-T Edge cluster that should be used for workload networking
-          Size: TINY                                                                    # Size - The size of the control plane virtual machines
-        Storage:
-          Policy:
-            Master: vSAN Default Storage Policy
-            Ephemeral: vSAN Default Storage Policy
-            Image: vSAN Default Storage Policy
+        ControlPlaneSize: TINY                                                          # Size - The size of the control plane virtual machines
         Network:
           Management:
-            PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
-            StartingIP: "{{ Net.Management.IPv4.Network }}.51"                                        # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
+            StartingIP: "{{ Net.Management.IPv4.Network }}.51"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
             Prefix: "{{ Net.Management.IPv4.Prefix }}"
             Gateway: "{{ Net.Management.IPv4.Network }}.1"
-            DNS: "{{ Common.DNS.Server1.IPv4 }}"                                                      # DNS - DNS server used on Kubernetes API server
+            DNS: "{{ Common.DNS.Server1.IPv4 }}"                                        # DNS - DNS server used on Kubernetes API server
             NTP:  "{{ Common.NTP.Server1.IPv4 }}"
             Domain: "{{ Common.DNS.Domain }}"
           Workload:
-            DNS: "{{ Nested_Router.Interface.VMNetwork.IPv4.Address }}"                               # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
-            Pod:                                                                                      # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
+            DNS: "{{ Nested_Router.Interface.VMNetwork.IPv4.Address }}"                 # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
+            Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
               Network: 10.244.0.0
               Prefix: 20
-            Service:                                                                                  # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components. 
+            Service:                                                                    # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components. 
               Network: 10.96.0.0
               Prefix: 23
-            Ingress:                                                                                  # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
+            Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
               Network: "{{ Net.VMNetwork.IPv4.Network }}.32"
               Prefix: 28
-            Egress:                                                                                   # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
+            Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
               Network: "{{ Net.VMNetwork.IPv4.Network }}.48"
               Prefix: 28
         ContentLibrary:
@@ -616,35 +608,27 @@ Nested_Clusters:
     Tanzu:
       SupervisorCluster: 
         Enable: false                                                                   # If set to "true" the cluster will be configured as a Tanzu Supervisor Cluster
-        Config:
-          EdgeCluster: "{{ SiteCode }}-T0-Edge-Cluster-01"                              # EdgeCluster - The NSX-T Edge cluster that should be used for workload networking
-          Size: TINY                                                                    # Size - The size of the control plane virtual machines
-        Storage:
-          Policy:
-            Master: vSAN Default Storage Policy
-            Ephemeral: vSAN Default Storage Policy
-            Image: vSAN Default Storage Policy
+        ControlPlaneSize: TINY                                                          # Size - The size of the control plane virtual machines
         Network:
           Management:
-            PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
-            StartingIP: "{{ Net.Management.IPv4.Network }}.56"                                        # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
+            StartingIP: "{{ Net.Management.IPv4.Network }}.56"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
             Prefix: "{{ Net.Management.IPv4.Prefix }}"
             Gateway: "{{ Net.Management.IPv4.Network }}.1"
-            DNS: "{{ Common.DNS.Server1.IPv4 }}"                                                      # DNS - DNS server used on Kubernetes API server
+            DNS: "{{ Common.DNS.Server1.IPv4 }}"                                        # DNS - DNS server used on Kubernetes API server
             NTP:  "{{ Common.NTP.Server1.IPv4 }}"
             Domain: "{{ Common.DNS.Domain }}"
           Workload:
-            DNS: "{{ Nested_Router.Interface.VMNetwork.IPv4.Address }}"                               # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
-            Pod:                                                                                      # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
+            DNS: "{{ Nested_Router.Interface.VMNetwork.IPv4.Address }}"                 # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
+            Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
               Network: 10.244.0.0
               Prefix: 20
-            Service:                                                                                  # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components. 
+            Service:                                                                    # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components. 
               Network: 10.96.0.0
               Prefix: 23
-            Ingress:                                                                                  # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
+            Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
               Network: "{{ Net.VMNetwork.IPv4.Network }}.64"
               Prefix: 28
-            Egress:                                                                                   # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
+            Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
               Network: "{{ Net.VMNetwork.IPv4.Network }}.80"
               Prefix: 28
         ContentLibrary:
@@ -666,37 +650,29 @@ Nested_Clusters:
     Tanzu:
       SupervisorCluster: 
         Enable: false                                                                   # If set to "true" the cluster will be configured as a Tanzu Supervisor Cluster
-        Config:
-          EdgeCluster: "{{ SiteCode }}-T0-Edge-Cluster-01"                              # EdgeCluster - The NSX-T Edge cluster that should be used for workload networking
-          Size: TINY                                                                    # Size - The size of the control plane virtual machines
-        Storage:
-          Policy:
-            Master: vSAN Default Storage Policy
-            Ephemeral: vSAN Default Storage Policy
-            Image: vSAN Default Storage Policy
+        ControlPlaneSize: TINY                                                          # Size - The size of the control plane virtual machines
         Network:
           Management:
-            PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
-            StartingIP: "{{ Net.Management.IPv4.Network }}.61"                                        # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
+            StartingIP: "{{ Net.Management.IPv4.Network }}.61"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
             Prefix: "{{ Net.Management.IPv4.Prefix }}"
             Gateway: "{{ Net.Management.IPv4.Network }}.1"
-            DNS: "{{ Common.DNS.Server1.IPv4 }}"                                                      # DNS - DNS server used on Kubernetes API server
+            DNS: "{{ Common.DNS.Server1.IPv4 }}"                                        # DNS - DNS server used on Kubernetes API server
             NTP:  "{{ Common.NTP.Server1.IPv4 }}"
             Domain: "{{ Common.DNS.Domain }}"
           Workload:
-            DNS: "{{ Nested_Router.Interface.VMNetwork.IPv4.Address }}"                               # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
-            Pod:                                                                                      # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
+            DNS: "{{ Nested_Router.Interface.VMNetwork.IPv4.Address }}"                 # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
+            Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
               Network: 10.244.0.0
               Prefix: 20
-            Service:                                                                                  # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components. 
+            Service:                                                                    # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components. 
               Network: 10.96.0.0
               Prefix: 23
-            Ingress:                                                                                  # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
+            Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
               Network: "{{ Net.VMNetwork.IPv4.Network }}.96"
-              Prefix: 27
-            Egress:                                                                                   # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
+              Prefix: 28
+            Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
               Network: "{{ Net.VMNetwork.IPv4.Network }}.112"
-              Prefix: 27
+              Prefix: 28
         ContentLibrary:
           Name: "{{ Nested_vCenter.ContentLibrary.Name }}"
     DeployHosts: false                                                                  # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
@@ -716,37 +692,29 @@ Nested_Clusters:
     Tanzu:
       SupervisorCluster: 
         Enable: false                                                                   # If set to "true" the cluster will be configured as a Tanzu Supervisor Cluster
-        Config:
-          EdgeCluster: "{{ SiteCode }}-T0-Edge-Cluster-01"                              # EdgeCluster - The NSX-T Edge cluster that should be used for workload networking
-          Size: TINY                                                                    # Size - The size of the control plane virtual machines
-        Storage:
-          Policy:
-            Master: vSAN Default Storage Policy
-            Ephemeral: vSAN Default Storage Policy
-            Image: vSAN Default Storage Policy
+        ControlPlaneSize: TINY                                                          # Size - The size of the control plane virtual machines
         Network:
           Management:
-            PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
-            StartingIP: "{{ Net.Management.IPv4.Network }}.66"                                        # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
+            StartingIP: "{{ Net.Management.IPv4.Network }}.66"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
             Prefix: "{{ Net.Management.IPv4.Prefix }}"
             Gateway: "{{ Net.Management.IPv4.Network }}.1"
-            DNS: "{{ Common.DNS.Server1.IPv4 }}"                                                      # DNS - DNS server used on Kubernetes API server
+            DNS: "{{ Common.DNS.Server1.IPv4 }}"                                        # DNS - DNS server used on Kubernetes API server
             NTP:  "{{ Common.NTP.Server1.IPv4 }}"
             Domain: "{{ Common.DNS.Domain }}"
           Workload:
-            DNS: "{{ Nested_Router.Interface.VMNetwork.IPv4.Address }}"                               # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
-            Pod:                                                                                      # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
+            DNS: "{{ Nested_Router.Interface.VMNetwork.IPv4.Address }}"                 # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
+            Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
               Network: 10.244.0.0
               Prefix: 20
-            Service:                                                                                  # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components. 
+            Service:                                                                    # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components. 
               Network: 10.96.0.0
               Prefix: 23
-            Ingress:                                                                                  # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
+            Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
               Network: "{{ Net.VMNetwork.IPv4.Network }}.128"
-              Prefix: 27
-            Egress:                                                                                   # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
+              Prefix: 28
+            Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
               Network: "{{ Net.VMNetwork.IPv4.Network }}.144"
-              Prefix: 27
+              Prefix: 28
         ContentLibrary:
           Name: "{{ Nested_vCenter.ContentLibrary.Name }}"
     DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
