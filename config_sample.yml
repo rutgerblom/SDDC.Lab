@@ -589,8 +589,6 @@ Nested_Clusters:
             Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
               Network: "{{ Net.VMNetwork.IPv4.Network }}.48"
               Prefix: 28
-        ContentLibrary:
-          Name: "{{ Nested_vCenter.ContentLibrary.Name }}"
     DeployHosts: false                                                                  # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
   ComputeA:
     DRS: true
@@ -631,8 +629,6 @@ Nested_Clusters:
             Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
               Network: "{{ Net.VMNetwork.IPv4.Network }}.80"
               Prefix: 28
-        ContentLibrary:
-          Name: "{{ Nested_vCenter.ContentLibrary.Name }}"  
     DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
   ComputeB:
     DRS: true
@@ -673,8 +669,6 @@ Nested_Clusters:
             Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
               Network: "{{ Net.VMNetwork.IPv4.Network }}.112"
               Prefix: 28
-        ContentLibrary:
-          Name: "{{ Nested_vCenter.ContentLibrary.Name }}"
     DeployHosts: false                                                                  # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
   Edge:                                                                                 # 'Edge' is where NSX-T ETN's are deployed.  HIGHLY suggest you always have an 'Edge' cluster.
     DRS: true
@@ -715,8 +709,6 @@ Nested_Clusters:
             Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
               Network: "{{ Net.VMNetwork.IPv4.Network }}.144"
               Prefix: 28
-        ContentLibrary:
-          Name: "{{ Nested_vCenter.ContentLibrary.Name }}"
     DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
 
 
