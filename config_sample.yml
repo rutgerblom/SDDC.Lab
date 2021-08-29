@@ -571,7 +571,7 @@ Nested_Clusters:
           Management:
             StartingIP: "{{ Net.Management.IPv4.Network }}.51"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
-            DNS: "{{ Nested_Router.Interface.VMNetwork.IPv4.Address }}"                 # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
+            DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
               Network: "{{ Net.VMNetwork.IPv4.Network }}.32"
               Prefix: 28
@@ -600,7 +600,7 @@ Nested_Clusters:
           Management:
             StartingIP: "{{ Net.Management.IPv4.Network }}.56"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
-            DNS: "{{ Nested_Router.Interface.VMNetwork.IPv4.Address }}"                 # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
+            DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
               Network: "{{ Net.VMNetwork.IPv4.Network }}.64"
               Prefix: 28
@@ -629,7 +629,7 @@ Nested_Clusters:
           Management:
             StartingIP: "{{ Net.Management.IPv4.Network }}.61"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
-            DNS: "{{ Nested_Router.Interface.VMNetwork.IPv4.Address }}"                 # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
+            DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
               Network: "{{ Net.VMNetwork.IPv4.Network }}.96"
               Prefix: 28
@@ -658,7 +658,7 @@ Nested_Clusters:
           Management:
             StartingIP: "{{ Net.Management.IPv4.Network }}.66"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
-            DNS: "{{ Nested_Router.Interface.VMNetwork.IPv4.Address }}"                 # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
+            DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
               Network: "{{ Net.VMNetwork.IPv4.Network }}.128"
               Prefix: 28
