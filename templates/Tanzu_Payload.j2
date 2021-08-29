@@ -1,16 +1,10 @@
 {
     "image_storage": {
-{% for sp_id in sp_id %}
         "storage_policy": "{{ sp_id }}"
-{% endfor %}{# sp_id #}
     },
     "ncp_cluster_network_spec": {
-{% for ec_id in ec_id %}
         "nsx_edge_cluster": "{{ ec_id }}",
-{% endfor %}{# ec_id #}
-{% for vds_id in vds_id %}
         "cluster_distributed_switch": "{{ vds_id }}",
-{% endfor %}{# vds_id #}
         "pod_cidrs": [
             {
                 "address": "10.244.0.0",
@@ -33,9 +27,7 @@
     "master_NTP_servers": [
         "{{ Common.NTP.Server1.IPv4 }}"
     ],
-{% for sp_id in sp_id %}
     "ephemeral_storage_policy": "{{ sp_id }}",
-{% endfor %}{# sp_id #}
     "service_cidr": {
         "address": "10.96.0.0",
         "prefix": "23"
@@ -48,9 +40,7 @@
         "{{ Common.DNS.Server1.IPv4 }}"
     ],
     "network_provider": "NSXT_CONTAINER_PLUGIN",
-{% for sp_id in sp_id %}
     "master_storage_policy": "{{ sp_id }}",
-{% endfor %}{# sp_id #}
     "master_DNS_search_domains": [
         "{{ Common.DNS.Domain }}"
     ],
@@ -62,11 +52,7 @@
             "gateway": "{{ Net.Management.IPv4.Network }}.1",
             "address_count": 5
         },
-{% for vdspg_id in vdspg_id %}
         "network": "{{ vdspg_id }}"
-{% endfor %}{# sp_id #}
     },
-{% for cl_id in cl_id %}
     "default_kubernetes_service_content_library": "{{ cl_id }}"
-{% endfor %}{# cl_id #}
 }
