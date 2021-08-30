@@ -25,18 +25,23 @@ Pod:
 
 Deploy:
   Product:
-    Router: true                                          # Router - Deploy a router as part of the Pod deployment (recommended).
-    vRLI: true                                            # vRLI - Deploy vRealize Log Insight as part of the Pod deployment.
-    DNSServer: false                                      # DNSServer - Deploy a pre-configured DNS/NTP server as part of the Pod deployment. This DNS/NTP server is not Pod specific and can serve multiple Pods.
+    Router:
+      Deploy: true                                        # Router - Deploy a Pod-Router as part of the Pod deployment (recommended).
+    vRLI:
+      Deploy: true                                        # vRLI - Deploy vRealize Log Insight as part of the Pod deployment.
+    DNSServer:
+      Deploy: false                                       # DNSServer - Deploy a pre-configured DNS/NTP server as part of the Pod deployment. This DNS/NTP server is not Pod specific and can serve multiple Pods.
     NSXT:
+      LocalManager:
+        Deploy: true                                      # LocalManager - Deploy NSX-T Local Manager as part of the Pod deployment.
       GlobalManager:
         Deploy: false                                     # GlobalManager - PLANNED FOR FUTURE - NOT YET IMPLEMENTED
         SiteCode: "{{ SiteCode }}"                        # If not deploying Global Manager in this SiteCode (i.e. 'Pod-###') as part of this deployment, change to indicate in which SiteCode Global Manager has been deployed to.  If the Global Manager is in a different SiteCode than this deployment, it must be deployed either before or concurrently with this deployment.
-      LocalManager: true                                  # LocalManager - Deploy NSX-T Local Manager as part of the Pod deployment.
-      CloudServicesManager: false                         # CloudServicesManager - PLANNED FOR FUTURE - NOT YET IMPLEMENTED
-      Edge: true                                          # Edge - Deploy NSX-T Edge Transport Nodes as part of the Pod deployment.
-    Tanzu: 
-      WorkloadManagement: false                           # Tanzu - Enable Workload Management as part of the Pod deployment - PLANNED FOR FUTURE - NOT YET IMPLEMENTED
+      Edge:
+        Deploy: true                                      # Edge - Deploy NSX-T Edge Transport Nodes as part of the Pod deployment.
+        UplinksToUse: LM                                  # Indicates which Uplink Edge Uplink Segments to use for the Edges...those created on the LM, or those created on the GM?  Valid settings are "LM" or "GM"
+      CloudServicesManager:
+        Deploy: false                                     # CloudServicesManager - PLANNED FOR FUTURE - NOT YET IMPLEMENTED
   Setting:
     IPv4: true                                            # IPv4 - All components are configured with IPv4 addresses.
     IPv6: false                                           # IPv6 - Make sure your environment (i.e. Ansible control station, DNS, etc.) are all configured with IPv6 else the installation will fail.  IPv6 transit also required between Ansible constrol station and DNS Server.
@@ -551,6 +556,7 @@ Nested_DNSServer:
 
 Nested_Clusters:
   Management:
+    DeployHosts: false                                                                  # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
     DRS: true
     HA:
       Enable: false
@@ -578,8 +584,8 @@ Nested_Clusters:
             Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
               Network: "{{ Net.VMNetwork.IPv4.Network }}.48"
               Prefix: 28
-    DeployHosts: false                                                                  # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
   ComputeA:
+    DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
     DRS: true
     HA:
       Enable: true
@@ -607,8 +613,8 @@ Nested_Clusters:
             Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
               Network: "{{ Net.VMNetwork.IPv4.Network }}.80"
               Prefix: 28
-    DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
   ComputeB:
+    DeployHosts: false                                                                  # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
     DRS: true
     HA:
       Enable: true
@@ -636,8 +642,8 @@ Nested_Clusters:
             Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
               Network: "{{ Net.VMNetwork.IPv4.Network }}.112"
               Prefix: 28
-    DeployHosts: false                                                                  # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
   Edge:                                                                                 # 'Edge' is where NSX-T ETN's are deployed.  HIGHLY suggest you always have an 'Edge' cluster.
+    DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
     DRS: true
     HA:
       Enable: false
@@ -665,7 +671,6 @@ Nested_Clusters:
             Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
               Network: "{{ Net.VMNetwork.IPv4.Network }}.144"
               Prefix: 28
-    DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
 
 
 Nested_ESXi:
@@ -1979,6 +1984,7 @@ Nested_NSXT:
         Description: NSX T0-Edge Uplink 1
         TransportZone: TZ-Edge
         ReplicationMode: MTEP                                                                   # ReplicationMode can be "MTEP" or "SOURCE"
+        EdgeTransit: true                                                                       # Indicates if segment is a Edge Transit Segment for EdgeVMs.
         VLANS:
           - "{{ Net.NSXEdgeUplink1.VLAN }}"
         Tags:
@@ -1989,6 +1995,7 @@ Nested_NSXT:
         Description: NSX T0-Edge Uplink 2
         TransportZone: TZ-Edge
         ReplicationMode: MTEP                                                                   # ReplicationMode can be "MTEP" or "SOURCE"
+        EdgeTransit: true                                                                       # Indicates if segment is a Edge Transit Segment for EdgeVMs.
         VLANS:
           - "{{ Net.NSXEdgeUplink2.VLAN }}"
         Tags:
@@ -2005,6 +2012,7 @@ Nested_NSXT:
         Subnets:
           - GatewayCIDR: 192.168.1.1/24
           - GatewayCIDR: fd00:a:a::1/64
+        EdgeTransit: false                                                                      # Indicates if segment is a Edge Transit Segment for EdgeVMs.
         VLANS:
         Tags:
           - Tag: Auto-Created
@@ -2020,6 +2028,7 @@ Nested_NSXT:
         Subnets:
           - GatewayCIDR: 192.168.2.1/24
           - GatewayCIDR: fd00:a:b::1/64
+        EdgeTransit: false                                                                      # Indicates if segment is a Edge Transit Segment for EdgeVMs.
         VLANS:
         Tags:
           - Tag:
@@ -2035,6 +2044,7 @@ Nested_NSXT:
         Subnets:
           - GatewayCIDR: 192.168.3.1/24
           - GatewayCIDR: fd00:a:c::1/64
+        EdgeTransit: false                                                                      # Indicates if segment is a Edge Transit Segment for EdgeVMs.
         VLANS:
         Tags:
           - Tag: Auto-Created
@@ -2044,6 +2054,7 @@ Nested_NSXT:
         Description: Example Test Segment with many VLANs and Tags
         TransportZone: TZ-VLAN
         ReplicationMode: SOURCE                                                                 # ReplicationMode can be "MTEP" or "SOURCE"
+        EdgeTransit: false                                                                      # Indicates if segment is a Edge Transit Segment for EdgeVMs.
         VLANS:
           - "{{ Net.NSXEdgeUplink2.VLAN }}"
           - "{{ Net.NSXEdgeUplink1.VLAN }}"
@@ -2069,6 +2080,7 @@ Nested_NSXT:
         Subnets:
           - GatewayCIDR: 192.168.4.1/24
           - GatewayCIDR: fd00:a:d::1/64
+        EdgeTransit: false                                                                      # Indicates if segment is a Edge Transit Segment for EdgeVMs.
         Tags:
           - Tag: Auto-Created
             Scope: SDDC.Lab
