@@ -1,0 +1,48 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: tests/GeneratePodConfig.yml
+##
+---
+- hosts: localhost
+  name: GeneratePodConfig.yml
+  vars_files:
+    - ../software.yml
+    - ../templates.yml
+
+  vars:
+    - PodTemplate: "Pod_Config.j2"
+    - PodConfigFile: "config_TEST.yml"
+
+  vars_prompt:
+    - name: SourceConfigPath
+      prompt: "In which directory is the Pod-Config file you want to have prepared located?"
+      unsafe: yes
+      private: no
+      default: "{{ lookup('env','PWD') }}"
+
+    - name: SourceConfigFile
+      prompt: "What is the name of the configuration file that you would like to have prepared?"
+      unsafe: yes
+      private: no
+      default: "config_TEST.yml"
+
+  tasks:
+    - name: Include Pod-Config variables into playbook
+      ansible.builtin.include_vars:
+        file: "{{ SourceConfigPath }}/{{ SourceConfigFile }}"
+
+    - name: Create variable with current date and time
+      ansible.builtin.set_fact: 
+        time: "{{lookup('pipe','date \"+%d-%B-%Y %H:%M\"')}}"
+ 
+    - name: Process 'config_TEST.yml' through Jinja2 Template and save to config_TEST.txt
+      ansible.builtin.template: 
+        src: "../templates/{{ PodTemplate }}"
+        dest: "{{ lookup('env','PWD') }}/config_TEST.txt"
+        mode: "666"
+        force: yes
+      when: 
+        - Pod.Number is defined
+        - Pod.Number >= 10
+        - Pod.Number <= 240
