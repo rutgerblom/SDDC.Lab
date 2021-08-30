@@ -426,3 +426,8 @@
   - Began work on making Tanzu configuration cluster-based. 
   - The following file was updated so please update your non-sample file:
     - config_sample.yml
+
+## Dev-v4.0.0 29-AUG-2021
+
+### Added by Luis Chanu
+  - Added tests/GeneratePodConfig.yml test playbook to easily generate a Pod Configuration for troubleshooting purposes.
