@@ -513,19 +513,19 @@
 
                         Issue: NSX-T Edge nodes can not be deployed
 
-                                Deploy NSX-T Edge nodes: {{ Deploy.Product.NSXT.Edge}}    
+                                Deploy NSX-T Edge nodes: {{ Deploy.Product.NSXT.Edge }}
             Deploy vSphere cluster for NSX-T Edge nodes: {{ Nested_Clusters.Edge.DeployHosts }}
 
           =================================================================================================
       when:
-        - Deploy.Product.NSXT.Edge
+        - Deploy.Product.NSXT.Edge.Deploy == true
         - Nested_Clusters.Edge.DeployHosts != true
 
     - name: Set flag if NSX-T Edge cannot be deployed
       ansible.builtin.set_fact:
         IssueFound: true
       when:
-        - Deploy.Product.NSXT.Edge
+        - Deploy.Product.NSXT.Edge.Deploy == true
         - Nested_Clusters.Edge.DeployHosts != true
 ##
 ## Verify NSX-T installation files exist
@@ -538,7 +538,7 @@
         get_mime: no
         follow: no
       register: NSXT_Installer
-      when: Deploy.Product.NSXT.LocalManager
+      when: Deploy.Product.NSXT.LocalManager.Deploy == true
 
     - name: Verify NSX-T Installer exists
       ansible.builtin.pause:
@@ -552,14 +552,14 @@
 
           =================================================================================================
       when:
-        - Deploy.Product.NSXT.LocalManager
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - NSXT_Installer.stat.isreg is not defined or NSXT_Installer.stat.isreg != true
 
     - name: Set flag if issue found locating NSX-T installer file
       ansible.builtin.set_fact:
         IssueFound: true
       when:
-        - Deploy.Product.NSXT.LocalManager
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - NSXT_Installer.stat.isreg is not defined or NSXT_Installer.stat.isreg != true
 
 
@@ -574,7 +574,7 @@
         get_mime: no
         follow: no
       register: vRLI_Installer
-      when: Deploy.Product.vRLI
+      when: Deploy.Product.vRLI.Deploy == true
 
     - name: Verify vRLI Installer exists
       ansible.builtin.pause:
@@ -588,14 +588,14 @@
 
           =================================================================================================
       when:
-        - Deploy.Product.vRLI
+        - Deploy.Product.vRLI.Deploy == true
         - vRLI_Installer.stat.isreg is not defined or vRLI_Installer.stat.isreg != true
 
     - name: Set flag if issue found locating vRLI installer file
       ansible.builtin.set_fact:
         IssueFound: true
       when:
-        - Deploy.Product.vRLI
+        - Deploy.Product.vRLI.Deploy == true
         - vRLI_Installer.stat.isreg is not defined or vRLI_Installer.stat.isreg != true
 
 

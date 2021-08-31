@@ -69,7 +69,7 @@
         T1GatewaysToCreate: "{{ lookup('template', LOCAL_T1Gateways_Template) | from_yaml }}"
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
@@ -83,7 +83,7 @@
       when:
         - DEBUG.DisplayVariables == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
         - T1GatewaysToCreate != ""
 
     - name: Create NSX-T Tier-1 Gateway
@@ -103,4 +103,4 @@
       loop: "{{ T1GatewaysToCreate }}"
       when: 
         - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.Edge.Deploy == true

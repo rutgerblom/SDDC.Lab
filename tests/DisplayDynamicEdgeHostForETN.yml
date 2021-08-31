@@ -174,7 +174,7 @@
         var_EdgeTransportNodes: "{{ lookup('template', LOCAL_EdgeTnTemplate) | from_yaml }}"
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
@@ -188,6 +188,6 @@
       when:
         - DEBUG.DisplayVariables == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
         - var_EdgeTransportNodes != ""
 
