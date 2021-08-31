@@ -107,14 +107,14 @@
       ignore_errors: true
       no_log: true
       when:
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
 
     - name: Read the structure from template into a variable
       ansible.builtin.set_fact:
         var_UbuntuConfiguration: "{{ lookup('template', LOCAL_Ubuntu_Template) | from_yaml }}"
       when:
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
@@ -129,7 +129,7 @@
         - DEBUG.DisplayVariables == true
         - var_UbuntuConfiguration != ""
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
 
     - name: Create temp directory
       ansible.builtin.file:
@@ -137,7 +137,7 @@
         state: directory
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
     
     - name: Check if Ubuntu ISO file exists locally exists locally in the software repository
       ansible.builtin.stat:
@@ -153,13 +153,13 @@
         - (InstallerFileCheck.stat.exists != true) or (Deploy.Software.Options.UseLocalInstaller != true)
         - Deploy.Software.Options.KeepNewInstallers == true
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true 
+        - Deploy.Product.DNSServer.Deploy == true 
         
 #    - name: Mount Ubuntu ISO file
 #      action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}" opts=loop fstype=iso9660 state=mounted
 #      when: 
 #        - ubuntu_status is failed
-#        - Deploy.Product.DNSServer == true  
+#        - Deploy.Product.DNSServer.Deploy == true  
 
     - name: Mount Ubuntu ISO as read-only and do not automatically mount with 'mount -a'
       ansible.posix.mount:
@@ -170,7 +170,7 @@
         state:  mounted
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true  
+        - Deploy.Product.DNSServer.Deploy == true  
 
     - name: Copy txt.cfg from Ubuntu ISO
       ansible.builtin.copy: 
@@ -179,7 +179,7 @@
         mode: "666"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true  
+        - Deploy.Product.DNSServer.Deploy == true  
 
     - name: Edit txt.cfg to enable autoinstaller 
       ansible.builtin.replace:
@@ -188,7 +188,7 @@
         replace: 'append   initrd=/casper/initrd quiet --- autoinstall ds=nocloud;s=/cdrom/{{ Common.DNS.Domain }}/'
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true  
+        - Deploy.Product.DNSServer.Deploy == true  
 
     - name: Create directory to store user-data and meta-data
       ansible.builtin.file:
@@ -196,7 +196,7 @@
         state: directory
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true  
+        - Deploy.Product.DNSServer.Deploy == true  
 
     - name: Create autoinstaller files
       ansible.builtin.template: 
@@ -206,7 +206,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AutoInstall }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true  
+        - Deploy.Product.DNSServer.Deploy == true  
 
     - name: Create custom Ubuntu ISO
       ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table  {{ ISOMountPoint }}/ {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
@@ -214,13 +214,13 @@
         chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
 
 #    - name: Unmount Ubuntu ISO
 #      action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}" fstype=iso9660 state=absent
 #      when: 
 #        - ubuntu_status is failed
-#        - Deploy.Product.DNSServer == true  
+#        - Deploy.Product.DNSServer.Deploy == true  
 
     - name: Unmount Ubuntu ISO
       ansible.posix.mount:
@@ -228,7 +228,7 @@
         state:  absent
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true  
+        - Deploy.Product.DNSServer.Deploy == true  
         - Deploy.Software.Options.UnmountISO
 
     - name: Upload the custom Ubuntu ISO to the datastore
@@ -243,7 +243,7 @@
         path: "{{ Target.ISOFolder }}/{{ Deploy.Software.DNSServer.File }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true  
+        - Deploy.Product.DNSServer.Deploy == true  
 
     - name: Deploy Ubuntu VM
       community.vmware.vmware_guest:
@@ -282,7 +282,7 @@
                     Password: {{ Nested_DNSServer.OS.Credential.Password }}
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
 
     - name: Start checking if the Ubuntu VM is ready
       community.vmware.vmware_guest_info:
@@ -299,7 +299,7 @@
       delay: 60
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
 
     - name: Set password for the Ubuntu user
       community.vmware.vmware_vm_shell:
@@ -314,7 +314,7 @@
         vm_shell_args: "'{{ Nested_DNSServer.OS.Credential.User }}:{{ Nested_DNSServer.OS.Credential.Password }}' | sudo chpasswd"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
 
     - name: Create configuration files
       ansible.builtin.template: 
@@ -324,7 +324,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
         - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
 
     - name: Copy configuration files to the Ubuntu VM
@@ -342,7 +342,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
         - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
 
     - name: Move configuration files to their final location on the Ubuntu VM
@@ -359,7 +359,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
         - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
 
     - name: Create directories on Ubuntu VM
@@ -376,7 +376,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Directories }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
         - var_UbuntuConfiguration.Configuration.Directories != ""
 
     - name: Set owner on directories on Ubuntu VM
@@ -393,7 +393,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Directories }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
         - var_UbuntuConfiguration.Configuration.Directories != ""
 
     - name: Apply the network configuration on Ubuntu VM
@@ -409,7 +409,7 @@
         vm_shell_args: netplan apply
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
 
     - name: Restart daemons on Ubuntu VM
       community.vmware.vmware_vm_shell:
@@ -425,7 +425,7 @@
       loop: "{{ var_UbuntuConfiguration.Configuration.Packages }}"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
         - var_UbuntuConfiguration.Configuration.Packages != ""
 
     - name: Delete local ISO content directory
@@ -434,7 +434,7 @@
         state: absent
       when: 
         - DEBUG.KeepInstallerFiles != true
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
         - ubuntu_status is failed
 
     - name: Delete the custom Ubuntu ISO file
@@ -443,7 +443,7 @@
         state: absent
       when: 
         - DEBUG.KeepInstallerFiles != true
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
         - ubuntu_status is failed
 
     - name: Delete configuration files
@@ -454,5 +454,5 @@
       when: 
         - DEBUG.KeepConfigFiles != true
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer == true
+        - Deploy.Product.DNSServer.Deploy == true
         - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
