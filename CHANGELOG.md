@@ -442,3 +442,11 @@
   - Updated various "Deploy.Product.xxx" entries to "Deploy.Product.xxx.Deploy" throughout all files in project
   - The following file was updated so please update your non-sample file:
     - config_sample.yml
+
+## Dev-v4.0.0 31-AUG-2021
+
+### Added by Rutger Blom
+  - Tanzu is now configured on a per vSphere cluster basis. 
+  - In this early release the user can choose to enable automatic deployment of Tanzu Supervisor Clusters (disabled by default). The default settings should be fine, but can be modified under "Nested_Clusters" for each individual vSphere cluster.
+  - The following file was updated so please update your non-sample file:
+    - config_sample.yml 
