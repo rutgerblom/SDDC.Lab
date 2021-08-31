@@ -64,12 +64,12 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
 
     - name: Get list of Uplink Profiles
       ansible.builtin.set_fact:
         UplinkProfilesToCreate: "{{ lookup('template', LOCAL_UplinkProfiles_Template) | from_yaml }}"
-      when: Deploy.Product.NSXT.LocalManager == true
+      when: Deploy.Product.NSXT.LocalManager.Deploy == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
@@ -82,7 +82,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - UplinkProfilesToCreate != ""
 
     - name: Create Uplink Profiles
@@ -100,5 +100,5 @@
         state: "present"
       with_list: "{{ UplinkProfilesToCreate }}"
       when:
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - UplinkProfilesToCreate != ""

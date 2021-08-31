@@ -90,7 +90,7 @@
         path: "{{ Target.TempFolder }}"
         state: directory
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
 
 ##
 ## VyOS Router
@@ -100,7 +100,7 @@
       ansible.builtin.set_fact:
         RouterConfig: "{{ lookup('template', '{{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}') | regex_findall('^set.+$|^delete.+$', multiline=true, ignorecase=true) | join('\n') }}"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - Deploy.Software.Router.Vendor == "VyOS"
 
     - name: DEBUG -- Display RouterConfig Variable (Pause)
@@ -112,7 +112,7 @@
           ===============================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - Deploy.Software.Router.Vendor == "VyOS"
 
     - name: Write VyOS router configuration to a file
@@ -122,7 +122,7 @@
         mode: "666"
         force: true
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - Deploy.Software.Router.Vendor == "VyOS"
 
     - name: Apply {{ Nested_Router.Name }} VyOS Baseline Router Configuration
@@ -136,7 +136,7 @@
         save: true
       ignore_errors: true
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - Deploy.Software.Router.Vendor == "VyOS"
 
 ##
@@ -152,13 +152,13 @@
         path: "{{ UserConfigDirectory }}/{{ Nested_Router.UserConfig.Template }}"
       register: UserConfigTemplate
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
 
     - name: If UserConfig template exists, generate VyOS Pod-Router commands to apply (removing non-commands and empty lines)
       ansible.builtin.set_fact:
         RouterUserConfig: "{{ lookup('template', '{{ UserConfigDirectory }}/{{ Nested_Router.UserConfig.Template }}') | regex_findall('^set.+$|^delete.+$', multiline=true, ignorecase=true) | join('\n') }}"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - Deploy.Software.Router.Vendor == "VyOS"
         - UserConfigTemplate.stat.exists
 
@@ -171,7 +171,7 @@
           ===============================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - Deploy.Software.Router.Vendor == "VyOS"
         - UserConfigTemplate.stat.exists
 
@@ -182,7 +182,7 @@
         mode: "666"
         force: true
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - Deploy.Software.Router.Vendor == "VyOS"
         - UserConfigTemplate.stat.exists
 
@@ -196,7 +196,7 @@
         src: "{{ Target.TempFolder }}/{{ LOCAL_UserConfigTempFile }}"
         save: true
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - Deploy.Software.Router.Vendor == "VyOS"
         - UserConfigTemplate.stat.exists
 
@@ -211,7 +211,7 @@
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
         state: absent
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - DEBUG.KeepConfigFiles != true
 
     - name: Delete the UserConfig configuration for {{ Nested_Router.Name }}
@@ -219,6 +219,6 @@
         path: "{{ Target.TempFolder }}/{{ LOCAL_UserConfigTempFile }}"
         state: absent
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - DEBUG.KeepConfigFiles != true
         - UserConfigTemplate.stat.exists

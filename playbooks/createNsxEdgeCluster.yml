@@ -64,14 +64,14 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
 
     - name: Read the structure from template into a variable
       ansible.builtin.set_fact:
         var_EdgeClusters: "{{ lookup('template', LOCAL_EdgeClusterTemplate) | from_yaml }}"
       when:
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
@@ -84,7 +84,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - var_EdgeClusters != ""
 
 
@@ -103,8 +103,8 @@
       register: edge_cluster
       loop: "{{ var_EdgeClusters }}"
       when: 
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
         - var_EdgeClusters != ""
 
     - name:  Wait until the NSX-T API reports that the Edge Cluster is in realized state
@@ -124,6 +124,6 @@
       retries: 30
       delay: 60
       when: 
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
         - var_EdgeClusters != ""

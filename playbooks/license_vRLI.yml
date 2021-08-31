@@ -55,7 +55,7 @@
 
                                     Target.Deployment: {{ Target.Deployment }}
 
-                                          Deploy.Product.vRLI: {{ Deploy.Product.vRLI }}
+                           Deploy.Product.vRLI.Deploy: {{ Deploy.Product.vRLI.Deploy }}
                                      Nested_vRLI.FQDN: {{ Nested_vRLI.FQDN }}
 
                                          License File: {{ LOCAL_LicenseFile }}
@@ -69,7 +69,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.vRLI == true
+        - Deploy.Product.vRLI.Deploy == true
 
 
 ###
@@ -134,7 +134,7 @@
         body_format: json
       register: vrli_session
       when:
-        - Deploy.Product.vRLI == true
+        - Deploy.Product.vRLI.Deploy == true
 
     - name: Add all licenses to vRLI
       ansible.builtin.uri:
@@ -151,5 +151,5 @@
       ignore_errors: yes                                                             # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
       no_log: true
       when:
-        - Deploy.Product.vRLI == true
+        - Deploy.Product.vRLI.Deploy == true
         - Deploy.Software.vRLI.Version is match(item.Version)

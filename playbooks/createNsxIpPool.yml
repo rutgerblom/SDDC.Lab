@@ -69,13 +69,13 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
 
 
     - name: Get list of IP Pools
       ansible.builtin.set_fact:
         IPPoolsToCreate: "{{ lookup('template', LOCAL_IPPools_Template) | from_yaml }}"
-      when: Deploy.Product.NSXT.LocalManager == true
+      when: Deploy.Product.NSXT.LocalManager.Deploy == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
@@ -88,7 +88,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - IPPoolsToCreate != ""
 
     - name: Create NSX-T IP Pools using Polcy API
@@ -105,5 +105,5 @@
       with_items:
         - "{{ IPPoolsToCreate }}"
       when:
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - IPPoolsToCreate != ""

@@ -68,7 +68,7 @@
     - name: Get list of Segments
       ansible.builtin.set_fact:
         SegmentsToCreate: "{{ lookup('template', LOCAL_Segments_Template) | from_yaml }}"
-      when: Deploy.Product.NSXT.LocalManager == true
+      when: Deploy.Product.NSXT.LocalManager.Deploy == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
@@ -81,7 +81,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - SegmentsToCreate != ""
 
     ## Create only VLAN-backed Segments in SegmentsToCreate  ##
@@ -101,5 +101,5 @@
         state: "present"
       loop: "{{ SegmentsToCreate }}"
       when: 
-      - Deploy.Product.NSXT.LocalManager == true
+      - Deploy.Product.NSXT.LocalManager.Deploy == true
       - Nested_NSXT.System.Fabric.TransportZone[item.transport_zone_display_name].Type == "VLAN"

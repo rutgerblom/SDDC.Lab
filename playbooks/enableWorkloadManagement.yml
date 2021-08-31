@@ -94,8 +94,8 @@
         - Deploy.Product.Tanzu.WorkloadManagement == true
         - item.value.DeployHosts == true
         - item.value.Tanzu.SupervisorCluster.Enable == true
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
       tags:
         - test
 
@@ -106,8 +106,8 @@
         query: "[*].clusters.[*.moid][][]"
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
       tags:
         - test
 
@@ -130,8 +130,8 @@
       register: vds_info
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
     - name: Store Distributed Switch ID for later use
       ansible.builtin.set_fact:
@@ -140,8 +140,8 @@
         query: distributed_virtual_switches[*].uuid
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
 
 ##
@@ -157,8 +157,8 @@
       register: vdspg_info
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
     - name: Store Management Port Group ID for later use
       ansible.builtin.set_fact:
@@ -167,8 +167,8 @@
         query: dvs_portgroup_info."{{ Nested_vCenter.Networking.vSwitch.Name }}"[?portgroup_name=='{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}'].key
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
       
 
 ##
@@ -183,8 +183,8 @@
       register: sp_info
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
     - name: Store Storage Policy ID for later use
       ansible.builtin.set_fact:
@@ -193,8 +193,8 @@
         query: spbm_profiles[?name=='vSAN Default Storage Policy'].id
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
 
 ##
@@ -209,8 +209,8 @@
       register: ec_info
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
     - name: Store NSX-T Edge Cluster ID for later use
       ansible.builtin.set_fact:
@@ -219,8 +219,8 @@
         query: results[?display_name=='{{ SiteCode }}-T0-Edge-Cluster-01'].id
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
 
 ##
@@ -235,8 +235,8 @@
       register: cl_info
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
     - name: Store vSphere Content Library ID for later use
       ansible.builtin.set_fact:
@@ -245,8 +245,8 @@
         query: content_libs
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
 
 ##
@@ -268,16 +268,16 @@
       register: vcenter_auth_result
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
     - name: Store vCenter Session ID for later use
       set_fact:
         vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
 
 ##
@@ -295,5 +295,5 @@
       loop: "{{ cluster_id }}"
       when:
         - Deploy.Product.Tanzu.WorkloadManagement == true
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true

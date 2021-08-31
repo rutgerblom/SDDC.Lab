@@ -49,18 +49,23 @@ Pod:
 {# Added additional fields to Deploy for templates and software, so unable to use 'to_nice_yaml' #}
 Deploy:
   Product:
-    Router: {{ Deploy.Product.Router }}
-    vRLI: {{ Deploy.Product.vRLI }}
-    DNSServer: {{ Deploy.Product.DNSServer }}
+    Router:
+      Deploy: {{ Deploy.Product.Router.Deploy }}
+    vRLI:
+      Deploy: {{ Deploy.Product.vRLI.Deploy }}
+    DNSServer:
+      Deploy: {{ Deploy.Product.DNSServer.Deploy }}
     NSXT:
+      LocalManager:
+        Deploy: {{ Deploy.Product.NSXT.LocalManager.Deploy }}
       GlobalManager:
         Deploy: {{ Deploy.Product.NSXT.GlobalManager.Deploy }}
         SiteCode: {{ Deploy.Product.NSXT.GlobalManager.SiteCode }}
-      LocalManager: {{ Deploy.Product.NSXT.LocalManager }}
-      CloudServicesManager: {{ Deploy.Product.NSXT.CloudServicesManager }}
-      Edge: {{ Deploy.Product.NSXT.Edge }}
-    Tanzu: 
-      WorkloadManagement: {{ Deploy.Product.Tanzu.WorkloadManagement }}
+      Edge:
+        Deploy: {{ Deploy.Product.NSXT.Edge.Deploy }}
+        UplinksToUse: {{ Deploy.Product.NSXT.Edge.UplinksToUse }}
+      CloudServicesManager:
+        Deploy: {{ Deploy.Product.NSXT.CloudServicesManager.Deploy }}
   Setting:
     IPv4: {{ Deploy.Setting.IPv4 }}
     IPv6: {{ Deploy.Setting.IPv6 }}

@@ -16,7 +16,7 @@
 # Deploy DNS server
 - ansible.builtin.import_playbook: playbooks/deployDNSServer.yml
   when: 
-    - Deploy.Product.DNSServer == true
+    - Deploy.Product.DNSServer.Deploy == true
 
 # Populate DNS with forward and reverse DNS records
 - ansible.builtin.import_playbook: playbooks/updateDNS.yml
@@ -26,12 +26,12 @@
 # Deploy router
 - ansible.builtin.import_playbook: playbooks/deployRouter.yml
   when: 
-    - Deploy.Product.Router == true
+    - Deploy.Product.Router.Deploy == true
 
 # Configure router
 - ansible.builtin.import_playbook: playbooks/configureRouter.yml
   when: 
-    - Deploy.Product.Router == true
+    - Deploy.Product.Router.Deploy == true
 
 # Deploy nested vSphere
 - ansible.builtin.import_playbook: playbooks/prepareISOInstaller.yml
@@ -54,92 +54,94 @@
 # Deploy NSX-T
 - ansible.builtin.import_playbook: playbooks/deployNsxLocalManager.yml
   when: 
-    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
  
 - ansible.builtin.import_playbook: playbooks/license_NSXT-LM.yml
   when: 
-    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/registerNsxComputeManager.yml
   when: 
-    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/createNsxTz.yml
   when: 
-    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/createNsxIpPool.yml
   when: 
-    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/createNsxUplinkProfiles.yml
   when: 
-    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/createNsxTnp.yml
   when: 
-    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/attachNsxTnp.yml
   when: 
-    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/createNsxEdgeTn.yml
   when: 
-    - Deploy.Product.NSXT.LocalManager == true
-    - Deploy.Product.NSXT.Edge == true
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+    - Deploy.Product.NSXT.Edge.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/createNsxEdgeCluster.yml
   when: 
-    - Deploy.Product.NSXT.LocalManager == true
-    - Deploy.Product.NSXT.Edge == true
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+    - Deploy.Product.NSXT.Edge.Deploy == true
 
 
 # Provision NSX-T logical networking
 - ansible.builtin.import_playbook: playbooks/enableNsxIPv6.yml
   when: 
-    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
     - Deploy.Setting.IPv6 == true
 
 - ansible.builtin.import_playbook: playbooks/createNsxVLANSegments.yml
   when: 
-    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/createNsxT0Gateway.yml
   when: 
-    - Deploy.Product.NSXT.LocalManager == true
-    - Deploy.Product.NSXT.Edge == true
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+    - Deploy.Product.NSXT.Edge.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/createNsxT1Gateway.yml
   when: 
-    - Deploy.Product.NSXT.LocalManager == true
-    - Deploy.Product.NSXT.Edge == true
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+    - Deploy.Product.NSXT.Edge.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/createNsxOverlaySegments.yml
   when: 
-    - Deploy.Product.NSXT.LocalManager == true
-    - Deploy.Product.NSXT.Edge == true
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+    - Deploy.Product.NSXT.Edge.Deploy == true
 
 
 # Deploy vRealize products
 - ansible.builtin.import_playbook: playbooks/deployVrli.yml
   when: 
-    - Deploy.Product.vRLI == true
+    - Deploy.Product.vRLI.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/license_vRLI.yml
   when: 
-    - Deploy.Product.vRLI == true
+    - Deploy.Product.vRLI.Deploy == true
 
 
 # Enable vSphere with Tanzu Workload Management
 - ansible.builtin.import_playbook: playbooks/enableWorkloadManagement.yml
   when: 
-    - Deploy.Product.Tanzu.WorkloadManagement == true
-    - Deploy.Product.NSXT.LocalManager == true
-    - Deploy.Product.NSXT.Edge == true
+#    - Deploy.Product.Tanzu.WorkloadManagement == true
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+    - Deploy.Product.NSXT.Edge.Deploy == true
+    - false
 
 - ansible.builtin.import_playbook: playbooks/license_Tanzu.yml
   when: 
-    - Deploy.Product.Tanzu.WorkloadManagement == true
-    - Deploy.Product.NSXT.LocalManager == true
-    - Deploy.Product.NSXT.Edge == true
+#    - Deploy.Product.Tanzu.WorkloadManagement == true
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+    - Deploy.Product.NSXT.Edge.Deploy == true
+    - false

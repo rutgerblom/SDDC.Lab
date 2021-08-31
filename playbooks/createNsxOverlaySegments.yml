@@ -68,7 +68,7 @@
     - name: Get list of Segments
       ansible.builtin.set_fact:
         SegmentsToCreate: "{{ lookup('template', LOCAL_Segments_Template) | from_yaml }}"
-      when: Deploy.Product.NSXT.LocalManager == true
+      when: Deploy.Product.NSXT.LocalManager.Deploy == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
@@ -81,8 +81,8 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager == true
-        - Deploy.Product.NSXT.Edge == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
         - SegmentsToCreate != ""
 
     ## Create only OVERLAY Segments in var_Segments  ##
@@ -104,6 +104,6 @@
         state: "present"
       loop: "{{ SegmentsToCreate }}"
       when: 
-      - Deploy.Product.NSXT.LocalManager == true
-      - Deploy.Product.NSXT.Edge == true
+      - Deploy.Product.NSXT.LocalManager.Deploy == true
+      - Deploy.Product.NSXT.Edge.Deploy == true
       - Nested_NSXT.System.Fabric.TransportZone[item.transport_zone_display_name].Type == "OVERLAY"

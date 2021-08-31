@@ -103,14 +103,14 @@
       ignore_errors: true
       no_log: true
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
 
     - name: Create temp directory
       ansible.builtin.file:
         path: "{{ Target.TempFolder }}"
         state: directory
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
 
     - name: Check if VyOS installation file exists locally in the software repository
@@ -132,7 +132,7 @@
       when:
         - InstallerFileCheck.stat.exists == true
         - Deploy.Software.Options.UseLocalInstaller == true
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
 
     - name: Download VyOS installation media (overwrite if exists)
@@ -142,7 +142,7 @@
         force: yes
       when: 
         - (InstallerFileCheck.stat.exists != true) or (Deploy.Software.Options.UseLocalInstaller != true)
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
 
     - name: Update VyOS installation file in the local software repository (overwrite if exists)
@@ -153,7 +153,7 @@
       when:
         - InstallerFileCheck.stat.exists != true
         - Deploy.Software.Options.KeepNewInstallers == true
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
 
     - name: Create configuration file for VyOS router
@@ -162,7 +162,7 @@
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
         mode: "666"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
 
 
@@ -182,7 +182,7 @@
         path: "{{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
       tags: upload
       when: 
-        - Deploy.Product.Router  == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -221,7 +221,7 @@
                     Username: vyos
                     Password: {{ Common.Password.Nested }}
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -229,7 +229,7 @@
       ansible.builtin.pause:
         minutes: 1
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -242,7 +242,7 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "vyos"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -250,7 +250,7 @@
       ansible.builtin.pause:
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -264,7 +264,7 @@
         keys_send:
           - ENTER
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -272,7 +272,7 @@
       ansible.builtin.pause:
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -285,7 +285,7 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "vyos"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -293,7 +293,7 @@
       ansible.builtin.pause:
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -309,7 +309,7 @@
           - ENTER
         string_send: "install image"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -317,7 +317,7 @@
       ansible.builtin.pause:
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -335,7 +335,7 @@
           - ENTER
         string_send: "yes"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -343,7 +343,7 @@
       ansible.builtin.pause:
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -361,7 +361,7 @@
           - ENTER
         string_send: "vyos"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -369,7 +369,7 @@
       ansible.builtin.pause: 
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -384,7 +384,7 @@
           - ENTER
         string_send: "vyos"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -392,7 +392,7 @@
       ansible.builtin.pause: 
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -407,7 +407,7 @@
           - ENTER
           - ENTER
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -415,7 +415,7 @@
       ansible.builtin.pause: 
         seconds: 30
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -428,7 +428,7 @@
         name: "{{ Nested_Router.Name }}"
         state: shutdown-guest
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -436,7 +436,7 @@
       ansible.builtin.pause: 
         seconds: 10
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -450,7 +450,7 @@
         cdrom:
           type: "none"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -463,7 +463,7 @@
         name: "{{ Nested_Router.Name }}"
         state: powered-on
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -471,7 +471,7 @@
       ansible.builtin.pause: 
         minutes: 1
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -488,7 +488,7 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "vyos"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -496,7 +496,7 @@
       ansible.builtin.pause:
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -510,7 +510,7 @@
         keys_send:
           - ENTER
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -518,7 +518,7 @@
       ansible.builtin.pause:
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -531,7 +531,7 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "vyos"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -539,7 +539,7 @@
       ansible.builtin.pause:
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -554,7 +554,7 @@
           - ENTER
           - ENTER
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -567,7 +567,7 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "configure"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -575,7 +575,7 @@
       ansible.builtin.pause:
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -589,7 +589,7 @@
         keys_send:
           - ENTER
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -602,7 +602,7 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "set interfaces ethernet eth0 address {{ Nested_Router.Interface.Uplink.IPv4.Address }}/{{ Nested_Router.Interface.Uplink.IPv4.Prefix }}"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -610,7 +610,7 @@
       ansible.builtin.pause:
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -624,7 +624,7 @@
         keys_send:
           - ENTER
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -637,7 +637,7 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "set protocols static route 0.0.0.0/0 next-hop {{ Nested_Router.Interface.Uplink.IPv4.Gateway }} distance 250"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -645,7 +645,7 @@
       ansible.builtin.pause:
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -659,7 +659,7 @@
         keys_send:
           - ENTER
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -672,7 +672,7 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "set service ssh port 22"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -680,7 +680,7 @@
       ansible.builtin.pause:
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -694,7 +694,7 @@
         keys_send:
           - ENTER
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -711,7 +711,7 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "commit"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -719,7 +719,7 @@
       ansible.builtin.pause:
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -733,7 +733,7 @@
         keys_send:
           - ENTER
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -746,7 +746,7 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "save"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -754,7 +754,7 @@
       ansible.builtin.pause:
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -768,7 +768,7 @@
         keys_send:
           - ENTER
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -781,7 +781,7 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "exit"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -789,7 +789,7 @@
       ansible.builtin.pause:
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -803,7 +803,7 @@
         keys_send:
           - ENTER
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -816,7 +816,7 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "ping {{ Nested_Router.Interface.Uplink.IPv4.Gateway }} count 4"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -824,7 +824,7 @@
       ansible.builtin.pause:
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -838,7 +838,7 @@
         keys_send:
           - ENTER
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -851,7 +851,7 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "exit"
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -859,7 +859,7 @@
       ansible.builtin.pause:
         seconds: 5
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -873,7 +873,7 @@
         keys_send:
           - ENTER
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
@@ -884,7 +884,7 @@
       register: iproute
       ignore_errors: true
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - Nested_Router.Protocol == "Static"
         - status is failed
 
@@ -904,7 +904,7 @@
         state: absent
       tags: upload
       when:
-        - Deploy.Product.Router  == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
         - DEBUG.KeepInstallerFiles != true
@@ -914,7 +914,7 @@
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
         state: absent
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - DEBUG.KeepConfigFiles != true
 
@@ -923,6 +923,6 @@
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         state: absent
       when: 
-        - Deploy.Product.Router == true
+        - Deploy.Product.Router.Deploy == true
         - status is failed
         - DEBUG.KeepInstallerFiles != true
