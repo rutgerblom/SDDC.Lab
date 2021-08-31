@@ -439,5 +439,6 @@
   - Updated templates/Pod_Config.j2 to match updated Deploy section within config_sample.yml
   - Added additional fields within NSX-T "Deploy" branch
   - Added "EdgeTransit" flag to NSX-T Segments.  This flag indicates if this Segment should be used as the VLAN Transit Segment for the Edge uplinks.
+  - Updated various "Deploy.Product.xxx" entries to "Deploy.Product.xxx.Deploy" throughout all files in project
   - The following file was updated so please update your non-sample file:
     - config_sample.yml
