@@ -124,8 +124,8 @@ Common:
   Syslog:
     Protocol: udp
     Port: 514
-    IPv4: "{{ Net.Management.IPv4.Network }}.6"                               # Replace with your IP address if Deploy.Product.vRLI == false
-    IPv6: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(6) }}"         # Replace with your IP address if Deploy.Product.vRLI == false
+    IPv4: "{{ Net.Management.IPv4.Network }}.6"                               # Replace with your IP address if Deploy.Product.vRLI.Deploy == false
+    IPv6: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(6) }}"         # Replace with your IP address if Deploy.Product.vRLI.Deploy == false
   NFS:                                                                        # NFS - The NFS settings below refer to a NFS share that can be used by the NESTED ESXi hosts for storage, and has nothing to do with physical ESXi server(s).  If possible, we suggest using vSAN storage on the nested ESXi hosts, which are backed by local physical storage.
     Server:
       IPv4: 192.168.0.12
