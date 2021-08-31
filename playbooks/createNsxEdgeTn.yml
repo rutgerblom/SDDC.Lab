@@ -63,7 +63,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
 
 
@@ -89,7 +89,7 @@
       set_fact:
         vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
       when:
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
 
 
@@ -111,14 +111,14 @@
         status_code: 200
       register: cluster_info
       when:
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
 
     - name: Store vSphere Cluster Object ID (MoREF) for later use
       ansible.builtin.set_fact:
         Cluster_ID: "{{ cluster_info.json.value[0].cluster | default(None) }}"
       when:
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
 
 
@@ -140,7 +140,7 @@
         status_code: 200
       register: cluster_hosts
       when:
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
 
     - name: Create list containing just the FQDN EdgeHosts
@@ -148,7 +148,7 @@
         EdgeHosts: "{{ EdgeHosts | default([]) + [ item.name ] }}"
       loop: "{{ cluster_hosts.json.value }}"
       when:
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
 
     - name: DEBUG -- Display EdgeHosts
@@ -165,7 +165,7 @@
       when:
         - DEBUG.DisplayVariables == true
         - EdgeHosts is defined
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
 
 
@@ -176,7 +176,7 @@
       ansible.builtin.set_fact:
         var_EdgeTransportNodes: "{{ lookup('template', LOCAL_EdgeTnTemplate) | from_yaml }}"
       when:
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
 
     - name: DEBUG -- Display Target Variables
@@ -190,7 +190,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
         - var_EdgeTransportNodes != ""
 
@@ -214,7 +214,7 @@
         state: present 
       loop: "{{ var_EdgeTransportNodes }}"
       when:
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
         - var_EdgeTransportNodes != ""
       async: 1800
@@ -223,7 +223,7 @@
     - name: Wait 1 minute for the NSX-T API to process Edge Transport Node deployment information
       ansible.builtin.pause: minutes=1
       when: 
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
         - var_EdgeTransportNodes != ""
 
@@ -244,7 +244,7 @@
       retries: 90
       delay: 60
       when: 
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
         - var_EdgeTransportNodes != ""
 
@@ -265,6 +265,6 @@
       retries: 90
       delay: 60
       when: 
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
         - var_EdgeTransportNodes != ""

@@ -68,7 +68,7 @@
       ansible.builtin.set_fact:
         T1GatewaysToCreate: "{{ lookup('template', LOCAL_T1Gateways_Template) | from_yaml }}"
       when:
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
 
     - name: DEBUG -- Display Target Variables (Pause)
@@ -82,7 +82,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
         - T1GatewaysToCreate != ""
 
@@ -102,5 +102,5 @@
         locale_services: "{{ item.locale_services }}"
       loop: "{{ T1GatewaysToCreate }}"
       when: 
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true

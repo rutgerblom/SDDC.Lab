@@ -64,12 +64,12 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
 
     - name: Get list of Transport Node Profiles
       ansible.builtin.set_fact:
         TNPsToCreate: "{{ lookup('template', LOCAL_TransportNodeProfiles_Template) | from_yaml }}"
-      when: Deploy.Product.NSXT.LocalManager == true
+      when: Deploy.Product.NSXT.LocalManager.Deploy == true
 
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
@@ -82,7 +82,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - TNPsToCreate != ""
 
     - name: Create Transport Node Profiles 
@@ -100,5 +100,5 @@
         state: present
       loop: "{{ TNPsToCreate }}"
       when:
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - TNPsToCreate != ""

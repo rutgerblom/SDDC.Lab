@@ -64,13 +64,13 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
 
     - name: Read the structure from template into a variable
       ansible.builtin.set_fact:
         var_EdgeClusters: "{{ lookup('template', LOCAL_EdgeClusterTemplate) | from_yaml }}"
       when:
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
 
     - name: DEBUG -- Display Target Variables (Pause)
@@ -84,7 +84,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - var_EdgeClusters != ""
 
 
@@ -103,7 +103,7 @@
       register: edge_cluster
       loop: "{{ var_EdgeClusters }}"
       when: 
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
         - var_EdgeClusters != ""
 
@@ -124,6 +124,6 @@
       retries: 30
       delay: 60
       when: 
-        - Deploy.Product.NSXT.LocalManager == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge == true
         - var_EdgeClusters != ""
