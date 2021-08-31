@@ -578,6 +578,12 @@ Nested_Clusters:
             StartingIP: "{{ Net.Management.IPv4.Network }}.51"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
             DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
+            Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
+              Network: 10.244.0.0
+              Prefix: 20
+            Service:                                                                    # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components. 
+              Network: 10.96.0.0
+              Prefix: 23
             Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
               Network: "{{ Net.VMNetwork.IPv4.Network }}.32"
               Prefix: 28
@@ -607,6 +613,12 @@ Nested_Clusters:
             StartingIP: "{{ Net.Management.IPv4.Network }}.56"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
             DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
+            Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
+              Network: 10.244.16.0
+              Prefix: 20
+            Service:                                                                    # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components. 
+              Network: 10.96.2.0
+              Prefix: 23
             Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
               Network: "{{ Net.VMNetwork.IPv4.Network }}.64"
               Prefix: 28
@@ -636,6 +648,12 @@ Nested_Clusters:
             StartingIP: "{{ Net.Management.IPv4.Network }}.61"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
             DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
+            Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
+              Network: 10.244.32.0
+              Prefix: 20
+            Service:                                                                    # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components. 
+              Network: 10.96.4.0
+              Prefix: 23
             Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
               Network: "{{ Net.VMNetwork.IPv4.Network }}.96"
               Prefix: 28
@@ -665,6 +683,12 @@ Nested_Clusters:
             StartingIP: "{{ Net.Management.IPv4.Network }}.66"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
             DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
+            Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
+              Network: 10.244.48.0
+              Prefix: 20
+            Service:                                                                    # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components. 
+              Network: 10.96.6.0
+              Prefix: 23
             Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
               Network: "{{ Net.VMNetwork.IPv4.Network }}.128"
               Prefix: 28
