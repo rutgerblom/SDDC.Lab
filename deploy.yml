@@ -55,14 +55,18 @@
 - ansible.builtin.import_playbook: playbooks/deployNsxLocalManager.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy == true
- 
+
+- ansible.builtin.import_playbook: playbooks/deployNsxGlobalManager.yml
+  when: 
+    - Deploy.Product.NSXT.GlobalManager.Deploy == true
+
 - ansible.builtin.import_playbook: playbooks/license_NSXT-LM.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/registerNsxComputeManager.yml
-  when: 
-    - Deploy.Product.NSXT.LocalManager.Deploy == true
+#  when: 
+#    - Deploy.Product.NSXT.LocalManager.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/createNsxTz.yml
   when: 
