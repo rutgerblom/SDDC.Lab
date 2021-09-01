@@ -71,6 +71,26 @@
         - DEBUG.DisplayVariables == true
 
 ##
+## Check if any Tanzu Supervisor Clusters will deployed
+##
+    - name: Store the nested cluster data structure
+      ansible.builtin.set_fact:
+        tanzu_supervisor: "{{ Nested_Clusters }}"
+      loop: "{{ Nested_Clusters | dict2items }}"
+      when:
+        - item.value.Tanzu.SupervisorCluster.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+#    - name: DEBUG -- Print variable set in previous task
+#      ansible.builtin.debug:
+#        msg: "Value of tanzu_supervisor is: {{ tanzu_supervisor }}"
+#      ignore_errors: true
+#      tags:
+#        - debug
+
+
+##
 ## Get vCenter session ID
 ##
     - name: Authenticate to vCenter to obtain a Session ID
@@ -87,11 +107,17 @@
         return_content: yes
         status_code: 200
       register: vcenter_auth_result
+      when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
     - name: Store vCenter Session ID for later use
       set_fact:
         vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
       when:
+      when:
+        - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 

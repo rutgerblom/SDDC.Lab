@@ -133,19 +133,3 @@
 - ansible.builtin.import_playbook: playbooks/license_vRLI.yml
   when: 
     - Deploy.Product.vRLI.Deploy == true
-
-
-# Enable vSphere with Tanzu Workload Management
-- ansible.builtin.import_playbook: playbooks/enableWorkloadManagement.yml
-  when: 
-#    - Deploy.Product.Tanzu.WorkloadManagement == true
-    - Deploy.Product.NSXT.LocalManager.Deploy == true
-    - Deploy.Product.NSXT.Edge.Deploy == true
-    - false
-
-- ansible.builtin.import_playbook: playbooks/license_Tanzu.yml
-  when: 
-#    - Deploy.Product.Tanzu.WorkloadManagement == true
-    - Deploy.Product.NSXT.LocalManager.Deploy == true
-    - Deploy.Product.NSXT.Edge.Deploy == true
-    - false
