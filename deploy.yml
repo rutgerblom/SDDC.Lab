@@ -133,3 +133,20 @@
 - ansible.builtin.import_playbook: playbooks/license_vRLI.yml
   when: 
     - Deploy.Product.vRLI.Deploy == true
+
+
+# Deploy Tanzu
+- ansible.builtin.import_playbook: playbooks/createContentLibrary.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.Edge == true
+
+- ansible.builtin.import_playbook: playbooks/enableWorkloadManagement.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.Edge == true
+
+- ansible.builtin.import_playbook: playbooks/license_Tanzu.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager == true
+    - Deploy.Product.NSXT.Edge == true 
