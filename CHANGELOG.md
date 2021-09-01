@@ -449,4 +449,11 @@
   - Tanzu is now configured on a per vSphere cluster basis. 
   - In this early release the user can choose to enable automatic deployment of Tanzu Supervisor Clusters (disabled by default). The default settings should be fine, but can be modified under "Nested_Clusters" for each individual vSphere cluster.
   - The following file was updated so please update your non-sample file:
-    - config_sample.yml 
+    - config_sample.yml
+
+## Dev-v4.0.0 01-SEP-2021
+
+### Added by Rutger Blom
+  - Tanzu worker nodes are now using the globally defined DNS server (Common.DNS.Server1.IPv4)
+  - The following file was updated so please update your non-sample file:
+    - config_sample.yml
