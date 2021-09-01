@@ -67,6 +67,19 @@
       when:
         - DEBUG.DisplayVariables == true
 
+##
+## Check if any Tanzu Supervisor Clusters will deployed
+##
+    - name: Store the nested cluster data structure
+      ansible.builtin.set_fact:
+        tanzu_supervisor: "{{ Nested_Clusters }}"
+      loop: "{{ Nested_Clusters | dict2items }}"
+      when:
+        - item.value.Tanzu.SupervisorCluster.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+
 ###
 ### GOAL: If License file does not exist, then skip all licensing, and leave the components in Evauation state.
 ###
@@ -76,17 +89,28 @@
         path: "{{ LOCAL_LicenseFile }}"
         get_checksum: no
       register: stat_results
+      when: 
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
     - name: Assume file does not exist, so set flag to skip licensing products
       ansible.builtin.set_fact:
         LicenseProducts: False
+      when: 
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
     - name: If License file does exist and is a regular file, then set flag to license products
       ansible.builtin.set_fact:
         LicenseProducts: True
       when:
+        - tanzu_supervisor is defined
         - stat_results.stat.exists == True
         - stat_results.stat.isreg == True
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
     - name: If not licensing products, notify user
       ansible.builtin.pause:
@@ -106,13 +130,20 @@
 
           =========================================================================
       when:
+        - tanzu_supervisor is defined
         - LicenseProducts != True
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
     - name: If we are licensing products, read in license information
       ansible.builtin.include_vars:
         file: "{{ LOCAL_LicenseFile }}"
       no_log: true
-      when: LicenseProducts == True
+      when: 
+        - tanzu_supervisor is defined
+        - LicenseProducts == True
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
 
 ##
@@ -130,7 +161,6 @@
       ignore_errors: yes                                                             # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
       no_log: false
       when: 
-        - Deploy.Product.Tanzu.WorkloadManagement == true
+        - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
-
