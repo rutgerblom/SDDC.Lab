@@ -82,13 +82,6 @@
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
-#    - name: DEBUG -- Print variable set in previous task
-#      ansible.builtin.debug:
-#        msg: "Value of tanzu_supervisor is: {{ tanzu_supervisor }}"
-#      ignore_errors: true
-#      tags:
-#        - debug
-
 
 ##
 ## Get vCenter session ID
@@ -141,6 +134,7 @@
       register: cluster_info
       loop: "{{ Nested_Clusters | dict2items }}"
       when:
+        - tanzu_supervisor is defined
         - item.value.DeployHosts == true
         - item.value.Tanzu.SupervisorCluster.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
@@ -152,6 +146,7 @@
       vars:
         query: "[*].json.value[*].{MoRef: cluster, Name: name}[]"
       when:
+        - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -174,6 +169,7 @@
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
       register: vds_info
       when:
+        - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -183,6 +179,7 @@
       vars:
         query: distributed_virtual_switches[*].uuid
       when:
+        - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -199,6 +196,7 @@
         validate_certs: false
       register: vdspg_info
       when:
+        - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -208,6 +206,7 @@
       vars:
         query: dvs_portgroup_info."{{ Nested_vCenter.Networking.vSwitch.Name }}"[?portgroup_name=='{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}'].key
       when:
+        - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -223,6 +222,7 @@
         validate_certs: false
       register: sp_info
       when:
+        - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -232,6 +232,7 @@
       vars:
         query: spbm_profiles[?name=='vSAN Default Storage Policy'].id
       when:
+        - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -247,6 +248,7 @@
         validate_certs: False
       register: ec_info
       when:
+        - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -256,6 +258,7 @@
       vars:
         query: results[?display_name=='{{ SiteCode }}-T0-Edge-Cluster-01'].id
       when:
+        - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -271,6 +274,7 @@
         validate_certs: false
       register: cl_info
       when:
+        - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -280,6 +284,7 @@
       vars:
         query: content_libs
       when:
+        - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -298,5 +303,6 @@
         status_code: 204
       loop: "{{ cluster_id }}"
       when:
+        - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
