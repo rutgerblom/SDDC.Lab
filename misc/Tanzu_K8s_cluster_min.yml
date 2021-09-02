@@ -1,0 +1,22 @@
+##
+##    This YAML file can be used to provision a minimal Tanzu Kubernetes cluster using all available defaults.
+##    Provision within a vSphere namespace called "tgks-cluster-ns" with: kubectl apply -f Tanzu_K8s_cluster_min.yml
+##
+---
+apiVersion: run.tanzu.vmware.com/v1alpha1           # TKGS API endpoint
+kind: TanzuKubernetesCluster                        # Required parameter
+metadata:
+  name: tkgs-cluster-1                              # Cluster name, user defined
+  namespace: tgks-cluster-ns                        # vSphere namespace
+spec:
+  distribution:
+    version: v1.20                                  # Resolves to latest TKR 1.20 version
+  topology:
+    controlPlane:                                   # Number of control plane nodes
+      count: 1
+      class: best-effort-medium                     # vmclass for control plane nodes
+      storageClass: vsan-default-storage-policy     # storageclass for control plane
+    workers:
+      count: 3                                      # Number of worker nodes
+      class: best-effort-medium
+      storageClass: vsan-default-storage-policy     # storageclass for worker nodes
