@@ -457,3 +457,10 @@
   - Tanzu worker nodes are now using the globally defined DNS server (Common.DNS.Server1.IPv4)
   - The following file was updated so please update your non-sample file:
     - config_sample.yml
+
+## Dev-v4.0.0 07-SEP-2021
+
+### Added by Rutger Blom
+  - Added NSX-T 3.1.3.1 to software_sample.yml
+  - The following file was updated so please update your non-sample file:
+    - software_sample.yml
