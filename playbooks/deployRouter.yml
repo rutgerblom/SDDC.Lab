@@ -213,8 +213,11 @@
           - name: "{{ Target.PortGroup.Trunk.Name }}"
             device_type: vmxnet3
         cdrom:
-          type: "iso"
-          iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
+          - controller_number: 0
+            unit_number: 0
+            type: iso
+            iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
+            state: present
         annotation: | 
                     {{ Common.Annotation }}
                     {{ Deploy.Software.Router.Vendor }} {{ Deploy.Software.Router.Product }} {{ Deploy.Software.Router.Version }}
