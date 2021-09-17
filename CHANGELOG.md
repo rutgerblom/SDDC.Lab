@@ -464,3 +464,8 @@
   - Added NSX-T 3.1.3.1 to software_sample.yml
   - The following file was updated so please update your non-sample file:
     - software_sample.yml
+
+## Dev-v4.0.0 17-SEP-2021
+
+### Added by Luis Chanu
+  - Moved NSX-T Local Manager licensing playbook immediately after it's deployment in deploy.yml
