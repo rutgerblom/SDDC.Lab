@@ -5,6 +5,9 @@
 ##
 ##      Notes: This module registers the NSX-T Local Manager to the NSX-T Global Manager
 ##
+##       ToDo:
+##          1) Replace thumbprint code with this API: https://vdc-download.vmware.com/vmwb-repository/dcr-public/d6de7a5e-636f-4677-8dbd-6f4ba91fa5e0/36b4881c-41cd-4c46-81d1-b2ca3a6c693b/api_includes/method_GetInfraSiteListenerCertificate.html
+##          2) Figure out what the API call is to perform the importing of LM objects while also Pre-Pending the "<SiteCode>-" to all LM objects
 ---
 - hosts: localhost
   name: registerNsxLocalWithNsxGlobal.yml
@@ -92,8 +95,8 @@
       ansible.builtin.set_fact:
         lm_cluster_cert_id: "{{ lm_api_cluster_cert_id_result.json.certificate_id }}"
       when:
-        - lm_api_cluster_cert_id_result.status == 200
         - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - lm_api_cluster_cert_id_result.status == 200
 
     - name: Obtain API Cluster Certificate using ID
       ansible.builtin.uri:
@@ -115,23 +118,23 @@
       ansible.builtin.set_fact:
         lm_cluster_cert_pem: "{{ lm_cluster_cert_result.json.pem_encoded }}"
       when:
-        - lm_cluster_cert_result.status == 200
         - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - lm_cluster_cert_result.status == 200
 
     - name: Obtain Information about Local Manager Cluster Certificate
       community.crypto.x509_certificate_info:
         content: "{{ lm_cluster_cert_pem }}"
       register: lm_cluster_cert_info
       when:
-        - lm_cluster_cert_result.status == 200
         - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - lm_cluster_cert_result.status == 200
 
     - name: Store Local Manager Cluster Certificate SHA256 Thumbprint (without colons) for easier use
       ansible.builtin.set_fact:
         lm_cluster_api_cert_thumbprint: "{{ lm_cluster_cert_info.fingerprints['sha256'].replace(':','') | lower }}"
       when:
-        - lm_cluster_cert_result.status == 200
         - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - lm_cluster_cert_result.status == 200
 
     - name: DEBUG -- Display Local Manager Cluster Certificate Thumbprint (Pause)
       ansible.builtin.pause:
@@ -212,8 +215,8 @@
           thumbprint: "{{ lm_cluster_api_cert_thumbprint }}"
         state: present
       when:
-        - compatible_result.version_compatible == true
         - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - compatible_result.version_compatible == true
 
     - name: Wait until the NSX-T API reports that the NSX-T Global Manager cluster is "STABLE"
       ansible.builtin.uri:
@@ -234,3 +237,24 @@
       when:
         - Deploy.Product.NSXT.GlobalManager.Deploy == true
 
+##
+## LC: Not sure if the <full_sync_id> is always 'GM-2-LM-FULL-SYNC' on the LM
+##
+    - name: Wait until the NSX-T API reports that the NSX-T Local Manager cluster is Fully Synchronized with the Global Manager
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.LocalManager_VIP.FQDN | lower }}/policy/api/v1/infra/full-sync-states/GM-2-LM-FULL-SYNC
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.last_completed_stage == "COMPLETED"
+      retries: 60
+      delay: 10
+      when:
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
