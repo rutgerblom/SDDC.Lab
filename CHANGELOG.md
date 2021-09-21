@@ -478,6 +478,6 @@
   - Added support for vCenter 7.0 U2d
   - Made vCenter 7.0 U2d the default version
   - Made NSX-T 3.1.3.1 the default version
-  - The following files were updated so please update your non-sample file:
+  - The following files were updated so please update your non-sample files:
     - config_sample.yml
     - software_sample.yml
