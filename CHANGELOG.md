@@ -475,5 +475,9 @@
 
 ### Added by Rutger Blom
   - Added a route re-distribution rule to the Tier-0 that contains TIER1_NAT and TIER1_LB_VIP
-  - The following file was updated so please update your non-sample file:
+  - Added support for vCenter 7.0 U2d
+  - Made vCenter 7.0 U2d the default version
+  - Made NSX-T 3.1.3.1 the default version
+  - The following files were updated so please update your non-sample file:
     - config_sample.yml
+    - software_sample.yml
