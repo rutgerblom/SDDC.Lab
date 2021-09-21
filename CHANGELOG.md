@@ -470,3 +470,10 @@
 ### Added by Luis Chanu
   - Moved NSX-T Local Manager licensing playbook immediately after it's deployment in deploy.yml
   - Added missing ".ova" file extension to NSX-T v3.1.3.1 entry in software_sample.yml
+
+## Dev-v4.0.0 21-SEP-2021
+
+### Added by Rutger Blom
+  - Added a route re-distribution rule to the Tier-0 that contains TIER1_NAT and TIER1_LB_VIP
+  - The following file was updated so please update your non-sample file:
+    - config_sample.yml
