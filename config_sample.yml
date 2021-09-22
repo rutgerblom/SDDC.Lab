@@ -135,15 +135,19 @@ Common:
     Type: nfs
   PKI:
     ValidateCerts: false                                                      # This indicates if PKI Certificates should be validated.  By default, self-signed certificates are used, so ValidateCerts should be set to 'false'
-  Backup:
-    User: "{{ Nested_DNSServer.OS.Credential.User }}"
-    Password: "{{ Nested_DNSServer.OS.Credential.Password }}"
-    Server:
-      SFTP:
-        FQDN: "{{ Nested_DServer.FQDN }}"                                     # SFTP Server FQDN
-        Path: "/home/{{ Nested_DNSServer.OS.Credential.User }}"               # Must be absolute path (i.e. Start from root '/')
   DiskProvisioning: thin
   Annotation: '*** Auto-Deployed by SDDC.Lab ***'
+
+
+##
+## Unable to put BackupServer in Common due to circular reference.  Must be stand-alone
+##
+BackupServer:
+  User: "{{ Nested_DNSServer.OS.Credential.User }}"                           # DNS server is default SFTP server, so use that credential
+  Password: "{{ Nested_DNSServer.OS.Credential.Password }}"
+  SFTP:
+    FQDN: "{{ Nested_DNSServer.FQDN }}"                                       # SFTP Server FQDN
+    Path: "/home/{{ Nested_DNSServer.OS.Credential.User }}"                   # Must be absolute path
 
 
 ##
@@ -1681,13 +1685,12 @@ Nested_NSXT:
     audit:
       Name: audit
       Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-  Backup:
-    User: "{{ Common.Backup.User }}"
-    Password: "{{ Common.Backup.Password }}"
-    Server:
-      SFTP:
-        FQDN: "{{ Common.Backup.Server.SFTP.FQDN }}"
-        Path: "{{ Common.Backup.Server.SFTP.Path }}"
+  BackupServer:
+    User: "{{ BackupServer.User }}"
+    Password: "{{ BackupServer.Password }}"
+    SFTP:
+      FQDN: "{{ BackupServer.SFTP.FQDN }}"
+      Path: "{{ BackupServer.SFTP.Path }}"
   Components:
     GlobalManager_VIP:
       VMName: "{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-NSXT-GM"
