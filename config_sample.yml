@@ -140,8 +140,8 @@ Common:
     Password: "{{ Nested_DNSServer.OS.Credential.Password }}"
     Server:
       SFTP:
-        FQDN: "{{ Nested_DServer.FQDN }}"
-        Path: "/home/{{ Nested_DNSServer.OS.Credential.User }}"
+        FQDN: "{{ Nested_DServer.FQDN }}"                                     # SFTP Server FQDN
+        Path: "/home/{{ Nested_DNSServer.OS.Credential.User }}"               # Must be absolute path (i.e. Start from root '/')
   DiskProvisioning: thin
   Annotation: '*** Auto-Deployed by SDDC.Lab ***'
 
