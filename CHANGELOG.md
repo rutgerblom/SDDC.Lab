@@ -481,3 +481,9 @@
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
     - software_sample.yml
+
+### Added by Luis Chanu
+  - Created new "Backup" section under Common
+  - Created new "Backup" section under Nested_NSXT, referencing the "Common" backup server
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml

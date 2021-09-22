@@ -140,6 +140,17 @@ Common:
 
 
 ##
+## Unable to put BackupServer in Common due to circular reference.  Must be stand-alone
+##
+BackupServer:
+  User: "{{ Nested_DNSServer.OS.Credential.User }}"                           # DNS server is default SFTP server, so use that credential
+  Password: "{{ Nested_DNSServer.OS.Credential.Password }}"
+  SFTP:
+    FQDN: "{{ Nested_DNSServer.FQDN }}"                                       # SFTP Server FQDN
+    Path: "/home/{{ Nested_DNSServer.OS.Credential.User }}"                   # Must be absolute path
+
+
+##
 ## Users should specify their deployment target settings in the 'TargetConfig' section
 ##
 TargetConfig:
@@ -1674,6 +1685,12 @@ Nested_NSXT:
     audit:
       Name: audit
       Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+  BackupServer:
+    User: "{{ BackupServer.User }}"
+    Password: "{{ BackupServer.Password }}"
+    Protocol: sftp
+    FQDN: "{{ BackupServer.SFTP.FQDN }}"
+    Path: "{{ BackupServer.SFTP.Path }}"
   Components:
     GlobalManager_VIP:
       VMName: "{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-NSXT-GM"
