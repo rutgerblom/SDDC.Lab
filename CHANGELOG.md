@@ -487,3 +487,11 @@
   - Created new "Backup" section under Nested_NSXT, referencing the "Common" backup server
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
+
+## Dev-v4.0.0 23-SEP-2021
+
+### Added by Luis Chanu
+  - Added Port variable to BackupServer structure
+  - Updated all BackupServer references to include Port
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml

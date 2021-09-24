@@ -52,15 +52,19 @@
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
 
-
                                      Ansible Playbook: {{ ansible_play_name }}
 
                                              SiteCode: {{ SiteCode }}
 
                         NSX-T Global Manager SiteCode: {{ Deploy.Product.NSXT.GlobalManager.SiteCode }}
-                         NSX-T Local Manager SiteCode: {{ Deploy.Product.NSXT.LocalManager.SiteCode }}
+
+                         NSX-T Local Manager VIP FQDN: {{ Nested_NSXT.Components.LocalManager_VIP.FQDN }}
+
+                         NSX-T Local Manager Username: {{ Nested_NSXT.Credential.admin.Name }}
+                         NSX-T Local Manager Password: {{ Nested_NSXT.Credential.admin.Password }}
 
                                Backup Server Protocol: {{ Nested_NSXT.BackupServer.Protocol }}
+                                   Backup Server Port: {{ Nested_NSXT.BackupServer.Port }}
                                    Backup Server FQDN: {{ Nested_NSXT.BackupServer.FQDN }}
                                    Backup Server Path: {{ Nested_NSXT.BackupServer.Path }}
                                    Backup Server User: {{ Nested_NSXT.BackupServer.User }}
@@ -71,24 +75,24 @@
 
     - name: Retrieve SSH Fingerprint for SFTP backup server
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.LocalManager_VIP.FQDN }}/api/v1/cluster/backups?action=retrieve_ssh_fingerprint
+        url: "https://{{ Nested_NSXT.Components.LocalManager_VIP.FQDN }}/api/v1/cluster/backups?action=retrieve_ssh_fingerprint"
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: False
         method: POST
         body_format: json
         headers:
-          Content-Type: application/json
+          Accept: application/json
         body: >
           {
             "server":"{{ Nested_NSXT.BackupServer.FQDN }}",
-            "port":22
+            "port":{{ Nested_NSXT.BackupServer.Port }}
           }
         timeout: 5
       register: sftp_result
       ignore_errors: true
       failed_when: false
-      no_log: true
+#      no_log: true
 
     - name: Store SSH Fingerprint of SFTP Server
       ansible.builtin.set_fact:
@@ -133,7 +137,7 @@
       when: 
         - Deploy.Product.NSXT.GlobalManager.Deploy == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
-        - deployment.changed == true
+#        - deployment.changed == true
         - false
 
     - name: Result check for NSX-T Global Manager node deployment
@@ -144,7 +148,7 @@
       when:
         - Deploy.Product.NSXT.GlobalManager.Deploy == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
-        - deployment.changed == true
+#        - deployment.changed == true
         - item.started is defined
         - false
 
