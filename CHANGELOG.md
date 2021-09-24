@@ -493,3 +493,5 @@
 ### Added by Luis Chanu
   - Added Port variable to BackupServer structure
   - Updated all BackupServer references to include Port
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml
