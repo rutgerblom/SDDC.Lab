@@ -146,7 +146,8 @@ BackupServer:
   User: "{{ Nested_DNSServer.OS.Credential.User }}"                           # DNS server is default SFTP server, so use that credential
   Password: "{{ Nested_DNSServer.OS.Credential.Password }}"
   SFTP:
-    FQDN: "{{ Nested_DNSServer.FQDN }}"                                       # SFTP Server FQDN
+    Port: 22                                                                  # Protocol Port Number
+    FQDN: "{{ Nested_DNSServer.FQDN }}"                                       # Server FQDN
     Path: "/home/{{ Nested_DNSServer.OS.Credential.User }}"                   # Must be absolute path
 
 
@@ -1691,6 +1692,7 @@ Nested_NSXT:
     Protocol: sftp
     FQDN: "{{ BackupServer.SFTP.FQDN }}"
     Path: "{{ BackupServer.SFTP.Path }}"
+    Port: "{{ BackupServer.SFTP.Port }}"
   Components:
     GlobalManager_VIP:
       VMName: "{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-NSXT-GM"
