@@ -32,10 +32,12 @@ Deploy:
     DNSServer:
       Deploy: false                                       # DNSServer - Deploy a pre-configured DNS/NTP server as part of the Pod deployment. This DNS/NTP server is not Pod specific and can serve multiple Pods.
     NSXT:
+      Federation:
+        Enable: False                                     # Indicates if Federation should be configured as part of the deployment.
       LocalManager:
         Deploy: true                                      # LocalManager - Deploy NSX-T Local Manager as part of the Pod deployment.
       GlobalManager:
-        Deploy: false                                     # GlobalManager - PLANNED FOR FUTURE - NOT YET IMPLEMENTED
+        Deploy: false                                     # GlobalManager - Deploy NSX-T Global Manager if SiteCode is ours.
         SiteCode: "{{ SiteCode }}"                        # If not deploying Global Manager in this SiteCode (i.e. 'Pod-###') as part of this deployment, change to indicate in which SiteCode Global Manager has been deployed to.  If the Global Manager is in a different SiteCode than this deployment, it must be deployed either before or concurrently with this deployment.
       Edge:
         Deploy: true                                      # Edge - Deploy NSX-T Edge Transport Nodes as part of the Pod deployment.
@@ -145,10 +147,11 @@ Common:
 BackupServer:
   User: "{{ Nested_DNSServer.OS.Credential.User }}"                           # DNS server is default SFTP server, so use that credential
   Password: "{{ Nested_DNSServer.OS.Credential.Password }}"
+  Passphrase: "{{ Common.Password.Nested }}"                                  # Passphrase used to secure backups
   SFTP:
     Port: 22                                                                  # Protocol Port Number
     FQDN: "{{ Nested_DNSServer.FQDN }}"                                       # Server FQDN
-    Path: "/home/{{ Nested_DNSServer.OS.Credential.User }}"                   # Must be absolute path
+    Path: "/home/{{ Nested_DNSServer.OS.Credential.User }}"                   # Must be an absolute path
 
 
 ##
@@ -1689,6 +1692,7 @@ Nested_NSXT:
   BackupServer:
     User: "{{ BackupServer.User }}"
     Password: "{{ BackupServer.Password }}"
+    Passphrase: "{{ BackupServer.Passphrase }}"
     Protocol: sftp
     FQDN: "{{ BackupServer.SFTP.FQDN }}"
     Path: "{{ BackupServer.SFTP.Path }}"

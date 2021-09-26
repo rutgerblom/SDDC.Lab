@@ -495,3 +495,18 @@
   - Updated all BackupServer references to include Port
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
+
+## Dev-v4.0.0 24-SEP-2021
+
+### Added by Luis Chanu
+  - Added Passphrase to BackupServers structure
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml
+
+## Dev-v4.0.0 25-SEP-2021
+
+### Added by Luis Chanu
+  - Added Deploy.Product.NSXT.Federation section to indicate if NSX-T Federation should be configured.  This allows the user to deploy all of the components, then run through NSX-T Federation configuration on their own.
+  - Templates/Pod_Config.j2 updated to include new Federation section within Deploy.
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml
