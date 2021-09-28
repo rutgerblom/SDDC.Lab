@@ -510,3 +510,10 @@
   - Templates/Pod_Config.j2 updated to include new Federation section within Deploy.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
+
+## Dev-v4.0.0 28-SEP-2021
+
+### Added by Rutger Blom
+  - Added Ubuntu Server 20.04.3 to software_sample.yml
+  - The following file was updated so please update your non-sample file:
+    - software_sample.yml
