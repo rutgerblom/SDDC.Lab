@@ -517,3 +517,15 @@
   - Added Ubuntu Server 20.04.3 to software_sample.yml
   - The following file was updated so please update your non-sample file:
     - software_sample.yml
+
+## Dev-v4.0.0 03-OCT-2021
+
+### Added by Luis Chanu
+  - Renamed playbooks/registerNsxLocalManager.yml to playbooks/federateNsxLocalManager.yml
+  - Added the following playbooks to deploy.yml:
+    - configureNsxBackup.yml
+    - registerNsxLocalManager.yml
+      - This is still untested, so it is excluded from running.  Remove the "false" flag in order to try it.
+  - Added vCenter Server "7.00U2D" entry in sample templates file.
+  - The following files were updated so please update your non-sample files:
+    - templates_sample.yml

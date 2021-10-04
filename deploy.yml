@@ -124,6 +124,16 @@
     - Deploy.Product.NSXT.LocalManager.Deploy == true
     - Deploy.Product.NSXT.Edge.Deploy == true
 
+- ansible.builtin.import_playbook: playbooks/configureNsxBackup.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+    - false
+
+- ansible.builtin.import_playbook: playbooks/federateNsxLocalManager.yml
+  when: 
+    - Deploy.Product.NSXT.Federation.Enable == true
+    - false
+
 
 # Deploy vRealize products
 - ansible.builtin.import_playbook: playbooks/deployVrli.yml
