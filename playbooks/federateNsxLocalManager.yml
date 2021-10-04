@@ -1,18 +1,18 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/registerNsxLocalWithNsxGlobal.yml
+##   Filename: playbooks/federateNsxLocalManager.yml
 ##
-##      Notes: This module registers the NSX-T Local Manager to the NSX-T Global Manager, and imports
+##      Notes: This module registers the NSX-T Local Manager to the NSX-T Global Manager, and imports it's objects.  Once completed, the site has been brought into the NSX-T Federation as a Location.
 ##
 ##       ToDo:
 ##          1) Replace thumbprint code with this API: https://vdc-download.vmware.com/vmwb-repository/dcr-public/d6de7a5e-636f-4677-8dbd-6f4ba91fa5e0/36b4881c-41cd-4c46-81d1-b2ca3a6c693b/api_includes/method_GetInfraSiteListenerCertificate.html
 ##          2) Figure out what the API call is to perform the importing of LM objects while also Pre-Pending the "<SiteCode>-" to all LM objects
 ---
 - hosts: localhost
-  name: registerNsxLocalWithNsxGlobal.yml
+  name: federateNsxLocalManager.yml
   tasks:
-    - name: registerNsxLocalWithNsxGlobal_Playbook
+    - name: federateNsxLocalManager_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
