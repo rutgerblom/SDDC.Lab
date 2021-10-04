@@ -526,3 +526,6 @@
     - configureNsxBackup.yml
     - registerNsxLocalManager.yml
       - This is still untested, so it is excluded from running.  Remove the "false" flag in order to try it.
+  - Added vCenter Server "7.00U2D" entry in sample templates file.
+  - The following files were updated so please update your non-sample files:
+    - templates_sample.yml
