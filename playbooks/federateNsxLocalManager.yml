@@ -3,7 +3,7 @@
 ##    Authors: Luis Chanu & Rutger Blom
 ##   Filename: playbooks/registerNsxLocalWithNsxGlobal.yml
 ##
-##      Notes: This module registers the NSX-T Local Manager to the NSX-T Global Manager
+##      Notes: This module registers the NSX-T Local Manager to the NSX-T Global Manager, and imports
 ##
 ##       ToDo:
 ##          1) Replace thumbprint code with this API: https://vdc-download.vmware.com/vmwb-repository/dcr-public/d6de7a5e-636f-4677-8dbd-6f4ba91fa5e0/36b4881c-41cd-4c46-81d1-b2ca3a6c693b/api_includes/method_GetInfraSiteListenerCertificate.html
@@ -84,19 +84,21 @@
         body_format: json
         return_content: yes
         status_code: 200
-      register: lm_api_cluster_cert_id_result
-      until: lm_api_cluster_cert_id_result.status == 200
+      register: result
+      until: result.status == 200
       retries: 10
       delay: 10
       when:
-        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
 
     - name: Store Local Manager Cluster Certificate ID into variable for easier use
       ansible.builtin.set_fact:
-        lm_cluster_cert_id: "{{ lm_api_cluster_cert_id_result.json.certificate_id }}"
+        lm_cluster_cert_id: "{{ result.json.certificate_id }}"
       when:
-        - Deploy.Product.NSXT.GlobalManager.Deploy == true
-        - lm_api_cluster_cert_id_result.status == 200
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - result.status == 200
 
     - name: Obtain API Cluster Certificate using ID
       ansible.builtin.uri:
@@ -110,31 +112,35 @@
         body_format: json
         return_content: yes
         status_code: 200
-      register: lm_cluster_cert_result
+      register: result
       when:
-        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
 
     - name: Store Local Manager Cluster Certificate (PEM format) into variable for easier use
       ansible.builtin.set_fact:
-        lm_cluster_cert_pem: "{{ lm_cluster_cert_result.json.pem_encoded }}"
+        lm_cluster_cert_pem: "{{ result.json.pem_encoded }}"
       when:
-        - Deploy.Product.NSXT.GlobalManager.Deploy == true
-        - lm_cluster_cert_result.status == 200
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - result.status == 200
 
     - name: Obtain Information about Local Manager Cluster Certificate
       community.crypto.x509_certificate_info:
         content: "{{ lm_cluster_cert_pem }}"
       register: lm_cluster_cert_info
       when:
-        - Deploy.Product.NSXT.GlobalManager.Deploy == true
-        - lm_cluster_cert_result.status == 200
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - result.status == 200
 
     - name: Store Local Manager Cluster Certificate SHA256 Thumbprint (without colons) for easier use
       ansible.builtin.set_fact:
         lm_cluster_api_cert_thumbprint: "{{ lm_cluster_cert_info.fingerprints['sha256'].replace(':','') | lower }}"
       when:
-        - Deploy.Product.NSXT.GlobalManager.Deploy == true
-        - lm_cluster_cert_result.status == 200
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - result.status == 200
 
     - name: DEBUG -- Display Local Manager Cluster Certificate Thumbprint (Pause)
       ansible.builtin.pause:
@@ -170,7 +176,7 @@
       retries: 60
       delay: 60
       when:
-        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.Federation.Enable == true
 
     - name: Verify NSX-T Local Manager is compatible with NSX-T Global Manager
       nsxt_local_managers_compatibility:
@@ -183,22 +189,22 @@
           username: "{{ Nested_NSXT.Credential.admin.Name }}"
           password: "{{ Nested_NSXT.Credential.admin.Password }}"
           thumbprint: "{{ lm_cluster_api_cert_thumbprint }}"
-      register: compatible_result
+      register: result
       when:
-        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.Federation.Enable == true
 
     - name: DEBUG -- Display "nsxt_local_managers_compatibility" result (Pause)
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display "compatible_result" ==================================
+          ======================================= Display "result" ========================================
 
-          {{ compatible_result }}
+          {{ result }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.Federation.Enable == true
 
     - name: Register NSX-T Local Manager with NSX-T Global Manager
       nsxt_local_manager_registration:
@@ -206,8 +212,8 @@
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: False
-        display_name: "{{ Nested_NSXT.Components.LocalManager_VIP.VMName }}"
-        id: "{{ Nested_NSXT.Components.LocalManager_VIP.VMName }}"
+        display_name: "{{ SiteCode }}"
+        id: "{{ SiteCode }}"
         site_connection_info:
           fqdn: "{{ Nested_NSXT.Components.LocalManager_VIP.FQDN }}"
           username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -215,12 +221,15 @@
           thumbprint: "{{ lm_cluster_api_cert_thumbprint }}"
         state: present
       when:
-        - Deploy.Product.NSXT.GlobalManager.Deploy == true
-        - compatible_result.version_compatible == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - result.version_compatible == true
 
-    - name: Wait until the NSX-T API reports that the NSX-T Global Manager cluster is "STABLE"
+##
+## LC: Not sure this step is needed....or, if needs to be the LM
+##
+    - name: TBD-----Wait until the NSX-T API reports that the NSX-T Global Manager cluster is "STABLE"
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN | lower }}/api/v1/cluster/status
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}/api/v1/cluster/status
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
@@ -235,14 +244,58 @@
       retries: 60
       delay: 10
       when:
-        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - False
+        - Deploy.Product.NSXT.Federation.Enable == true
 
-##
-## LC: Not sure if the <full_sync_id> is always 'GM-2-LM-FULL-SYNC' on the LM
-##
-    - name: Wait until the NSX-T API reports that the NSX-T Local Manager cluster is Fully Synchronized with the Global Manager
+    - name: On-board the NSX-T Local Manager site objects into NSX-T Global Manager
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.LocalManager_VIP.FQDN | lower }}/policy/api/v1/infra/full-sync-states/GM-2-LM-FULL-SYNC
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding?action=start_onboarding
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: POST
+        body_format: json
+        body:
+          {
+            "site_id" : "{{ SiteCode }}",
+            "suffix": "{{ SiteCode }}_",
+            "site_backup_reference" : "{{ Nested_NSXT.Components.GlobalManager_VIP }}-Backup"
+          }
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 60
+      delay: 10
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name: Wait until NSX-T Global Manager indicates that on-boarding is a "SUCCESS"
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding/status
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.status == "SUCCESS"
+      retries: 60
+      delay: 10
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name: Wait until the NSX-T Local Manager reports that the NSX-T Local Manager cluster is Fully Synchronized with the Global Manager
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.LocalManager_VIP.FQDN }}/policy/api/v1/infra/full-sync-states/GM-2-LM-FULL-SYNC
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
@@ -257,4 +310,5 @@
       retries: 60
       delay: 10
       when:
-        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
