@@ -275,3 +275,23 @@
       when: 
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - item.userid > 0
+
+##
+## Finish things up by dealing with the EULA
+##
+
+    - name: Accept NSX-T Local Manager End User License Agreement (EULA)
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.LocalManager.FQDN | lower }}/api/v1/eula/accept
+        validate_certs: no
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: POST
+        body_format: json
+        return_content: yes
+        status_code: 200
+      when: 
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Nested_NSXT.Question.EULA.Accept == true
