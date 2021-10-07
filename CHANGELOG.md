@@ -544,5 +544,8 @@
 ### Added by Luis Chanu
   - Added conditional to updateDNS.yml to only populate Global Manager records in DNS if the deploying SiteCode == Global Manager SiteCode.  It should be noted that the conditional was NOT added to cleanupDNS.yml, as they should always be removed if present.
   - Originally, Deploy.Product.NSXT.GlobalManager.Deploy was used to signify if GM was being deployed.  That has now been changed, and now Deploy.Product.NSXT.Federation.Enable is used.  If it is set to True, then when the deployment SiteCode matches the GlobalManager.SiteCode, the Global Manager is deployed.
+  - Modify EULA structure for Nested_NSXT
+  - Added automated EULA acceptance to the NSX-T Global and Local Manager deployment playbooks.  EULA must be accepted in the config.yml file (under Nested_NSXT.Question.EULA)
   - The following file(s) were updated so please update your non-sample files:
     - config_sample.yml
+

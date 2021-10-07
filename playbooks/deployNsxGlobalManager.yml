@@ -181,9 +181,9 @@
         - deployment.changed == true
         - item.started is defined
 
-    - name: Wait until the NSX-T API reports that the NSX-T Global Manager cluster is "STABLE"
+    - name: Wait until the NSX-T API reports that the NSX-T Global Manager operational state is "NONE"
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.GlobalManager.FQDN | lower }}/api/v1/cluster/status
+        url: https://{{ Nested_NSXT.Components.GlobalManager.FQDN | lower }}/global-manager/api/v1/gm-operational-state
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
@@ -194,10 +194,16 @@
         return_content: yes
         status_code: 200
       register: result
-      until: result.status == 200 and result.json.detailed_cluster_status.overall_status == "STABLE"
+      until: result.status == 200 and result.json.status == "NONE"
       retries: 60
       delay: 60
       when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+
+    - name: Wait 5 seconds before attempting to set NSX-T Global Manager VIP
+      ansible.builtin.pause: seconds=5
+      when: 
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
@@ -213,9 +219,9 @@
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
-    - name: Wait until the NSX-T API reports that the NSX-T Global Manager cluster is "STABLE" on the VIP
+    - name: Wait until the NSX-T API reports that the NSX-T Global Manager operational state is "NONE" on the VIP
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.Address.IPv4.Address }}/api/v1/cluster/status
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.Address.IPv4.Address }}/global-manager/api/v1/gm-operational-state
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
@@ -226,7 +232,7 @@
         return_content: yes
         status_code: 200
       register: result
-      until: result.status == 200 and result.json.detailed_cluster_status.overall_status == "STABLE"
+      until: result.status == 200 and result.json.status == "NONE"
       retries: 60
       delay: 60
       when:
@@ -270,7 +276,7 @@
 ##
     - name: Obtain NSX-T Global Manager User List
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.GlobalManager.FQDN | lower }}/api/v1/node/users
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN | lower }}/api/v1/node/users
         validate_certs: no
         timeout: 15
         force_basic_auth: yes
@@ -287,7 +293,7 @@
 
     - name: Disable Password Expiration Of All NSX-T Users (except for 'root')
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.GlobalManager.FQDN | lower }}/api/v1/node/users/{{ item.userid }}
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN | lower }}/api/v1/node/users/{{ item.userid }}
         validate_certs: no
         timeout: 15
         force_basic_auth: yes
@@ -303,3 +309,24 @@
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
         - item.userid > 0
+
+##
+## Finish things up by dealing with the EULA
+##
+
+    - name: Accept NSX-T Global Manager End User License Agreement (EULA)
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN | lower }}/api/v1/eula/accept
+        validate_certs: no
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: POST
+        body_format: json
+        return_content: yes
+        status_code: 200
+      when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+        - Nested_NSXT.Question.EULA.Accept == true
