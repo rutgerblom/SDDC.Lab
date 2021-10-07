@@ -538,3 +538,8 @@
   - The following files were updated so please update your non-sample files:
     - software_sample.yml
     - templates_sample.yml
+
+## Dev-v4.0.0 06-OCT-2021
+
+### Added by Luis Chanu
+  - Added conditional to updateDNS.yml to only populate Global Manager records in DNS if the deploying SiteCode == Global Manager SiteCode.  It should be noted that the conditional was NOT added to cleanupDNS.yml, as they should always be removed if present.
