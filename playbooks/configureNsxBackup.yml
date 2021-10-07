@@ -212,7 +212,7 @@
 #      no_log: true
       when:
         - false
-        - Deploy.Product.NSXT.GlobalManager.Deploy == True
+        - Deploy.Product.NSXT.Federation.Enable == True
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
         - ssh_fingerprint == None or ssh_fingerprint is undefined
 
@@ -283,5 +283,5 @@
 #      no_log: true
       when:
         - false
+        - Deploy.Product.NSXT.Federation.Enable == True
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
-        - Deploy.Product.NSXT.GlobalManager.Deploy == True
