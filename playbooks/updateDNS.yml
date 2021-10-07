@@ -758,7 +758,7 @@
         - DEBUG.DisplayVariables == true
         - Deploy.Setting.UseDNS == true
         - Deploy.Setting.IPv4 == true
-        - '"GlobalManager" not in item.key or ("GlobalManager" in item.key and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)'
+        - '"GlobalManager" not in "{{ item.key }}" or ("GlobalManager" in "{{ item.key }}" and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)'
 
     - name: IPv4 'A' records for Nested_NSXT Components
       community.general.nsupdate:
@@ -773,7 +773,7 @@
       when:
         - Deploy.Setting.UseDNS == true
         - Deploy.Setting.IPv4 == true
-        - '"GlobalManager" not in item.key or ("GlobalManager" in item.key and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)'
+        - '"GlobalManager" not in "{{ item.key }}" or ("GlobalManager" in "{{ item.key }}" and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)'
 
 
 
@@ -798,7 +798,7 @@
         - DEBUG.DisplayVariables == true
         - Deploy.Setting.UseDNS == true
         - Deploy.Setting.IPv4 == true
-        - '"GlobalManager" not in item.key or ("GlobalManager" in item.key and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)'
+        - '"GlobalManager" not in "{{ item.key }}" or ("GlobalManager" in "{{ item.key }}" and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)'
 
     - name: IPv4 'PTR' records for Nested_NSXT Components
       community.general.nsupdate:
@@ -813,7 +813,7 @@
       when:
         - Deploy.Setting.UseDNS == true
         - Deploy.Setting.IPv4 == true
-        - '"GlobalManager" not in item.key or ("GlobalManager" in item.key and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)'
+        - '"GlobalManager" not in "{{ item.key }}" or ("GlobalManager" in "{{ item.key }}" and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)'
 
 
 
