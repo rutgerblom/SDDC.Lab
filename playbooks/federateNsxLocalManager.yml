@@ -268,30 +268,25 @@
         - Deploy.Product.NSXT.Federation.Enable == true
         - result.version_compatible == true
 
-##
-## LC: Not sure this step is needed....or, if needs to be the LM
-##
-    - name: TBD-----Wait until the NSX-T API reports that the NSX-T Global Manager cluster is "STABLE"
-      ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}/api/v1/cluster/status
-        validate_certs: no
-        timeout: 5
-        force_basic_auth: yes
-        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        method: GET
-        body_format: json
-        return_content: yes
-        status_code: 200
-      register: result
-      until: result.status == 200 and result.json.detailed_cluster_status.overall_status == "STABLE"
-      retries: 60
-      delay: 10
-      when:
-        - False
-        - Deploy.Product.NSXT.Federation.Enable == true
 
-    - name: Modify on-boarding preferences to import NSX-T Local Manager site objects into NSX-T Global Manager during on-boarding
+##
+## Determine NSX-T Federation On-Boarding Preferences
+##
+    - name: Determinte NSX-T Federation Import - Global Manager Site [Import]
+      ansible.builtin.set_fact:
+        ignore_import: false
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+
+    - name: Determinte NSX-T Federation Import - Non-Global Manager Site [Do Not Import]
+      ansible.builtin.set_fact:
+        ignore_import: true
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+    - name: Set on-boarding preferences for NSX-T Local Manager objects into NSX-T Global Manager for the on-boarding process
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding/preferences
         validate_certs: no
@@ -303,8 +298,10 @@
         body_format: json
         body:
           {
+            "id" : "{{ SiteCode }}",
             "site_id" : "{{ SiteCode }}",
-            "ignore_import": true,
+            "display_name" : "{{ SiteCode }}",
+            "ignore_import": "{{ ignore_import }}",
             "resource_type": "SiteOnboardingPreference"
           }
         return_content: yes
@@ -317,21 +314,20 @@
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
 
-    - name: Check for on-boarding conflicts
+
+##
+## May not be needed, but performed by GUI
+##
+    - name: TBD--Obtain feature summary
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding?action=check_conflict
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding/feature-summary
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        method: POST
+        method: GET
         body_format: json
-        body:
-          {
-            "site_id" : "{{ SiteCode }}",
-            "suffix": "{{ SiteCode }}_",
-          }
         return_content: yes
         status_code: 200
       register: result
@@ -342,33 +338,7 @@
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
 
-    - name: On-board the NSX-T Local Manager site objects into NSX-T Global Manager
-      ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding?action=start_onboarding
-        validate_certs: no
-        timeout: 5
-        force_basic_auth: yes
-        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        method: POST
-        body_format: json
-        body:
-          {
-            "site_id" : "{{ SiteCode }}",
-            "suffix": "{{ SiteCode }}_",
-            "site_backup_reference" : "{{ lm_backup_id }}"
-          }
-        return_content: yes
-        status_code: 200
-      register: result
-      until: result.status == 200
-      retries: 60
-      delay: 10
-      when:
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-
-    - name: Wait until NSX-T Global Manager indicates that on-boarding is a "ALLOWED"
+    - name: Keep checking status of newly added site until it reaches "ALLOWED" status
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding/status
         validate_certs: no
@@ -388,9 +358,62 @@
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
 
-    - name: Wait until the NSX-T Local Manager reports that the NSX-T Local Manager cluster is Fully Synchronized with the Global Manager
+    - name: If deploying Global Manager Site, check for on-boarding conflicts of importing objects
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.LocalManager_VIP.FQDN }}/policy/api/v1/infra/full-sync-states/GM-2-LM-FULL-SYNC
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding?action=check_conflict
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: POST
+        body_format: json
+        body:
+          {
+            "site_id":"{{ SiteCode }}",
+            "prefix":""
+          }
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.status == "NO_CONFLICTS"
+      retries: 60
+      delay: 10
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+
+    - name: If deploying Global Manager Site, on-board the NSX-T Local Manager site objects into NSX-T Global Manager
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding?action=start_onboarding
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: POST
+        body_format: json
+        body:
+          {
+            "site_id":"{{ SiteCode }}",
+            "prefix":"",
+            "site_backup_reference":"{{ lm_backup_id }}"
+          }
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.status == "IN_PROGRESS"
+      retries: 60
+      delay: 10
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+
+    - name: Continue to check the status of the newly added site until it reaches "SUCCESS"
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding/status
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
@@ -401,9 +424,84 @@
         return_content: yes
         status_code: 200
       register: result
-      until: result.status == 200 and result.json.last_completed_stage == "COMPLETED"
+      until: result.status == 200 and result.json.status == "SUCCESS"
       retries: 60
       delay: 10
       when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##
+## Obtain the NSX-T Site's unique Site ID in order to check on status
+##
+    - name: Obtain NSX-T Global Manager information for newly added site
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 60
+      delay: 10
+      when:
+        - false
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name: Store unique site ID of newly added site for later use
+      ansible.builtin.set_fact:
+        unique_site_id: "{{ result.json.unique_id }}"
+      when:
+        - false
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name: Wait until replication_state reaches "SYNCHRONIZING" state
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}/api/v1/federation/replication/gm/sites/{{ unique_site_id }}/status
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.flow_statuses[0].replication_state == "SYNCHRONIZING"
+      retries: 60
+      delay: 10
+      when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true

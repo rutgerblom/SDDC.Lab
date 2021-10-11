@@ -549,3 +549,10 @@
   - The following file(s) were updated so please update your non-sample files:
     - config_sample.yml
 
+## Dev-v4.0.0 10-OCT-2021
+
+### Added by Luis Chanu
+  - Changes made to the configureNsxBackup.yml playbook, and it appears to be functioning properly.
+  - Added comments to playbook to document what backups are created, and which ones are run.
+  - Additional changes to federateNsxLocalManager.yml...still work in progress.
+  - Enabled configureNsxBackup.yml in deploy.yml.
