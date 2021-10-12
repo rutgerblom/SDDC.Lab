@@ -562,3 +562,9 @@
 ### Added by Luis Chanu
   - Changed expected "ready" state for GlobalManager in deployNsxGlobalManager.yml from "NONE" to "ACTIVE".
   - Increased delay before VIP in an attempt to address a race condition.
+  - Modified deploy.yml to support the following:
+    - If deployment is Federated, then only provision NSX-T logical objects in the same pod that is deploying Global Manager
+    - Federation deployment as been enabled, but will only execute if Federation is enabled (Federation.Enable == true)
+  - Removed Deploy.Product.NSXT.Edge.UplinksToUse variable from config_sample.yml and Pod_Config.j2.
+  - The following file(s) were updated so please update your non-sample files:
+    - config_sample.yml
