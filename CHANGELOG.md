@@ -556,3 +556,9 @@
   - Added comments to playbook to document what backups are created, and which ones are run.
   - Additional changes to federateNsxLocalManager.yml...still work in progress.
   - Enabled configureNsxBackup.yml in deploy.yml.
+
+## Dev-v4.0.0 11-OCT-2021
+
+### Added by Luis Chanu
+  - Changed expected "ready" state for GlobalManager in deployNsxGlobalManager.yml from "NONE" to "ACTIVE".
+  - Increased delay before VIP in an attempt to address a race condition.
