@@ -201,8 +201,8 @@
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
-    - name: Wait 5 seconds before attempting to set NSX-T Global Manager VIP
-      ansible.builtin.pause: seconds=5
+    - name: Wait 10 seconds before attempting to set NSX-T Global Manager VIP
+      ansible.builtin.pause: seconds=10
       when: 
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
@@ -247,6 +247,26 @@
         validate_certs: False
         display_name: "{{ Nested_NSXT.Components.GlobalManager_VIP.VMName }}"
         id: "{{ Nested_NSXT.Components.GlobalManager_VIP.VMName }}"
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+
+    - name: Wait until the NSX-T API reports that the NSX-T Global Manager operational state is "ACTIVE" on the VIP
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.Address.IPv4.Address }}/global-manager/api/v1/gm-operational-state
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.status == "ACTIVE"
+      retries: 60
+      delay: 60
       when:
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
