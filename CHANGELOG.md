@@ -568,3 +568,10 @@
   - Removed Deploy.Product.NSXT.Edge.UplinksToUse variable from config_sample.yml and Pod_Config.j2.
   - The following file(s) were updated so please update your non-sample files:
     - config_sample.yml
+
+## Dev-v4.0.0 13-OCT-2021
+
+### Added by Luis Chanu
+  - Added vRealize Log Insight v8.6.0 to software_sample.yml (Untested)
+  - The following file(s) were updated so please update your non-sample files:
+    - software_sample.yml
