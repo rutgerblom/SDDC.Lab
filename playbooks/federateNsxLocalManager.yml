@@ -400,6 +400,7 @@
         return_content: yes
         status_code: 200
       register: result
+# IN_PROGRESS is what we would normally expect.  However, if the server is fast, it might complete that before being checked.  For that reason, checking for both conditions
       until: result.status == 200 and (result.json.status == "IN_PROGRESS" or result.json.status == "SUCCESS")
       retries: 60
       delay: 10
