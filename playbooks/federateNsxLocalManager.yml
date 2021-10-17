@@ -400,7 +400,7 @@
         return_content: yes
         status_code: 200
       register: result
-      until: result.status == 200 and result.json.status == "IN_PROGRESS"
+      until: result.status == 200 and (result.json.status == "IN_PROGRESS" or result.json.status == "SUCCESS")
       retries: 60
       delay: 10
       when:
