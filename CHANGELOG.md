@@ -575,3 +575,13 @@
   - Added vRealize Log Insight v8.6.0 to software_sample.yml (Untested)
   - The following file(s) were updated so please update your non-sample files:
     - software_sample.yml
+
+## Dev-v4.0.0 17-OCT-2021
+
+### Added by Luis Chanu
+  - NOTE: Successfully deployed vRealize Log Insight v8.6.0 as part of a deployment
+  - Made slight modifications to federateNsxLocalManager.yml around order of operations and delays
+  - Began developing federateNsxEdgeNodes.yml playbook to make the necessary changes to the Edge Nodes for Federation.  Initial thoughts on tasks include:
+    - Connect EdgeNodes to T0-Gateway-01 interfaces
+    - Assign IP addresses to the EdgeNode interfaces
+    - Configure RTEP interfaces on EdgeNodes

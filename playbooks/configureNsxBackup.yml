@@ -162,25 +162,6 @@
 #      no_log: true
       when: Deploy.Product.NSXT.LocalManager.Deploy == True
 
-    - name: Perform a backup of the NSX-T Local Manager if Federation is being configured [Local Manager]
-      ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.LocalManager_VIP.FQDN }}/api/v1/cluster?action=backup_to_remote
-        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        force_basic_auth: True
-        validate_certs: False
-        method: POST
-        body_format: json
-        headers:
-          Accept: application/json
-        timeout: 5
-      ignore_errors: true
-      failed_when: false
-#      no_log: true
-      when:
-        - Deploy.Product.NSXT.Federation.Enable == True
-        - Deploy.Product.NSXT.LocalManager.Deploy == True
-
 
 ##
 ## Configure Backup on NSX-T Global Manager if the Global Manager SiteCode matches our SiteCode (==We are deploying the Global Manager)
@@ -278,10 +259,30 @@
 
 
 ##
-## Do not continue with SDDC Lab Deployment until NSX-T Local Manager backups have completed
+## Now that all Managers have their backups configured, perform a backup of the Local Manager, and wait for it to complete
 ##
-    - name: Wait 5 seconds before start checking whether the NSX-T Local Manager backup has completed [Local Manager]
-      ansible.builtin.pause: seconds=5
+
+    - name: Perform a backup of the NSX-T Local Manager if Federation is being configured [Local Manager]
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.LocalManager_VIP.FQDN }}/api/v1/cluster?action=backup_to_remote
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        force_basic_auth: True
+        validate_certs: False
+        method: POST
+        body_format: json
+        headers:
+          Accept: application/json
+        timeout: 5
+      ignore_errors: true
+      failed_when: false
+#      no_log: true
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == True
+        - Deploy.Product.NSXT.LocalManager.Deploy == True
+
+    - name: Wait 10 seconds before start checking whether the NSX-T Local Manager backup has completed [Local Manager]
+      ansible.builtin.pause: seconds=10
       when: 
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == True

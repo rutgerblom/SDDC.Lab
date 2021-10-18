@@ -1,15 +1,21 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/federateNsxLocalManager.yml
+##   Filename: playbooks/federateNsxEdgeNodes.yml
 ##
-##      Notes: This module registers the NSX-T Local Manager to the NSX-T Global Manager, and imports it's objects.  Once completed, the site has been brought into the NSX-T Federation as a Location.
+##      Notes: The purpose of this module is to perform the following actions: (May be split over multiple playbooks)
+##             1) Configure RTEP Interfaces
+##             2) Stretch the Tier-0 Gateway to this SiteCode as a Primary (==All_Primaries)
+##             3) Attached EdgeNodes to T0-Gateway-01 Gateway
+##             4) Configure IP addresses on EdgeNode interfaces
+##
+##       ToDo: Move EdgeNodes to Stretched T0
 ##
 ---
 - hosts: localhost
-  name: federateNsxLocalManager.yml
+  name: federateNsxEdgeNodes.yml
   tasks:
-    - name: federateNsxLocalManager_Playbook
+    - name: federateNsxEdgeNodes_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -64,6 +70,126 @@
       when:
         - DEBUG.DisplayVariables == true
 
+##
+## Obtain out NSX-T Site ID
+##
+    - name: Get information about our NSX-T site
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 10
+      delay: 5
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Store NSX-T Global Manager's Unique Site ID for our site
+      ansible.builtin.set_fact:
+        SiteID: "{{ result.json.unique_id }}"
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - result.status == 200
+
+
+##
+## Obtain list of Edge Nodes for our Site
+##
+    - name: Obtain information on All Transport Nodes
+      nsxt_transport_nodes_facts:
+        hostname: "{{ Nested_NSXT.Components.LocalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: false
+      register: result_allTNs
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: DEBUG -- Display All Transport Nodes (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display "result_allTNs" Variable ==================================
+
+            {{ result_allTNs | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          ====================================================================================================
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - DEBUG.DisplayVariables == true
+
+    - name: Extract Edge Transport Nodes from All Transport Nodes
+      ansible.builtin.set_fact:
+        EdgeNodes: "{{ (EdgeNodes | default([])) + [ item ] }}"
+      loop: "{{ result_allTNs.results | default([]) }}"
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - item.node_deployment_info.resource_type == "EdgeNode"
+
+    - name: DEBUG -- Display Edge Nodes (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display "EdgeNodes" Variable ==================================
+
+            {{ EdgeNodes | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          ================================================================================================
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - DEBUG.DisplayVariables == true
+
+
+##
+## Conifgure RTEP on Edge Node by updating its configuration
+##
+
+## STOPPED HERE ##
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ##
 ## Steps to obtain the NSX-T Local Manager Cluster API Certificate Thumbprint
@@ -86,13 +212,16 @@
       retries: 10
       delay: 10
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - false
 
     - name: Store Local Manager Cluster Certificate ID into variable for easier use
       ansible.builtin.set_fact:
         lm_cluster_cert_id: "{{ result.json.certificate_id }}"
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - result.status == 200
@@ -111,6 +240,7 @@
         status_code: 200
       register: result
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
 
@@ -118,6 +248,7 @@
       ansible.builtin.set_fact:
         lm_cluster_cert_pem: "{{ result.json.pem_encoded }}"
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - result.status == 200
@@ -127,6 +258,7 @@
         content: "{{ lm_cluster_cert_pem }}"
       register: lm_cluster_cert_info
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - result.status == 200
@@ -135,6 +267,7 @@
       ansible.builtin.set_fact:
         lm_cluster_api_cert_thumbprint: "{{ lm_cluster_cert_info.fingerprints['sha256'].replace(':','') | lower }}"
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - result.status == 200
@@ -149,6 +282,7 @@
 
           =================================================================================================
       when:
+        - false
         - DEBUG.DisplayVariables == true
 
 ##
@@ -172,6 +306,7 @@
       retries: 10
       delay: 10
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
 
@@ -179,6 +314,7 @@
       ansible.builtin.set_fact:
         lm_backup_id: "{{ result.json.cluster_backup_statuses[0].backup_id | default('{{ Nested_NSXT.Components.LocalManager_VIP.FQDN }}-Backup') }}"
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - result.status == 200
@@ -193,6 +329,7 @@
 
           =================================================================================================
       when:
+        - false
         - DEBUG.DisplayVariables == true
 
 
@@ -217,6 +354,7 @@
       retries: 60
       delay: 60
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
 
     - name: Verify NSX-T Local Manager is compatible with NSX-T Global Manager
@@ -232,6 +370,7 @@
           thumbprint: "{{ lm_cluster_api_cert_thumbprint }}"
       register: result
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
 
     - name: DEBUG -- Display "nsxt_local_managers_compatibility" result (Pause)
@@ -244,6 +383,7 @@
 
           =================================================================================================
       when:
+        - false
         - DEBUG.DisplayVariables == true
         - Deploy.Product.NSXT.Federation.Enable == true
 
@@ -262,6 +402,7 @@
           thumbprint: "{{ lm_cluster_api_cert_thumbprint }}"
         state: present
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - result.version_compatible == true
 
@@ -273,6 +414,7 @@
       ansible.builtin.set_fact:
         ignore_import: false
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
@@ -280,6 +422,7 @@
       ansible.builtin.set_fact:
         ignore_import: true
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
 
@@ -308,6 +451,7 @@
       retries: 60
       delay: 10
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
 
@@ -332,6 +476,7 @@
       retries: 60
       delay: 10
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
 
@@ -352,6 +497,7 @@
       retries: 60
       delay: 10
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
 
@@ -377,6 +523,7 @@
       retries: 60
       delay: 10
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
@@ -405,6 +552,7 @@
       retries: 60
       delay: 10
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
@@ -426,5 +574,6 @@
       retries: 60
       delay: 10
       when:
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
