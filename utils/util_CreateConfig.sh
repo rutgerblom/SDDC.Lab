@@ -106,39 +106,39 @@ if [[ $choice =~ ^[Yy]$ ]] ; then
  
     # Update config.yml with the user supplied settings 
     sed -i -e "19s/Number: 240/Number: $podnumber/g" $destinationpath
-    sed -i -e "110s/Physical: VMware1\!/Physical: $physicalpassword/g" $destinationpath
-    sed -i -e "114s/IPv4: \"{{ Net.Uplink.IPv4.Network }}.5\"/IPv4: $dnsserver/g" $destinationpath
-    sed -i -e "121s/IPv4: \"{{ Net.Uplink.IPv4.Network }}.5\"/IPv4: $ntpserver/g" $destinationpath
-    sed -i -e "161s/Deployment: Host/Deployment: $target/g" $destinationpath
+    sed -i -e "108s/Physical: VMware1\!/Physical: $physicalpassword/g" $destinationpath
+    sed -i -e "112s/IPv4: \"{{ Net.Uplink.IPv4.Network }}.5\"/IPv4: $dnsserver/g" $destinationpath
+    sed -i -e "119s/IPv4: \"{{ Net.Uplink.IPv4.Network }}.5\"/IPv4: $ntpserver/g" $destinationpath
+    sed -i -e "159s/Deployment: Host/Deployment: $target/g" $destinationpath
     
     # Check deployment target so that we update "FQDN" at the right line number
     if [[ $target == 'Host' ]] ; then
-        sed -i -e "163s/FQDN: Host32.NetLab.Home/FQDN: $fqdn/g" $destinationpath
+        sed -i -e "161s/FQDN: Host32.NetLab.Home/FQDN: $fqdn/g" $destinationpath
     else
-        sed -i -e "185s/FQDN: NetLab-vCenter.NetLab.Local/FQDN: $fqdn/g" $destinationpath
+        sed -i -e "183s/FQDN: NetLab-vCenter.NetLab.Local/FQDN: $fqdn/g" $destinationpath
     fi
     
     # Update "DataCenter" and "Cluster" only when the deployment target is vCenter
     if [[ $target == 'vCenter' ]] ; then
-        sed -i -e "190s/DataCenter: SDDC/DataCenter: $datacenter/g" $destinationpath
-        sed -i -e "191s/Cluster: Lab-Cluster/Cluster: $cluster/g" $destinationpath
+        sed -i -e "188s/DataCenter: SDDC/DataCenter: $datacenter/g" $destinationpath
+        sed -i -e "189s/Cluster: Lab-Cluster/Cluster: $cluster/g" $destinationpath
     fi
     
     # Check deployment target so that we update "Datastore" at the right line number
     if [[ $target == 'Host' ]] ; then
-        sed -i -e "170s/Datastore: Local_VMs/Datastore: $datastore/g" $destinationpath
+        sed -i -e "168s/Datastore: Local_VMs/Datastore: $datastore/g" $destinationpath
     else
-        sed -i -e "192s/Datastore: Shared_VMs/Datastore: $datastore/g" $destinationpath
+        sed -i -e "190s/Datastore: Shared_VMs/Datastore: $datastore/g" $destinationpath
     fi
     
     # Check deployment target so that we update "Uplink" at the right line number
     if [[ $target == 'Host' ]] ; then
-        sed -i -e "177s/Uplink: Lab-Routers/Uplink: $portgroup/g" $destinationpath
+        sed -i -e "175s/Uplink: Lab-Routers/Uplink: $portgroup/g" $destinationpath
     else
-        sed -i -e "199s/Uplink: Lab-Routers/Uplink: $portgroup/g" $destinationpath
+        sed -i -e "197s/Uplink: Lab-Routers/Uplink: $portgroup/g" $destinationpath
     fi
     
-    sed -i -e "364s/Protocol: BOTH /Protocol: $routing/g" $destinationpath
+    sed -i -e "362s/Protocol: BOTH /Protocol: $routing/g" $destinationpath
 else
     echo
     echo "Nothing updated. Exiting the script"
