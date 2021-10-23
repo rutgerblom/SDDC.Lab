@@ -205,29 +205,29 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 41 | ComputeB-1 | Nested ESXi Host in ComputeB Cluster | No |
 | 42 | ComputeB-2 | Nested ESXi Host in ComputeB Cluster | No |
 | 43 | ComputeB-3 | Nested ESXi Host in ComputeB Cluster | No |
-| 51 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | No|
-| 52 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | No|
-| 53 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | No|
-| 54 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | No|
-| 55 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | No|
-| 56 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | No|
-| 57 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | No|
-| 58 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | No|
-| 59 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | No|
-| 60 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | No|
-| 61 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | No|
-| 62 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | No|
-| 63 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | No|
-| 64 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | No|
-| 65 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | No|
-| 66 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | No|
-| 67 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | No|
-| 68 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | No|
-| 69 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | No|
-| 70 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | No|
 | 91 | Edge-1 | Nested ESXi Host in Edge Cluster | Yes |
 | 92 | Edge-2 | Nested ESXi Host in Edge Cluster | Yes |
 | 93 | Edge-3 | Nested ESXi Host in Edge Cluster | Yes |
+| 101 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | No |
+| 102 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | No |
+| 103 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | No |
+| 104 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | No |
+| 105 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | No |
+| 106 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | No |
+| 107 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | No |
+| 108 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | No |
+| 109 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | No |
+| 110 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | No |
+| 111 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | No |
+| 112 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | No |
+| 113 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | No |
+| 114 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | No |
+| 115 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | No |
+| 116 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | No |
+| 117 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | No |
+| 118 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | No |
+| 119 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | No |
+| 120 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | No |
 | 253 | EdgeVM-02 | NSX-T Edge Transport Node 2 | Yes |
 | 254 | EdgeVM-01 | NSX-T Edge Transport Node 1 | Yes |
 
