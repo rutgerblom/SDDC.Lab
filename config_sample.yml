@@ -56,14 +56,14 @@ Deploy:
     vCenter:                                              # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: vCenter                                    # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '7.00U2D'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '7.00U3'                                   # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-vCenter.conf"
       Installer: "{{ SiteCode }}-Installer-vCenter"
     ESXi:                                                 # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: ESXi                                       # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '7.00U2A'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '7.00U3'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "KS.CFG"
       Installer: "{{ SiteCode }}-Installer-ESXi"
@@ -84,7 +84,7 @@ Deploy:
     vRLI:                                                 # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: vRLI                                       # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '8.4.1'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '8.6.0'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-vRLI.conf"
       Installer: "{{ SiteCode }}-Installer-vRLI"
@@ -588,7 +588,7 @@ Nested_Clusters:
         ControlPlaneSize: TINY                                                          # Size - The size of the control plane virtual machines
         Network:
           Management:
-            StartingIP: "{{ Net.Management.IPv4.Network }}.51"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
+            StartingIP: "{{ Net.Management.IPv4.Network }}.101"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
             DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
@@ -623,7 +623,7 @@ Nested_Clusters:
         ControlPlaneSize: TINY                                                          # Size - The size of the control plane virtual machines
         Network:
           Management:
-            StartingIP: "{{ Net.Management.IPv4.Network }}.56"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
+            StartingIP: "{{ Net.Management.IPv4.Network }}.106"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
             DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
@@ -658,7 +658,7 @@ Nested_Clusters:
         ControlPlaneSize: TINY                                                          # Size - The size of the control plane virtual machines
         Network:
           Management:
-            StartingIP: "{{ Net.Management.IPv4.Network }}.61"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
+            StartingIP: "{{ Net.Management.IPv4.Network }}.111"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
             DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
@@ -693,7 +693,7 @@ Nested_Clusters:
         ControlPlaneSize: TINY                                                          # Size - The size of the control plane virtual machines
         Network:
           Management:
-            StartingIP: "{{ Net.Management.IPv4.Network }}.66"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
+            StartingIP: "{{ Net.Management.IPv4.Network }}.116"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
               Network: 10.244.48.0
