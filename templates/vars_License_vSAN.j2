@@ -16,7 +16,7 @@
 {% set ns.LicenseAssignedToCluster=false %}
 {% set ns.Licenses=vSAN_Licenses %}
 {% set ns.ClusterSockets=0|int %}
-{% for ClusterName, ClusterSettings in Nested_Clusters.items() %}
+{% for ClusterName, ClusterSettings in Nested_Cluster.items() %}
 {# Reset Global flag that ensures that each Cluster only gets one license assigned to it #}
 {% set ns.LicenseAssignedToCluster=false %}
 {# Only process this cluster if it has hosts deployed and has vSAN enabled #}

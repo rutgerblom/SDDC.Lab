@@ -514,19 +514,19 @@
                         Issue: NSX-T Edge nodes can not be deployed
 
                                 Deploy NSX-T Edge nodes: {{ Deploy.Product.NSXT.Edge }}
-            Deploy vSphere cluster for NSX-T Edge nodes: {{ Nested_Clusters.Edge.DeployHosts }}
+            Deploy vSphere cluster for NSX-T Edge nodes: {{ Nested_Cluster.Edge.DeployHosts }}
 
           =================================================================================================
       when:
         - Deploy.Product.NSXT.Edge.Deploy == true
-        - Nested_Clusters.Edge.DeployHosts != true
+        - Nested_Cluster.Edge.DeployHosts != true
 
     - name: Set flag if NSX-T Edge cannot be deployed
       ansible.builtin.set_fact:
         IssueFound: true
       when:
         - Deploy.Product.NSXT.Edge.Deploy == true
-        - Nested_Clusters.Edge.DeployHosts != true
+        - Nested_Cluster.Edge.DeployHosts != true
 ##
 ## Verify NSX-T installation files exist
 ##

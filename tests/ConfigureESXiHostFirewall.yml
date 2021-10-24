@@ -35,7 +35,7 @@
               enabled: True
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when:
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
         - false
 
 ##
@@ -49,6 +49,6 @@
         validate_certs: false
         cluster_name: "{{ item.key }}"
         rules: "{{ Nested_ESXi.FirewallRules }}"
-      loop: "{{ Nested_Clusters | dict2items }}"
+      loop: "{{ Nested_Cluster | dict2items }}"
       when:
-        - Nested_Clusters[item.key]['DeployHosts'] == true
+        - Nested_Cluster[item.key]['DeployHosts'] == true

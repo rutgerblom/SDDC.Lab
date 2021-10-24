@@ -105,7 +105,7 @@
         path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
         state: directory
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+      when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
       tags: esxi-install-media
 
     - name: Create kickstart file for each nested ESXi host
@@ -114,7 +114,7 @@
         dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
         mode: "666"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+      when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
       tags: esxi-install-media
 
     - name: Create custom ESXi ISO for each nested ESXi host
@@ -122,7 +122,7 @@
       args:
         chdir: "{{ Target.TempFolder }}/{{ item.value.VMName }}/"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+      when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
       tags: esxi-install-media
 
     - name: Unmount ESXi ISO
@@ -143,7 +143,7 @@
         datastore: "{{ Target.Datastore }}" 
         path: "{{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+      when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
       tags: esxi-install-media
       
     - name: Delete local ISO content directory
@@ -159,7 +159,7 @@
         state: absent
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
         - DEBUG.KeepInstallerFiles != true
       tags: esxi-install-media
 
@@ -169,6 +169,6 @@
         state: absent
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
         - DEBUG.KeepInstallerFiles != true
       tags: esxi-install-media

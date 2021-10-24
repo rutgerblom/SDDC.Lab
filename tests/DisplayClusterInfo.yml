@@ -46,7 +46,7 @@
                                Nested_vCenter.Password: {{ Nested_vCenter.Password }}
                              Nested_vCenter.DataCenter: {{ Nested_vCenter.DataCenter }}
 
-                                       Nested_Clusters: {{ Nested_Clusters }}
+                                       Nested_Cluster: {{ Nested_Cluster }}
 
           =================================================================================================
       when:
@@ -59,7 +59,7 @@
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: false
         cluster_name: "{{ item.key }}"
-      loop: "{{ Nested_Clusters | dict2items }}"
+      loop: "{{ Nested_Cluster | dict2items }}"
       register: cluster_info
       when: 
        - item.value.DeployHosts == true

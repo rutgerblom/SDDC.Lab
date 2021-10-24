@@ -70,11 +70,11 @@
         path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
         state: directory
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+      when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
         
     - name: Create KS.CFG for each nested ESXi host
       ansible.builtin.template: 
         src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.ESXi.Template }}"
         dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}/KS.CFG"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+      when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true

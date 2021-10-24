@@ -10,7 +10,7 @@
         cluster_name: "{{ item.key }}"
         drive_capacity: "{{ (Nested_ESXi.HardwareSettings[item.key].vSAN.CacheSize |int) * 1024 }}"
         set_drivetype_to_flash: true
-      loop: "{{ Nested_Clusters | dict2items }}"
+      loop: "{{ Nested_Cluster | dict2items }}"
       when:
         - item.value.vSAN == true
         - item.value.DeployHosts == true
@@ -25,7 +25,7 @@
         cluster_name: "{{ item.key }}"
         drive_capacity: "{{ (Nested_ESXi.HardwareSettings[item.key].vSAN.CapacitySize |int) * 1024 }}"
         set_drivetype_to_flash: false
-      loop: "{{ Nested_Clusters | dict2items }}"
+      loop: "{{ Nested_Cluster | dict2items }}"
       when:
         - item.value.vSAN == true
         - item.value.DeployHosts == true

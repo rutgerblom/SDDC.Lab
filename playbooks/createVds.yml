@@ -208,7 +208,7 @@
         state: present
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
 
     - name: Migrate vmk0 to the VDS
       community.vmware.vmware_migrate_vmk:
@@ -224,7 +224,7 @@
         migrate_portgroup_name: "{{ item.value.vmk.vmk0.PortGroup }}"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
 
     - name: Create vmk1 for vMotion
       community.vmware.vmware_vmkernel:
@@ -245,7 +245,7 @@
         state: present
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
 
     - name: Configure vMotion TCP/IP stack gateway address on Nested_ESXi hosts
       community.vmware.vmware_vm_shell:
@@ -263,7 +263,7 @@
         vm_shell_args: "network ip route ipv4 add --netstack vmotion --network default --gateway {{ item.value.vmk.vmk1.Address.IPv4.Gateway }}"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when:
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
 
     - name: Create vmk2 for vSAN
       community.vmware.vmware_vmkernel:
@@ -284,7 +284,7 @@
         state: present
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
       
     - name: Create vmk3 for IP Storage
       community.vmware.vmware_vmkernel:
@@ -304,7 +304,7 @@
         state: present
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
       
     - name: Remove the standard switch from the ESXi hosts
       community.vmware.vmware_vswitch:
@@ -316,4 +316,4 @@
         state: absent
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true

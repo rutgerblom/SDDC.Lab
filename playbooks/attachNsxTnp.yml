@@ -76,7 +76,7 @@
         cluster_name: "{{ item.key }}"
         transport_node_profile_name: "{{ item.value.NSXT_TransportNodeProfile }}"
         state: present
-      loop: "{{ Nested_Clusters | dict2items }}"
+      loop: "{{ Nested_Cluster | dict2items }}"
       when: 
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - item.value.Prep_NSX == true

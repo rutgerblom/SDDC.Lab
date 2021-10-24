@@ -21,7 +21,7 @@
 #        vm_shell_args: "network ip route ipv4 add --netstack vmotion --network default --gateway {{ item.value.vmk.vmk1.Address.IPv4.Gateway }}"
 #      loop: "{{ Nested_ESXi.Host | dict2items }}"
 #      when:
-#        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+#        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
 
 
     - name: Configure vMotion TCP/IP stack gateway

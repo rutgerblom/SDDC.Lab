@@ -22,7 +22,7 @@
 {% set ns.LicenseAssignedToHost=false %}
 {% for License in ns.Licenses %}
 {# Only assign license if Qty avaiable, Hosts for the given cluster were deployed, and Host hasn't already been assigned a licnese #}
-{% if License.Quantity >= HostSockets and Nested_Clusters[HostConfig.Cluster].DeployHosts == true and ns.LicenseAssignedToHost != true %}
+{% if License.Quantity >= HostSockets and Nested_Cluster[HostConfig.Cluster].DeployHosts == true and ns.LicenseAssignedToHost != true %}
   - Host: "{{ HostConfig.FQDN }}"
     License: "{{ License.KeyCode }}"
 {# Current Host has consumed a license, so set flag #}

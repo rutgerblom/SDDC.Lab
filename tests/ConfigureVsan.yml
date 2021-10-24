@@ -39,7 +39,7 @@
 #        enable_vsan: True
 #        vsan_auto_claim_storage: True
 #      delegate_to: localhost
-#      loop: "{{ Nested_Clusters | dict2items }}"
+#      loop: "{{ Nested_Cluster | dict2items }}"
 #      when:
 #        - item.value.vSAN == true
 #        - item.value.DeployHosts == true
@@ -52,7 +52,7 @@
 #        passwd: "{{ Nested_vCenter.Password }}"
 #        cluster: "{{ item.key }}"
 #      ignore_errors: true
-#      loop: "{{ Nested_Clusters | dict2items }}"
+#      loop: "{{ Nested_Cluster | dict2items }}"
 #      when:
 #        - item.value.vSAN == true
 #        - item.value.DeployHosts == true
@@ -65,7 +65,7 @@
 #        cluster: "{{ item.key }}"
 #        datastorename: "{{ item.value.vsanDatastore }}"
 #      ignore_errors: true
-#      loop: "{{ Nested_Clusters | dict2items }}"
+#      loop: "{{ Nested_Cluster | dict2items }}"
 #      when:
 #        - item.value.vSAN == true
 #        - item.value.DeployHosts == true

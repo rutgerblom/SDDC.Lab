@@ -83,6 +83,6 @@
         apd_response: "{{ item.value.HA.APD_Response }}"
         pdl_response: "{{ item.value.HA.PDL_Response }}"
         host_isolation_response: "{{ item.value.HA.Host_Isolation_Response }}"
-      loop: "{{ Nested_Clusters | dict2items }}"
+      loop: "{{ Nested_Cluster | dict2items }}"
       when: 
         - item.value.DeployHosts == true

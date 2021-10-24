@@ -77,7 +77,7 @@
       delay: 60
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
 
     - name: Add nested ESXi host to vCenter
       community.vmware.vmware_host:
@@ -94,7 +94,7 @@
       ignore_errors: true
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
 
     - name: Mount NFS datastore on nested ESXi host
       community.vmware.vmware_host_datastore:
@@ -113,7 +113,7 @@
       async: 1800
       poll: 0
       when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
         - Deploy.Setting.UseNFS == true
 
     - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the datastore
@@ -128,7 +128,7 @@
         state: absent
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
-        - Nested_Clusters[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
         - DEBUG.KeepInstallerFiles != true
 
 ##
@@ -143,6 +143,6 @@
         validate_certs: false
         cluster_name: "{{ item.key }}"
         rules: "{{ Nested_ESXi.FirewallRules }}"
-      loop: "{{ Nested_Clusters | dict2items }}"
+      loop: "{{ Nested_Cluster | dict2items }}"
       when:
-        - Nested_Clusters[item.key]['DeployHosts'] == true
+        - Nested_Cluster[item.key]['DeployHosts'] == true

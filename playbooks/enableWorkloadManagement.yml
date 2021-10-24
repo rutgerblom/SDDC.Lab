@@ -75,8 +75,8 @@
 ##
     - name: Store the nested cluster data structure
       ansible.builtin.set_fact:
-        tanzu_supervisor: "{{ Nested_Clusters }}"
-      loop: "{{ Nested_Clusters | dict2items }}"
+        tanzu_supervisor: "{{ Nested_Cluster }}"
+      loop: "{{ Nested_Cluster | dict2items }}"
       when:
         - item.value.Tanzu.SupervisorCluster.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
@@ -132,7 +132,7 @@
         return_content: yes
         status_code: 200
       register: cluster_info
-      loop: "{{ Nested_Clusters | dict2items }}"
+      loop: "{{ Nested_Cluster | dict2items }}"
       when:
         - tanzu_supervisor is defined
         - item.value.DeployHosts == true
