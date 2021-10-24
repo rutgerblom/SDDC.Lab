@@ -63,8 +63,8 @@
                                      Target.Datastore: {{ Target.Datastore }}
                                       Target.VMFolder: {{ Target.VMFolder }}
 
-             Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
-           Nested_NSXT.Components.LocalManager.VMName: {{ Nested_NSXT.Components.LocalManager.VMName }}
+             Nested_NSXT.Component.LocalManager.FQDN: {{ Nested_NSXT.Component.LocalManager.FQDN }}
+           Nested_NSXT.Component.LocalManager.VMName: {{ Nested_NSXT.Component.LocalManager.VMName }}
 
                                   Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN }}
                                 Nested_vCenter.VMName: {{ Nested_vCenter.VMName }}
@@ -77,7 +77,7 @@
 
     - name: Register NSX-T Compute Manager to Local Manager
       nsxt_fabric_compute_managers:
-          hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
+          hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
           username: "{{ Nested_NSXT.Credential.admin.Name }}"
           password: "{{ Nested_NSXT.Credential.admin.Password }}"
           validate_certs: False
@@ -95,7 +95,7 @@
 
     - name: Register NSX-T Compute Manager to Global Manager
       nsxt_fabric_compute_managers:
-          hostname: "{{ Nested_NSXT.Components.GlobalManager.FQDN }}"
+          hostname: "{{ Nested_NSXT.Component.GlobalManager.FQDN }}"
           username: "{{ Nested_NSXT.Credential.admin.Name }}"
           password: "{{ Nested_NSXT.Credential.admin.Password }}"
           validate_certs: False

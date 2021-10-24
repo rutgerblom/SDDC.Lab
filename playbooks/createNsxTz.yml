@@ -63,7 +63,7 @@
                                      Target.Datastore: {{ Target.Datastore }}
                                       Target.VMFolder: {{ Target.VMFolder }}
 
-             Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
+             Nested_NSXT.Component.LocalManager.FQDN: {{ Nested_NSXT.Component.LocalManager.FQDN }}
 
               Nested_NSXT.System.Fabric.TransportZone: {{ Nested_NSXT.System.Fabric.TransportZone }}
 
@@ -75,7 +75,7 @@
 
     - name: Create NSX-T transport zones
       nsxt_transport_zones:
-        hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
+        hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: False

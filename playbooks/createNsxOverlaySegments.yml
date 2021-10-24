@@ -57,7 +57,7 @@
 
                                     Target.Deployment: {{ Target.Deployment }}
 
-             Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
+             Nested_NSXT.Component.LocalManager.FQDN: {{ Nested_NSXT.Component.LocalManager.FQDN }}
 
                       Nested_NSXT.Networking.Segments: {{ Nested_NSXT.Networking.Segments }}
 
@@ -88,7 +88,7 @@
     ## Create only OVERLAY Segments in var_Segments  ##
     - name: Create NSX-T Segments
       nsxt_policy_segment:
-        hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
+        hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: False

@@ -54,7 +54,7 @@
 
                                          Target.Deployment: {{ Target.Deployment }}
 
-                  Nested_NSXT.Components.LocalManager.FQDN: {{ Nested_NSXT.Components.LocalManager.FQDN }}
+                  Nested_NSXT.Component.LocalManager.FQDN: {{ Nested_NSXT.Component.LocalManager.FQDN }}
 
           Nested_NSXT.System.Fabric.Profile.TransportNodeProfiles.Name: {{ Nested_NSXT.System.Fabric.Profile.TransportNodeProfiles }}
 
@@ -65,7 +65,7 @@
       
     - name: Attach NSX-T transport node profile to vSphere cluster
       nsxt_transport_node_collections:
-        hostname: "{{ Nested_NSXT.Components.LocalManager.FQDN }}"
+        hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: False
@@ -85,7 +85,7 @@
 
     - name: Wait until the NSX-T API reports that the Transport Zones are in "UP" state
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.LocalManager.FQDN }}/api/v1/transport-zones/status
+        url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/api/v1/transport-zones/status
         validate_certs: no
         timeout: 10
         force_basic_auth: yes

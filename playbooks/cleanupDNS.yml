@@ -751,7 +751,7 @@
                                                 Value: {{ item.value.Address.IPv4.Address }}
 
           =================================================================================================
-      loop: "{{ Nested_NSXT.Components | dict2items }}"
+      loop: "{{ Nested_NSXT.Component | dict2items }}"
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
@@ -767,7 +767,7 @@
         record:   "{{ item.value.VMName }}"
         value:    "{{ item.value.Address.IPv4.Address }}"
         state:    "{{ LOCAL_RecordState }}"
-      loop: "{{ Nested_NSXT.Components | dict2items }}"
+      loop: "{{ Nested_NSXT.Component | dict2items }}"
       when:
         - Deploy.Setting.UseDNS == true
         - Deploy.Setting.IPv4 == true
@@ -789,7 +789,7 @@
                                                 Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
-      loop: "{{ Nested_NSXT.Components | dict2items }}"
+      loop: "{{ Nested_NSXT.Component | dict2items }}"
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
@@ -805,7 +805,7 @@
         record:   "{{ item.value.Address.IPv4.Address | ipaddr('revdns') }}"
         value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
-      loop: "{{ Nested_NSXT.Components | dict2items }}"
+      loop: "{{ Nested_NSXT.Component | dict2items }}"
       when:
         - Deploy.Setting.UseDNS == true
         - Deploy.Setting.IPv4 == true
@@ -903,7 +903,7 @@
                                                 Value: {{ item.value.Address.IPv6.Address }}
 
           =================================================================================================
-      loop: "{{ Nested_NSXT.Components | dict2items }}"
+      loop: "{{ Nested_NSXT.Component | dict2items }}"
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
@@ -920,7 +920,7 @@
         record:   "{{ item.value.VMName }}"
         value:    "{{ item.value.Address.IPv6.Address }}"
         state:    "{{ LOCAL_RecordState }}"
-      loop: "{{ Nested_NSXT.Components | dict2items }}"
+      loop: "{{ Nested_NSXT.Component | dict2items }}"
       when:
         - Deploy.Setting.UseDNS == true
         - Deploy.Setting.IPv6 == true
@@ -943,7 +943,7 @@
                                                 Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
-      loop: "{{ Nested_NSXT.Components | dict2items }}"
+      loop: "{{ Nested_NSXT.Component | dict2items }}"
       when:
         - DEBUG.DisplayVariables_DNS == true
         - DEBUG.DisplayVariables == true
@@ -960,7 +960,7 @@
         record:   "{{ item.value.Address.IPv6.Address | ipaddr('revdns') }}"
         value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
-      loop: "{{ Nested_NSXT.Components | dict2items }}"
+      loop: "{{ Nested_NSXT.Component | dict2items }}"
       when:
         - Deploy.Setting.UseDNS == true
         - Deploy.Setting.IPv6 == true

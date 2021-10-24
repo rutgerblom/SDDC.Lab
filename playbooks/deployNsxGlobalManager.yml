@@ -65,20 +65,20 @@
                                      Target.Datastore: {{ Target.Datastore }}
                                       Target.VMFolder: {{ Target.VMFolder }}
 
-                                   NSX-T Manager Role: {{ Nested_NSXT.Components.GlobalManager.Deployment.Role }}
+                                   NSX-T Manager Role: {{ Nested_NSXT.Component.GlobalManager.Deployment.Role }}
                                         NSX-T Version: {{ Deploy.Software.NSXT.Version }}
-                                         NSX-T VMName: {{ Nested_NSXT.Components.GlobalManager.VMName }}
-                            NSX-T Global Manager FQDN: {{ Nested_NSXT.Components.GlobalManager.FQDN }}
+                                         NSX-T VMName: {{ Nested_NSXT.Component.GlobalManager.VMName }}
+                            NSX-T Global Manager FQDN: {{ Nested_NSXT.Component.GlobalManager.FQDN }}
                         NSX-T Global Manager SiteCode: {{ Deploy.Product.NSXT.GlobalManager.SiteCode }}
 
-                             NSX-T Global Manager VIP: {{ Nested_NSXT.Components.GlobalManager_VIP.Address.IPv4.Address }}
+                             NSX-T Global Manager VIP: {{ Nested_NSXT.Component.GlobalManager_VIP.Address.IPv4.Address }}
 
                                                 OVF Variables
                                                 =============
 
-                                   NSX-T Manager Role: {{ Nested_NSXT.Components.GlobalManager.Deployment.Role }}
-                                           NSX-T Size: {{ Nested_NSXT.Components.GlobalManager.Deployment.Size }}
-                                         NSX-T VMName: {{ Nested_NSXT.Components.GlobalManager.VMName }}
+                                   NSX-T Manager Role: {{ Nested_NSXT.Component.GlobalManager.Deployment.Role }}
+                                           NSX-T Size: {{ Nested_NSXT.Component.GlobalManager.Deployment.Size }}
+                                         NSX-T VMName: {{ Nested_NSXT.Component.GlobalManager.VMName }}
                                     Network PortGroup: {{ Target.PortGroup.Management.Name }}
 
                                            Audit User: {{ Nested_NSXT.Credential.audit.Name }}
@@ -87,9 +87,9 @@
                                              CLI User: {{ Nested_NSXT.Credential.admin.Name }}
                                          CLI Password: {{ Nested_NSXT.Credential.admin.Password }}
 
-                                 Network IPv4 Address: {{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Address }}
-                                      Network Netmask: {{ (Nested_NSXT.Components.GlobalManager.Address.IPv4.Address + '/' + Nested_NSXT.Components.GlobalManager.Address.IPv4.Prefix) | ipaddr('netmask') }}
-                                      Network Gateway: {{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Gateway }}
+                                 Network IPv4 Address: {{ Nested_NSXT.Component.GlobalManager.Address.IPv4.Address }}
+                                      Network Netmask: {{ (Nested_NSXT.Component.GlobalManager.Address.IPv4.Address + '/' + Nested_NSXT.Component.GlobalManager.Address.IPv4.Prefix) | ipaddr('netmask') }}
+                                      Network Gateway: {{ Nested_NSXT.Component.GlobalManager.Address.IPv4.Gateway }}
 
                                    Network NTP Server: {{ Common.NTP.Server1.IPv4 }}
                                    Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
@@ -105,7 +105,7 @@
 
     - name: If NSX-T Global Manager is part of this deployment, check if it is already installed
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.GlobalManager.FQDN }}
+        url: https://{{ Nested_NSXT.Component.GlobalManager.FQDN }}
         validate_certs: False
         timeout: 5
       register: nsxman_check
@@ -127,9 +127,9 @@
         folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}{% else %}{{ Target.VMFolder }}{% endif %}"         # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
         datacenter: "{{ Target.DataCenter }}"
         cluster: "{{ Target.Cluster }}"
-        name: "{{ Nested_NSXT.Components.GlobalManager.VMName }}"
+        name: "{{ Nested_NSXT.Component.GlobalManager.VMName }}"
         ovf:  "{{ Deploy.Software.NSXT.Directory }}/{{ Deploy.Software.NSXT.File }}"
-        deployment_option: "{{ Nested_NSXT.Components.GlobalManager.Deployment.Size }}"
+        deployment_option: "{{ Nested_NSXT.Component.GlobalManager.Deployment.Size }}"
         networks:
           "Network 1": "{{ Target.PortGroup.Management.Name }}"
         disk_provisioning: "{{ Common.DiskProvisioning }}"
@@ -143,17 +143,17 @@
           nsx_cli_audit_passwd_0: "{{ Nested_NSXT.Credential.audit.Password }}"
           nsx_cli_username: "{{ Nested_NSXT.Credential.admin.Name }}"
           nsx_cli_passwd_0: "{{ Nested_NSXT.Credential.admin.Password }}"
-          nsx_allowSSHRootLogin: "{{ Nested_NSXT.Components.GlobalManager.Deployment.EnableSSH }}"
-          nsx_isSSHEnabled: "{{ Nested_NSXT.Components.GlobalManager.Deployment.EnableSSH }}"
+          nsx_allowSSHRootLogin: "{{ Nested_NSXT.Component.GlobalManager.Deployment.EnableSSH }}"
+          nsx_isSSHEnabled: "{{ Nested_NSXT.Component.GlobalManager.Deployment.EnableSSH }}"
           nsx_dns1_0: "{{ Common.DNS.Server1.IPv4 }}"
           nsx_domain_0: "{{ Common.DNS.Domain }}"
-          nsx_gateway_0: "{{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Gateway }}"
-          nsx_hostname:  "{{ Nested_NSXT.Components.GlobalManager.FQDN }}"
-          nsx_ip_0:      "{{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Address }}"
-          nsx_netmask_0: "{{ (Nested_NSXT.Components.GlobalManager.Address.IPv4.Address + '/' + Nested_NSXT.Components.GlobalManager.Address.IPv4.Prefix) | ipaddr('netmask') }}"
+          nsx_gateway_0: "{{ Nested_NSXT.Component.GlobalManager.Address.IPv4.Gateway }}"
+          nsx_hostname:  "{{ Nested_NSXT.Component.GlobalManager.FQDN }}"
+          nsx_ip_0:      "{{ Nested_NSXT.Component.GlobalManager.Address.IPv4.Address }}"
+          nsx_netmask_0: "{{ (Nested_NSXT.Component.GlobalManager.Address.IPv4.Address + '/' + Nested_NSXT.Component.GlobalManager.Address.IPv4.Prefix) | ipaddr('netmask') }}"
           nsx_ntp_0:     "{{ Common.NTP.Server1.IPv4 }}"
           nsx_passwd_0:  "{{ Nested_NSXT.Credential.admin.Password }}"
-          nsx_role:      "{{ Nested_NSXT.Components.GlobalManager.Deployment.Role }}"
+          nsx_role:      "{{ Nested_NSXT.Component.GlobalManager.Deployment.Role }}"
       delegate_to: localhost
       when:
         - Deploy.Product.NSXT.Federation.Enable == true
@@ -183,7 +183,7 @@
 
     - name: Wait until the NSX-T API reports that the NSX-T Global Manager operational state is "NONE"
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.GlobalManager.FQDN | lower }}/global-manager/api/v1/gm-operational-state
+        url: https://{{ Nested_NSXT.Component.GlobalManager.FQDN | lower }}/global-manager/api/v1/gm-operational-state
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
@@ -209,11 +209,11 @@
 
     - name: Configure NSX-T Global Manager Virtual IP (VIP) Address
       nsxt_virtual_ip:
-        hostname: "{{ Nested_NSXT.Components.GlobalManager.FQDN }}"
+        hostname: "{{ Nested_NSXT.Component.GlobalManager.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: false
-        virtual_ip_address: "{{ Nested_NSXT.Components.GlobalManager_VIP.Address.IPv4.Address }}"
+        virtual_ip_address: "{{ Nested_NSXT.Component.GlobalManager_VIP.Address.IPv4.Address }}"
         state: present
       when:
         - Deploy.Product.NSXT.Federation.Enable == true
@@ -221,7 +221,7 @@
 
     - name: Wait until the NSX-T API reports that the NSX-T Global Manager operational state is "NONE" on the VIP
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.Address.IPv4.Address }}/global-manager/api/v1/gm-operational-state
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.Address.IPv4.Address }}/global-manager/api/v1/gm-operational-state
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
@@ -241,19 +241,19 @@
 
     - name: Enable and Activate NSX-T Global Manager
       nsxt_global_manager_enable_service:
-        hostname: "{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN }}"
+        hostname: "{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: False
-        display_name: "{{ Nested_NSXT.Components.GlobalManager_VIP.VMName }}"
-        id: "{{ Nested_NSXT.Components.GlobalManager_VIP.VMName }}"
+        display_name: "{{ Nested_NSXT.Component.GlobalManager_VIP.VMName }}"
+        id: "{{ Nested_NSXT.Component.GlobalManager_VIP.VMName }}"
       when:
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Wait until the NSX-T API reports that the NSX-T Global Manager operational state is "ACTIVE" on the VIP
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.Address.IPv4.Address }}/global-manager/api/v1/gm-operational-state
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.Address.IPv4.Address }}/global-manager/api/v1/gm-operational-state
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
@@ -280,7 +280,7 @@
         cluster: "{{ Target.Cluster }}"
         datacenter: "{{ Target.DataCenter }}"
         folder: "{{ Target.VMFolder }}"
-        name: "{{ Nested_NSXT.Components.GlobalManager.VMName }}"
+        name: "{{ Nested_NSXT.Component.GlobalManager.VMName }}"
         annotation: | 
                     {{ Common.Annotation }}
                     {{ Deploy.Software.NSXT.Vendor }} {{ Deploy.Software.NSXT.Product }} {{ Deploy.Software.NSXT.Version }}
@@ -296,7 +296,7 @@
 ##
     - name: Obtain NSX-T Global Manager User List
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN | lower }}/api/v1/node/users
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN | lower }}/api/v1/node/users
         validate_certs: no
         timeout: 15
         force_basic_auth: yes
@@ -313,7 +313,7 @@
 
     - name: Disable Password Expiration Of All NSX-T Users (except for 'root')
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN | lower }}/api/v1/node/users/{{ item.userid }}
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN | lower }}/api/v1/node/users/{{ item.userid }}
         validate_certs: no
         timeout: 15
         force_basic_auth: yes
@@ -336,7 +336,7 @@
 
     - name: Accept NSX-T Global Manager End User License Agreement (EULA)
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Components.GlobalManager_VIP.FQDN | lower }}/api/v1/eula/accept
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN | lower }}/api/v1/eula/accept
         validate_certs: no
         timeout: 15
         force_basic_auth: yes

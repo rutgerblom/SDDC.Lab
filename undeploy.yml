@@ -65,7 +65,7 @@
 
                                    Nested_Router.Name: {{ Nested_Router.Name }}
                                 Nested_vCenter.VMName: {{ Nested_vCenter.VMName }}
-           Nested_NSXT.Components.LocalManager.VMName: {{ Nested_NSXT.Components.LocalManager.VMName }}
+           Nested_NSXT.Component.LocalManager.VMName: {{ Nested_NSXT.Component.LocalManager.VMName }}
 
           =================================================================================================
       when:
@@ -125,7 +125,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested_NSXT.Components.LocalManager.VMName }}"
+        name: "{{ Nested_NSXT.Component.LocalManager.VMName }}"
         force: true
         state: absent
       ignore_errors: true
@@ -136,7 +136,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: no
-        name: "{{ Nested_NSXT.Components.GlobalManager.VMName }}"
+        name: "{{ Nested_NSXT.Component.GlobalManager.VMName }}"
         force: true
         state: absent
       ignore_errors: true

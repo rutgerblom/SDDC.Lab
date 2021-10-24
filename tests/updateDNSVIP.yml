@@ -107,7 +107,7 @@
 ##
 ## Process Nested_NSXT Global Manager VIP
 ##
-    - name: DEBUG -- Display IPv4 'A' record for Nested_NSXT {{ Nested_NSXT.Components.GlobalManager.FQDN_VIP }}
+    - name: DEBUG -- Display IPv4 'A' record for Nested_NSXT {{ Nested_NSXT.Component.GlobalManager.FQDN_VIP }}
       ansible.builtin.pause:
         seconds: 1
         prompt: |
@@ -118,8 +118,8 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                                  Zone: {{ Common.DNS.Domain }}
-                                               Record: {{ (Nested_NSXT.Components.GlobalManager.FQDN_VIP).split('.')[0] }}
-                                                Value: {{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Virtual }}
+                                               Record: {{ (Nested_NSXT.Component.GlobalManager.FQDN_VIP).split('.')[0] }}
+                                                Value: {{ Nested_NSXT.Component.GlobalManager.Address.IPv4.Virtual }}
 
           =================================================================================================
       when:
@@ -128,14 +128,14 @@
         - Deploy.Setting.UseDNS == true
         - Deploy.Setting.IPv4 == true
 
-    - name: IPv4 'A' record for Nested_NSXT {{ Nested_NSXT.Components.GlobalManager.FQDN_VIP }}
+    - name: IPv4 'A' record for Nested_NSXT {{ Nested_NSXT.Component.GlobalManager.FQDN_VIP }}
       community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     A
         protocol: udp
         zone:     "{{ Common.DNS.Domain }}"
-        record:   "{{ (Nested_NSXT.Components.GlobalManager.FQDN_VIP).split('.')[0] }}"
-        value:    "{{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Virtual }}"
+        record:   "{{ (Nested_NSXT.Component.GlobalManager.FQDN_VIP).split('.')[0] }}"
+        value:    "{{ Nested_NSXT.Component.GlobalManager.Address.IPv4.Virtual }}"
         state:    "{{ LOCAL_RecordState }}"
       when:
         - Deploy.Setting.UseDNS == true
@@ -143,7 +143,7 @@
 
 
 
-    - name: DEBUG -- Display IPv4 'PTR' record for Nested_NSXT {{ Nested_NSXT.Components.GlobalManager.FQDN_VIP }}
+    - name: DEBUG -- Display IPv4 'PTR' record for Nested_NSXT {{ Nested_NSXT.Component.GlobalManager.FQDN_VIP }}
       ansible.builtin.pause:
         seconds: 1
         prompt: |
@@ -154,8 +154,8 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                                  Zone: {{ IPv4_Reverse_Zone }}
-                                               Record: {{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Virtual | ipaddr('revdns') }}
-                                                Value: {{ (Nested_NSXT.Components.GlobalManager.FQDN_VIP).split('.')[0] }}.{{ Common.DNS.Domain }}.
+                                               Record: {{ Nested_NSXT.Component.GlobalManager.Address.IPv4.Virtual | ipaddr('revdns') }}
+                                                Value: {{ (Nested_NSXT.Component.GlobalManager.FQDN_VIP).split('.')[0] }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
       when:
@@ -164,14 +164,14 @@
         - Deploy.Setting.UseDNS == true
         - Deploy.Setting.IPv4 == true
 
-    - name: IPv4 'PTR' record for Nested_NSXT {{ Nested_NSXT.Components.GlobalManager.FQDN_VIP }}
+    - name: IPv4 'PTR' record for Nested_NSXT {{ Nested_NSXT.Component.GlobalManager.FQDN_VIP }}
       community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
         protocol: udp
         zone:     "{{ IPv4_Reverse_Zone }}"
-        record:   "{{ Nested_NSXT.Components.GlobalManager.Address.IPv4.Virtual | ipaddr('revdns') }}"
-        value:    "{{ (Nested_NSXT.Components.GlobalManager.FQDN_VIP).split('.')[0] }}.{{ Common.DNS.Domain }}."
+        record:   "{{ Nested_NSXT.Component.GlobalManager.Address.IPv4.Virtual | ipaddr('revdns') }}"
+        value:    "{{ (Nested_NSXT.Component.GlobalManager.FQDN_VIP).split('.')[0] }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
       when:
         - Deploy.Setting.UseDNS == true
@@ -182,7 +182,7 @@
 ##
 ## Process Nested_NSXT Local Manager VIP
 ##
-    - name: DEBUG -- Display IPv4 'A' record for Nested_NSXT {{ Nested_NSXT.Components.LocalManager.FQDN_VIP }}
+    - name: DEBUG -- Display IPv4 'A' record for Nested_NSXT {{ Nested_NSXT.Component.LocalManager.FQDN_VIP }}
       ansible.builtin.pause:
         seconds: 10
         prompt: |
@@ -193,8 +193,8 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                                  Zone: {{ Common.DNS.Domain }}
-                                               Record: {{ (Nested_NSXT.Components.LocalManager.FQDN_VIP).split('.')[0] }}
-                                                Value: {{ Nested_NSXT.Components.LocalManager.Address.IPv4.Virtual }}
+                                               Record: {{ (Nested_NSXT.Component.LocalManager.FQDN_VIP).split('.')[0] }}
+                                                Value: {{ Nested_NSXT.Component.LocalManager.Address.IPv4.Virtual }}
 
           =================================================================================================
       when:
@@ -203,14 +203,14 @@
         - Deploy.Setting.UseDNS == true
         - Deploy.Setting.IPv4 == true
 
-    - name: IPv4 'A' record for Nested_NSXT {{ Nested_NSXT.Components.LocalManager.FQDN_VIP }}
+    - name: IPv4 'A' record for Nested_NSXT {{ Nested_NSXT.Component.LocalManager.FQDN_VIP }}
       community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     A
         protocol: udp
         zone:     "{{ Common.DNS.Domain }}"
-        record:   "{{ (Nested_NSXT.Components.LocalManager.FQDN_VIP).split('.')[0] }}"
-        value:    "{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Virtual }}"
+        record:   "{{ (Nested_NSXT.Component.LocalManager.FQDN_VIP).split('.')[0] }}"
+        value:    "{{ Nested_NSXT.Component.LocalManager.Address.IPv4.Virtual }}"
         state:    "{{ LOCAL_RecordState }}"
       when:
         - Deploy.Setting.UseDNS == true
@@ -218,7 +218,7 @@
 
 
 
-    - name: DEBUG -- Display IPv4 'PTR' record for Nested_NSXT {{ Nested_NSXT.Components.LocalManager.FQDN_VIP }}
+    - name: DEBUG -- Display IPv4 'PTR' record for Nested_NSXT {{ Nested_NSXT.Component.LocalManager.FQDN_VIP }}
       ansible.builtin.pause:
         seconds: 1
         prompt: |
@@ -229,8 +229,8 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                                  Zone: {{ IPv4_Reverse_Zone }}
-                                               Record: {{ Nested_NSXT.Components.LocalManager.Address.IPv4.Virtual | ipaddr('revdns') }}
-                                                Value: {{ (Nested_NSXT.Components.LocalManager.FQDN_VIP).split('.')[0] }}.{{ Common.DNS.Domain }}.
+                                               Record: {{ Nested_NSXT.Component.LocalManager.Address.IPv4.Virtual | ipaddr('revdns') }}
+                                                Value: {{ (Nested_NSXT.Component.LocalManager.FQDN_VIP).split('.')[0] }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
       when:
@@ -239,14 +239,14 @@
         - Deploy.Setting.UseDNS == true
         - Deploy.Setting.IPv4 == true
 
-    - name: IPv4 'PTR' record for Nested_NSXT {{ Nested_NSXT.Components.LocalManager.FQDN_VIP }}
+    - name: IPv4 'PTR' record for Nested_NSXT {{ Nested_NSXT.Component.LocalManager.FQDN_VIP }}
       community.general.nsupdate:
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
         protocol: udp
         zone:     "{{ IPv4_Reverse_Zone }}"
-        record:   "{{ Nested_NSXT.Components.LocalManager.Address.IPv4.Virtual | ipaddr('revdns') }}"
-        value:    "{{ (Nested_NSXT.Components.LocalManager.FQDN_VIP).split('.')[0] }}.{{ Common.DNS.Domain }}."
+        record:   "{{ Nested_NSXT.Component.LocalManager.Address.IPv4.Virtual | ipaddr('revdns') }}"
+        value:    "{{ (Nested_NSXT.Component.LocalManager.FQDN_VIP).split('.')[0] }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
       when:
         - Deploy.Setting.UseDNS == true

@@ -1693,7 +1693,7 @@ Nested_NSXT:
     FQDN: "{{ BackupServer.SFTP.FQDN }}"
     Path: "{{ BackupServer.SFTP.Path }}"
     Port: "{{ BackupServer.SFTP.Port }}"
-  Components:
+  Component:
     GlobalManager_VIP:
       VMName: "{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-NSXT-GM"
       FQDN: "{% if Deploy.Setting.UseDNS %}{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-NSXT-GM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.7{% endif %}"
