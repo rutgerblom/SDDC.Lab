@@ -585,3 +585,13 @@
     - Connect EdgeNodes to T0-Gateway-01 interfaces
     - Assign IP addresses to the EdgeNode interfaces
     - Configure RTEP interfaces on EdgeNodes
+
+## Dev-v4.0.0 24-OCT-2021
+### Added by Rutger Blom
+  - Made vCenter 7.00U3 the default version
+  - Made ESXi 7.00U3 the default version
+  - Made vRLI 8.6.0 the default version
+  - Made DNSServer 20.04.3 the default version
+  - Changed name of dicts in config_sample.yml to conform with the project's naming standard.
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml

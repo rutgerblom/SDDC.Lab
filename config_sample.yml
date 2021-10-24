@@ -91,7 +91,7 @@ Deploy:
     DNSServer:                                            # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  Ubuntu                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: Server                                     # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '20.04.2'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '20.04.3'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-Ubuntu.conf"
       Installer: "{{ SiteCode }}-Installer-Ubuntu"
@@ -1562,7 +1562,7 @@ Nested_vCenter:
     Name: "{{ SiteCode }}-ContentLibrary"
     Description: "{{ SiteCode }} Content Library"
     Type: local
-    Datastore: "{{ Nested_Clusters.ComputeA.vsanDatastore }}"
+    Datastore: "{{ Nested_Cluster.ComputeA.vsanDatastore }}"
   Networking:
     vSwitch:
       Name: "{{ SiteCode }}-VDS"
@@ -2263,7 +2263,7 @@ Nested_NSXT:
               ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
               Hostname: "{{ SiteCode }}-T0-EdgeVM-01.{{ Common.DNS.Domain }}" 
-              Datastore: "{{ Nested_Clusters.Edge.vsanDatastore }}"
+              Datastore: "{{ Nested_Cluster.Edge.vsanDatastore }}"
               Reservations:
                 CPU:
                   Megahertz: 0                                                                  # Megahertz - Default "0"
@@ -2309,7 +2309,7 @@ Nested_NSXT:
               ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
               Hostname: "{{ SiteCode }}-T0-EdgeVM-02.{{ Common.DNS.Domain }}" 
-              Datastore: "{{ Nested_Clusters.Edge.vsanDatastore }}"
+              Datastore: "{{ Nested_Cluster.Edge.vsanDatastore }}"
               Reservations:
                 CPU:
                   Megahertz: 0                                                                  # Megahertz - Default "0"
