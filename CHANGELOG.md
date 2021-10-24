@@ -587,6 +587,7 @@
     - Configure RTEP interfaces on EdgeNodes
 
 ## Dev-v4.0.0 24-OCT-2021
+
 ### Added by Rutger Blom
   - Made vCenter 7.00U3 the default version
   - Made ESXi 7.00U3 the default version
