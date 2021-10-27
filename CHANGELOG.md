@@ -603,3 +603,5 @@
   - Added additional "Answer" variables and comments to Nested_NSXT.Question.CEIP section.  When "Answer" is set to "true", the CEIP is set accordingly.
   - Modified Global Manager EULA acceptance task to use policy API
   - Modified deployNsxLocalManager.yml to include task to automatically answer CEIP.
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml
