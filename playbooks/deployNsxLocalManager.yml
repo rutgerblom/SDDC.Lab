@@ -296,6 +296,23 @@
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Nested_NSXT.Question.EULA.Accept == true
 
+    - name: GET Current Revision Number for CEIP Config
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/api/v1/telemetry/config
+        validate_certs: no
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      when: 
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Nested_NSXT.Question.CEIP.Answer == true
+
     - name: Answer NSX-T Local Manager Customer Experience Improvement Program (CEIP) Agreement
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/api/v1/telemetry/config
@@ -309,7 +326,8 @@
         body:
           {
             "ceip_acceptance": "{{ Nested_NSXT.Question.CEIP.Accept }}",
-            "schedule_enabled": "{{ Nested_NSXT.Question.CEIP.Schedule_Enabled }}"
+            "schedule_enabled": "{{ Nested_NSXT.Question.CEIP.Schedule_Enabled }}",
+            "_revision": "{{ result.json._revision }}"
           }
         return_content: yes
         status_code: 200
@@ -317,7 +335,24 @@
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Nested_NSXT.Question.CEIP.Answer == true
 
-    - name: Do Not Display NSX-T Local Manager Customer Experience Improvement Program (CEIP) Again
+    - name: GET Current Revision Number for CEIP Agreement
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/api/v1/telemetry/agreement
+        validate_certs: no
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      when: 
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Nested_NSXT.Question.CEIP.Answer == true
+
+    - name: Configure the NSX-T Local Manager Customer Experience Improvement Program (CEIP) to not display again
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/api/v1/telemetry/agreement
         validate_certs: no
@@ -332,7 +367,8 @@
             "telemetry_agreement_displayed": true,
             "resource_type": "TelemetryAgreement",
             "id": "TelemetryAgreementIdentifier",
-            "display_name": "TelemetryAgreementIdentifier"
+            "display_name": "TelemetryAgreementIdentifier",
+            "_revision": "{{ result.json._revision }}"
           }
         return_content: yes
         status_code: 200
