@@ -183,7 +183,7 @@
 
     - name: Wait until the NSX-T API reports that the NSX-T Global Manager operational state is "NONE"
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager.FQDN | lower }}/global-manager/api/v1/gm-operational-state
+        url: https://{{ Nested_NSXT.Component.GlobalManager.FQDN }}/global-manager/api/v1/gm-operational-state
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
@@ -296,7 +296,7 @@
 ##
     - name: Obtain NSX-T Global Manager User List
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN | lower }}/api/v1/node/users
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/api/v1/node/users
         validate_certs: no
         timeout: 15
         force_basic_auth: yes
@@ -313,7 +313,7 @@
 
     - name: Disable Password Expiration Of All NSX-T Users (except for 'root')
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN | lower }}/api/v1/node/users/{{ item.userid }}
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/api/v1/node/users/{{ item.userid }}
         validate_certs: no
         timeout: 15
         force_basic_auth: yes
@@ -336,7 +336,7 @@
 
     - name: Accept NSX-T Global Manager End User License Agreement (EULA)
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN | lower }}/api/v1/eula/accept
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/policy/api/v1/eula/accept
         validate_certs: no
         timeout: 15
         force_basic_auth: yes

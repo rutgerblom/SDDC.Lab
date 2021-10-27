@@ -277,12 +277,12 @@
         - item.userid > 0
 
 ##
-## Finish things up by dealing with the EULA
+## Finish things up by dealing with the EULA and CEIP
 ##
 
     - name: Accept NSX-T Local Manager End User License Agreement (EULA)
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.LocalManager.FQDN | lower }}/api/v1/eula/accept
+        url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/api/v1/eula/accept
         validate_certs: no
         timeout: 15
         force_basic_auth: yes
@@ -295,3 +295,47 @@
       when: 
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Nested_NSXT.Question.EULA.Accept == true
+
+    - name: Answer NSX-T Local Manager Customer Experience Improvement Program (CEIP) Agreement
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/api/v1/telemetry/config
+        validate_certs: no
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: PUT
+        body_format: json
+        body:
+          {
+            "ceip_acceptance": "{{ Nested_NSXT.Question.CEIP.Accept }}",
+            "schedule_enabled": "{{ Nested_NSXT.Question.CEIP.Schedule_Enabled }}"
+          }
+        return_content: yes
+        status_code: 200
+      when: 
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Nested_NSXT.Question.CEIP.Answer == true
+
+    - name: Do Not Display NSX-T Local Manager Customer Experience Improvement Program (CEIP) Again
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/api/v1/telemetry/agreement
+        validate_certs: no
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: PUT
+        body_format: json
+        body:
+          {
+            "telemetry_agreement_displayed": true,
+            "resource_type": "TelemetryAgreement",
+            "id": "TelemetryAgreementIdentifier",
+            "display_name": "TelemetryAgreementIdentifier"
+          }
+        return_content: yes
+        status_code: 200
+      when: 
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Nested_NSXT.Question.CEIP.Answer == true

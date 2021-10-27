@@ -596,3 +596,10 @@
   - Changed name of dicts in config_sample.yml to comply with the project's naming standard.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
+
+## Dev-v4.0.0 26-OCT-2021
+
+### Added by Luis Chanu
+  - Added additional "Answer" variables and comments to Nested_NSXT.Question.CEIP section.  When "Answer" is set to "true", the CEIP is set accordingly.
+  - Modified Global Manager EULA acceptance task to use policy API
+  - Modified deployNsxLocalManager.yml to include task to automatically answer CEIP.
