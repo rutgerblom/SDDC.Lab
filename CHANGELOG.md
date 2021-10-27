@@ -605,3 +605,9 @@
   - Modified deployNsxLocalManager.yml to include task to automatically answer CEIP.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
+
+## Dev-v4.0.0 27-OCT-2021
+
+### Added by Luis Chanu
+  - In federateNsxLocalManager.yml, doubled length of time we'll loop to see if Global Manager is ready from 1 hour to 2 hours.
+  - Updated deployNsxLocalManager.yml to obtain current _revision number for CEIP config and telemetry settings

@@ -214,7 +214,7 @@
         status_code: 200
       register: result
       until: result.status == 200 and result.json.detailed_cluster_status.overall_status == "STABLE"
-      retries: 60
+      retries: 120
       delay: 60
       when:
         - Deploy.Product.NSXT.Federation.Enable == true
