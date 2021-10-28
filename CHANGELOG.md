@@ -611,3 +611,5 @@
 ### Added by Luis Chanu
   - In federateNsxLocalManager.yml, doubled length of time we'll loop to see if Global Manager is ready from 1 hour to 2 hours.
   - Updated deployNsxLocalManager.yml to obtain current _revision number for CEIP config and telemetry settings
+  - To determine if Pod-Router VM is actually powered off, replaced timer with module to query VM state
+  
