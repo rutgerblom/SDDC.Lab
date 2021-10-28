@@ -435,10 +435,21 @@
         - status is failed
         - Deploy.Software.Router.Version == "Latest"
 
-    - name: Wait 10 seconds for the VyOS VM to shut down.
-      ansible.builtin.pause: 
-        seconds: 10
-      when: 
+    - name: Wait for Pod-Router to be Powered Off
+      community.vmware.vmware_guest_info:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        datacenter: "{{ Target.DataCenter }}"
+        name: "{{ Nested_Router.Name }}"
+        validate_certs: no
+        tags: False
+        tag_details: False
+      register: result
+      until: result.instance.hw_power_status == "poweredOff"
+      retries: 10
+      delay: 5
+      when:
         - Deploy.Product.Router.Deploy == true
         - status is failed
         - Deploy.Software.Router.Version == "Latest"

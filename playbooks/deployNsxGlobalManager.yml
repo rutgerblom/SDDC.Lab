@@ -336,7 +336,8 @@
 
     - name: Accept NSX-T Global Manager End User License Agreement (EULA)
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/policy/api/v1/eula/accept
+### Do NOT convert the URL below to /policy/api/v1/eula/accept, as it does not work, even though it's listed in the Global Manager REST API documentation as the proper API call ###
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/api/v1/eula/accept
         validate_certs: no
         timeout: 15
         force_basic_auth: yes
