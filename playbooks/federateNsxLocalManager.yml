@@ -350,7 +350,7 @@
       register: result
       until: result.status == 200 and result.json.status == "ALLOWED"
       retries: 60
-      delay: 10
+      delay: 30
       when:
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
