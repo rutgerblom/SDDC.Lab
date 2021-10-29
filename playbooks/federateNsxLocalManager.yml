@@ -269,19 +269,21 @@
 ##
 ## Determine NSX-T Federation On-Boarding Preferences
 ##
-    - name: Determinte NSX-T Federation Import - Global Manager Site [Import]
+    - name: Determinte NSX-T Federation Import - Global Manager Site [Import] - IMPORT ALL SITES
       ansible.builtin.set_fact:
         ignore_import: false
       when:
         - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+#        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
-    - name: Determinte NSX-T Federation Import - Non-Global Manager Site [Do Not Import]
-      ansible.builtin.set_fact:
-        ignore_import: true
-      when:
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+#
+#    - name: Determinte NSX-T Federation Import - Non-Global Manager Site [Do Not Import]
+#      ansible.builtin.set_fact:
+#        ignore_import: true
+#      when:
+#        - Deploy.Product.NSXT.Federation.Enable == true
+#        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+#
 
     - name: Set on-boarding preferences for NSX-T Local Manager objects into NSX-T Global Manager for the on-boarding process
       ansible.builtin.uri:
