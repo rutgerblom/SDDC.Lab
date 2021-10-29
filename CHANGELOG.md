@@ -617,5 +617,6 @@
 
 ### Added by Luis Chanu
   - The "SEG-Example-Complicated-VLAN-Segment" segment was deleted from sample_config.yml to remove collisions during Federation onboarding. 
+  - Changed few tasks in deployNsxGlobalManager.yml to use FQDN instead of IPv4 address
   - The following files were updated so please update your non-sample files:
     - config_sample.yml

@@ -71,7 +71,8 @@
                             NSX-T Global Manager FQDN: {{ Nested_NSXT.Component.GlobalManager.FQDN }}
                         NSX-T Global Manager SiteCode: {{ Deploy.Product.NSXT.GlobalManager.SiteCode }}
 
-                             NSX-T Global Manager VIP: {{ Nested_NSXT.Component.GlobalManager_VIP.Address.IPv4.Address }}
+                      NSX-T Global Manager VIP (FQDN): {{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}
+                      NSX-T Global Manager VIP (IPv4): {{ Nested_NSXT.Component.GlobalManager_VIP.Address.IPv4.Address }}
 
                                                 OVF Variables
                                                 =============
@@ -201,27 +202,29 @@
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
-    - name: Wait 10 seconds before attempting to set NSX-T Global Manager VIP
-      ansible.builtin.pause: seconds=10
-      when: 
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
-
     - name: Configure NSX-T Global Manager Virtual IP (VIP) Address
-      nsxt_virtual_ip:
-        hostname: "{{ Nested_NSXT.Component.GlobalManager.FQDN }}"
-        username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: false
-        virtual_ip_address: "{{ Nested_NSXT.Component.GlobalManager_VIP.Address.IPv4.Address }}"
-        state: present
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager.FQDN }}/api/v1/cluster/api-virtual-ip?action=set_virtual_ip&ip_address={{ Nested_NSXT.Component.GlobalManager_VIP.Address.IPv4.Address }}
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: POST
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.ip_address == Nested_NSXT.Component.GlobalManager_VIP.Address.IPv4.Address
+      retries: 10
+      delay: 60
       when:
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Wait until the NSX-T API reports that the NSX-T Global Manager operational state is "NONE" on the VIP
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.Address.IPv4.Address }}/global-manager/api/v1/gm-operational-state
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/gm-operational-state
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
@@ -253,7 +256,7 @@
 
     - name: Wait until the NSX-T API reports that the NSX-T Global Manager operational state is "ACTIVE" on the VIP
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.Address.IPv4.Address }}/global-manager/api/v1/gm-operational-state
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/gm-operational-state
         validate_certs: no
         timeout: 5
         force_basic_auth: yes
