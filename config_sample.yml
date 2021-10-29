@@ -2097,26 +2097,6 @@ Nested_NSXT:
         Tags:
           - Tag: Auto-Created
             Scope: SDDC.Lab
-      - Name: SEG-Example-Complicated-VLAN-Segment
-        AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
-        Description: Example Test Segment with many VLANs and Tags
-        TransportZone: TZ-VLAN
-        ReplicationMode: SOURCE                                                                 # ReplicationMode can be "MTEP" or "SOURCE"
-        EdgeTransit: false                                                                      # Indicates if segment is a Edge Transit Segment for EdgeVMs.
-        VLANS:
-          - "{{ Net.NSXEdgeUplink2.VLAN }}"
-          - "{{ Net.NSXEdgeUplink1.VLAN }}"
-          - 100
-          - 101
-          - 102
-          - 103
-          - 104
-          - 105-110
-        Tags:
-          - Tag: Auto-Created
-            Scope: SDDC.Lab
-          - Tag: Mickey
-            Scope: Disney
       - Name: SEG-Example-Overlay-Without-VLANS
         AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
         Description: Example Overlay Segment without VLAN

@@ -613,3 +613,9 @@
   - Updated deployNsxLocalManager.yml to obtain current _revision number for CEIP config and telemetry settings
   - To determine if Pod-Router VM is actually powered off, replaced timer with module to query VM state
   
+## Dev-v4.0.0 28-OCT-2021
+
+### Added by Luis Chanu
+  - The "SEG-Example-Complicated-VLAN-Segment" segment was deleted from sample_config.yml to remove collisions during Federation onboarding. 
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml
