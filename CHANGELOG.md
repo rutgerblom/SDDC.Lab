@@ -618,5 +618,8 @@
 ### Added by Luis Chanu
   - The "SEG-Example-Complicated-VLAN-Segment" segment was deleted from sample_config.yml to remove collisions during Federation onboarding. 
   - Changed few tasks in deployNsxGlobalManager.yml to use FQDN instead of IPv4 address
+  - Removed "lower" filters from deployNsxLocalManager.yml playbook
+  - Modified deployNsxGlobalManager and deployNsxLocalManager playbooks to use NSX-T REST API with a verification loop to configure VIPs rather than NSX-T Ansible Module
+  - Modified deployNsxLocalManager to use NSX-T LM VIP rather than appliance IP's after VIP is configured
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
