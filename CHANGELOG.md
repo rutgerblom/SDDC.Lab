@@ -626,3 +626,16 @@
     - config_sample.yml
     - software_sample.yml
     - templates_sample.yml
+
+## Dev-v4.0.0 31-OCT-2021
+
+### Added by Luis Chanu
+  - Created tests/TestFailure.yml playbook to test various failure handling scenarios
+  - Many changes to federateNsxLocalManager.yml playbook:
+    - Identified race condition, and modified various tasks to address it
+    - Identified onboarding issue if multiple simultaneous Pods are being deployed, as only one NSX-T Location can be onboarded at a time.  Resolved by adding logic so that sites can onboard only if NSX-T is accepting onboarding, else the sites keep waiting.
+  - Successfully tested NSX-T Federation deployment with three (3) sites.
+  - Current Federation Limitations with this project (Solution is to do them manually):
+    - Edge Node RTEP configuration is not performed (Still researching REST APIs)
+    - BGP is not configured on the Stretched Tier-0 Gateway
+    - Stretched Tier-0 Gateway is not streteched across sites beyond the Site where the Global Manager runs
