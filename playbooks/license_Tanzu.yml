@@ -159,7 +159,7 @@
         state: present
       loop: "{{ License.VMware.Tanzu.Licenses }}"
       ignore_errors: yes                                                             # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
-      no_log: false
+      no_log: true
       when: 
         - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy == true
