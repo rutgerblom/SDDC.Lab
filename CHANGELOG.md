@@ -639,3 +639,10 @@
     - Edge Node RTEP configuration is not performed (Still researching REST APIs)
     - BGP is not configured on the Stretched Tier-0 Gateway
     - Stretched Tier-0 Gateway is not streteched across sites beyond the Site where the Global Manager runs
+
+## Dev-v4.0.0 03-NOV-2021
+
+### Added by Luis Chanu
+  - Added NSX-T v3.1.3.3 to software_sample.yml file
+  - The following files were updated so please update your non-sample files:
+    - software_sample.yml
