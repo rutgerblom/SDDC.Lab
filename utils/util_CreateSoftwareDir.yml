@@ -17,6 +17,7 @@
         state: directory
         mode: "0775"
       loop: "{{ Software.VMware.vCenter.Installers | dict2items }}"
+      when: Software.VMware.vCenter.Installers is defined
 
     - name: Create VMware ESXi directories
       file:
@@ -24,6 +25,7 @@
         state: directory
         mode: "0775"
       loop: "{{ Software.VMware.ESXi.Installers | dict2items }}"
+      when: Software.VMware.ESXi.Installers is defined
 
     - name: Create VMware NSXT directories
       file:
@@ -31,6 +33,7 @@
         state: directory
         mode: "0775"
       loop: "{{ Software.VMware.NSXT.Installers | dict2items }}"
+      when: Software.VMware.NSXT.Installers is defined
 
     - name: Create VMware vRLI directories
       file:
@@ -38,6 +41,7 @@
         state: directory
         mode: "0775"
       loop: "{{ Software.VMware.vRLI.Installers | dict2items }}"
+      when: Software.VMware.vRLI.Installers is defined
 
     - name: Create Ubuntu directories
       file:
@@ -45,6 +49,7 @@
         state: directory
         mode: "0775"
       loop: "{{ Software.Ubuntu.Server.Installers | dict2items }}"
+      when: Software.Ubuntu.Server.Installers is defined
 
 
 ##
@@ -56,4 +61,4 @@
         state: directory
         mode: "0775"
       loop: "{{ Software.VyOS.Router.Installers | dict2items }}"
-
+      when: Software.VyOS.Router.Installers is defined
