@@ -280,6 +280,8 @@
         return_content: yes
         status_code: 200
       loop: "{{ UserList.json.results }}"
+      loop_control:
+        pause: 5
       when: 
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - item.userid > 0
