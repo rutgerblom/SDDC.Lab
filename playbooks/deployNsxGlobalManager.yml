@@ -314,7 +314,7 @@
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
-    - name: Disable Password Expiration Of All NSX-T Users (except for 'root')
+    - name: Disable Password Expiration Of All NSX-T Users
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/api/v1/node/users/{{ item.userid }}
         validate_certs: no
@@ -333,7 +333,6 @@
       when:
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
-        - item.userid > 0
 
 ##
 ## Finish things up by dealing with the EULA
