@@ -266,7 +266,7 @@
       when: 
         - Deploy.Product.NSXT.LocalManager.Deploy == true
 
-    - name: Disable Password Expiration Of All NSX-T Users (except for 'root')
+    - name: Disable Password Expiration Of All NSX-T Users
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/node/users/{{ item.userid }}
         validate_certs: no
@@ -284,7 +284,6 @@
         pause: 5
       when: 
         - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - item.userid > 0
 
 ##
 ## Finish things up by dealing with the EULA and CEIP
