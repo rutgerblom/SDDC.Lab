@@ -200,7 +200,7 @@
 ##
     - name: Deploy and configure Edge Transport Nodes
       nsxt_transport_nodes:
-        hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: False
@@ -229,7 +229,7 @@
 
     - name: Wait until the NSX-T API reports that no Edge Transport Nodes are in "PENDING" state
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/api/v1/transport-nodes/state?status=PENDING
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes/state?status=PENDING
         validate_certs: no
         timeout: 10
         force_basic_auth: yes
@@ -250,7 +250,7 @@
 
     - name: Wait until the NSX-T API reports that no Edge Transport Nodes are in "IN_PROGRESS" state
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/api/v1/transport-nodes/state?status=IN_PROGRESS
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes/state?status=IN_PROGRESS
         validate_certs: no
         timeout: 10
         force_basic_auth: yes
