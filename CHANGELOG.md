@@ -646,3 +646,21 @@
   - Added NSX-T v3.1.3.3 to software_sample.yml file
   - The following files were updated so please update your non-sample files:
     - software_sample.yml
+
+## Dev-v4.0.0 08-NOV-2021
+
+### Added by Luis Chanu
+  - Added check to make sure product variables were defined in utils/createSoftwareDir.yml playbook
+  - Added check for IPv4 in table header to match table data in templates/Pod_Doc.j2
+  - Removed extra ":5480" from vCenter Server CLI URI's in templates/Pod_Doc.j2
+  - Added "loop_control" section to disabling user password expiration setting on Local and Global manager to address a potential timeout issue
+  - Corrected issue where Edge nodes were not setting 'audit' user password
+  - Added Named Teaming Policies to Edge-Uplink-Profile to support pinning to ToR-A and ToR-B
+  - Modfied TZ-Edge to take advantage of the new ToR-A and ToR-B named teaming policies
+  - Added filter in deployNsxLocalManager.yml and deployNsxGlobalManager.yml to force 'Deployment Size' to lower as a safety net in case user accidentally changes case.  OVFTool requires Size to be in lower case.
+  - Added 'upper' filter in templates/vars_NSXT_EdgeTransportNodes.j2 to ensure FormFactor sizing is always in upper case, as required by the NSX-T API.
+  - Modified createNsxEdgeTn.yml to disable password expiration for all users on NSX-T Edges
+  - Modified deployNsxLocalManager.yml and deployNsxGlobalManager.yml to also disable password expiration for 'root' user
+  - Updated software versions in config_sample.yml for NSX-T and vCenter Server to v3.1.3.3 and v7.00U3a, respectively.
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml
