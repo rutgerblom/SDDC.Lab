@@ -52,6 +52,11 @@
 
 
 # Deploy NSX-T
+- ansible.builtin.import_playbook: playbooks/deployNsxGlobalManager.yml
+  when: 
+    - Deploy.Product.NSXT.Federation.Enable == true
+    - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+
 - ansible.builtin.import_playbook: playbooks/deployNsxLocalManager.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy == true
@@ -59,11 +64,6 @@
 - ansible.builtin.import_playbook: playbooks/license_NSXT-LM.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy == true
-
-- ansible.builtin.import_playbook: playbooks/deployNsxGlobalManager.yml
-  when: 
-    - Deploy.Product.NSXT.Federation.Enable == true
-    - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
 - ansible.builtin.import_playbook: playbooks/registerNsxComputeManager.yml
 

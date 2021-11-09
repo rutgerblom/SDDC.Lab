@@ -122,7 +122,7 @@
         cluster: "{{ Target.Cluster }}"
         name: "{{ Nested_NSXT.Component.LocalManager.VMName }}"
         ovf:  "{{ Deploy.Software.NSXT.Directory }}/{{ Deploy.Software.NSXT.File }}"
-        deployment_option: "{{ Nested_NSXT.Component.LocalManager.Deployment.Size }}"
+        deployment_option: "{{ Nested_NSXT.Component.LocalManager.Deployment.Size | lower }}"                                                                # Deployment Size must be in lower case when deploying via OVFTool
         networks:
           "Network 1": "{{ Target.PortGroup.Management.Name }}"
         disk_provisioning: "{{ Common.DiskProvisioning }}"
@@ -266,7 +266,7 @@
       when: 
         - Deploy.Product.NSXT.LocalManager.Deploy == true
 
-    - name: Disable Password Expiration Of All NSX-T Users (except for 'root')
+    - name: Disable Password Expiration Of All NSX-T Users
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/node/users/{{ item.userid }}
         validate_certs: no
@@ -279,10 +279,13 @@
         body: '{ "password_change_frequency": 0 }'
         return_content: yes
         status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 10
+      delay: 3
       loop: "{{ UserList.json.results }}"
       when: 
         - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - item.userid > 0
 
 ##
 ## Finish things up by dealing with the EULA and CEIP

@@ -111,7 +111,9 @@ tr:nth-child(even) {
     <th>Description</th>
     <th>Version</th>
     <th>Link (FQDN)</th>
+{% if Deploy.Setting.IPv4 %}
     <th>Link (IPv4)</th>
+{% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}  
     <th>Link (IPv6)</th>
 {% endif %}{# Deploy.Setting.IPv6 #}
@@ -169,10 +171,10 @@ tr:nth-child(even) {
     <td>{{ Deploy.Software.vCenter.Version }}</td>
     <td><a href="ssh://root@{{ Nested_vCenter.FQDN }}">ssh://root@{{ Nested_vCenter.FQDN }}</a></td>
 {% if Deploy.Setting.IPv4 %}
-    <td><a href="ssh://root@{{ Nested_vCenter.Address.IPv4.Address }}:5480">ssh://root@{{ Nested_vCenter.Address.IPv4.Address }}:5480</a></td>
+    <td><a href="ssh://root@{{ Nested_vCenter.Address.IPv4.Address }}">ssh://root@{{ Nested_vCenter.Address.IPv4.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
-    <td><a href="ssh://root@{{ Nested_vCenter.Address.IPv6.Address }}:5480">ssh://root@{{ Nested_vCenter.Address.IPv6.Address }}:5480</a></td>
+    <td><a href="ssh://root@{{ Nested_vCenter.Address.IPv6.Address }}">ssh://root@{{ Nested_vCenter.Address.IPv6.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv6 #}  
   </tr>
 {% for Host in Nested_ESXi.Host %}

@@ -75,7 +75,7 @@
         url: "https://{{ Nested_vCenter.FQDN }}/rest/com/vmware/cis/session"
         headers: "{ 'vmware-use-header-authn':'test' }"
         method: POST
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
         force_basic_auth: yes
         url_username: "{{ Nested_vCenter.User }}"
@@ -101,7 +101,7 @@
         url: "https://{{ Nested_vCenter.FQDN }}/rest/vcenter/cluster?filter.names={{ Nested_NSXT.System.Fabric.Nodes.vSphereEdgeCluster }}"
         headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
         method: GET
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
         force_basic_auth: yes
         url_username: "{{ Nested_vCenter.User }}"
@@ -130,7 +130,7 @@
         url: "https://{{ Nested_vCenter.FQDN }}/rest/vcenter/host?filter.clusters={{ Cluster_ID }}"
         headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
         method: GET
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
         force_basic_auth: yes
         url_username: "{{ Nested_vCenter.User }}"
@@ -200,10 +200,10 @@
 ##
     - name: Deploy and configure Edge Transport Nodes
       nsxt_transport_nodes:
-        hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: False
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         display_name: "{{ item.display_name }}"
         description: "{{ item.description }}"
         host_switch_spec:
@@ -229,8 +229,8 @@
 
     - name: Wait until the NSX-T API reports that no Edge Transport Nodes are in "PENDING" state
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/api/v1/transport-nodes/state?status=PENDING
-        validate_certs: no
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes/state?status=PENDING
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -250,8 +250,8 @@
 
     - name: Wait until the NSX-T API reports that no Edge Transport Nodes are in "IN_PROGRESS" state
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/api/v1/transport-nodes/state?status=IN_PROGRESS
-        validate_certs: no
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes/state?status=IN_PROGRESS
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -268,3 +268,126 @@
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
         - var_EdgeTransportNodes != ""
+
+
+##
+## Disable Password Expiration for all users on NSX-T Edge VMs
+##
+    - name: Obtain list of Edge Nodes from the Local Manager
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes?node_types=EdgeNode
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      when: 
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: DEBUG -- Display EdgeVM result
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =============================== Display EdgeVM result Variable ==================================
+
+          Quantity: {{ result | length }}
+
+          result:
+            {{ result | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Create list of EdgeVM Node IDs
+      ansible.builtin.set_fact:
+        EdgeNodeIDs: "{{ EdgeNodeIDs | default([]) + [ item.node_id ] }}"
+      loop: "{{ result.json.results }}"
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: DEBUG -- Display EdgeNodeIDs variable
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display EdgeNodeIDs Variable ===================================
+
+          Quantity: {{ EdgeNodeIDs | length }}
+
+          EdgeNodeIDs:
+            {{ EdgeNodeIDs | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Obtain NSX-T Local Manager User List from first EdgeVM
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes/{{ EdgeNodeIDs[0] }}/node/users
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: UserList
+      until: UserList.status == 200
+      when: 
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: DEBUG -- Display UserList variable
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================== Display UserList Variable ====================================
+
+          Quantity: {{ UserList | length }}
+
+          UserList:
+            {{ UserList | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Loop through each NSX-T Edge, disabling password expiration for each user on that Edge node
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes/{{ item.0 }}/node/users/{{ item.1.userid }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: PUT
+        body_format: json
+        body: '{ "password_change_frequency": 0 }'
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 10
+      delay: 3
+      with_nested:
+        - "{{ EdgeNodeIDs }}"
+        - "{{ UserList.json.results }}"
+      when: 
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
