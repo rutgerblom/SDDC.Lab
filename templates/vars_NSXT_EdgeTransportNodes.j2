@@ -50,6 +50,8 @@
         node_user_settings:
           cli_password: "{{ EdgeTransportNode.Deployment.CLIPassword }}"
           root_password: "{{ EdgeTransportNode.Deployment.RootPassword }}"
+          audit_username: "{{ EdgeTransportNode.Deployment.AuditUsername }}"
+          audit_password: "{{ EdgeTransportNode.Deployment.AuditPassword }}"
         vm_deployment_config:
           enable_ssh: "{{ EdgeTransportNode.Deployment.EnableSSH }}"
           allow_ssh_root_login: "{{ EdgeTransportNode.Deployment.AllowRootSSH }}"
@@ -68,7 +70,7 @@
           placement_type: VsphereDeploymentConfig
           vc_name: "{{ EdgeTransportNode.Deployment.vCenterName }}"
           vc_username: "{{ EdgeTransportNode.Deployment.vCenterUser }}"
-          vc_password: "{{ EdgeTransportNode.Deployment.vCenterPassword }}"        
+          vc_password: "{{ EdgeTransportNode.Deployment.vCenterPassword }}"
           data_networks:
 {% for DataPortGroup in EdgeTransportNode.Deployment.DataPortGroups %}
           - "{{ DataPortGroup.Name }}"

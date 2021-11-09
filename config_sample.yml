@@ -2129,7 +2129,7 @@ Nested_NSXT:
           Description: Edge Cluster Peering Segments
           Switch: NVDS-1
           SetAsDefault: false
-          TeamingPolicies: []
+          TeamingPolicies: [ ToR-A, ToR-B ]
         TZ-Overlay:
           Type: OVERLAY
           Description: GEVEVE Overlay Transport Zone
@@ -2163,6 +2163,17 @@ Nested_NSXT:
                   Type: PNIC
                 - Name: uplink-2
                   Type: PNIC
+            NamedTeamings:
+              - Name: ToR-A
+                Policy: FAILOVER_ORDER
+                ActiveUplinks:
+                  - Name: uplink-1
+                    Type: PNIC
+              - Name: ToR-B
+                Policy: FAILOVER_ORDER
+                ActiveUplinks:
+                  - Name: uplink-2
+                    Type: PNIC
           - Name: Sample-Uplink-Profile
             Description: Sample Uplink Profile
             Transport:
@@ -2234,6 +2245,8 @@ Nested_NSXT:
               AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
               CLIPassword:  "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
               RootPassword: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+              AuditUsername: audit
+              AuditPassword: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
               vCenterName:  "{{ Nested_vCenter.VMName }}"
               vCenterUser:  "{{ Nested_vCenter.User }}"
               vCenterPassword: "{{ Nested_vCenter.Password }}"
@@ -2280,6 +2293,8 @@ Nested_NSXT:
               AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
               CLIPassword:  "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
               RootPassword: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+              AuditUsername: audit
+              AuditPassword: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
               vCenterName:  "{{ Nested_vCenter.VMName }}"
               vCenterUser:  "{{ Nested_vCenter.User }}"
               vCenterPassword: "{{ Nested_vCenter.Password }}"
