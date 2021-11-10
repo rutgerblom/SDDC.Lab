@@ -130,7 +130,7 @@
         cluster: "{{ Target.Cluster }}"
         name: "{{ Nested_NSXT.Component.GlobalManager.VMName }}"
         ovf:  "{{ Deploy.Software.NSXT.Directory }}/{{ Deploy.Software.NSXT.File }}"
-        deployment_option: "{{ Nested_NSXT.Component.GlobalManager.Deployment.Size }}"
+        deployment_option: "{{ Nested_NSXT.Component.GlobalManager.Deployment.Size | lower }}"                                                               # Deployment Size must be in lower case when deploying via OVFTool
         networks:
           "Network 1": "{{ Target.PortGroup.Management.Name }}"
         disk_provisioning: "{{ Common.DiskProvisioning }}"
