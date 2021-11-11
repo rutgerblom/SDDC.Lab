@@ -1868,9 +1868,9 @@ Nested_NSXT:
                 MaxHopLimit: 1
                 Password: ""
           Interfaces:
-            - Name: "{{ SiteCode }}-T0-EdgeVM-01-1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
+            - Name: "{{ SiteCode }}-T0-EdgeVM-01-1_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink1.VLAN|int) }}"
               Description: "{{ SiteCode }}-T0-EdgeVM-01 Uplink 1"
-              SegmentName: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
+              SegmentName: "SEG-T0-Edge-Uplink1_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink1.VLAN|int) }}"
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
               Tags:
@@ -1884,9 +1884,9 @@ Nested_NSXT:
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
                 - Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(2) }}"
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
-            - Name: "{{ SiteCode }}-T0-EdgeVM-01-2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
+            - Name: "{{ SiteCode }}-T0-EdgeVM-01-2_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink2.VLAN|int) }}"
               Description: "{{ SiteCode }}-T0-EdgeVM-01 Uplink 2"
-              SegmentName: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
+              SegmentName: "SEG-T0-Edge-Uplink2_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink2.VLAN|int) }}"
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
               Tags:
@@ -1900,9 +1900,9 @@ Nested_NSXT:
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
                 - Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(2) }}"
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
-            - Name: "{{ SiteCode }}-T0-EdgeVM-02-1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
+            - Name: "{{ SiteCode }}-T0-EdgeVM-02-1_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink1.VLAN|int) }}"
               Description: "{{ SiteCode }}-T0-EdgeVM-02 Uplink 1"
-              SegmentName: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
+              SegmentName: "SEG-T0-Edge-Uplink1_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink1.VLAN|int) }}"
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
               Tags:
@@ -1916,9 +1916,9 @@ Nested_NSXT:
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
                 - Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(3) }}"
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
-            - Name: "{{ SiteCode }}-T0-EdgeVM-02-2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
+            - Name: "{{ SiteCode }}-T0-EdgeVM-02-2_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink2.VLAN|int) }}"
               Description: "{{ SiteCode }}-T0-EdgeVM-02 Uplink 2"
-              SegmentName: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
+              SegmentName: "SEG-T0-Edge-Uplink2_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink2.VLAN|int) }}"
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
               Tags:
@@ -2027,7 +2027,7 @@ Nested_NSXT:
 ## are only created within NSX-T, but not connected to any Tier-0 or Tier-1 Gateway.  Subnets are only added to Overlay segments.
 ##
     Segments:
-      - Name: "SEG-T0-Edge-Uplink1_VLAN-{{ Net.NSXEdgeUplink1.VLAN }}"
+      - Name: "SEG-T0-Edge-Uplink1_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink1.VLAN|int) }}"
         AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
         Description: NSX T0-Edge Uplink 1
         TransportZone: TZ-Edge
@@ -2038,7 +2038,7 @@ Nested_NSXT:
         Tags:
           - Tag: Auto-Created
             Scope: SDDC.Lab
-      - Name: "SEG-T0-Edge-Uplink2_VLAN-{{ Net.NSXEdgeUplink2.VLAN }}"
+      - Name: "SEG-T0-Edge-Uplink2_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink2.VLAN|int) }}"
         AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
         Description: NSX T0-Edge Uplink 2
         TransportZone: TZ-Edge
