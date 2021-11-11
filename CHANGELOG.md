@@ -664,3 +664,10 @@
   - Updated software versions in config_sample.yml for NSX-T and vCenter Server to v3.1.3.3 and v7.00U3a, respectively.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
+
+## Dev-v4.0.0 11-NOV-2021
+
+### Added by Luis Chanu
+  - Modified VLAN Segments in config_sample.yml to use 3-Digit VLAN IDs so segments sort properly in GUI when Federated
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml
