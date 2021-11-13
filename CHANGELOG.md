@@ -671,3 +671,13 @@
   - Modified VLAN Segments in config_sample.yml to use 3-Digit VLAN IDs so segments sort properly in GUI when Federated
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
+
+## Dev-v4.0.0 13-NOV-2021
+
+### Added by Rutger Blom
+  - Added vCenter Server v7.0 Update 3B to software repository
+  - Added ESXi v7.0 Update 3B to software repository
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml
+    - software_sample.yml
+    - templates_sample.yml
