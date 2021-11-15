@@ -2226,8 +2226,8 @@ Nested_NSXT:
               - Name: NVDS-1
                 Mode: STANDARD
                 TransportZones:
-                  - Name: TZ-Edge
-                  - Name: TZ-Overlay
+                  - TZ-Edge
+                  - TZ-Overlay
                 UplinkProfile:
                   Name: Edge-Uplink-Profile
                 IPPool:
@@ -2251,8 +2251,8 @@ Nested_NSXT:
               vCenterUser:  "{{ Nested_vCenter.User }}"
               vCenterPassword: "{{ Nested_vCenter.Password }}"
               DataPortGroups:
-                - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Name }}"
-                - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Name }}"
+                - "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Name }}"
+                - "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Name }}"
               ManagementPortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
               ManagementIPAddress: "{{ Net.Management.IPv4.Network }}.254"
               ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
@@ -2274,8 +2274,8 @@ Nested_NSXT:
               - Name: NVDS-1
                 Mode: STANDARD
                 TransportZones:
-                  - Name: TZ-Edge
-                  - Name: TZ-Overlay
+                  - TZ-Edge
+                  - TZ-Overlay
                 UplinkProfile:
                   Name: Edge-Uplink-Profile
                 IPPool:
@@ -2299,8 +2299,8 @@ Nested_NSXT:
               vCenterUser:  "{{ Nested_vCenter.User }}"
               vCenterPassword: "{{ Nested_vCenter.Password }}"
               DataPortGroups:
-                - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Name }}"
-                - Name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Name }}"
+                - "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Name }}"
+                - "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Name }}"
               ManagementPortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
               ManagementIPAddress: "{{ Net.Management.IPv4.Network }}.253"
               ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
@@ -2321,10 +2321,10 @@ Nested_NSXT:
           - Name: "{{ SiteCode }}-T0-Edge-Cluster-01"
             Description: Edge Cluster
             ClusterProfiles:
-              - Name: nsx-default-edge-high-availability-profile
+              - nsx-default-edge-high-availability-profile
             Members:
-              - Name: "{{ SiteCode }}-T0-EdgeVM-01"
-              - Name: "{{ SiteCode }}-T0-EdgeVM-02"
+              - "{{ SiteCode }}-T0-EdgeVM-01"
+              - "{{ SiteCode }}-T0-EdgeVM-02"
             Tags:
               - Tag: Auto-Created
                 Scope: SDDC.Lab

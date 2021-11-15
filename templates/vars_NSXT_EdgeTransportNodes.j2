@@ -38,13 +38,12 @@
         ip_pool_name: "{{ HostSwitch.IPPool.Name }}"
       transport_zone_endpoints:
 {% for TransportZone in HostSwitch.TransportZones %}
-      - transport_zone_name: "{{ TransportZone.Name }}"
+      - transport_zone_name: "{{ TransportZone }}"
 {% endfor %}{# TransportZone #}
 {% endfor %}{# HostSwitch #}
     node_deployment_info:
       display_name: "{{ EdgeTransportNode.Deployment.VMName }}"
       resource_type: "EdgeNode"
-      ip_addresses:
       deployment_config:
         form_factor: "{{ EdgeTransportNode.Deployment.FormFactor | upper }}"
         node_user_settings:
@@ -73,7 +72,7 @@
           vc_password: "{{ EdgeTransportNode.Deployment.vCenterPassword }}"
           data_networks:
 {% for DataPortGroup in EdgeTransportNode.Deployment.DataPortGroups %}
-          - "{{ DataPortGroup.Name }}"
+          - "{{ DataPortGroup }}"
 {% endfor %}{# DataPortGroup #}
           management_network: "{{ EdgeTransportNode.Deployment.ManagementPortGroup }}"
           management_port_subnets:
