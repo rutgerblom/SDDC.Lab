@@ -131,7 +131,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         license: "{{ item.KeyCode }}"
         state: present
       loop: "{{ License.VMware.vCenter.Licenses | default([]) }}"
@@ -197,7 +197,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         esxi_hostname: "{{ item.Host | lower }}"
         license: "{{ item.License }}"
         state: present
@@ -266,7 +266,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         cluster_name: "{{ item.Cluster }}"
         license: "{{ item.License }}"
         state: present

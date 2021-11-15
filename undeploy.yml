@@ -77,7 +77,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         name: "{{ Nested_Router.Name }}"
         force: true
         state: absent
@@ -88,7 +88,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         name: "{{ Nested_vRLI.VMName }}"
         force: true
         state: absent
@@ -99,7 +99,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         name: "{{ item.value.VMName }}"
         force: true
         state: absent
@@ -113,7 +113,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         name: "{{ Nested_vCenter.VMName }}"
         force: true
         state: absent
@@ -124,7 +124,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         name: "{{ Nested_NSXT.Component.LocalManager.VMName }}"
         force: true
         state: absent
@@ -135,7 +135,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         name: "{{ Nested_NSXT.Component.GlobalManager.VMName }}"
         force: true
         state: absent
@@ -197,7 +197,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         switch_name: "{{ Target.vSwitch }}"
         portgroup_type: earlyBinding
         portgroup_name: "{{ Target.PortGroup.Management.Name }}"
@@ -212,7 +212,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         switch_name: "{{ Target.vSwitch }}"
         portgroup_type: earlyBinding
         portgroup_name: "{{ Target.PortGroup.Trunk.Name }}"
@@ -232,7 +232,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter: "{{ Target.DataCenter }}"
         folder_type: vm
         parent_folder: "{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}"                     # Extract parent folder from VMFolder full path

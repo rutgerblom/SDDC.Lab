@@ -72,7 +72,7 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         datacenter_name: "{{ Nested_vCenter.DataCenter }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         switch_version: "{% if Deploy.Software.vCenter.vSwitch == Deploy.Software.ESXi.vSwitch %}{{ omit }}{% else %}{{ Deploy.Software.ESXi.vSwitch }}{% endif %}"
         mtu: "{{ Nested_vCenter.Networking.vSwitch.Config.MTU }}"
@@ -86,7 +86,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.VLAN.ID }}"
@@ -99,7 +99,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.VLAN.ID }}"
@@ -112,7 +112,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.VLAN.ID }}"
@@ -125,7 +125,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.VLAN.ID }}"
@@ -138,7 +138,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.Name }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.VLAN.ID }}"
@@ -158,7 +158,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Name }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vlan_trunk: true
@@ -172,7 +172,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Name }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vlan_trunk: true
@@ -186,7 +186,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.Name }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.VLAN.ID }}"
@@ -199,7 +199,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         esxi_hostname: "{{ item.value.FQDN | lower }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vmnics:
@@ -215,7 +215,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         esxi_hostname: "{{ item.value.FQDN | lower }}"
         device: 'vmk0'
         current_switch_name: 'vSwitch0'
@@ -231,7 +231,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         esxi_hostname: "{{ item.value.FQDN | lower }}"
         portgroup_name: "{{ item.value.vmk.vmk1.PortGroup }}"
         dvswitch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
@@ -255,7 +255,7 @@
         cluster: "{{ Target.Cluster }}"
         datacenter: "{{ Target.DataCenter }}"
         folder: "{{ Target.VMFolder }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         vm_id: "{{ item.value.VMName }}"
         vm_username: "{{ item.value.User }}"
         vm_password: "{{ item.value.Password }}"
@@ -270,7 +270,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         esxi_hostname: "{{ item.value.FQDN | lower }}"
         portgroup_name: "{{ item.value.vmk.vmk2.PortGroup }}"
         dvswitch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
@@ -291,7 +291,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         esxi_hostname: "{{ item.value.FQDN | lower }}"
         portgroup_name: "{{ item.value.vmk.vmk3.PortGroup }}"
         dvswitch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
@@ -311,7 +311,7 @@
         hostname: '{{ item.value.FQDN }}'
         username: '{{ item.value.User }}'
         password: '{{ item.value.Password }}'
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         switch: 'vSwitch0'
         state: absent
       loop: "{{ Nested_ESXi.Host | dict2items }}"

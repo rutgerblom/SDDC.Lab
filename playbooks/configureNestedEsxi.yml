@@ -67,7 +67,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter: "{{ Target.DataCenter }}"
         name: "{{ item.value.VMName }}"
         schema: "vsphere"
@@ -85,7 +85,7 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         datacenter_name: "{{ Nested_vCenter.DataCenter }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         cluster_name: "{{ item.value.Cluster }}"
         esxi_hostname: "{{ item.value.FQDN }}"
         esxi_username: "{{ item.value.User }}"
@@ -101,7 +101,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         esxi_hostname: "{{ item.value.FQDN }}"
         datastore_name: "{{ Common.NFS.Datastore }}"
         datastore_type: "{{ Common.NFS.Type }}"
@@ -121,7 +121,7 @@
         host: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter: "{{ Target.DataCenter }}"
         datastore: "{{ Target.Datastore }}"
         path: "{{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
@@ -140,7 +140,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         cluster_name: "{{ item.key }}"
         rules: "{{ Nested_ESXi.FirewallRules }}"
       loop: "{{ Nested_Cluster | dict2items }}"

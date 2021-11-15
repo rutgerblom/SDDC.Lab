@@ -72,7 +72,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         name: "{{ item.value.VMName }}"
         state: poweredon
         guest_id: vmkernel65Guest

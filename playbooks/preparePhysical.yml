@@ -88,7 +88,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter_name: "{{ Target.DataCenter }}"
         switch_name: "{{ Target.vSwitch }}"
         switch_version: "{{ Target.vSwitchVersion }}"
@@ -123,7 +123,7 @@
         url: "https://{{ Target.FQDN }}/rest/com/vmware/cis/session"
         headers: "{ 'vmware-use-header-authn':'test' }"
         method: POST
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
         force_basic_auth: yes
         url_username: "{{ Target.User }}"
@@ -185,7 +185,7 @@
         url: "https://{{ Target.FQDN }}/rest/vcenter/cluster?filter.names={{ Target.Cluster }}"
         headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
         method: GET
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
         force_basic_auth: yes
         url_username: "{{ Target.User }}"
@@ -244,7 +244,7 @@
         url: "https://{{ Target.FQDN }}/rest/vcenter/host?filter.clusters={{ Cluster_ID }}"
         headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
         method: GET
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
         force_basic_auth: yes
         url_username: "{{ Target.User }}"
@@ -279,7 +279,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         switch_name: "{{ Target.vSwitch }}"
         esxi_hostname: "{{ item.name }}"
         state: present
@@ -324,7 +324,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         switch_name: "{{ Target.vSwitch }}"
         portgroup_type: earlyBinding
         portgroup_name: "{{ Target.PortGroup.Management.Name }}"
@@ -343,7 +343,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         switch_name: "{{ Target.vSwitch }}"
         portgroup_type: earlyBinding
         portgroup_name: "{{ Target.PortGroup.Trunk.Name }}"
@@ -372,7 +372,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter: "{{ Target.DataCenter }}"
         folder_type: vm
         parent_folder: ""
@@ -402,7 +402,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter: "{{ Target.DataCenter }}"
         folder_type: vm
         parent_folder: "{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}"                     # Extract parent folder from VMFolder full path
@@ -445,7 +445,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         esxi_hostname: "{{ Target.FQDN }}"
         switch_name: "{{ Target.vSwitch }}"
         mtu: 9000
@@ -456,7 +456,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: false        
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"        
         esxi_hostname: "{{ Target.FQDN }}"
         switch_name: "{{ Target.vSwitch }}"
         portgroup_name: "{{ Target.PortGroup.Management.Name }}"
@@ -470,7 +470,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         esxi_hostname: "{{ Target.FQDN }}"
         switch_name: "{{ Target.vSwitch }}"
         portgroup_name: "{{ Target.PortGroup.Trunk.Name }}"

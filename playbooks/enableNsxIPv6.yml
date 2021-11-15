@@ -61,7 +61,7 @@
     - name: Enable Both IPv4 and IPv6 Forwarding within NSX-T
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/policy/api/v1/infra/global-config
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"

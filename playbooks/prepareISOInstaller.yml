@@ -137,7 +137,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter: "{{ Target.DataCenter }}"
         src: "{{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }}" 
         datastore: "{{ Target.Datastore }}" 

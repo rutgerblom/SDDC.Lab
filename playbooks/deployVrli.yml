@@ -95,7 +95,7 @@
     - name: Check if vRLI is already installed
       ansible.builtin.uri:
         url: https://{{ Nested_vRLI.FQDN }}
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
       register: vrli_check
       ignore_errors: true
@@ -108,7 +108,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datastore: "{{ Target.Datastore }}"
         allow_duplicates: false
         folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}{% else %}{{ Target.VMFolder }}{% endif %}"         # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
@@ -141,7 +141,7 @@
     - name: Start checking if the vRLI Web UI is available
       ansible.builtin.uri:
         url: https://{{ Nested_vRLI.FQDN }}
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
       register: vrli_webui_check
       until: vrli_webui_check.status == 200
@@ -154,7 +154,7 @@
     - name: Perform vRLI bootstrap
       ansible.builtin.uri:
         url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/deployment/new
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         method: POST
         timeout: 240
         body:
@@ -170,7 +170,7 @@
     - name: Obtain a session ID from the vRLI API 
       ansible.builtin.uri:
         url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/sessions
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         method: POST
         body:
           username: "{{ Nested_vRLI.Credential.admin.Name }}"
@@ -185,7 +185,7 @@
     - name: Add vSphere to vRLI
       ansible.builtin.uri:
         url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/vsphere
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         method: POST
         timeout: 240
         headers:
@@ -208,7 +208,7 @@
     - name: Configure NTP
       ansible.builtin.uri:
         url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/time/config
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         method: PUT
         timeout: 240
         headers:
@@ -228,7 +228,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         cluster: "{{ Target.Cluster }}"
         datacenter: "{{ Target.DataCenter }}"
         folder: "{{ Target.VMFolder }}"

@@ -127,7 +127,7 @@
         hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         license_key: "{{ item.KeyCode }}"
         state: present
       loop: "{{ License.VMware.NSXT.Licenses | default([]) }}"

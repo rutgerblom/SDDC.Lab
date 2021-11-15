@@ -154,7 +154,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         license: "{{ item.KeyCode }}"
         state: present
       loop: "{{ License.VMware.Tanzu.Licenses }}"

@@ -88,7 +88,7 @@
         hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: False
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         state: present
         display_name: "{{ item.display_name }}"
         ha_mode: "{{ item.ha_mode }}"

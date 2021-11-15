@@ -80,7 +80,7 @@
           hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
           username: "{{ Nested_NSXT.Credential.admin.Name }}"
           password: "{{ Nested_NSXT.Credential.admin.Password }}"
-          validate_certs: False
+          validate_certs: "{{ Common.PKI.ValidateCerts }}"
           display_name: "{{ item.Name }}"
           server: "{{ item.Address }}"
           origin_type: "{{ item.Type }}"
@@ -98,7 +98,7 @@
           hostname: "{{ Nested_NSXT.Component.GlobalManager.FQDN }}"
           username: "{{ Nested_NSXT.Credential.admin.Name }}"
           password: "{{ Nested_NSXT.Credential.admin.Password }}"
-          validate_certs: False
+          validate_certs: "{{ Common.PKI.ValidateCerts }}"
           display_name: "{{ item.Name }}"
           server: "{{ item.Address }}"
           origin_type: "{{ item.Type }}"

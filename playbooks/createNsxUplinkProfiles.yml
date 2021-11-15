@@ -90,7 +90,7 @@
         hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: False
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         resource_type: UplinkHostSwitchProfile
         display_name: "{{ item.display_name }}"
         description: "{{ item.description }}"                              # Description

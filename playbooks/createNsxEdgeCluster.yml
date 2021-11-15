@@ -93,7 +93,7 @@
         hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: False
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         display_name: "{{ item.display_name }}"
         description: "{{ item.description }}"
         tags: "{{ item.tags }}"
@@ -110,7 +110,7 @@
     - name:  Wait until the NSX-T API reports that the Edge Cluster is in realized state
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/policy/api/v1/infra/sites/default/enforcement-points/default/edge-clusters/{{ edge_cluster | json_query('results[].id') | first }}
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"

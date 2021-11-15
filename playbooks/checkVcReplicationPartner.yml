@@ -78,7 +78,7 @@
         url: "https://{{ Nested_vCenter.SSO.ReplicationPartner }}/rest/com/vmware/cis/session"
         headers: "{ 'vmware-use-header-authn':'test' }"
         method: POST
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
         force_basic_auth: yes
         url_username: "{{ Nested_vCenter.User }}"                             # Assumes all Nested_vCenter servers use the same credentials
@@ -140,7 +140,7 @@
         url: "https://{{ Nested_vCenter.SSO.ReplicationPartner }}/rest/appliance/health/system"
         headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
         method: GET
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
         force_basic_auth: yes
         url_username: "{{ Nested_vCenter.User }}"                             # Assumes all Nested_vCenter servers use the same credentials
@@ -182,7 +182,7 @@
         url: "https://{{ Nested_vCenter.SSO.ReplicationPartner }}/rest/com/vmware/cis/session"
         headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
         method: DELETE
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
 #        force_basic_auth: yes
 #        url_username: "{{ Nested_vCenter.User }}"                             # Assumes all Nested_vCenter servers use the same credentials
