@@ -44,6 +44,7 @@
     node_deployment_info:
       display_name: "{{ EdgeTransportNode.Deployment.VMName }}"
       resource_type: "EdgeNode"
+      _revision: 2
       deployment_config:
         form_factor: "{{ EdgeTransportNode.Deployment.FormFactor | upper }}"
         node_user_settings:
@@ -84,7 +85,7 @@
           hostname: "{{ EdgeTransportNode.Deployment.Hostname }}"
           compute: "{{ Nested_NSXT.System.Fabric.Nodes.vSphereEdgeCluster }}"
           storage: "{{ EdgeTransportNode.Deployment.Datastore }}"
-          host: "{{ EdgeHosts[(loop.index0 % (EdgeHosts|length))] }}"
+{#          host: "{{ EdgeHosts[(loop.index0 % (EdgeHosts|length))] }}" #}
           reservation_info:
             cpu_reservation:
               reservation_in_mhz: "{{ EdgeTransportNode.Deployment.Reservations.CPU.Megahertz }}"

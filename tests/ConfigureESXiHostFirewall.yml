@@ -28,7 +28,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         esxi_hostname: "{{ item.value.FQDN | lower }}"
         rules:
             - name: syslog
@@ -46,7 +46,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         cluster_name: "{{ item.key }}"
         rules: "{{ Nested_ESXi.FirewallRules }}"
       loop: "{{ Nested_Cluster | dict2items }}"

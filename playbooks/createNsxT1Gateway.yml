@@ -91,7 +91,7 @@
         hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: False
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         state: present
         display_name: "{{ item.display_name }}"
         failover_mode: "{{ item.failover_mode }}"

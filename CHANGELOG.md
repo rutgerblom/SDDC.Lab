@@ -681,3 +681,12 @@
     - config_sample.yml
     - software_sample.yml
     - templates_sample.yml
+
+## Dev-v4.0.0 14-NOV-2021
+
+### Added by Luis Chanu
+  - Updated all instances of "validate_certs" to get their effective value from Common.PKI.ValidateCerts
+  - Cleaned up dict Lists in Nested_NSXT EdgeClusters and Edge Nodes datastructures to use basic Lists in config_sample.yml.
+  - Removed extra "ip_addresses:" entry on line 47 from var_NSXT_EdgeTransportNodes.j2 that appeared to have been left in by accident, and had no function.
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml

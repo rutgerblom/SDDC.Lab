@@ -92,7 +92,7 @@
     - name: Check if vCenter is already installed
       ansible.builtin.uri:
         url: https://{{ Nested_vCenter.Address.IPv4.Address }}
-        validate_certs: False
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
       register: vcenter_check
       ignore_errors: True
@@ -179,7 +179,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         cluster: "{{ Target.Cluster }}"
         datacenter: "{{ Target.DataCenter }}"
         folder: "{{ Target.VMFolder }}"
@@ -197,7 +197,7 @@
         password: "{{ Nested_vCenter.Password }}"
         datacenter_name: "{{ Nested_vCenter.DataCenter }}"
         state: present
-        validate_certs: False
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
       when: vcenter_check.status != 200
 
     - name: Create Clusters
@@ -207,7 +207,7 @@
         password: "{{ Nested_vCenter.Password }}"
         datacenter_name: "{{ Nested_vCenter.DataCenter }}"
         cluster_name: "{{ item.key }}"
-        validate_certs: False
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
       loop: "{{ Nested_Cluster | dict2items }}"
       when: 
         - vcenter_check.status != 200
@@ -220,7 +220,7 @@
         password: "{{ Nested_vCenter.Password }}"
         datacenter_name: "{{ Nested_vCenter.DataCenter }}"
         cluster_name: "{{ item.key }}"
-        validate_certs: False
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         enable_drs: "{{ item.value.DRS }}"
       loop: "{{ Nested_Cluster | dict2items }}"
       when: 

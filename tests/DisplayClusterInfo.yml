@@ -57,7 +57,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         cluster_name: "{{ item.key }}"
       loop: "{{ Nested_Cluster | dict2items }}"
       register: cluster_info

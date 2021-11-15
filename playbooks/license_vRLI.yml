@@ -125,7 +125,7 @@
     - name: Obtain a session ID from the vRLI API 
       ansible.builtin.uri:
         url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/sessions
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         method: POST
         body:
           username: "{{ Nested_vRLI.Credential.admin.Name }}"
@@ -139,7 +139,7 @@
     - name: Add all licenses to vRLI
       ansible.builtin.uri:
         url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/licenses
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         method: POST
         headers:
           Authorization: "Bearer {{ vrli_session.json.sessionId }}"

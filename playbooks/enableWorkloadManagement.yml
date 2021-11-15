@@ -91,7 +91,7 @@
         url: "https://{{ Nested_vCenter.FQDN }}/rest/com/vmware/cis/session"
         headers: "{ 'vmware-use-header-authn':'test' }"
         method: POST
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
         force_basic_auth: yes
         url_username: "{{ Nested_vCenter.User }}"
@@ -122,7 +122,7 @@
         url: "https://{{ Nested_vCenter.FQDN }}/rest/vcenter/cluster?filter.names={{ item.key }}"
         headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
         method: GET
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
         force_basic_auth: yes
         url_username: "{{ Nested_vCenter.User }}"
@@ -164,7 +164,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
       register: vds_info
       when:
@@ -192,7 +192,7 @@
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         datacenter: "{{ Nested_vCenter.DataCenter }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
       register: vdspg_info
       when:
         - tanzu_supervisor is defined
@@ -218,7 +218,7 @@
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
       register: sp_info
       when:
         - tanzu_supervisor is defined
@@ -244,7 +244,7 @@
         hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: False
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
       register: ec_info
       when:
         - tanzu_supervisor is defined
@@ -270,7 +270,7 @@
         hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
       register: cl_info
       when:
         - tanzu_supervisor is defined
@@ -294,7 +294,7 @@
     - name: POST payload to vCenter REST API
       ansible.builtin.uri:
         url: "https://{{ Nested_vCenter.FQDN }}/api/vcenter/namespace-management/clusters/{{ item.MoRef }}?action=enable"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
         method: POST
         body: "{{ lookup('template', LOCAL_TanzuPayload) | to_json }}"

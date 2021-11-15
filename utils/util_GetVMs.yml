@@ -43,7 +43,7 @@
         hostname: "{{ vCenter.Server }}"
         username: "{{ vCenter.User }}"
         password: "{{ vCenter.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         vm_type: all
       register: vminfo
 
@@ -91,7 +91,7 @@
         url: "https://{{ vCenter.Server }}/rest/com/vmware/cis/session"
         headers: "{ 'vmware-use-header-authn':'test' }"
         method: POST
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
         force_basic_auth: yes
         url_username: "{{ vCenter.User }}"
@@ -114,7 +114,7 @@
         url: "https://{{ vCenter.Server }}/rest/vcenter/network?filter.names={{ item }}"
         headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
         method: GET
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
         force_basic_auth: yes
         url_username: "{{ vCenter.User }}"
@@ -173,7 +173,7 @@
         username: "{{ vCenter.User }}"
         password: "{{ vCenter.Password }}"
         datacenter: "{{ vCenter.DataCenter }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         uuid: "{{ item.uuid }}"
       loop: "{{ vmlist_filtered_by_clusters }}"
       register: guestinfo

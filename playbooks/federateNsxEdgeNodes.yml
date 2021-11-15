@@ -76,7 +76,7 @@
     - name: Get information about our NSX-T site
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -112,7 +112,7 @@
         hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: false
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
       register: result_allTNs
       when:
         - Deploy.Product.NSXT.Federation.Enable == true
@@ -198,7 +198,7 @@
     - name: Obtain NSX-T Local Manager API Cluster Certificate ID
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/cluster/api-certificate
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -229,7 +229,7 @@
     - name: Obtain API Cluster Certificate using ID
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/trust-management/certificates/{{ lm_cluster_cert_id }}
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -292,7 +292,7 @@
     - name: Obtain NSX-T Local Manager backup history to obtain Backup_ID
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/cluster/backups/history
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -340,7 +340,7 @@
     - name: Verify that the NSX-T Global Manager cluster is "STABLE"
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN | lower }}/api/v1/cluster/status
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -362,7 +362,7 @@
         hostname: "{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: False
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         site_connection_info:
           fqdn: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
           username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -392,7 +392,7 @@
         hostname: "{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: False
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         display_name: "{{ SiteCode }}"
         id: "{{ SiteCode }}"
         site_connection_info:
@@ -429,7 +429,7 @@
     - name: Set on-boarding preferences for NSX-T Local Manager objects into NSX-T Global Manager for the on-boarding process
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding/preferences
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -462,7 +462,7 @@
     - name: Obtain summary of features ssupported by the Site being onboarded
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding/feature-summary
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -483,7 +483,7 @@
     - name: Keep checking status of newly added site until it reaches "ALLOWED" status
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding/status
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -504,7 +504,7 @@
     - name: If deploying Global Manager Site, check for on-boarding conflicts of importing objects
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding?action=check_conflict
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -531,7 +531,7 @@
     - name: If deploying Global Manager Site, on-board the NSX-T Local Manager site objects into NSX-T Global Manager
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding?action=start_onboarding
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -560,7 +560,7 @@
     - name: Continue to check the status of the newly added site until it reaches "SUCCESS"
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding/status
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"

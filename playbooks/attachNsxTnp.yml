@@ -68,7 +68,7 @@
         hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: False
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         display_name: "TNC"
         resource_type: "TransportNodeCollection"
         description: "Transport Node Collections"
@@ -86,7 +86,7 @@
     - name: Wait until the NSX-T API reports that the Transport Zones are in "UP" state
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/api/v1/transport-zones/status
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"

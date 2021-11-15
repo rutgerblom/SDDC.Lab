@@ -97,7 +97,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter: "{{ Target.DataCenter }}"
         folder: "{% if Target.Deployment == 'vCenter' %}{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}{% else %}{{ Target.VMFolder }}{% endif %}"          # If vCenter, use Parent folder
         name: "{{ Nested_DNSServer.VM.VMName }}"
@@ -236,7 +236,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter: "{{ Target.DataCenter }}"
         src: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }}" 
         datastore: "{{ Target.Datastore }}"
@@ -250,7 +250,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         name: "{{ Nested_DNSServer.VM.VMName }}"
         state: poweredon
         guest_id: ubuntu64Guest
@@ -289,7 +289,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter: "{{ Target.DataCenter }}"
         name: "{{ Nested_DNSServer.VM.VMName }}"
         schema: vsphere
@@ -306,7 +306,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         vm_id: "{{ Nested_DNSServer.VM.VMName }}"
         vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
         vm_password: VMware1!
@@ -332,7 +332,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         vm_id: "{{ Nested_DNSServer.VM.VMName }}"
         vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
         vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
@@ -350,7 +350,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         vm_id: "{{ Nested_DNSServer.VM.VMName }}"
         vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
         vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
@@ -367,7 +367,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         vm_id: "{{ Nested_DNSServer.VM.VMName }}"
         vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
         vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
@@ -384,7 +384,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         vm_id: "{{ Nested_DNSServer.VM.VMName }}"
         vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
         vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
@@ -401,7 +401,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         vm_id: "{{ Nested_DNSServer.VM.VMName }}"
         vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
         vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
@@ -416,7 +416,7 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: no
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         vm_id: "{{ Nested_DNSServer.VM.VMName }}"
         vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
         vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
