@@ -118,7 +118,7 @@
       when:
         - DEBUG.DisplayVariables == true
 
-    - name: Configure Weekly NSX-T Backup Job [Local Manager]
+    - name: Configure Disabled Weekly NSX-T Backup Job [Local Manager]
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/cluster/backups/config
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -131,7 +131,7 @@
           Accept: application/json
         body: >
           {
-            "backup_enabled" : true,
+            "backup_enabled" : false,
             "backup_schedule": {
                 "resource_type": "WeeklyBackupSchedule",
                 "days_of_week":[ 0 ],
