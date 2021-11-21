@@ -31,8 +31,6 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
 
 
 ##
@@ -57,6 +55,7 @@
       when:
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
     - name: Store the Unique ID of our Site for later use
       ansible.builtin.set_fact:
@@ -64,8 +63,8 @@
       when:
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
         - result.status == 200
-
 
 
 
@@ -87,6 +86,7 @@
       register: result
       until: result.status == 200
       when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -104,6 +104,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -115,6 +116,7 @@
       when:
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
         - result.status == 200
 
     - name: DEBUG -- Display RTEP Pool ID
@@ -128,6 +130,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -150,6 +153,7 @@
       register: result
       until: result.status == 200
       when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -167,9 +171,9 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
-
 
     - name: Create list of Edge Nodes
       ansible.builtin.set_fact:
@@ -187,11 +191,10 @@
             }
           }
       loop: "{{ result.json.results }}"
-
       when:
+        - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
-
 
     - name: DEBUG -- Display merged Edge Nodes with TunnelEndpoint result
       ansible.builtin.pause:
@@ -207,6 +210,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -227,10 +231,9 @@
       until: result.status == 200
       loop: "{{ EdgeNodes }}"
       when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
-
-
 
     - name: Pause forever
       ansible.builtin.pause:
