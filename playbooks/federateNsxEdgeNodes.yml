@@ -3,13 +3,14 @@
 ##    Authors: Luis Chanu & Rutger Blom
 ##   Filename: playbooks/federateNsxEdgeNodes.yml
 ##
-##      Notes: The purpose of this module is to perform the following actions: (May be split over multiple playbooks)
-##             1) Configure RTEP Interfaces
-##             2) Stretch the Tier-0 Gateway to this SiteCode as a Primary (==All_Primaries)
+##      Notes: The purpose of this module is to perform the following actions:
+##             1) Configure RTEP Networking/Interfaces using "{{SiteCode}}-RTEP-Pool" for IPs
+##             2) Add Non-GM SiteCodes as Locations on the Tier-0 Gateway and make it Primary (==All_Primaries)
+##             3) Configure Tier-0 Interfaces (==IP addresses on EdgeNode interfaces)
+
+# Do not think we need to do this next step
 ##             3) Attached EdgeNodes to T0-Gateway-01 Gateway
-##             4) Configure IP addresses on EdgeNode interfaces
 ##
-##       ToDo: Move EdgeNodes to Stretched T0
 ##
 ---
 - hosts: localhost
@@ -70,10 +71,17 @@
       when:
         - DEBUG.DisplayVariables == true
 
+
 ##
-## Obtain out NSX-T Site ID
+#######################################################################################################
+##          Configure Remote Tunnel End-Point (RTEP) Networking/Interface on Edge Cluster            ##
+#######################################################################################################
 ##
-    - name: Get information about our NSX-T site
+
+##
+## Obtain Global Manager Unique ID for our Site
+##
+    - name: Obtain information about our Site
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
@@ -94,9 +102,9 @@
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
-    - name: Store NSX-T Global Manager's Unique Site ID for our site
+    - name: Store the Unique ID of our Site for later use
       ansible.builtin.set_fact:
-        SiteID: "{{ result.json.unique_id }}"
+        site_id: "{{ result.json.unique_id }}"
       when:
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
@@ -105,475 +113,287 @@
 
 
 ##
-## Obtain list of Edge Nodes for our Site
+## Obtain Pool Object ID for the RTEP Pool
 ##
-    - name: Obtain information on All Transport Nodes
-      nsxt_transport_nodes_facts:
-        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
-        username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+    - name: Obtain list of IP Pools
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/pools/ip-pools
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-      register: result_allTNs
-      when:
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      when: 
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
-    - name: DEBUG -- Display All Transport Nodes (Pause)
+    - name: DEBUG -- Display IP Pools result.json.results
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display "result_allTNs" Variable ==================================
+          ====================== Display IP Pools 'result.json.results' Variable ==========================
 
-            {{ result_allTNs | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+          Quantity: {{ result.json.results | length }}
 
-          ====================================================================================================
+          result.json.results:
+            {{ result.json.results | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
       when:
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
         - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
 
-    - name: Extract Edge Transport Nodes from All Transport Nodes
+    - name: Locate and store information about the RTEP Pool
       ansible.builtin.set_fact:
-        EdgeNodes: "{{ (EdgeNodes | default([])) + [ item ] }}"
-      loop: "{{ result_allTNs.results | default([]) }}"
+        rtep_pool_id: "{{ result.json | community.general.json_query(query) }}"
+      vars:
+        query: results[?display_name=='{{ SiteCode }}-RTEP-Pool']|[0].id
       when:
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
-        - item.node_deployment_info.resource_type == "EdgeNode"
+        - result.status == 200
 
-    - name: DEBUG -- Display Edge Nodes (Pause)
+    - name: DEBUG -- Display RTEP Pool ID
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display "EdgeNodes" Variable ==================================
+          ============================== Display 'rtep_pool_id' Variable ==================================
 
+          rtep_pool_id: {{ rtep_pool_id }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+
+##
+## Obtain configuration details on all NSX-T Edge Nodes
+##
+    - name: Obtain list of Edge Nodes from the Local Manager
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes?node_types=EdgeNode
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: DEBUG -- Display EdgeVM result
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =============================== Display EdgeVM result Variable ==================================
+
+          Quantity: {{ result | length }}
+
+          result:
+            {{ result | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Create list of Edge Nodes with additional RTEP configuration
+      ansible.builtin.set_fact:
+        EdgeNodes: "{{ EdgeNodes | default([]) + [ item | combine(RemoteTunnel) ] }}"
+      vars:
+        RemoteTunnel: |
+          {
+            "remote_tunnel_endpoint": {
+              "host_switch_name": "NVDS-1",
+              "rtep_vlan": {{ Net.RTEP.VLAN }},
+              "ip_assignment_spec": {
+                "resource_type": "StaticIpPoolSpec",
+                "ip_pool_id": "{{ rtep_pool_id }}"
+              }
+            }
+          }
+      loop: "{{ result.json.results }}"
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: DEBUG -- Display merged Edge Nodes with TunnelEndpoint result
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =============================== Display EdgeNodes Variable ==================================
+
+          Quantity: {{ EdgeNodes | length }}
+
+          EdgeNodes:
             {{ EdgeNodes | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
-          ================================================================================================
+          =================================================================================================
       when:
+        - DEBUG.DisplayVariables == true
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
-        - DEBUG.DisplayVariables == true
 
-
-##
-## Conifgure RTEP on Edge Node by updating its configuration
-##
-
-## STOPPED HERE ##
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-##
-## Steps to obtain the NSX-T Local Manager Cluster API Certificate Thumbprint
-##
-
-    - name: Obtain NSX-T Local Manager API Cluster Certificate ID
+    - name: Configure RTEP on Edge Nodes via Global Manager
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/cluster/api-certificate
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/remote/{{ site_id }}/api/v1/transport-nodes/{{ item.node_id }}
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 5
-        force_basic_auth: yes
-        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        method: GET
-        body_format: json
-        return_content: yes
-        status_code: 200
-      register: result
-      until: result.status == 200
-      retries: 10
-      delay: 10
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - false
-
-    - name: Store Local Manager Cluster Certificate ID into variable for easier use
-      ansible.builtin.set_fact:
-        lm_cluster_cert_id: "{{ result.json.certificate_id }}"
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - result.status == 200
-
-    - name: Obtain API Cluster Certificate using ID
-      ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/trust-management/certificates/{{ lm_cluster_cert_id }}
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 5
-        force_basic_auth: yes
-        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        method: GET
-        body_format: json
-        return_content: yes
-        status_code: 200
-      register: result
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-
-    - name: Store Local Manager Cluster Certificate (PEM format) into variable for easier use
-      ansible.builtin.set_fact:
-        lm_cluster_cert_pem: "{{ result.json.pem_encoded }}"
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - result.status == 200
-
-    - name: Obtain Information about Local Manager Cluster Certificate
-      community.crypto.x509_certificate_info:
-        content: "{{ lm_cluster_cert_pem }}"
-      register: lm_cluster_cert_info
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - result.status == 200
-
-    - name: Store Local Manager Cluster Certificate SHA256 Thumbprint (without colons) for easier use
-      ansible.builtin.set_fact:
-        lm_cluster_api_cert_thumbprint: "{{ lm_cluster_cert_info.fingerprints['sha256'].replace(':','') | lower }}"
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - result.status == 200
-
-    - name: DEBUG -- Display Local Manager Cluster Certificate Thumbprint (Pause)
-      ansible.builtin.pause:
-        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
-        prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
-
-           Local Manager Cluster Certificate Thumbprint: {{ lm_cluster_api_cert_thumbprint | default(None) }}
-
-          =================================================================================================
-      when:
-        - false
-        - DEBUG.DisplayVariables == true
-
-##
-## Get Backup ID from NSX-T Local Manager
-##
-
-    - name: Obtain NSX-T Local Manager backup history to obtain Backup_ID
-      ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/cluster/backups/history
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 5
-        force_basic_auth: yes
-        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        method: GET
-        body_format: json
-        return_content: yes
-        status_code: 200
-      register: result
-      until: result.status == 200
-      retries: 10
-      delay: 10
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-
-    - name: Store NSX-T Local Manager backup_id for later use
-      ansible.builtin.set_fact:
-        lm_backup_id: "{{ result.json.cluster_backup_statuses[0].backup_id | default('{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}-Backup') }}"
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - result.status == 200
-
-    - name: DEBUG -- Display Local Manager Cluster Backup ID (Pause)
-      ansible.builtin.pause:
-        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
-        prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
-
-           Local Manager Cluster Backup ID: {{ lm_backup_id | default(None) }}
-
-          =================================================================================================
-      when:
-        - false
-        - DEBUG.DisplayVariables == true
-
-
-##
-## Now that we have the Thumbprint, let's go use it
-##
-
-    - name: Verify that the NSX-T Global Manager cluster is "STABLE"
-      ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN | lower }}/api/v1/cluster/status
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 5
-        force_basic_auth: yes
-        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        method: GET
-        body_format: json
-        return_content: yes
-        status_code: 200
-      register: result
-      until: result.status == 200 and result.json.detailed_cluster_status.overall_status == "STABLE"
-      retries: 60
-      delay: 60
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-
-    - name: Verify NSX-T Local Manager is compatible with NSX-T Global Manager
-      nsxt_local_managers_compatibility:
-        hostname: "{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}"
-        username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        site_connection_info:
-          fqdn: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
-          username: "{{ Nested_NSXT.Credential.admin.Name }}"
-          password: "{{ Nested_NSXT.Credential.admin.Password }}"
-          thumbprint: "{{ lm_cluster_api_cert_thumbprint }}"
-      register: result
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-
-    - name: DEBUG -- Display "nsxt_local_managers_compatibility" result (Pause)
-      ansible.builtin.pause:
-        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
-        prompt: |
-          ======================================= Display "result" ========================================
-
-          {{ result }}
-
-          =================================================================================================
-      when:
-        - false
-        - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.Federation.Enable == true
-
-    - name: Register NSX-T Local Manager with NSX-T Global Manager
-      nsxt_local_manager_registration:
-        hostname: "{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}"
-        username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        display_name: "{{ SiteCode }}"
-        id: "{{ SiteCode }}"
-        site_connection_info:
-          fqdn: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
-          username: "{{ Nested_NSXT.Credential.admin.Name }}"
-          password: "{{ Nested_NSXT.Credential.admin.Password }}"
-          thumbprint: "{{ lm_cluster_api_cert_thumbprint }}"
-        state: present
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - result.version_compatible == true
-
-
-##
-## Determine NSX-T Federation On-Boarding Preferences
-##
-    - name: Determinte NSX-T Federation Import - Global Manager Site [Import]
-      ansible.builtin.set_fact:
-        ignore_import: false
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
-
-    - name: Determinte NSX-T Federation Import - Non-Global Manager Site [Do Not Import]
-      ansible.builtin.set_fact:
-        ignore_import: true
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
-
-    - name: Set on-boarding preferences for NSX-T Local Manager objects into NSX-T Global Manager for the on-boarding process
-      ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding/preferences
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 5
+        timeout: 15
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         method: PUT
         body_format: json
-        body:
+        body: "{{ item }}"
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      loop: "{{ EdgeNodes }}"
+      when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+
+
+##
+#######################################################################################################
+##   Add Non-GM SiteCodes as Locations on the Tier-0 Gateway and make it Primary (==ALL_PRIMARIES)   ##
+#######################################################################################################
+##
+
+##
+## Obtain Edge Cluster Path
+##
+    - name: Obtain our Edge Clusters path (Non-GM SiteCodes only)
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/enforcement-points/default/edge-clusters
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+    - name: DEBUG -- Display Edge Clusters result.json.results
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ===================== Display Edge Clusters 'result.json.results' Variable ======================
+
+          Quantity: {{ result.json.results | length }}
+
+          result.json.results:
+            {{ result.json.results | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+    - name: Locate and store the Edge Cluster Path for later user
+      ansible.builtin.set_fact:
+        edge_cluster_path: "{{ result.json | community.general.json_query(query) }}"
+      vars:
+        query: results[?display_name=='{{ Nested_NSXT.System.Fabric.Nodes.EdgeClusters[0].Name }}']|[0].path
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+        - result.status == 200
+
+    - name: DEBUG -- Display Edge Cluster Path
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================= Display 'edge_cluster_path' Variable ==============================
+
+          edge_cluster_path: {{ edge_cluster_path }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+
+##
+## Perform NSX-T REST API call to add SiteCode to first Tier-0 Gateway
+##
+    - name: Site Non-GM SiteCode Site as a Location to the first Tier-0 Gateway
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ SiteCode }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: PUT
+        body_format: json
+        body: |
           {
-            "id" : "{{ SiteCode }}",
-            "site_id" : "{{ SiteCode }}",
-            "display_name" : "{{ SiteCode }}",
-            "ignore_import": "{{ ignore_import }}",
-            "resource_type": "SiteOnboardingPreference"
+            "resource_type": "LocaleServices",
+            "display_name": "{{ SiteCode }}",
+            "id": "{{ SiteCode }}",
+            "edge_cluster_path": "{{ edge_cluster_path }}"
           }
         return_content: yes
         status_code: 200
       register: result
       until: result.status == 200
-      retries: 60
-      delay: 10
-      when:
-        - false
+      when: 
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
 
 
 ##
-## May not be needed, but performed by GUI
+#######################################################################################################
+##       Configure Tier-0 Gateway Interfaces (==Edge Node Interfaces) For Newly Added Location       ##
+#######################################################################################################
 ##
-    - name: Obtain summary of features ssupported by the Site being onboarded
-      ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding/feature-summary
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 5
-        force_basic_auth: yes
-        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        method: GET
-        body_format: json
-        return_content: yes
-        status_code: 200
-      register: result
-      until: result.status == 200
-      retries: 60
-      delay: 10
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
 
-    - name: Keep checking status of newly added site until it reaches "ALLOWED" status
-      ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding/status
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 5
-        force_basic_auth: yes
-        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        method: GET
-        body_format: json
-        return_content: yes
-        status_code: 200
-      register: result
-      until: result.status == 200 and result.json.status == "ALLOWED"
-      retries: 60
-      delay: 10
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
 
-    - name: If deploying Global Manager Site, check for on-boarding conflicts of importing objects
-      ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding?action=check_conflict
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 5
-        force_basic_auth: yes
-        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        method: POST
-        body_format: json
-        body:
-          {
-            "site_id":"{{ SiteCode }}",
-            "prefix":""
-          }
-        return_content: yes
-        status_code: 200
-      register: result
-      until: result.status == 200 and result.json.status == "NO_CONFLICTS"
-      retries: 60
-      delay: 10
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
-
-    - name: If deploying Global Manager Site, on-board the NSX-T Local Manager site objects into NSX-T Global Manager
-      ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding?action=start_onboarding
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 5
-        force_basic_auth: yes
-        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        method: POST
-        body_format: json
-        body:
-          {
-            "site_id":"{{ SiteCode }}",
-            "prefix":"",
-            "site_backup_reference":"{{ lm_backup_id }}"
-          }
-        return_content: yes
-        status_code: 200
-      register: result
-# IN_PROGRESS is what we would normally expect.  However, if the server is fast, it might complete that before being checked.  For that reason, checking for both conditions
-      until: result.status == 200 and (result.json.status == "IN_PROGRESS" or result.json.status == "SUCCESS")
-      retries: 60
-      delay: 10
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
-
-    - name: Continue to check the status of the newly added site until it reaches "SUCCESS"
-      ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding/status
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 5
-        force_basic_auth: yes
-        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        method: GET
-        body_format: json
-        return_content: yes
-        status_code: 200
-      register: result
-      until: result.status == 200 and result.json.status == "SUCCESS"
-      retries: 60
-      delay: 10
-      when:
-        - false
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
