@@ -134,6 +134,10 @@
   when: 
     - Deploy.Product.NSXT.Federation.Enable == true
 
+- ansible.builtin.import_playbook: playbooks/federateNsxEdgeNodes.yml
+  when: 
+    - Deploy.Product.NSXT.Federation.Enable == true
+
 
 # Deploy vRealize products
 - ansible.builtin.import_playbook: playbooks/deployVrli.yml
