@@ -699,3 +699,7 @@
     - Configures Tier-0 Gateway Interfaces on the Edge Node SRs
     - **IMPORTANT**: Only the first Tier-0 Gateway is configured
     - VERY limited testing performed
+  - Added RTEP configuration details to Nested_NSXT.System.LocationManager in config_sample.yml
+  - InterLocationMTU not yet implemented in RTEP section
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml

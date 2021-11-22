@@ -2116,6 +2116,13 @@ Nested_NSXT:
             Scope: Disney
 
   System:
+    LocationManager:
+      Networking:
+        EdgeSwitch: NVDS-1
+        TeamingPolicy:
+        RTEP_VLAN: "{{ Net.RTEP.VLAN }}"
+        IPPool: "{{ SiteCode }}-RTEP-Pool"
+        InterLocationMTU:                                                                       # MTU value or do not put any value (i.e. Leave value empty) to use Global MTU Setting
     Fabric:
       TransportZone:
         TZ-VLAN:
