@@ -716,3 +716,9 @@
     - templates_sample.yml
     - software_sample.yml
     - licenses_sample.yml
+  - Removed Nested_NSXT.System.LocationManager  from config_sample.yml
+  - Added Nested_NSXT.System.Fabric.GlocalSetting to config_sample.yml
+  - Added playbooks/configureNsxFabricMTU.yml to project
+  - Added configureNsxFabricMTU.yml to deploy.yml
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml

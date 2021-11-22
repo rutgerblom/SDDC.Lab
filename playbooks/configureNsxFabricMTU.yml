@@ -1,0 +1,110 @@
+##
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: playbooks/configureNsxFabricMTU.yml
+##
+##  Description: This playbook configures the Global Fabric MTUs for both TEP and RTEP to settings defined
+##               at Nested_NSXT.System.Fabric.GlobalSetting.
+##
+---
+- hosts: localhost
+  name: configureNsxFabricMTU.yml
+  tasks:
+    - name: configureNsxFabricMTU_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                             NSX-T Local Manager FQDN: {{ Nested_NSXT.Component.LocalManager.FQDN }}
+                      NSX-T Tunnel EndPoint (TEP) MTU: {{ Nested_NSXT.System.Fabric.GlobalSetting.TEP.MTU }}
+              NSX-T Remote Tunnel EndPoint (RTEP) MTU: {{ Nested_NSXT.System.Fabric.GlobalSetting.RTEP.MTU }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Get current _revision number for NSX-T Fabric MTU Settings
+      ansible.builtin.uri:
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+        force_basic_auth: yes
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      when: 
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name: Store current _revision number
+      ansible.builtin.set_fact:
+        current_revision: "{{ result.json._revision | default(0) }}"
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - result.status == 200
+
+    - name: Set NSX-T Fabric MTU Settings
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/global-configs/SwitchingGlobalConfig
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        method: PUT
+        body_format: json
+        body: |
+          {
+            "resource_type": "SwitchingGlobalConfig",
+            "physical_uplink_mtu": {{ Nested_NSXT.System.Fabric.GlobalSetting.TEP.MTU }},
+            "remote_tunnel_physical_mtu": {{ Nested_NSXT.System.Fabric.GlobalSetting.RTEP.MTU }},
+            "_revision": {{ current_revision }}
+          }
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      when: 
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
