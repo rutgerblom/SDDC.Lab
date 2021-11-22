@@ -691,7 +691,7 @@
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
 
-## Dev-v4.0.0 22-NOV-2021
+## Dev-v4.0.0 21-NOV-2021
 
 ### Added by Luis Chanu
   - Added code to federateNsxEdgeNodes.yml which:
@@ -703,3 +703,16 @@
   - InterLocationMTU not yet implemented in RTEP section
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
+
+## Dev-v4.0.0 22-NOV-2021
+
+### Added by Luis Chanu
+  - Modified .gitignore to ignore all files that start with:
+    - config*
+    - license*
+    - licenses*
+  - Modified .gitignore to ensure the following sample files are still included in git:
+    - config_sample.yml
+    - templates_sample.yml
+    - software_sample.yml
+    - licenses_sample.yml
