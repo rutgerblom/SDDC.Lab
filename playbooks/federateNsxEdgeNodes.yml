@@ -15,6 +15,8 @@
 ---
 - hosts: localhost
   name: federateNsxEdgeNodes.yml
+  vars:
+    LOCAL_T0GatewayInterfaces_Template: "{{ Target.TemplateFolder }}/vars_NSXT_T0Gateway_Interfaces.j2"
   tasks:
     - name: federateNsxEdgeNodes_Playbook
       ansible.builtin.debug:
@@ -329,7 +331,7 @@
         - Deploy.Product.NSXT.Edge.Deploy == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
 
-    - name: Locate and store the Edge Cluster Path for later user
+    - name: Locate and store the Edge Cluster Path for later use
       ansible.builtin.set_fact:
         edge_cluster_path: "{{ result.json | community.general.json_query(query) }}"
       vars:
@@ -359,7 +361,7 @@
 
 
 ##
-## Perform NSX-T REST API call to add SiteCode to first Tier-0 Gateway
+## Perform NSX-T REST API call to add Non-GM SiteCode as a Location to the first Tier-0 Gateway
 ##
     - name: Site Non-GM SiteCode Site as a Location to the first Tier-0 Gateway
       ansible.builtin.uri:
@@ -383,6 +385,8 @@
       register: result
       until: result.status == 200
       when: 
+# Remove the following 'false' line -- TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING TESTING 
+        - false
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
@@ -396,4 +400,170 @@
 #######################################################################################################
 ##
 
+##
+## Create a dictionary where key=SegmentName and value=segment_path
+##
+    - name: Obtain information on each segment of the first Tier-0 Gateway
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/segments/{{ item.SegmentName }}
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      loop: "{{ Nested_NSXT.Networking.Tier0Gateways[0].BGP.Interfaces }}"
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
 
+    - name: Create T0Segments dictionary
+      set_fact:
+        T0Segments: "{{ T0Segments|default({}) | combine( {item.json.display_name: item.json.path} ) }}"
+      loop: "{{ result.results }}"
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+    - name: DEBUG -- Display T0Segments Variable (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================= Display 'T0Segments' Variable ====================================
+
+          T0Segments:
+            {{ T0Segments | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+
+##
+## Create dictionary where key=EdgeVM Node Name and value=EdgeVM Node Path
+##
+    - name: Obtain information on each segment of the first Tier-0 Gateway
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1{{ edge_cluster_path }}/edge-nodes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+    - name: Create T0Edges dictionary
+      set_fact:
+        T0Edges: "{{ T0Edges|default({}) | combine( {item.display_name: item.path} ) }}"
+      loop: "{{ result.json.results }}"
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+    - name: DEBUG -- Display T0Segments Variable (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================= Display 'T0Edges' Variable ====================================
+
+          T0Edges:
+            {{ T0Edges | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+
+
+##
+## Generate body (using a Jinga2 template) for the REST API call that adds the interfaces to the Tier-0 Gateway
+##
+    - name: Generate body of REST API call to add the Tier-0 Gateway Interfaces
+      ansible.builtin.set_fact:
+        T0GatewayInterfaces: "{{ lookup('template', LOCAL_T0GatewayInterfaces_Template) | from_yaml }}"
+      when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+    - name: DEBUG -- Display T0GatewayInterfaces Variable (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display T0GatewayInterfaces Variable ===================================
+
+          Quantity: {{ T0GatewayInterfaces | length }}
+
+          T0GatewayInterfaces (YAML):
+            {{ T0GatewayInterfaces | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+          
+          T0GatewayInterfaces (JSON):
+            {{ T0GatewayInterfaces | to_nice_json(indent=2) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+    - name: Pause for 60 minutes
+      ansible.builtin.pause:
+        minutes: 60
+
+##
+## Peform the NSXT REST API call that addes the interfaces
+##
+    - name: Add interfaces to Tier-0 Gateway
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ SiteCode }}/interfaces/{{ item.display_name }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: PUT
+        body_format: json
+        body: "{{ item | to_json }}"
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      loop: "{{ T0GatewayInterfaces }}"
+      when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode

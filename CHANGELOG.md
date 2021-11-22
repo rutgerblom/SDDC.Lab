@@ -690,3 +690,12 @@
   - Removed extra "ip_addresses:" entry on line 47 from var_NSXT_EdgeTransportNodes.j2 that appeared to have been left in by accident, and had no function.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
+
+## Dev-v4.0.0 22-NOV-2021
+
+### Added by Luis Chanu
+  - Added code to federateNsxEdgeNodes.yml which:
+    - Configures RTEP interface on Edge Nodes
+    - Configures Tier-0 Gateway Interfaces on the Edge Node SRs
+    - **IMPORTANT**: Only the first Tier-0 Gateway is configured
+    - VERY limited testing performed
