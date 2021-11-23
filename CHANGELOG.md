@@ -724,3 +724,14 @@
   - NSX-T Global Fabric MTU settings are now configured to match the values defined in Net.Transport.MTU and Net.RTEP.MTU.  Make sure these values supported by your physical networking environment.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
+
+## Dev-v4.0.0 23-NOV-2021
+
+### Added by Luis Chanu
+  - Added federateNsxT0RouteReDist.yml playbook to project.  This handles configuration of Tier-0 Gateway Route Re-Distribution on non-GM SiteCodes.
+  - Added federateNsxT0RouteReDist.yml playbook to deploy.yml.
+  - Corredted issue with T0Edges variable.
+  - Increased time on some loops to support large deployments.
+  - In config_sample.yml, changed Tier-0 Gateway Locale-Service from "T0-Gateway-01_Locale_Service" to "{{ SiteCode }}" to aid with Federation automation.
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml

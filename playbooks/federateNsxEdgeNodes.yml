@@ -59,7 +59,7 @@
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
 
-                                          Ansible Playbook: {{ ansible_play_name }}
+                                         Ansible Playbook: {{ ansible_play_name }}
 
              Nested_NSXT.Component.GlobalManager_VIP.FQDN: {{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}
            Nested_NSXT.Component.GlobalManager_VIP.VMName: {{ Nested_NSXT.Component.GlobalManager_VIP.VMName }}
@@ -422,7 +422,7 @@
       register: result
       until: result.status == 200
       retries: 30
-      delay: 10
+      delay: 30
       when: 
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
@@ -521,7 +521,6 @@
         T0Edges: "{{ T0Edges|default({}) | combine( {item.display_name: item.path} ) }}"
       loop: "{{ result.json.results }}"
       when:
-        - DEBUG.DisplayVariables == true
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
