@@ -730,6 +730,8 @@
 ### Added by Luis Chanu
   - Added federateNsxT0RouteReDist.yml playbook to project.  This handles configuration of Tier-0 Gateway Route Re-Distribution on non-GM SiteCodes.
   - Added federateNsxT0RouteReDist.yml playbook to deploy.yml.
+  - Corredted issue with T0Edges variable.
+  - Increased time on some loops to support large deployments.
   - In config_sample.yml, changed Tier-0 Gateway Locale-Service from "T0-Gateway-01_Locale_Service" to "{{ SiteCode }}" to aid with Federation automation.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
