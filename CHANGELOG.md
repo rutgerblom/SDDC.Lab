@@ -707,6 +707,7 @@
 ## Dev-v4.0.0 22-NOV-2021
 
 ### Added by Luis Chanu
+  - Added NSX-T Federation section to README.md file
   - Modified .gitignore to ignore all files that start with:
     - config*
     - license*
