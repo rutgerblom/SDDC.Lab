@@ -73,12 +73,12 @@
       when:
         - DEBUG.DisplayVariables == true
 
+
 ##
 #######################################################################################################
 ##              Wait until the Tier-0 Gateway has been imported into the Global Manager              ##
 #######################################################################################################
 ##
-
     - name: Wait until the Tier-0 Gateway has been imported into the Global Manager
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}
