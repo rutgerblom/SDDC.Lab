@@ -16,6 +16,7 @@
 * [Networking](#Networking)
 * [IP Address Assignments](#IP-Address-Assignments)
 * [Usage](#Usage)
+* [NSX-T Federation](#NSX-T-Federation)
 * [Known Items](#Known-Items)
 * [More Information](#More-Information)
 * [Credits](#Credits)
@@ -132,18 +133,18 @@ The Pod-Router provides gateways services for all of the SDDC.Lab's networks via
 
 Each Pod is comprised of ten (10) SDDC.Lab networks, numbered 0 through 9.  These SDDC.Lab network numbers are added to the Pod number to create unique VLAN IDs for each Pod.  This explains why the Pod Numbers are divisible by 10.  Below are the SDDC.Lab networks that are deployed within each Pod (Pod Number 100 shown):
 
-| Pod.Number | Network Number | VLAN ID |    Description    |
-|------------|----------------|---------|-------------------|
-|    100     |       0        |   100   | Management (ESXi, NSX-T Edges, etc.) |
-|    100     |       1        |   101   | vMotion |
-|    100     |       2        |   102   | vSAN |
-|    100     |       3        |   103   | IPStorage |
-|    100     |       4        |   104   | Overlay Transport (i.e. GENEVE Traffic) |
-|    100     |       5        |   105   | Service VM Management Interfaces |
-|    100     |       6        |   106   | NSX-T Edge Uplink #1 |
-|    100     |       7        |   107   | NSX-T Edge Uplink #2 |
-|    100     |       8        |   108   | Remote Tunnel Endpoint (RTEP) |
-|    100     |       9        |   109   | VM Network |
+| Pod.Number | Network Number | MTU  | VLAN ID |    Description    |
+|------------|----------------|------|------|-------------------|
+|    100     |       0        | 1500 | 100   | Management (ESXi, NSX-T Edges, etc.) |
+|    100     |       1        | 9000 | 101   | vMotion |
+|    100     |       2        | 9000 | 102   | vSAN |
+|    100     |       3        | 9000 | 103   | IPStorage |
+|    100     |       4        | 9000 | 104   | Overlay Transport (i.e. GENEVE Traffic) |
+|    100     |       5        | 1500 | 105   | Service VM Management Interfaces |
+|    100     |       6        | 1500 | 106   | NSX-T Edge Uplink #1 |
+|    100     |       7        | 1500 | 107   | NSX-T Edge Uplink #2 |
+|    100     |       8        | 1500 | 108   | Remote Tunnel Endpoint (RTEP) |
+|    100     |       9        | 1500 | 109   | VM Network |
 
 In order to be able to deploy multiple Pods, VLAN ID's 10-249 should be reserved for SDDC.Lab use.
 
@@ -244,6 +245,30 @@ Deploying an SDDC Pod will take somewhere between 1 and 1.5 hours depending on y
 
 Similary you remove a Pod with:  
 **sudo ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" undeploy.yml**
+
+## NSX-T Federation
+When deploying NSX-T Federation, keep the following in mind:
+
+1. Each NSX-T Location will be deployed from a separate SDDC.Lab Pod configuration file.
+
+2. All of the Pods that are participating in the NSX-T Federation deployment (i.e. Which will become NSX-T Locations) need to have "Deploy.Product.NSXT.Federation.Enable = true" set in their configuration file.
+
+3. The Global Manager Cluster (single VM) will be deployed by the Pod specified by "Deploy.Product.NSXT.GlobalManager.SiteCode".  As the value of this variable for each Pod defaults to their own SiteCode, this value can be left at default for the Pod deploying the Global Manager.  All other Pods participating in NSX-T Federation need to update this value to the SiteCode of the Pod deploying the Global Manager.  For example, if the "Pod-100" is deploying the Global Manager, then the other Pods need to change this variable in their respective configurations to "Pod-100".
+
+4. The Pod responsible for deploying the Global Manager Cluster is responsible for many aspects of the NSX-T Federation deployment.  Because of these extra steps, there may be instances when the other Pods are waiting for some component to come on-line.  This is normal and by design.
+
+5. NSX-T Federation can only be deployed as part of a complete Pod deployment.  For that reason, the following Pod Configuration settings must all be enabled to deploy NSX-T Federation:\
+  a) Deploy.Product.NSXT.Federation.Enable = true
+  b) Deploy.Product.NSXT.LocalManager.Deploy = true
+  c) Deploy.Product.NSXT.Edge.Deploy = true
+
+6. NSX-T Federation requires an NSX-T Enterprise Plus license, so be sure the proper license is included in your License.yml file.
+
+7. SDDC.Lab only supports one (1) Tier-0 Gateway when NSX-T Federation is configured.  This Tier-0 Gateway will become the Stretched Tier-0 Gateway.
+
+8. NSX-T Federation support is still being developed, so there might be some functional items missing as part of the automated deployment.
+
+9. The **config_sample.yml** default configuration assumes the Lab-Routers transit segment, and thus communication between NSX-T Federation Locations, is configured with an MTU of 1500 bytes.  If your environment supports Jumbo Frames, you can obtain better performance by changing the MTU values in the Net section.  Keep in mind that the OSPF (by default) requires matching MTU sizes, so you may lose peering with your ToR router.  If you decide to change the MTU values, you need to take this all into account, and are on your own.  For a lab, the default 1500 byte MTU configurations should suffice.
 
 ## Known Items
 Here are some known items to be aware of:

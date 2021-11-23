@@ -1,13 +1,16 @@
 ##
-##    Project: SDDC.Lab
-##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/enableNsxIPv6.yml
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: playbooks/configureNsxFabricMTU.yml
+##
+##  Description: This playbook configures the Global Fabric MTUs for both TEP and RTEP to settings defined
+##               at Nested_NSXT.System.Fabric.GlobalSetting.
 ##
 ---
 - hosts: localhost
-  name: enableNsxIPv6.yml
+  name: configureNsxFabricMTU.yml
   tasks:
-    - name: enableNsxIPv6_Playbook
+    - name: configureNsxFabricMTU_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -47,30 +50,62 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
-                             NSX-T Local Manager FQDN: {{ Nested_NSXT.Component.LocalManager.FQDN }}
-                                  Deploy.Setting.IPv6: {{ Deploy.Setting.IPv6 }}
+                             NSX-T Local Manager FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
+                      NSX-T Tunnel EndPoint (TEP) MTU: {{ Nested_NSXT.System.Fabric.GlobalSetting.TEP.MTU }}
+              NSX-T Remote Tunnel EndPoint (RTEP) MTU: {{ Nested_NSXT.System.Fabric.GlobalSetting.RTEP.MTU }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
 
-    - name: Enable Both IPv4 and IPv6 Forwarding within NSX-T
+    - name: Get current _revision number for NSX-T Fabric MTU Settings
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/policy/api/v1/infra/global-config
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/global-configs/SwitchingGlobalConfig
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
         force_basic_auth: yes
-        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        method: PATCH
+        method: GET
         body_format: json
-        body: '{ "l3_forwarding_mode": "IPV4_AND_IPV6" }'
         return_content: yes
         status_code: 200
+      register: result
+      until: result.status == 200
       when: 
         - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Setting.IPv6 == true
+
+    - name: Store current _revision number
+      ansible.builtin.set_fact:
+        current_revision: "{{ result.json._revision | default(0) }}"
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - result.status == 200
+
+    - name: Set NSX-T Fabric MTU Settings
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/global-configs/SwitchingGlobalConfig
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        method: PUT
+        body_format: json
+        body: |
+          {
+            "resource_type": "SwitchingGlobalConfig",
+            "physical_uplink_mtu": {{ Nested_NSXT.System.Fabric.GlobalSetting.TEP.MTU }},
+            "remote_tunnel_physical_mtu": {{ Nested_NSXT.System.Fabric.GlobalSetting.RTEP.MTU }},
+            "_revision": {{ current_revision }}
+          }
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      when: 
+        - Deploy.Product.NSXT.LocalManager.Deploy == true

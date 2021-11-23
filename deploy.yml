@@ -65,6 +65,10 @@
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy == true
 
+- ansible.builtin.import_playbook: playbooks/configureNsxFabricMTU.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+
 - ansible.builtin.import_playbook: playbooks/registerNsxComputeManager.yml
 
 - ansible.builtin.import_playbook: playbooks/createNsxTz.yml
@@ -131,6 +135,10 @@
     - Deploy.Product.NSXT.LocalManager.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/federateNsxLocalManager.yml
+  when: 
+    - Deploy.Product.NSXT.Federation.Enable == true
+
+- ansible.builtin.import_playbook: playbooks/federateNsxEdgeNodes.yml
   when: 
     - Deploy.Product.NSXT.Federation.Enable == true
 

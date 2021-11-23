@@ -690,3 +690,37 @@
   - Removed extra "ip_addresses:" entry on line 47 from var_NSXT_EdgeTransportNodes.j2 that appeared to have been left in by accident, and had no function.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
+
+## Dev-v4.0.0 21-NOV-2021
+
+### Added by Luis Chanu
+  - Added code to federateNsxEdgeNodes.yml which:
+    - Configures RTEP interface on Edge Nodes
+    - Configures Tier-0 Gateway Interfaces on the Edge Node SRs
+    - **IMPORTANT**: Only the first Tier-0 Gateway is configured
+    - VERY limited testing performed
+  - Added RTEP configuration details to Nested_NSXT.System.LocationManager in config_sample.yml
+  - InterLocationMTU not yet implemented in RTEP section
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml
+
+## Dev-v4.0.0 22-NOV-2021
+
+### Added by Luis Chanu
+  - Added NSX-T Federation section to README.md file
+  - Modified .gitignore to ignore all files that start with:
+    - config*
+    - license*
+    - licenses*
+  - Modified .gitignore to ensure the following sample files are still included in git:
+    - config_sample.yml
+    - templates_sample.yml
+    - software_sample.yml
+    - licenses_sample.yml
+  - Removed Nested_NSXT.System.LocationManager  from config_sample.yml
+  - Added Nested_NSXT.System.Fabric.GlocalSetting to config_sample.yml
+  - Added playbooks/configureNsxFabricMTU.yml to project
+  - Added configureNsxFabricMTU.yml to deploy.yml
+  - NSX-T Global Fabric MTU settings are now configured to match the values defined in Net.Transport.MTU and Net.RTEP.MTU.  Make sure these values supported by your physical networking environment.
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml

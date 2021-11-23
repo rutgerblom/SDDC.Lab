@@ -7,7 +7,7 @@
 - hosts: localhost
   name: configureRTEP.yml
   vars:
-      LOCAL_EdgeTnTemplate: "./configureRTEP_template.j2"
+      LOCAL_ConfigRTEPTemplate: "./configureRTEP_template.j2"
   tasks:
     - name: configureRTEP_Playbook
       ansible.builtin.debug:
@@ -18,7 +18,6 @@
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
-
 
                                             Ansible Playbook: {{ ansible_play_name }}
 
@@ -175,7 +174,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
-    - name: Create list of Edge Nodes
+    - name: Create list of Edge Nodes with additional RTEP configuration
       ansible.builtin.set_fact:
         EdgeNodes: "{{ EdgeNodes | default([]) + [ item | combine(RemoteTunnel) ] }}"
       vars:
@@ -235,9 +234,9 @@
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
-    - name: Pause forever
+    - name: Pause for 60 minutes
       ansible.builtin.pause:
-        minutes: 10
+        minutes: 60
 
 
 
@@ -258,7 +257,7 @@
 ##
     - name: Read the structure from template into a variable
       ansible.builtin.set_fact:
-        var_EdgeTransportNodes: "{{ lookup('template', LOCAL_EdgeTnTemplate) | from_yaml }}"
+        var_EdgeTransportNodes: "{{ lookup('template', LOCAL_ConfigRTEPTemplate) | from_yaml }}"
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
