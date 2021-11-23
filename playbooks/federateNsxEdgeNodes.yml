@@ -73,6 +73,37 @@
       when:
         - DEBUG.DisplayVariables == true
 
+##
+#######################################################################################################
+##              Wait until the Tier-0 Gateway has been imported into the Global Manager              ##
+#######################################################################################################
+##
+
+    - name: Wait until the Tier-0 Gateway has been imported into the Global Manager
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 120
+      delay: 60
+      when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+
 
 ##
 #######################################################################################################
@@ -371,7 +402,7 @@
 ##
 ## Perform NSX-T REST API call to add Non-GM SiteCode as a Location to the first Tier-0 Gateway
 ##
-    - name: Site Non-GM SiteCode Site as a Location to the first Tier-0 Gateway
+    - name: Add Non-GM SiteCode Site as a Location to the first Tier-0 Gateway
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ SiteCode }}
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
@@ -516,7 +547,6 @@
         - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
 
 
-
 ##
 ## Generate body (using a Jinga2 template) for the REST API call that adds the interfaces to the Tier-0 Gateway
 ##
@@ -551,9 +581,6 @@
         - Deploy.Product.NSXT.Edge.Deploy == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
 
-    - name: Pause for 60 minutes
-      ansible.builtin.pause:
-        minutes: 60
 
 ##
 ## Peform the NSXT REST API call that addes the interfaces
