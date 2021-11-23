@@ -50,11 +50,11 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
-                             NSX-T Local Manager FQDN: {{ Nested_NSXT.Component.LocalManager.FQDN }}
+                             NSX-T Local Manager FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
                       NSX-T Tunnel EndPoint (TEP) MTU: {{ Nested_NSXT.System.Fabric.GlobalSetting.TEP.MTU }}
               NSX-T Remote Tunnel EndPoint (RTEP) MTU: {{ Nested_NSXT.System.Fabric.GlobalSetting.RTEP.MTU }}
 
@@ -64,6 +64,7 @@
 
     - name: Get current _revision number for NSX-T Fabric MTU Settings
       ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/global-configs/SwitchingGlobalConfig
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
