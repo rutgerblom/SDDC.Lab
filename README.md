@@ -143,7 +143,7 @@ Each Pod is comprised of ten (10) SDDC.Lab networks, numbered 0 through 9.  Thes
 |    100     |       5        | 1500 | 105   | Service VM Management Interfaces |
 |    100     |       6        | 1500 | 106   | NSX-T Edge Uplink #1 |
 |    100     |       7        | 1500 | 107   | NSX-T Edge Uplink #2 |
-|    100     |       8        | **1500** | 108   | Remote Tunnel Endpoint (RTEP) |
+|    100     |       8        | 1500 | 108   | Remote Tunnel Endpoint (RTEP) |
 |    100     |       9        | 1500 | 109   | VM Network |
 
 In order to be able to deploy multiple Pods, VLAN ID's 10-249 should be reserved for SDDC.Lab use.
@@ -267,6 +267,8 @@ When deploying NSX-T Federation, keep the following in mind:
 7. SDDC.Lab only supports one (1) Tier-0 Gateway when NSX-T Federation is configured.  This Tier-0 Gateway will become the Stretched Tier-0 Gateway.
 
 8. NSX-T Federation support is still being developed, so there might be some functional items missing as part of the automated deployment.
+
+9. The **config_sample.yml** default configuration assumes the Lab-Routers transit segment, and thus communication between NSX-T Federation Locations, is configured with an MTU of 1500 bytes.  If your environment supports Jumbo Frames, you can obtain better performance by changing the MTU values in the Net section.  Keep in mind that the OSPF (by default) requires matching MTU sizes, so you may lose peering with your ToR router.  If you decide to change the MTU values, you need to take this all into account, and are on your own.  For a lab, the default 1500 byte MTU configurations should suffice.
 
 ## Known Items
 Here are some known items to be aware of:
