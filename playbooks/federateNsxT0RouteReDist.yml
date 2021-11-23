@@ -1,0 +1,146 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/federateNsxT0RouteReDist.yml.yml
+##
+##      Notes: The purpose of this playbook is configure Route Redistribution on the Tier-0 Gateway.
+##             For consistency, it copies the Route Re-Distribution configuration from the GM SiteCode LocaleServices,
+##             as it's configuration was imported into the Global Manager.
+##
+---
+- hosts: localhost
+  name: federateNsxT0RouteReDist.yml.yml
+  tasks:
+    - name: federateNsxT0RouteReDist.yml_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                         Ansible Playbook: {{ ansible_play_name }}
+
+             Nested_NSXT.Component.GlobalManager_VIP.FQDN: {{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}
+           Nested_NSXT.Component.GlobalManager_VIP.VMName: {{ Nested_NSXT.Component.GlobalManager_VIP.VMName }}
+
+              Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
+            Nested_NSXT.Component.LocalManager_VIP.VMName: {{ Nested_NSXT.Component.LocalManager_VIP.VMName }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Obtain current Tier-0 Gateway Route Redistribution configuration from GM SiteCode
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 12
+      delay: 5
+      when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+    - name: Save GM SiteCode Tier-0 Gateway Route Redistribution configuration for later use
+      ansible.builtin.set_fact:
+        route_redistribution_config: "{{ result.json.route_redistribution_config }}"
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+        - result.status == 200
+
+    - name: DEBUG -- Display GM SiteCode Tier-0 Gateway Route Redistribution configuration
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ====================== Display IP Pools 'route_redistribution_config' Variable ==========================
+
+          route_redistribution_config (YAML):
+            {{ route_redistribution_config | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          route_redistribution_config (JSON):
+            {{ route_redistribution_config | to_nice_json(indent=2) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+    - name: Configure Route Redistribution on Tier-0 Gateway for our Pod
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ SiteCode }}
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        method: PATCH
+        body_format: json
+        body: |
+         {
+           "resource_type": "LocaleServices",
+           "route_redistribution_config": {{ route_redistribution_config }}
+         }
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 12
+      delay: 5
+      when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
