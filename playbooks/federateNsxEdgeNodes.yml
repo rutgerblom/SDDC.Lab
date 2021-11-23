@@ -521,7 +521,6 @@
         T0Edges: "{{ T0Edges|default({}) | combine( {item.display_name: item.path} ) }}"
       loop: "{{ result.json.results }}"
       when:
-        - DEBUG.DisplayVariables == true
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
