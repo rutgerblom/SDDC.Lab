@@ -547,9 +547,14 @@
         - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
 
 
+
 ##
 ## Generate body (using a Jinga2 template) for the REST API call that adds the interfaces to the Tier-0 Gateway
 ##
+    - name: Add delay to address race condition issue with variables
+      ansible.builtin.pause:
+        seconds: 3
+
     - name: Generate body of REST API call to add the Tier-0 Gateway Interfaces
       ansible.builtin.set_fact:
         T0GatewayInterfaces: "{{ lookup('template', LOCAL_T0GatewayInterfaces_Template) | from_yaml }}"
