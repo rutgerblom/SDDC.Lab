@@ -133,18 +133,18 @@ The Pod-Router provides gateways services for all of the SDDC.Lab's networks via
 
 Each Pod is comprised of ten (10) SDDC.Lab networks, numbered 0 through 9.  These SDDC.Lab network numbers are added to the Pod number to create unique VLAN IDs for each Pod.  This explains why the Pod Numbers are divisible by 10.  Below are the SDDC.Lab networks that are deployed within each Pod (Pod Number 100 shown):
 
-| Pod.Number | Network Number | VLAN ID |    Description    |
-|------------|----------------|---------|-------------------|
-|    100     |       0        |   100   | Management (ESXi, NSX-T Edges, etc.) |
-|    100     |       1        |   101   | vMotion |
-|    100     |       2        |   102   | vSAN |
-|    100     |       3        |   103   | IPStorage |
-|    100     |       4        |   104   | Overlay Transport (i.e. GENEVE Traffic) |
-|    100     |       5        |   105   | Service VM Management Interfaces |
-|    100     |       6        |   106   | NSX-T Edge Uplink #1 |
-|    100     |       7        |   107   | NSX-T Edge Uplink #2 |
-|    100     |       8        |   108   | Remote Tunnel Endpoint (RTEP) |
-|    100     |       9        |   109   | VM Network |
+| Pod.Number | Network Number | MTU  | VLAN ID |    Description    |
+|------------|----------------|------|------|-------------------|
+|    100     |       0        | 1500 | 100   | Management (ESXi, NSX-T Edges, etc.) |
+|    100     |       1        | 9000 | 101   | vMotion |
+|    100     |       2        | 9000 | 102   | vSAN |
+|    100     |       3        | 9000 | 103   | IPStorage |
+|    100     |       4        | 9000 | 104   | Overlay Transport (i.e. GENEVE Traffic) |
+|    100     |       5        | 1500 | 105   | Service VM Management Interfaces |
+|    100     |       6        | 1500 | 106   | NSX-T Edge Uplink #1 |
+|    100     |       7        | 1500 | 107   | NSX-T Edge Uplink #2 |
+|    100     |       8        | **1500** | 108   | Remote Tunnel Endpoint (RTEP) |
+|    100     |       9        | 1500 | 109   | VM Network |
 
 In order to be able to deploy multiple Pods, VLAN ID's 10-249 should be reserved for SDDC.Lab use.
 
