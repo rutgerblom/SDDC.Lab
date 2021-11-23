@@ -65,10 +65,8 @@
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy == true
 
-## Disabled because module needs to be tested
 - ansible.builtin.import_playbook: playbooks/configureNsxFabricMTU.yml
   when: 
-    - false
     - Deploy.Product.NSXT.LocalManager.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/registerNsxComputeManager.yml
