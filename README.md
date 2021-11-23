@@ -16,6 +16,7 @@
 * [Networking](#Networking)
 * [IP Address Assignments](#IP-Address-Assignments)
 * [Usage](#Usage)
+* [NSX-T Federation](#NSX-T-Federation)
 * [Known Items](#Known-Items)
 * [More Information](#More-Information)
 * [Credits](#Credits)
@@ -244,6 +245,28 @@ Deploying an SDDC Pod will take somewhere between 1 and 1.5 hours depending on y
 
 Similary you remove a Pod with:  
 **sudo ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" undeploy.yml**
+
+## NSX-T Federation
+When deploying NSX-T Federation, keep the following in mind:
+
+1. Each NSX-T Location will be deployed from a separate SDDC.Lab Pod configuration file.
+
+2. All of the Pods that are participating in the NSX-T Federation deployment (i.e. Which will become NSX-T Locations) need to have "Deploy.Product.NSXT.Federation.Enable = true" set in their configuration file.
+
+3. The Global Manager Cluster (single VM) will be deployed by the Pod specified by "Deploy.Product.NSXT.GlobalManager.SiteCode".  As the value of this variable for each Pod defaults to their own SiteCode, this value can be left at default for the Pod deploying the Global Manager.  All other Pods participating in NSX-T Federation need to update this value to the SiteCode of the Pod deploying the Global Manager.  For example, if the "Pod-100" is deploying the Global Manager, then the other Pods need to change this variable in their respective configurations to "Pod-100".
+
+4. The Pod responsible for deploying the Global Manager Cluster is responsible for many aspects of the NSX-T Federation deployment.  Because of these extra steps, there may be instances when the other Pods are waiting for some component to come on-line.  This is normal and by design.
+
+5. NSX-T Federation can only be deployed as part of a complete Pod deployment.  For that reason, the following Pod Configuration settings must all be enabled to deploy NSX-T Federation:\
+  a) Deploy.Product.NSXT.Federation.Enable = true
+  b) Deploy.Product.NSXT.LocalManager.Deploy = true
+  c) Deploy.Product.NSXT.Edge.Deploy = true
+
+6. NSX-T Federation requires an NSX-T Enterprise Plus license, so be sure the proper license is included in your License.yml file.
+
+7. SDDC.Lab only supports one (1) Tier-0 Gateway when NSX-T Federation is configured.  This Tier-0 Gateway will become the Stretched Tier-0 Gateway.
+
+8. NSX-T Federation support is still being developed, so there might be some functional items missing as part of the automated deployment.
 
 ## Known Items
 Here are some known items to be aware of:
