@@ -67,12 +67,13 @@
           neighbors:
 {% for Neighbor in Gateway.BGP.Neighbors %}
 {##### Verify Neighbor address type matches Deploy IP type #####}
-{% if (Deploy.Setting.IPv4 and Neighbor.Address | ipv4) or (Deploy.Setting.IPv6 and Neighbor.Address | ipv6) %}
+{% if (Deploy.Setting.IPv4 and (Neighbor.Address|ipv4)) or (Deploy.Setting.IPv6 and (Neighbor.Address|ipv6)) %}
             - state: present
               display_name: "{{ Neighbor.Name }}"
               neighbor_address: "{{ Neighbor.Address }}"
               remote_as_num: "{{ Neighbor.RemoteASN }}"
               allow_as_in: {{ Neighbor.AllowASIn }}
+              description: "{{ SiteCode }} neighbor {{ Neighbor.Address }}"
 {##### BFD Not supported with IPv6 #####}
 {% if Deploy.Setting.IPv6 is sameas false %}
               bfd:

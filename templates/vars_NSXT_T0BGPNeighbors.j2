@@ -1,0 +1,41 @@
+{#
+ #      Authors: Luis Chanu & Rutger Blom
+ #     Filename: templates/var_NSXT_T0BGPNeighbors.j2
+ #      Used By: This file is used by the federateNsxT0BGPNeighbors.yml playbook
+ #      Purpose: This Jinja2 template file is used to create the data structure that is 
+ #               sent to the NSX-T REST API to configure the Tier-0 Gateway BGP Neighbors.
+ #
+ #}
+{% for Neighbor in Nested_NSXT.Networking.Tier0Gateways[0].BGP.Neighbors %}
+{##### Verify Neighbor address type matches Deploy IP type #####}
+{% if (Deploy.Setting.IPv4 and (Neighbor.Address|ipv4)) or (Deploy.Setting.IPv6 and (Neighbor.Address|ipv6)) %}
+  - display_name: "{{ Neighbor.Name }}"
+    neighbor_address: "{{ Neighbor.Address }}"
+    remote_as_num: {{ Neighbor.RemoteASN }}
+    allow_as_in: {{ Neighbor.AllowASIn }}
+    description: "{{ SiteCode }} neighbor {{ Neighbor.Address }}"
+{##### BFD Not supported with IPv6 #####}
+{% if Deploy.Setting.IPv6 is sameas false %}
+    bfd:
+      enabled: {{ Neighbor.BFD.Enabled }}
+{% endif %}{# Deploy.Setting.IPv6 == false #}
+    graceful_restart_mode: "{{ Neighbor.GracefulRestartMode }}"
+    hold_down_time: {{ Neighbor.BGPSettings.HoldDownTime }}
+    keep_alive_time: {{ Neighbor.BGPSettings.KeepAliveTime }}
+    maximum_hop_limit: {{ Neighbor.BGPSettings.MaxHopLimit }}
+    password: "{{ Neighbor.BGPSettings.Password }}"
+    route_filtering:
+      - address_family: {% if (Neighbor.Address|ipv4) %}IPV4{% else %}IPV6{% endif %}{{''}}
+        enabled: true
+        in_route_filters: null
+        out_route_filters: null
+        maximum_routes: null
+    source_addresses:
+{% for Address in Neighbor.SourceAddresses %}
+{##### Only add source addresses that are the same address type as the neighbor's ip address #}
+{% if ((Neighbor.Address | ipv4) and (Address | ipv4)) or ((Neighbor.Address | ipv6) and (Address | ipv6)) %}
+      - "{{ Address }}"
+{% endif %}{# Neighbor.Address #}
+{% endfor %}{# Address #}
+{% endif %}{# Deploy.Setting.IPv4 or Deploy.Setting.IPv6 #}
+{% endfor %}{# Neighbor #}

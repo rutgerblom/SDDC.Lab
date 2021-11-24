@@ -2032,7 +2032,6 @@ Nested_NSXT:
         Description: NSX T0-Edge Uplink 1
         TransportZone: TZ-Edge
         ReplicationMode: MTEP                                                                   # ReplicationMode can be "MTEP" or "SOURCE"
-        EdgeTransit: true                                                                       # Indicates if segment is a Edge Transit Segment for EdgeVMs.
         VLANS:
           - "{{ Net.NSXEdgeUplink1.VLAN }}"
         Tags:
@@ -2043,7 +2042,6 @@ Nested_NSXT:
         Description: NSX T0-Edge Uplink 2
         TransportZone: TZ-Edge
         ReplicationMode: MTEP                                                                   # ReplicationMode can be "MTEP" or "SOURCE"
-        EdgeTransit: true                                                                       # Indicates if segment is a Edge Transit Segment for EdgeVMs.
         VLANS:
           - "{{ Net.NSXEdgeUplink2.VLAN }}"
         Tags:
@@ -2060,7 +2058,6 @@ Nested_NSXT:
         Subnets:
           - GatewayCIDR: 192.168.1.1/24
           - GatewayCIDR: fd00:a:a::1/64
-        EdgeTransit: false                                                                      # Indicates if segment is a Edge Transit Segment for EdgeVMs.
         VLANS:
         Tags:
           - Tag: Auto-Created
@@ -2076,7 +2073,6 @@ Nested_NSXT:
         Subnets:
           - GatewayCIDR: 192.168.2.1/24
           - GatewayCIDR: fd00:a:b::1/64
-        EdgeTransit: false                                                                      # Indicates if segment is a Edge Transit Segment for EdgeVMs.
         VLANS:
         Tags:
           - Tag:
@@ -2092,14 +2088,13 @@ Nested_NSXT:
         Subnets:
           - GatewayCIDR: 192.168.3.1/24
           - GatewayCIDR: fd00:a:c::1/64
-        EdgeTransit: false                                                                      # Indicates if segment is a Edge Transit Segment for EdgeVMs.
         VLANS:
         Tags:
           - Tag: Auto-Created
             Scope: SDDC.Lab
-      - Name: SEG-Example-Overlay-Without-VLANS
+      - Name: SEG-Example-Tier0-Overlay-Segment
         AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
-        Description: Example Overlay Segment without VLAN
+        Description: Example of a Tier-0 Overlay Segment
         TransportZone: TZ-Overlay
         ReplicationMode: MTEP                                                                   # ReplicationMode can be "MTEP" or "SOURCE"
         ConnectedTo:
@@ -2108,7 +2103,6 @@ Nested_NSXT:
         Subnets:
           - GatewayCIDR: 192.168.4.1/24
           - GatewayCIDR: fd00:a:d::1/64
-        EdgeTransit: false                                                                      # Indicates if segment is a Edge Transit Segment for EdgeVMs.
         Tags:
           - Tag: Auto-Created
             Scope: SDDC.Lab
