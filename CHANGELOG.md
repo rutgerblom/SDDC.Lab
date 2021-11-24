@@ -729,11 +729,14 @@
 
 ### Added by Luis Chanu
   - Added BGP Neighbor description to vars_NSXT_T0Gateways.j2 template.
-  - Added federatedNsxT0BGPNeighbors.yml playbook to project, which configures BGP Neighbors to the stretched Tier-0 Gateway.
+  - Added federateNsxT0BGPNeighbors.yml playbook to project, which configures BGP Neighbors to the stretched Tier-0 Gateway.
   - Added federateNsxT0RouteReDist.yml playbook to project.  This handles configuration of Tier-0 Gateway Route Re-Distribution on non-GM SiteCodes.
   - Added federateNsxT0RouteReDist.yml playbook to deploy.yml.
   - Corredted issue with T0Edges variable.
   - Increased time on some loops to support large deployments.
   - In config_sample.yml, changed Tier-0 Gateway Locale-Service from "T0-Gateway-01_Locale_Service" to "{{ SiteCode }}" to aid with Federation automation.
+  - Added federateNsxT0BGPNeighbors.yml to deploy.yml
+  - Removed 'EdgeTransit' field from all NSX-T Segments in the config_sample.yml file as it is not used.
+  - Renamed 'SEG-Example-Overlay-Without-VLANS' segment to 'SEG-Example-Tier0-Overlay-Segment' to better describe its existance/purpose.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
