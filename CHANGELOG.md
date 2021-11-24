@@ -728,6 +728,8 @@
 ## Dev-v4.0.0 23-NOV-2021
 
 ### Added by Luis Chanu
+  - Added BGP Neighbor description to vars_NSXT_T0Gateways.j2 template.
+  - Added federatedNsxT0BGPNeighbors.yml playbook to project, which configures BGP Neighbors to the stretched Tier-0 Gateway.
   - Added federateNsxT0RouteReDist.yml playbook to project.  This handles configuration of Tier-0 Gateway Route Re-Distribution on non-GM SiteCodes.
   - Added federateNsxT0RouteReDist.yml playbook to deploy.yml.
   - Corredted issue with T0Edges variable.
