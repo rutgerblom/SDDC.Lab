@@ -51,7 +51,7 @@
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
-                             NSX-T Local Manager FQDN: {{ Nested_NSXT.Component.LocalManager.FQDN }}
+                       NSX-T Local Manager (VIP) FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
                                   Deploy.Setting.IPv6: {{ Deploy.Setting.IPv6 }}
 
           =================================================================================================
@@ -60,7 +60,7 @@
 
     - name: Enable Both IPv4 and IPv6 Forwarding within NSX-T
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/policy/api/v1/infra/global-config
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/policy/api/v1/infra/global-config
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
         force_basic_auth: yes

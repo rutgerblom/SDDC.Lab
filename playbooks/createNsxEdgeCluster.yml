@@ -53,13 +53,13 @@
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
 
 
-                                            Ansible Playbook: {{ ansible_play_name }}
+                                             Ansible Playbook: {{ ansible_play_name }}
 
-                                           Target.Deployment: {{ Target.Deployment }}
+                                            Target.Deployment: {{ Target.Deployment }}
 
-                    Nested_NSXT.Component.LocalManager.FQDN: {{ Nested_NSXT.Component.LocalManager.FQDN }}
+                  Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
 
-          Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes: {{ Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes }}
+           Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes: {{ Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes }}
 
           =================================================================================================
       when:
@@ -90,7 +90,7 @@
 
     - name: Create NSX-T Edge Cluster
       nsxt_edge_clusters:
-        hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
@@ -109,7 +109,7 @@
 
     - name:  Wait until the NSX-T API reports that the Edge Cluster is in realized state
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/policy/api/v1/infra/sites/default/enforcement-points/default/edge-clusters/{{ edge_cluster | json_query('results[].id') | first }}
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/policy/api/v1/infra/sites/default/enforcement-points/default/edge-clusters/{{ edge_cluster | json_query('results[].id') | first }}
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
         force_basic_auth: yes

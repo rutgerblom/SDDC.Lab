@@ -51,20 +51,20 @@
         prompt: |
           ============================ Display Variables For Pod {{Pod.Number}} ===========================
 
-                                     Ansible Playbook: {{ ansible_play_name }}
+                                       Ansible Playbook: {{ ansible_play_name }}
 
-                                    Target.Deployment: {{ Target.Deployment }}
+                                      Target.Deployment: {{ Target.Deployment }}
 
-                             Deploy.Product.NSXT.LocalManager: {{ Deploy.Product.NSXT.LocalManager.Deploy }}
-             Nested_NSXT.Component.LocalManager.FQDN: {{ Nested_NSXT.Component.LocalManager.FQDN }}
+                       Deploy.Product.NSXT.LocalManager: {{ Deploy.Product.NSXT.LocalManager.Deploy }}
+            Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
 
-                                         License File: {{ LOCAL_LicenseFile }}
+                                           License File: {{ LOCAL_LicenseFile }}
 
-                                               NSX-T Deployed
-                                               ==============
-                                               Vendor: {{ Deploy.Software.NSXT.Vendor }}
-                                              Product: {{ Deploy.Software.NSXT.Product }}
-                                              Version: {{ Deploy.Software.NSXT.Version }}
+                                                NSX-T Deployed
+                                                ==============
+                                                 Vendor: {{ Deploy.Software.NSXT.Vendor }}
+                                                Product: {{ Deploy.Software.NSXT.Product }}
+                                                Version: {{ Deploy.Software.NSXT.Version }}
 
           =================================================================================================
       when:
@@ -124,7 +124,7 @@
 ##
     - name: Install All NSX-T Licenses
       nsxt_licenses:
-        hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"

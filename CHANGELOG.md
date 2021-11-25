@@ -740,3 +740,9 @@
   - Renamed 'SEG-Example-Overlay-Without-VLANS' segment to 'SEG-Example-Tier0-Overlay-Segment' to better describe its existance/purpose.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
+
+## Dev-v4.0.0 24-NOV-2021
+
+### Added by Luis Chanu
+  - Where applicable, playbooks were updated to use Local Manager and Global Manager VIPs instead of direct appliance IP
+  - Added task to end of validateConfiguration.yml playbook to recursively delete /tmp/{{ SiteCode }} directory
