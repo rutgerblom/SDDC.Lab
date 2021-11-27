@@ -588,7 +588,7 @@ Nested_Cluster:
         ControlPlaneSize: TINY                                                          # Size - The size of the control plane virtual machines
         Network:
           Management:
-            StartingIP: "{{ Net.Management.IPv4.Network }}.101"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
+            StartingIP: "{{ Net.Management.IPv4.Network }}.101"                         # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
             DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
@@ -623,7 +623,7 @@ Nested_Cluster:
         ControlPlaneSize: TINY                                                          # Size - The size of the control plane virtual machines
         Network:
           Management:
-            StartingIP: "{{ Net.Management.IPv4.Network }}.106"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
+            StartingIP: "{{ Net.Management.IPv4.Network }}.106"                         # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
             DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
@@ -658,7 +658,7 @@ Nested_Cluster:
         ControlPlaneSize: TINY                                                          # Size - The size of the control plane virtual machines
         Network:
           Management:
-            StartingIP: "{{ Net.Management.IPv4.Network }}.111"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
+            StartingIP: "{{ Net.Management.IPv4.Network }}.111"                         # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
             DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
@@ -693,7 +693,7 @@ Nested_Cluster:
         ControlPlaneSize: TINY                                                          # Size - The size of the control plane virtual machines
         Network:
           Management:
-            StartingIP: "{{ Net.Management.IPv4.Network }}.116"                          # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
+            StartingIP: "{{ Net.Management.IPv4.Network }}.116"                         # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
               Network: 10.244.48.0
@@ -1556,20 +1556,20 @@ Nested_vCenter:
   SSO:
     Domain: vsphere.local
     Site: "{{ SiteCode }}-Site"
-    ReplicationPartner: ""                                                                 # If replication partner FQDN is provided, the Replication template will be used to configure vCenter.  Else, field should be left as an empty string ("").
+    ReplicationPartner: ""                                                              # If replication partner FQDN is provided, the Replication template will be used to configure vCenter.  Else, field should be left as an empty string ("").
   DataCenter: "{{ SiteCode }}-DataCenter"
   ContentLibrary:
-    Enable: true                                                                                                   # Set to 'true' to enable the Content Library functionality, and 'false' to disable.
+    Enable: true                                                                        # Set to 'true' to enable the Content Library functionality, and 'false' to disable.
     Name: "{{ SiteCode }} Content Library"
     Description: "{{ SiteCode }} Content Library"
-    Type: local                                                                                                    # Must be either 'local' or 'subscribed'
-    Datastore: ""                                                                                                  # Specifying a Datastore will over-ride the default functionality of automatically selecting the datastore to use
+    Type: local                                                                         # Must be either 'local' or 'subscribed'
+    Datastore: ""                                                                       # Specifying a Datastore will over-ride the default functionality of automatically selecting the datastore to use
     Subscribed:
-      vCenter: "{{ Target.FQDN }}"                                                                                 # vCenter Server where Published Content Library is located.  By default, we assume the Content Library is on the physical vCenter Server
+      vCenter: "{{ Target.FQDN }}"                                                      # vCenter Server where Published Content Library is located.  By default, we assume the Content Library is on the physical vCenter Server
       User: "{{ Target.User }}"
       Password: "{{ Target.Password }}"
-      PublishedLibraryName: "SDDC.Lab Content Library"                                                             # Name must EXACTLY match the name of the published library to which you are subscribing
-      UpdateOnDemand: true                                                                                         # Setting to 'true' will download files as they are needed, while 'false' will download the entire content library ahead of time
+      PublishedLibraryName: "SDDC.Lab Content Library"                                  # Name must EXACTLY match the name of the published library to which you are subscribing
+      UpdateOnDemand: true                                                              # Setting to 'true' will download files as they are needed, while 'false' will download the entire content library ahead of time
   Networking:
     vSwitch:
       Name: "{{ SiteCode }}-VDS"

@@ -746,3 +746,11 @@
 ### Added by Luis Chanu
   - Where applicable, playbooks were updated to use Local Manager and Global Manager VIPs instead of direct appliance IP
   - Added task to end of validateConfiguration.yml playbook to recursively delete /tmp/{{ SiteCode }} directory
+
+## Dev-v4.0.0 26-NOV-2021
+
+### Added by Luis Chanu
+  - Updated 'createContentLibrary.yml' file implemented which supports additional functionality, including the ability to subscribe to remotely publised content libraries.
+  - Updated config_sample.yml configuration file with additional Content Library variables to support the additional functionality
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml
