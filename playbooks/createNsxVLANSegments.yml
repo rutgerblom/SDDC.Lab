@@ -53,13 +53,13 @@
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
 
 
-                                     Ansible Playbook: {{ ansible_play_name }}
+                                       Ansible Playbook: {{ ansible_play_name }}
 
-                                    Target.Deployment: {{ Target.Deployment }}
+                                      Target.Deployment: {{ Target.Deployment }}
 
-             Nested_NSXT.Component.LocalManager.FQDN: {{ Nested_NSXT.Component.LocalManager.FQDN }}
+            Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
 
-                      Nested_NSXT.Networking.Segments: {{ Nested_NSXT.Networking.Segments }}
+                        Nested_NSXT.Networking.Segments: {{ Nested_NSXT.Networking.Segments }}
 
           =================================================================================================
       when:
@@ -87,7 +87,7 @@
     ## Create only VLAN-backed Segments in SegmentsToCreate  ##
     - name: Create NSX-T Segments
       nsxt_policy_segment:
-        hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"

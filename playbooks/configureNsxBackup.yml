@@ -159,7 +159,7 @@
       register: result
       ignore_errors: true
       failed_when: false
-#      no_log: true
+      no_log: true
       when: Deploy.Product.NSXT.LocalManager.Deploy == True
 
 
@@ -276,7 +276,7 @@
         timeout: 5
       ignore_errors: true
       failed_when: false
-#      no_log: true
+      no_log: true
       when:
         - Deploy.Product.NSXT.Federation.Enable == True
         - Deploy.Product.NSXT.LocalManager.Deploy == True
@@ -301,7 +301,7 @@
         timeout: 5
       ignore_errors: true
       failed_when: false
-#      no_log: true
+      no_log: true
       register: result
       until: result.status == 200 and result.json.current_backup_operation_status.operation_type == "none"
       retries: 60

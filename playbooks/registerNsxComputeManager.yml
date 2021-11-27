@@ -50,26 +50,25 @@
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
 
+                                       Ansible Playbook: {{ ansible_play_name }}
 
-                                     Ansible Playbook: {{ ansible_play_name }}
+                                      Target.Deployment: {{ Target.Deployment }}
 
-                                    Target.Deployment: {{ Target.Deployment }}
+                                            Target.FQDN: {{ Target.FQDN }}
+                                            Target.User: {{ Target.User }}
+                                        Target.Password: {{ Target.Password }}
+                                         Target.Cluster: {{ Target.Cluster }}
+                                      Target.DataCenter: {{ Target.DataCenter }}
+                                       Target.Datastore: {{ Target.Datastore }}
+                                        Target.VMFolder: {{ Target.VMFolder }}
 
-                                          Target.FQDN: {{ Target.FQDN }}
-                                          Target.User: {{ Target.User }}
-                                      Target.Password: {{ Target.Password }}
-                                       Target.Cluster: {{ Target.Cluster }}
-                                    Target.DataCenter: {{ Target.DataCenter }}
-                                     Target.Datastore: {{ Target.Datastore }}
-                                      Target.VMFolder: {{ Target.VMFolder }}
+            Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
+              Nested_NSXT.Component.LocalManager.VMName: {{ Nested_NSXT.Component.LocalManager.VMName }}
 
-             Nested_NSXT.Component.LocalManager.FQDN: {{ Nested_NSXT.Component.LocalManager.FQDN }}
-           Nested_NSXT.Component.LocalManager.VMName: {{ Nested_NSXT.Component.LocalManager.VMName }}
-
-                                  Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN }}
-                                Nested_vCenter.VMName: {{ Nested_vCenter.VMName }}
-                                  Nested_vCenter.User: {{ Nested_vCenter.User }}
-                              Nested_vCenter.Password: {{ Nested_vCenter.Password }}
+                                    Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN }}
+                                  Nested_vCenter.VMName: {{ Nested_vCenter.VMName }}
+                                    Nested_vCenter.User: {{ Nested_vCenter.User }}
+                                Nested_vCenter.Password: {{ Nested_vCenter.Password }}
 
           =================================================================================================
       when:
@@ -77,7 +76,7 @@
 
     - name: Register NSX-T Compute Manager to Local Manager
       nsxt_fabric_compute_managers:
-          hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
+          hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
           username: "{{ Nested_NSXT.Credential.admin.Name }}"
           password: "{{ Nested_NSXT.Credential.admin.Password }}"
           validate_certs: "{{ Common.PKI.ValidateCerts }}"
@@ -95,7 +94,7 @@
 
     - name: Register NSX-T Compute Manager to Global Manager
       nsxt_fabric_compute_managers:
-          hostname: "{{ Nested_NSXT.Component.GlobalManager.FQDN }}"
+          hostname: "{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}"
           username: "{{ Nested_NSXT.Credential.admin.Name }}"
           password: "{{ Nested_NSXT.Credential.admin.Password }}"
           validate_certs: "{{ Common.PKI.ValidateCerts }}"

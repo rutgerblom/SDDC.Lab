@@ -57,7 +57,7 @@
 
                                          Target.Deployment: {{ Target.Deployment }}
 
-                  Nested_NSXT.Component.LocalManager.FQDN: {{ Nested_NSXT.Component.LocalManager.FQDN }}
+               Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
 
           Nested_NSXT.System.Fabric.Profile.UplinkProfiles: {{ Nested_NSXT.System.Fabric.Profile.UplinkProfiles }}
 
@@ -87,7 +87,7 @@
 
     - name: Create Uplink Profiles
       nsxt_uplink_profiles:
-        hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"

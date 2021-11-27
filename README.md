@@ -16,7 +16,10 @@
 * [Networking](#Networking)
 * [IP Address Assignments](#IP-Address-Assignments)
 * [Usage](#Usage)
-* [NSX-T Federation](#NSX-T-Federation)
+* [Project Features](#Project-Features)
+  * [NSX-T Federation](#NSX-T-Federation)
+  * [vSphere Content Libraries](#vSphere-Content-Libraries)
+  * [vSphere with Tanzu](#vSphere-with-Tanzu)  **Rutger To Add More Info In This Section Later**
 * [Known Items](#Known-Items)
 * [More Information](#More-Information)
 * [Credits](#Credits)
@@ -246,7 +249,9 @@ Deploying an SDDC Pod will take somewhere between 1 and 1.5 hours depending on y
 Similary you remove a Pod with:  
 **sudo ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" undeploy.yml**
 
-## NSX-T Federation
+## Project Features
+
+### NSX-T Federation
 When deploying NSX-T Federation, keep the following in mind:
 
 1. Each NSX-T Location will be deployed from a separate SDDC.Lab Pod configuration file.
@@ -269,6 +274,20 @@ When deploying NSX-T Federation, keep the following in mind:
 8. NSX-T Federation support is still being developed, so there might be some functional items missing as part of the automated deployment.
 
 9. The **config_sample.yml** default configuration assumes the Lab-Routers transit segment, and thus communication between NSX-T Federation Locations, is configured with an MTU of 1500 bytes.  If your environment supports Jumbo Frames, you can obtain better performance by changing the MTU values in the Net section.  Keep in mind that the OSPF (by default) requires matching MTU sizes, so you may lose peering with your ToR router.  If you decide to change the MTU values, you need to take this all into account, and are on your own.  For a lab, the default 1500 byte MTU configurations should suffice.
+
+### vSphere Content Libraries
+SDDC.Lab now supports both local and subscribed vSphere Content Libraries, which can be very helpful in a lab environment by centralizing workload ISOs and VMs (i.e. On the physical vCenter Server or a stand-alone Content Library target), then accessing them via the deployed Pods.  There are a few things to keep in mind with Content Libraries:
+
+1. Make sure to provision sufficient Pod storage to store whatever content items are used.
+
+2. If a specific datatstore is not specified in the config_sample.yml file (default), then the datastore used is dynamically selected from the available vSphere clusters.  If multiple vSphere clusters are deployed, the 'Edge' datastore is not used as it's assumed it's storage will be needed for NSX-T EdgeVMs.
+
+3. By default, config_sample.yml assumes the published content library exists on the physical vCenter Server servicing the SDDC.Lab environment.
+
+4. Only one (1) Content Library can be automatically configured via SDDC.Lab.  If additional Content Libraries are required, those will need to be manually added after the Pod deployment has completed.
+
+### vSphere with Tanzu
+More information about the added Workload Management will be added later.  Requires Local Content Library to be enabled.
 
 ## Known Items
 Here are some known items to be aware of:

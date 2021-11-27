@@ -52,12 +52,11 @@
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
 
+                                                 Ansible Playbook: {{ ansible_play_name }}
 
-                                          Ansible Playbook: {{ ansible_play_name }}
+                                                Target.Deployment: {{ Target.Deployment }}
 
-                                         Target.Deployment: {{ Target.Deployment }}
-
-                  Nested_NSXT.Component.LocalManager.FQDN: {{ Nested_NSXT.Component.LocalManager.FQDN }}
+                      Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
 
           Nested_NSXT.System.Fabric.Profile.TransportNodeProfiles: {{ Nested_NSXT.System.Fabric.Profile.TransportNodeProfiles }}
 
@@ -87,7 +86,7 @@
 
     - name: Create Transport Node Profiles 
       nsxt_transport_node_profiles:
-        hostname: "{{ Nested_NSXT.Component.LocalManager.FQDN }}"
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"

@@ -1,0 +1,38 @@
+##
+## Figure out how to obtain a datastore for the Content Library.  Json Query is used for efficiency.
+##
+---
+- hosts: localhost
+  tasks:
+    - name: Filter original Nested_Cluster dict of entries where DeployHosts == true
+      ansible.builtin.debug:
+        msg: "{{ dict(Nested_Cluster | dict2items | json_query('[?value.DeployHosts].[key, value]')) }}"
+
+    - name: Display List of vsanDatastores of vSphere clusters where DeployHosts == true
+      ansible.builtin.debug:
+        msg: "{{ (Nested_Cluster | dict2items | json_query('[?value.DeployHosts].value.vsanDatastore')) }}"
+
+    - name: Display List of vsanDatastores of vSphere clusters where DeployHosts == true
+      ansible.builtin.debug:
+        msg: "{{ (Nested_Cluster | dict2items | json_query('[?value.DeployHosts].value.vsanDatastore')) | reverse }}"
+
+    - name: Display List of vsanDatastores of vSphere clusters where DeployHosts == true
+      ansible.builtin.debug:
+        msg: "{{ (Nested_Cluster | dict2items | json_query('[?value.DeployHosts].value.vsanDatastore')) | reverse }}"
+
+    - name: Display List of vsanDatastores of vSphere clusters where DeployHosts == true
+      ansible.builtin.debug:
+        msg: "{{ (Nested_Cluster | dict2items | json_query('[?value.DeployHosts].value.vsanDatastore')) | difference([ Nested_Cluster['Edge'].vsanDatastore ]) }}"
+      when: (Nested_Cluster | length) > 1
+
+    - name: Get list of all vSphere Content Libraries
+      community.vmware.vmware_content_library_info:
+        hostname: "{{ Target.FQDN | lower }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+      register: result
+
+    - name: Display Content Libraries obtained
+      ansible.builtin.debug:
+        msg: "{{ result }}"

@@ -250,6 +250,7 @@
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         display_name: "{{ Nested_NSXT.Component.GlobalManager_VIP.VMName }}"
         id: "{{ Nested_NSXT.Component.GlobalManager_VIP.VMName }}"
+      no_log: true
       when:
         - Deploy.Product.NSXT.Federation.Enable == true
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode

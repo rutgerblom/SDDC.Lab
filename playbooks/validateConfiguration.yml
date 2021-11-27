@@ -630,6 +630,11 @@
 
 ##
 ########################################################################################################################
-##               At this point, everything looks good, so let's create the new static configuration file              ##
+##                    At this point, everything looks good, so we can proceed with the deployment                     ##
 ########################################################################################################################
 ##
+
+    - name: Prepare for deployment by deleting /tmp/{{ SiteCode }} directory
+      ansible.builtin.file:
+        path: "/tmp/{{ SiteCode }}"
+        state: absent
