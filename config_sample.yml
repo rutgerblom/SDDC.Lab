@@ -1559,10 +1559,17 @@ Nested_vCenter:
     ReplicationPartner: ""                                                                 # If replication partner FQDN is provided, the Replication template will be used to configure vCenter.  Else, field should be left as an empty string ("").
   DataCenter: "{{ SiteCode }}-DataCenter"
   ContentLibrary:
-    Name: "{{ SiteCode }}-ContentLibrary"
+    Enable: true                                                                                                   # Set to 'true' to enable the Content Library functionality, and 'false' to disable.
+    Name: "{{ SiteCode }} Content Library"
     Description: "{{ SiteCode }} Content Library"
-    Type: local
-    Datastore: "{{ Nested_Cluster.ComputeA.vsanDatastore }}"
+    Type: local                                                                                                    # Must be either 'local' or 'subscribed'
+    Datastore: ""                                                                                                  # Specifying a Datastore will over-ride the default functionality of automatically selecting the datastore to use
+    Subscribed:
+      vCenter: "{{ Target.FQDN }}"                                                                                 # vCenter Server where Published Content Library is located.  By default, we assume the Content Library is on the physical vCenter Server
+      User: "{{ Target.User }}"
+      Password: "{{ Target.Password }}"
+      PublishedLibraryName: "SDDC.Lab Content Library"                                                             # Name must EXACTLY match the name of the published library to which you are subscribing
+      UpdateOnDemand: true                                                                                         # Setting to 'true' will download files as they are needed, while 'false' will download the entire content library ahead of time
   Networking:
     vSwitch:
       Name: "{{ SiteCode }}-VDS"
