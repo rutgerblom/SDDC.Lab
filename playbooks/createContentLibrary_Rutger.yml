@@ -1,0 +1,106 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/createContentLibrary.yml
+##
+---
+- hosts: localhost
+  name: createContentLibrary.yml
+  tasks:
+    - name: createContentLibrary_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+
+                                  Nested vCenter FQDN: {{ Nested_vCenter.FQDN | lower }}
+                            Nested vCenter DataCenter: {{ Nested_vCenter.DataCenter }}
+
+                  Nested vCenter Content Library Name: {{ Nested_vCenter.ContentLibrary.Name }}
+           Nested vCenter Content Library Description: {{ Nested_vCenter.ContentLibrary.Description }}
+                  Nested vCenter Content Library Type: {{ Nested_vCenter.ContentLibrary.Type }}
+             Nested vCenter Content Library Datastore: {{ Nested_vCenter.ContentLibrary.Datastore }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+##
+## Check if any Tanzu Supervisor Clusters will deployed
+##
+    - name: Store the nested cluster data structure
+      ansible.builtin.set_fact:
+        tanzu_supervisor: "{{ Nested_Cluster }}"
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when:
+        - item.value.Tanzu.SupervisorCluster.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+##
+## Create a vSphere Content Library
+##
+    - name: Create a vSphere Content Library
+      community.vmware.vmware_content_library_manager:
+        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        library_name: "{{ Nested_vCenter.ContentLibrary.Name }}"
+        library_description: "{{ Nested_vCenter.ContentLibrary.Description }}"
+        library_type: "{{ Nested_vCenter.ContentLibrary.Type }}"
+        datastore_name: "{{ Nested_vCenter.ContentLibrary.Datastore }}"
+      when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
