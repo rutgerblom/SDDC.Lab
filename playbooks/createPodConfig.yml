@@ -73,7 +73,6 @@
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
 
-
                                      Ansible Playbook: {{ ansible_play_name }}
 
                                     Target.Deployment: {{ Target.Deployment }}
@@ -106,7 +105,7 @@
                Once prepared, it will be saved to this file: {{ lookup('env','HOME') }}/{{ PodConfigFile }}
 
           Once prepared, you can deploy the Pod using the following command:
-                          sudo ansible-playbook -e "@{{ lookup('env','HOME') }}/{{ PodConfigFile }}" deploy.yml
+                  sudo ansible-playbook -e "@{{ lookup('env','HOME') }}/{{ PodConfigFile }}" deploy.yml
 
           ====================================================================================================
 
