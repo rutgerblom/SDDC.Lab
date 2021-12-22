@@ -754,3 +754,16 @@
   - Updated config_sample.yml configuration file with additional Content Library variables to support the additional functionality
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
+
+## Dev-v4.0.0 21-DEC-2021
+
+### Added by Luis Chanu
+  - As the sample_config.yml file has changed over time, the amount of time it takes for createPodConfig.yml to complete is increasing.  Latest testing shows it's now taking just over 2 hours to complete.  You can run multiple in parallel without issue.  We are looking into this, but for now, that's how long to expect.
+  - Updated verbiage in createPodConfig.yml on how long it takes to create the static Pod-XXX-Config.yml file.
+  - Added Deploy.Product.NSXT.GlobalManager.PodNumber variable to support Federation, as a stretched Tier-0 uses the same ASN across all sites.
+  - Added the following updated products to software_sample.yml:
+    - NSX-T v3.2.0 (Untested)
+    - vRealize Log Insight v6.4.1 (Untested)
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml
+    - software_sample.yml
