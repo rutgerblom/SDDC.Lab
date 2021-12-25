@@ -767,3 +767,11 @@
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
     - software_sample.yml
+
+## Dev-v4.0.0 23-DEC-2021
+
+### Added by Luis Chanu
+  - Modified createPodConfig.yml to include additional fields in created static Pod Config filename.  Those fields are:
+    - VCSA version (VCSAvXXXXX) where XXXXX is VCSA version
+    - NSXT version (NSXTvYYYYY) where YYYYY is NSX-T version
+    - Fed-Z where Z is either Y or N, and indicates whether the Pod Configuration has NSX-T Federation deployment enabled or not

@@ -14,7 +14,7 @@
   vars:
     - PodTemplate: "Pod_Config.j2"
     - PodTempConfigFile: "{{ SiteCode }}-Config_Temp.yml"
-    - PodConfigFile: "{{ SiteCode }}-Config.yml"
+    - PodConfigFile: "{{ SiteCode }}-Config_VCSAv{{ Deploy.Software.vCenter.Version }}_NSXTv{{ Deploy.Software.NSXT.Version }}_Fed-{% if Deploy.Product.NSXT.Federation.Enable == true %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}{% else %}N{% endif %}.yml"
 
   vars_prompt:
 
@@ -102,11 +102,11 @@
           some time.  On average, it takes at least 75 minutes to complete, but this time may vary depending
           on the size of your lab, and the speed of your Ansible Control Station (a.k.a. Ansible Controller).
 
-                The following source file is being prepared: {{ SourceConfigPath }}/{{ SourceConfigFile }}
-               Once prepared, it will be saved to this file: {{ lookup('env','HOME') }}/{{ PodConfigFile }}
+              The following source file is being prepared: {{ SourceConfigPath }}/{{ SourceConfigFile }}
+             Once prepared, it will be saved to this file: {{ lookup('env','HOME') }}/{{ PodConfigFile }}
 
           Once prepared, you can deploy the Pod using the following command:
-                  sudo ansible-playbook -e "@{{ lookup('env','HOME') }}/{{ PodConfigFile }}" deploy.yml
+              sudo ansible-playbook -e "@{{ lookup('env','HOME') }}/{{ PodConfigFile }}" deploy.yml
 
           ====================================================================================================
 
@@ -153,7 +153,7 @@
           =============================================  NOTICE  =============================================
           ====================================================================================================
 
-             You can deploy the Pod using the following command:
-                      sudo ansible-playbook -e "@{{ lookup('env','HOME') }}/{{ PodConfigFile }}" deploy.yml
+           You can deploy the Pod using the following command:
+              sudo ansible-playbook -e "@{{ lookup('env','HOME') }}/{{ PodConfigFile }}" deploy.yml
 
           ====================================================================================================
