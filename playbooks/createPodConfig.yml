@@ -14,7 +14,7 @@
   vars:
     - PodTemplate: "Pod_Config.j2"
     - PodTempConfigFile: "{{ SiteCode }}-Config_Temp.yml"
-    - PodConfigFile: "{{ SiteCode }}-Config_VCSAv{{ Deploy.Software.vCenter.Version }}_NSXTv{{ Deploy.Software.NSXT.Version }}_Fed-{% if Deploy.Product.NSXT.Federation == true %}Y{% else %}N{% endif %}.yml"
+    - PodConfigFile: "{{ SiteCode }}-Config_VCSAv{{ Deploy.Software.vCenter.Version }}_NSXTv{{ Deploy.Software.NSXT.Version }}_Fed-{% if Deploy.Product.NSXT.Federation.Enable == true %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}{% else %}N{% endif %}.yml"
 
   vars_prompt:
 
