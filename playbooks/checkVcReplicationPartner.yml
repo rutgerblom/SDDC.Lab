@@ -150,7 +150,7 @@
         status_code: 200
       register: health_result
       until:    health_result.status == 200 and health_result.json.value == "green"
-      retries: 30
+      retries: 45
       delay: 60
       when:
         - vCenter_SessionID is defined
