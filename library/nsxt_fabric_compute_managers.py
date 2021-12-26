@@ -191,7 +191,7 @@ def wait_till_create(id, module, manager_url, mgr_username, mgr_password, valida
       while True:
           (rc, resp) = request(manager_url+ '/fabric/compute-managers/%s/status'% id, headers=dict(Accept='application/json'),
                         url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
-          if resp['registration_status'] == "REGISTERING":
+          if resp['registration_status'] == "REGISTERING" or resp['registration_status'] == "UNREGISTERED":
               time.sleep(10)
           elif resp['registration_status'] == "REGISTERED":
             if resp["connection_status"] == "CONNECTING":
