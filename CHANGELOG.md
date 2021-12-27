@@ -802,3 +802,12 @@
     - VCSA v7.00U3A, ESXi 7.00U3, NSX-T v3.1.3.5 (Standalone)
   - The following deployment scenarios **FAILED**:
     - VCSA v7.00U3A, ESXi 7.00U3, NSX-T v3.2.0   (Standalone) -- Issue with EdgeVM state changes when password aging is cleared (Flaps from SUCCESS to IN_PROGRESS), then Edge Cluster creation fails.
+
+## Dev-v4.0.0 26-DEC-2021
+
+### Added by Luis Chanu
+  - Modified createNsxEdgeCluster.yml play to address the flapping of EdgeVM state when the user password aging is disabled.
+  - The following deployment scenarios completed successfully:
+    - VCSA v7.00U3A, ESXi 7.00U3, NSX-T v3.1.3.3 (2-Site Federation)
+    - VCSA v7.00U3A, ESXi 7.00U3, NSX-T v3.1.3.5 (Standalone)
+    - VCSA v7.00U3A, ESXi 7.00U3, NSX-T v3.2.0   (Standalone)
