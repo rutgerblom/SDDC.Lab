@@ -1968,6 +1968,16 @@ Nested_NSXT:
                     - TIER1_CONNECTED
                     - TIER1_SEGMENT
 
+    DHCPProfiles:
+      - Name: DHCP-Server-Profile
+        Type: DHCP_SERVER                                                                       # Type is either DHCP_SERVER or DHCP_RELAY
+        ServerAddresses: []                                                                     # List of Server Address(es).  Required for DHCP_RELAY, but can be left as empty list ("[]") for DHCP_SERVER
+        LeaseTime: 86400
+        EdgeCluster: "{{ SiteCode }}-T0-Edge-Cluster-01"                                        # Edge Cluster where DHCP Server service is instantiated.
+        Tags:
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
+
     IPPools:
       - Name: "{{ SiteCode }}-TEP-Pool"
         Description: IP Pool for TEPs

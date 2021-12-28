@@ -811,3 +811,12 @@
     - VCSA v7.00U3A, ESXi 7.00U3, NSX-T v3.1.3.3 (2-Site Federation)
     - VCSA v7.00U3A, ESXi 7.00U3, NSX-T v3.1.3.5 (Standalone)
     - VCSA v7.00U3A, ESXi 7.00U3, NSX-T v3.2.0   (Standalone)
+
+## Dev-v4.0.0 27-DEC-2021
+
+### Added by Luis Chanu
+  - Created utils/util_ApplyConfigToTemplate.yml playbook to be able to test any template quickly.  Modify the variable within to indicate what template you want to have it generate.
+  - Began working on createNsxDhcpProfiles.yml playbook to create DHCP Server and DHCP Relay profiles.
+  - Added Nested_NSXT.Networking.DHCPProfiles section to config_sample.yml.
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml
