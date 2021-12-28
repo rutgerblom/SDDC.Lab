@@ -96,14 +96,6 @@
 ## NOT in "SUCCESS" state, the Edge Cluster creation play will fail.  For that reason, we need to verify that all of
 ## the EdgeVM Nodes are in "SUCCESS" state before we proceed with the Edge Cluster creation.
 ##
-    - name: Add delay to allow all EdgeVM nodes to reach 'SUCCESS' state
-      ansible.builtin.pause:
-        minutes: 1
-      when: 
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
-        - var_EdgeClusters != ""
-
     - name:  Wait until all Edge Nodes deployed report as being in a realized 'SUCCESS' state
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes/state?status=SUCCESS
