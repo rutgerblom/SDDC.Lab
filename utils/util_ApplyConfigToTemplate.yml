@@ -1,0 +1,23 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: utils/util_ApplyConfigToTemplate.yml
+##
+##
+## This playbook utility applies the supplied configuration to a specified template, and writes the output to /tmp/GeneratedTemplate.txt
+##
+## The command syntax to run this script is the same as is used to deploy a SDDC Lab, except you execut this script.  That command looks like this:
+##
+##              ansible-playbook  -e "@~/Pod-XXX-Config.yml" utils/util_ApplyConfigToTemplate.yml
+##
+---
+- hosts: localhost
+  gather_facts: false
+  vars:
+    - TemplateToUse: vars_NSXT_DHCPProfiles.j2
+  tasks:
+    - name: Applying Configuration To {{ TemplateToUse }} Template
+      ansible.builtin.template: 
+        src:  "../templates/{{ TemplateToUse }}"
+        dest: "/tmp/GeneratedTemplate.txt"
+        force: yes
