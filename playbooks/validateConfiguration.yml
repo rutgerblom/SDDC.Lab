@@ -146,6 +146,35 @@
 
 
 ##
+## Verify the following two options are not set, as Federation with NSX-T v3.2.0 is not supported:
+##     Deploy.Product.NSXT.Federation.Enable == True
+##     Deploy.Software.NSXT.Version == '3.2.0'
+##
+    - name: Verify Federation Support
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Deploying Federation on NSX-T v3.2.0 is not supported
+
+            Configured Values: Deploy.Product.NSXT.Federation.Enable == {{ Deploy.Product.NSXT.Federation.Enable }}
+                               Deploy.Software.NSXT.Version == {{ Deploy.Software.NSXT.Version }}
+
+          =================================================================================================
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == True
+        - Deploy.Software.NSXT.Version == '3.2.0'
+
+    - name: Set flag if issue found with Pod.BaseNetwork.IPv6
+      ansible.builtin.set_fact:
+        IssueFound: true
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == True
+        - Deploy.Software.NSXT.Version == '3.2.0'
+
+
+##
 ## Verify Pod.BaseNetwork.IPv6 is 17 characters long and makes a valid /56 prefix
 ##
     - name: Verify Pod.BaseNetwork.IPv6

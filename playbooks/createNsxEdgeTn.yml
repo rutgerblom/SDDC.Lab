@@ -372,7 +372,7 @@
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes/{{ item.0 }}/node/users/{{ item.1.userid }}
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 15
+        timeout: 60
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
@@ -391,3 +391,18 @@
       when: 
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
+
+
+##
+## In NSX-T v3.2.0, in the previous task where the User Accounts password change frequency is set to 0 (==Do Not Expire),
+## the EdgeVM nodes briefly transition into "IN_PROGRESS" states for each User Account that is reconfigured before
+## returning to the "SUCCESS" state.  To ensure subsequent playbooks don't run into any issues with an EdgeVM not being
+## in the "SUCCESS" state, a small delay is introduced.
+##
+    - name: Add delay to allow all EdgeVM nodes to reach 'SUCCESS' state
+      ansible.builtin.pause:
+        minutes: 1
+      when: 
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+

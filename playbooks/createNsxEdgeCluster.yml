@@ -59,6 +59,7 @@
 
                   Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
 
+                               Number of Edge Transport Nodes: {{ Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes | length }}
            Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes: {{ Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes }}
 
           =================================================================================================
@@ -79,7 +80,8 @@
         prompt: |
           ================================ Display var_EdgeClusters Variable ===================================
 
-              var_EdgeTransportNodes: {{ var_EdgeClusters | to_nice_yaml(indent=2) }}
+          var_EdgeTransportNodes:
+            {{ var_EdgeClusters | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
           =================================================================================================
       when:
@@ -88,6 +90,42 @@
         - var_EdgeClusters != ""
 
 
+##
+## In NSX-T v3.2.0, during the task where User Accounts password aging is set to 0 (==Do Not Expire), the EdgeVM nodes 
+## transition into "IN_PROGRESS" states for each User Account that is reconfigured.  If any of the Edge VM nodes are 
+## NOT in "SUCCESS" state, the Edge Cluster creation play will fail.  For that reason, we need to verify that all of
+## the EdgeVM Nodes are in "SUCCESS" state before we proceed with the Edge Cluster creation.
+##
+    - name:  Wait until all Edge Nodes deployed report as being in a realized 'SUCCESS' state
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes/state?status=SUCCESS
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 20
+        force_basic_auth: yes
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and ((result | community.general.json_query(query) | length) == (Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes | length))
+      retries: 10
+      delay: 30
+      vars:
+        # JSON Query returns all EdgeVMs from the list of ALL the Transport Nodes (Host & Edges) we received from the REST API call
+        query: json.results[?node_deployment_state.state=='NODE_READY']
+      when: 
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - var_EdgeClusters != ""
+
+
+
+
+##
+## At this point, all EdgeVMs are in a "SUCCESS" state, so we can proceed with creating the Edge Cluster.
+##
     - name: Create NSX-T Edge Cluster
       nsxt_edge_clusters:
         hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
@@ -110,11 +148,11 @@
     - name:  Wait until the NSX-T API reports that the Edge Cluster is in realized state
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/policy/api/v1/infra/sites/default/enforcement-points/default/edge-clusters/{{ edge_cluster | json_query('results[].id') | first }}
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 5
-        force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
         method: GET
         body_format: json
         return_content: yes

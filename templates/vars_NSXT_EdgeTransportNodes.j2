@@ -3,6 +3,7 @@
  #   Filename: templates/var_NSXT_EdgeTransportNodes.j2
  #    Used By: This file is used by the playbook createNsxEdgeTn.yml
  #    Purpose: This Jinja2 template file is used to create the data structure that is provided to the nsxt_transport_nodes module.
+ #      NSX-T: Structure updated to support NSX-T v3.2.0
  #
  #}
 {% for EdgeTransportNode in Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes %}
@@ -52,20 +53,6 @@
           audit_username: "{{ EdgeTransportNode.Deployment.AuditUsername }}"
           audit_password: "{{ EdgeTransportNode.Deployment.AuditPassword }}"
         vm_deployment_config:
-          enable_ssh: "{{ EdgeTransportNode.Deployment.EnableSSH }}"
-          allow_ssh_root_login: "{{ EdgeTransportNode.Deployment.AllowRootSSH }}"
-          search_domains:
-            - "{{ Common.DNS.Domain }}"
-          dns_servers:
-            - "{{ Common.DNS.Server1.IPv4 }}"
-{% if Common.DNS.Server2.IPv4 %}
-            - "{{ Common.DNS.Server2.IPv4 }}"
-{% endif %}
-          ntp_servers:
-            - "{{ Common.NTP.Server1.IPv4 }}"
-{% if Common.NTP.Server2.IPv4 %}
-            - "{{ Common.NTP.Server2.IPv4 }}"
-{% endif %}
           placement_type: VsphereDeploymentConfig
           vc_name: "{{ EdgeTransportNode.Deployment.vCenterName }}"
           vc_username: "{{ EdgeTransportNode.Deployment.vCenterUser }}"
@@ -81,7 +68,6 @@
             prefix_length: "{{ EdgeTransportNode.Deployment.ManagementIPPrefix }}"
           default_gateway_addresses: 
           - "{{ EdgeTransportNode.Deployment.Gateway }}"
-          hostname: "{{ EdgeTransportNode.Deployment.Hostname }}"
           compute: "{{ Nested_NSXT.System.Fabric.Nodes.vSphereEdgeCluster }}"
           storage: "{{ EdgeTransportNode.Deployment.Datastore }}"
           host: "{{ EdgeHosts[(loop.index0 % (EdgeHosts|length))] }}"
@@ -91,4 +77,21 @@
               reservation_in_shares: "{{ EdgeTransportNode.Deployment.Reservations.CPU.Shares }}"
             memory_reservation:
               reservation_percentage: "{{ EdgeTransportNode.Deployment.Reservations.Memory.Percentage }}"
+      node_settings:
+          hostname: "{{ EdgeTransportNode.Deployment.Hostname }}"
+          allow_ssh_root_login: "{{ EdgeTransportNode.Deployment.AllowRootSSH }}"
+          enable_ssh: "{{ EdgeTransportNode.Deployment.EnableSSH }}"
+          search_domains:
+            - "{{ Common.DNS.Domain }}"
+          dns_servers:
+            - "{{ Common.DNS.Server1.IPv4 }}"
+{% if Common.DNS.Server2.IPv4 %}
+            - "{{ Common.DNS.Server2.IPv4 }}"
+{% endif %}{# DNS.Server2 #}
+          ntp_servers:
+            - "{{ Common.NTP.Server1.IPv4 }}"
+{% if Common.NTP.Server2.IPv4 %}
+            - "{{ Common.NTP.Server2.IPv4 }}"
+{% endif %}{# NTP.Server2 #}
+
 {% endfor %}{# EdgeTransportNode #}

@@ -102,7 +102,7 @@
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 5
+        timeout: 15
       register: nsxman_check
       ignore_errors: true
       failed_when: false
@@ -175,7 +175,7 @@
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/api/v1/cluster/status
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 5
+        timeout: 15
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
@@ -194,7 +194,7 @@
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/api/v1/cluster/api-virtual-ip?action=set_virtual_ip&ip_address={{ Nested_NSXT.Component.LocalManager_VIP.Address.IPv4.Address }}
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 5
+        timeout: 15
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
@@ -213,7 +213,7 @@
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/cluster/status
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 5
+        timeout: 15
         force_basic_auth: yes
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"

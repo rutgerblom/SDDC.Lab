@@ -83,8 +83,8 @@
         is_default: "{{ item.value.SetAsDefault }}"
         description: "{{ item.value.Description }}"
         transport_type: "{{ item.value.Type }}"
-        host_switch_name: "{{ item.value.Switch }}"
-        host_switch_mode: "STANDARD"
+#        host_switch_name: "{{ item.value.Switch }}" _320_
+#        host_switch_mode: "STANDARD" _320_
         state: "present"
       register: result
       loop: "{{ Nested_NSXT.System.Fabric.TransportZone | dict2items }}"
