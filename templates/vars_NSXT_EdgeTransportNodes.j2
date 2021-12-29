@@ -70,7 +70,6 @@
           - "{{ EdgeTransportNode.Deployment.Gateway }}"
           compute: "{{ Nested_NSXT.System.Fabric.Nodes.vSphereEdgeCluster }}"
           storage: "{{ EdgeTransportNode.Deployment.Datastore }}"
-          host: "{{ EdgeHosts[(loop.index0 % (EdgeHosts|length))] }}"
           reservation_info:
             cpu_reservation:
               reservation_in_mhz: "{{ EdgeTransportNode.Deployment.Reservations.CPU.Megahertz }}"
