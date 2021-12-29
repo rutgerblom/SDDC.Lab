@@ -71,15 +71,15 @@
 
 - ansible.builtin.import_playbook: playbooks/registerNsxComputeManager.yml
 
+- ansible.builtin.import_playbook: playbooks/createNsxUplinkProfiles.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+
 - ansible.builtin.import_playbook: playbooks/createNsxTz.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/createNsxIpPool.yml
-  when: 
-    - Deploy.Product.NSXT.LocalManager.Deploy == true
-
-- ansible.builtin.import_playbook: playbooks/createNsxUplinkProfiles.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy == true
 
