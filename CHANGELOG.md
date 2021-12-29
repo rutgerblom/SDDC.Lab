@@ -820,3 +820,10 @@
   - Added Nested_NSXT.Networking.DHCPProfiles section to config_sample.yml.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
+
+## Dev-v4.0.0 28-DEC-2021
+
+### Added by Luis Chanu
+  - Following changes were made to createNsxEdgeTn.yml playbook:
+    - The nested loop to set password aging to 0 was reversed so that each of the EdgeVMs are cycled through for each user.  This permits the EdgeVM to "recover" to the "SUCCESS" state before the next REST API call is attempted to it.
+    - Added an additional check at the end of the playbook to verify all EdgeVMs are in a "SUCCESS" state before the playbook is completed.  This hopefully ensures all EdgeVMs are ready for other REST API calls.
