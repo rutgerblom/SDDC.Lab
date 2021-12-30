@@ -1,12 +1,46 @@
 ---
 - hosts: localhost
-  vars_files:
-    - ../config.yml
-    - ../answerfile.yml
-    - ../software.yml
-    - ../licenses.yml
   tasks:
-    - name: Display Subnet of Managmenet IP
-      ansible.builtin.debug:
-        msg: "{{ Net.Management.IPv4.Network | ipsubnet( Net.Management.IPv4.Prefix ) }}"
+
+    - name: Set Gateway_IPv4
+      ansible.builtin.set_fact:
+        GatewayCIDR_IPv4: "{{ Nested_NSXT.Networking.Segments[0].Subnets[0].GatewayCIDR }}"
+
+    - name: Set Gateway_IPv6
+      ansible.builtin.set_fact:
+        GatewayCIDR_IPv6: "{{ Nested_NSXT.Networking.Segments[0].Subnets[1].GatewayCIDR }}"
+
+    - name: Show IPv4 Addresses
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ============================ Display IPv4 Addressing In Various Ways ============================
+
+            GatewayCIDR_IPv4: {{ GatewayCIDR_IPv4 }}
+              2nd IP Address: {{ GatewayCIDR_IPv4 | ansible.netcommon.ipaddr('2') }}
+
+            Highest 16 Usable IPs
+            ---------------------
+                {{ GatewayCIDR_IPv4 | ansible.netcommon.ipaddr('net') | ansible.netcommon.ipaddr('-16') | ansible.netcommon.ipaddr('range_usable') }}
+                {{ GatewayCIDR_IPv4 | ansible.netcommon.ipaddr('net') | ansible.netcommon.ipsubnet(28,-1) | ansible.netcommon.ipaddr('range_usable') }}
+
+          =================================================================================================
+
+
+    - name: Show IPv6 Addresses
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ============================ Display IPv6 Addressing In Various Ways ============================
+
+            GatewayCIDR_IPv6: {{ GatewayCIDR_IPv6 }}
+              2nd IP Address: {{ GatewayCIDR_IPv6 | ansible.netcommon.ipaddr('2') }}
+
+            Highest 16 Usable IPs
+            ---------------------
+                {{ GatewayCIDR_IPv6 | ansible.netcommon.ipaddr('net') | ansible.netcommon.ipaddr('-16') | ansible.netcommon.ipaddr('range_usable') }}
+                {{ GatewayCIDR_IPv6 | ansible.netcommon.ipaddr('net') | ansible.netcommon.ipsubnet(124,-1) | ansible.netcommon.ipaddr('range_usable') }}
+
+          =================================================================================================
+
 
