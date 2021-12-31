@@ -86,7 +86,7 @@
       register: vcenter_auth_result
 
     - name: Store vCenter Session ID for later use
-      set_fact:
+      ansible.builtin.set_fact:
         vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy == true
@@ -199,7 +199,7 @@
 ## Provision Edge Transport Nodes
 ##
     - name: Deploy and configure Edge Transport Nodes
-      nsxt_transport_nodes:
+      vmware.ansible_for_nsxt.nsxt_transport_nodes:
         hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
