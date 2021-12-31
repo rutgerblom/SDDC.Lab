@@ -107,6 +107,8 @@ Common:
   Password:
     Nested:   VMware1!
     Physical: VMware1!
+  DHCP:
+    LeaseTime: 86400                                                          # DHCP Lease Time (in seconds) for Overlay Segments
   DNS:
     Domain: SDDC.Lab                                                          # Domain - Default DNS Domain used by all nested components.
     Server1:
@@ -1969,7 +1971,7 @@ Nested_NSXT:
                     - TIER1_SEGMENT
 
     DHCPProfiles:
-      - Name: DHCP-Server-Profile
+      - Name: DHCP-Server-Profile                                                               # The first profile is used by the DHCP Local Server to provide IP's to all Overlay Segments
         Type: DHCP_SERVER                                                                       # Type is either DHCP_SERVER or DHCP_RELAY
         ServerAddresses: []                                                                     # List of Server Address(es).  Required for DHCP_RELAY, but can be left as empty list ("[]") for DHCP_SERVER
         LeaseTime: 86400
@@ -2121,6 +2123,7 @@ Nested_NSXT:
         Subnets:
           - GatewayCIDR: 192.168.4.1/24
           - GatewayCIDR: fd00:a:d::1/64
+        VLANS:
         Tags:
           - Tag: Auto-Created
             Scope: SDDC.Lab
