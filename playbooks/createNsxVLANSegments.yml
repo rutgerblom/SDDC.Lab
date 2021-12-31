@@ -45,7 +45,6 @@
       ansible.builtin.meta: end_play
       when: Valid_Pod_Config_File is not defined
 
-
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
@@ -64,6 +63,10 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
+
+    - name: Define DHCPProfilePath dictionary if it does not already exist
+      ansible.builtin.include_tasks:
+        file: include_var_DHCPProfilePath.yml
 
     - name: Get list of Segments
       ansible.builtin.set_fact:
@@ -86,7 +89,7 @@
 
     ## Create only VLAN-backed Segments in SegmentsToCreate  ##
     - name: Create NSX-T Segments
-      nsxt_policy_segment:
+      vmware.ansible_for_nsxt.nsxt_policy_segment:
         hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
@@ -94,6 +97,7 @@
         display_name: "{{ item.display_name }}"
         description:  "{{ item.description }}"
         admin_state:  "{{ item.admin_state }}"
+        domain_name: "{{ item.domain_name }}"
         replication_mode: "{{ item.replication_mode }}"
         transport_zone_display_name: "{{ item.transport_zone_display_name }}"
         tags: "{{ item.tags }}"

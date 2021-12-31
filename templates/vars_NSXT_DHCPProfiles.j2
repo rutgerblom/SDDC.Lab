@@ -20,11 +20,12 @@
     resource_type: "DhcpServerConfig"
     lease_time: {{ Profile.LeaseTime }}
 {% if EdgeClusterPath[Profile.EdgeCluster] is defined %}    edge_cluster_path: {{ EdgeClusterPath[Profile.EdgeCluster] }}{% endif %}
+
+{# DO NOT REMOVE THE EMPTY LINE ABOVE THIS COMMENT #}
 {% else %}{# Assume DHCP_RELAY #}
 {# DHCP Relay Structure #}
     resource_type: "DhcpRelayConfig"
 {% endif %}{# Profile.Type #}
-
     tags:
 {###### Make sure Tags is defined #####}
 {% if (Profile.Tags is defined) %}
@@ -38,5 +39,4 @@
       - tag: ""
         scope: ""
 {% endif %}{# Profile.Tags is defined #}
-
 {% endfor %}{# Profile #}
