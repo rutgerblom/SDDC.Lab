@@ -75,7 +75,7 @@ The following are recommendations based on our experience with deploying Pods:
     * 64 GB for Linux boot disk
     * 300 GB for /Software repository (Recommend this be on it's own disk)
   * VMware Paravirtual SCSI controller
-  * VMXNET 3 network adapter
+  * VMXNET3 network adapter
 * Deploy the pre-configured DNS server for DNS name resolution within Pods instead of using your own.
 
 ## Preparations
@@ -90,7 +90,6 @@ The following are recommendations based on our experience with deploying Pods:
   * sudo pip3 install --upgrade ansible pyvim pyvmomi netaddr jmespath dnspython paramiko setuptools git+https://github.com/vmware/vsphere-automation-sdk-python.git
   * git clone https://github.com/rutgerblom/SDDC.Lab.git 
   * ansible-galaxy collection install -r SDDC.Lab/requirements.yml
-
 
 * Copy/rename the sample files:
   * cp config_sample.yml config.yml
@@ -114,6 +113,8 @@ Consider the following when upgrading SDDC.Lab to a newer version.
   * Use copies of the v3 sample files and update these with your settings. Don't copy any v2 files into the v3 directory.
   * Remove the VyOS ISO file from your software library and let the router deployment script download the latest version of the rolling release.
 
+* v3 to v4
+  * TBD - Coming soon
 
 ## Networking
 The network configuration is where many users experience issues with the setup of the SDDC.Lab solution.  For that reason, the focus of this section is to give a deep dive into how the SDDC.Lab solution "connects" to the physical network, and what networking components it requires.  We will also give overviews of how the network connectivity is different if you're running:
@@ -186,15 +187,15 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 4 | Reserved | Reserved for Future Use | |
 | 5 | vCenter | vCenter Appliance | Yes |
 | 6 | vRLI | vRealize Log Insight Appliance | Yes |
-| 7 | GM VIP | NSX-T Global Manager VIP (Future) | No |
-| 8 | GM1 | NSX-T Global Manager Node 1 (Future) | No |
-| 9 | GM2 | NSX-T Global Manager Node 2 (Future) | No |
-| 10 | GM3 | NSX-T Global Manager Node 3 (Future) | No |
+| 7 | GM VIP | NSX-T Global Manager VIP | No |
+| 8 | GM1 | NSX-T Global Manager Node 1 | No |
+| 9 | GM2 | NSX-T Global Manager Node 2 | No |
+| 10 | GM3 | NSX-T Global Manager Node 3 | No |
 | 11 | LM VIP | NSX-T Local Manager VIP | Yes |
 | 12 | LM1 | NSX-T Local Manager Node 1 | Yes |
 | 13 | LM2 | NSX-T Local Manager Node 2 | No |
 | 14 | LM3 | NSX-T Local Manager Node 3 | No |
-| 15 | CSM | NSX-T Cloud Services Manager | No |
+| 15 | CSM | NSX-T Cloud Services Manager (Future) | No |
 | 16 | vRNI Platform | vRealize Network Insight Platform Appliance | No |
 | 17 | vRNI Collector | vRealize Network Insight Collector Node | No |
 | 18 | Reserved | Reserved for Future Use | |
