@@ -106,7 +106,7 @@
         - Deploy.Product.NSXT.Edge.Deploy == true
 
     - name: Store vCenter Session ID for later use
-      set_fact:
+      ansible.builtin.set_fact:
         vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
       when:
         - tanzu_supervisor is defined
@@ -240,7 +240,7 @@
 ## Get and store NSX-T Edge Cluster ID
 ##
     - name: Get NSX-T Edge Cluster Info
-      nsxt_edge_clusters_facts:
+      vmware.ansible_for_nsxt.nsxt_edge_clusters_facts:
         hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"

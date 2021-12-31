@@ -462,7 +462,7 @@
         - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
 
     - name: Create T0Segments dictionary
-      set_fact:
+      ansible.builtin.set_fact:
         T0Segments: "{{ T0Segments|default({}) | combine( {item.json.display_name: item.json.path} ) }}"
       loop: "{{ result.results }}"
       when:
@@ -515,7 +515,7 @@
         - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
 
     - name: Create T0Edges dictionary
-      set_fact:
+      ansible.builtin.set_fact:
         T0Edges: "{{ T0Edges|default({}) | combine( {item.display_name: item.path} ) }}"
       loop: "{{ result.json.results }}"
       when:
