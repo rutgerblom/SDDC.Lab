@@ -859,3 +859,15 @@
   - Added Common.DHCP section to config_sample.yml
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
+
+## Dev-v4.0.0 01-JANUARY-2022
+
+### Added by Luis Chanu
+  - Created "deployWorkloadVms.yml" playbook to deploy Workload VM Templates (VM or OVF) from the Content Library after Pod deployment
+  - Created "include_tasks_deployWorkloadVm.yml" file with plays that does the "heavy lifting" of the VM deployment.
+  - Added additional sections to config_sample.yml file, includng:
+    - Deploy.WorkloadVMs section enable WorkloadVMs functionality and provide default settings for Cluster and VMFolder placement of VMs.  These default settings can be over-written at a VM level.
+    - WorkloadVMs section at the end of the file where the various VM/OVF Template workloads that are to be deployed are defined.  Users will need to modify this section to meet their needs.
+  - Added Deploy and WorkloadVMs to Pod_Config.j2 template
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml

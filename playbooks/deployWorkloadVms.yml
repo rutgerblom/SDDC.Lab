@@ -1,0 +1,83 @@
+##
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: playbooks/deployWorkloadVms.yml
+##
+##  Description: This playbook loops through the Workload VMs, and provisions them one-by-one, by "sending" the object to the
+##               "include_tasks_deployWorkloadVm.yml" file.  That file includes ALL of the tasks needed to provision the given
+##               Workload VM from a VM/OVF Template.  That includes connecting the VM to the appropriate Port-Group(s), assigning
+##               NSX-T Tags, and powering on the VM.  See additional comments near the "WorkloadVMs" section in the config_sample.yml
+##               file.
+##
+---
+- hosts: localhost
+  name: deployWorkloadVms.yml
+  tasks:
+    - name: deployWorkloadVms_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                             Ansible Playbook: {{ ansible_play_name }}
+
+                                            Target.Deployment: {{ Target.Deployment }}
+
+                         Nested_vCenter.ContentLibrary.Enable: {{ Nested_vCenter.ContentLibrary.Enable }}
+                           Nested_vCenter.ContentLibrary.Name: {{ Nested_vCenter.ContentLibrary.Name }}
+
+                       Number of Guest Workload VMs to deploy: {{ WorkloadVMs | length }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+
+##
+## Provision Workload VMs
+##
+    - name: Provision Workload VMs one at a time
+      ansible.builtin.include_tasks:
+        file: include_tasks_deployWorkloadVm.yml
+      loop: "{{ WorkloadVMs }}"
+      when:
+        - WorkloadVMs is defined
+        - WorkloadVMs | length > 0
+        - Deploy.WorkloadVMs.Deploy == true
+        - Nested_vCenter.ContentLibrary.Enable == true

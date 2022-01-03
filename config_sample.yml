@@ -43,6 +43,10 @@ Deploy:
         Deploy: true                                      # Edge - Deploy NSX-T Edge Transport Nodes as part of the Pod deployment.
       CloudServicesManager:
         Deploy: false                                     # CloudServicesManager - PLANNED FOR FUTURE - NOT YET IMPLEMENTED
+  WorkloadVMs:
+    Deploy: false                                         # Controls whether Guest Workload VMs are deployed from the Content Library after the Pod deployment is completed
+    Cluster: ComputeA                                     # Default vSphere Cluster to place the Workload VMs in
+    VMFolder: _Workload VMs                               # Default Folder to place the provisioned Workload VMs in
   Setting:
     IPv4: true                                            # IPv4 - All components are configured with IPv4 addresses.
     IPv6: false                                           # IPv6 - Make sure your environment (i.e. Ansible control station, DNS, etc.) are all configured with IPv6 else the installation will fail.  IPv6 transit also required between Ansible constrol station and DNS Server.
@@ -2359,3 +2363,36 @@ Nested_NSXT:
             User: "{{ Nested_vCenter.User }}"
             Password: "{{ Nested_vCenter.Password }}"
 
+
+##
+## Users need to modify the following 'WorkloadVMs' section to meet their environment, as this is just a sample.
+## The VM and OVF Templates must be located in the Pod's Content Library.  It's suggested that the
+## Pod's Content Library subscribe to a Content Library that exists on the Physical vCenter Server, which
+## the Pod can then automatically subscribe to as part of it's deployment.  The user can then centrally place
+## all of the VM/OVF Templates in the Content Library of the Physical vCenter Server.
+##
+WorkloadVMs:
+  - VMName: yVM_SEG-Web                                                                 # VM Name of the GuestVM being created
+    ContentLibrary: "{{ Nested_vCenter.ContentLibrary.Name }}"                          # Content Library Name where template is located
+    Template:
+      Type: OVF_TEMPLATE                                                                # Valid options: OVF_TEMPLATE or VM_TEMPLATE
+      Name: yVM                                                                         # Name of template to create the VM from
+    DataCenter: "{{ Nested_vCenter.DataCenter }}"
+    Cluster: "{{ Deploy.WorkloadVMs.Cluster }}"
+    VMFolder: "{{ Deploy.WorkloadVMs.VMFolder }}"                                       # vCenter VM Folder to place the VM in
+    PowerOn: true                                                                       # Power on the VM when the VM provisioning/configuration is complete
+    Config:
+      Guest:
+        Annotation: "{{ Common.Annotation }}"
+        DiskProvisioning: "{{ Common.DiskProvisioning }}"                               # Used by OVF Templates
+        Networks:
+          - PortGroup: SEG-Web                                                          # NSX-T Segment to connect the VM to.  Leave PortGroup empty to not modify the Port-Group for the given Ethernet.  Lowest numbered Network Adapter is at the top, and increases downward
+            StartConnected: true                                                        # Connect NIC when VM Starts?
+        Tags:
+          - Tag:                                                                        # vSphere Tags are NOT YET IMPLEMENTED -- POTENTIAL FUTURE ITEM
+            Category:                                                                   # vSphere Tags are NOT YET IMPLEMENTED -- POTENTIAL FUTURE ITEM
+            Description:                                                                # vSphere Tags are NOT YET IMPLEMENTED -- POTENTIAL FUTURE ITEM
+      NSXT:
+        Tags:
+          - Tag: Auto-Deployed
+            Scope: SDDC.Lab
