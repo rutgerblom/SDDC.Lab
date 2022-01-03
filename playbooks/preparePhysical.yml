@@ -376,7 +376,7 @@
         datacenter: "{{ Target.DataCenter }}"
         folder_type: vm
         parent_folder: ""
-        folder_name: "{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}"                     # Extract parent folder from VMFolder full path"
+        folder_name: "{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}"                     # Extract parent folder from VMFolder full path
         state: present
       register: vm_parent_folder_creation_result
       when: Target.Deployment == "vCenter"

@@ -1,0 +1,1 @@
+The files in this directory were copied back in order to support three "nsxt_global_manager_*" modules, as VMware did not include Federation modules in v3.2.0.  Those modules are in the "library" directory.  Once the official VMware Federation modules are released that include that functionality, this entire directory can be removed.

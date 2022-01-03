@@ -51,7 +51,6 @@
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
 
-
                                              Ansible Playbook: {{ ansible_play_name }}
 
                                             Target.Deployment: {{ Target.Deployment }}
@@ -86,7 +85,7 @@
       register: vcenter_auth_result
 
     - name: Store vCenter Session ID for later use
-      set_fact:
+      ansible.builtin.set_fact:
         vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy == true
@@ -199,7 +198,7 @@
 ## Provision Edge Transport Nodes
 ##
     - name: Deploy and configure Edge Transport Nodes
-      nsxt_transport_nodes:
+      vmware.ansible_for_nsxt.nsxt_transport_nodes:
         hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
@@ -370,7 +369,7 @@
 
     - name: Loop through each NSX-T Edge, disabling password expiration for each user on that Edge node
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes/{{ item.0 }}/node/users/{{ item.1.userid }}
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes/{{ item.1 }}/node/users/{{ item.0.userid }}
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 60
         force_basic_auth: yes
@@ -386,8 +385,8 @@
       retries: 10
       delay: 3
       with_nested:
-        - "{{ EdgeNodeIDs }}"
         - "{{ UserList.json.results }}"
+        - "{{ EdgeNodeIDs }}"
       when: 
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
@@ -397,11 +396,35 @@
 ## In NSX-T v3.2.0, in the previous task where the User Accounts password change frequency is set to 0 (==Do Not Expire),
 ## the EdgeVM nodes briefly transition into "IN_PROGRESS" states for each User Account that is reconfigured before
 ## returning to the "SUCCESS" state.  To ensure subsequent playbooks don't run into any issues with an EdgeVM not being
-## in the "SUCCESS" state, a small delay is introduced.
+## in the "SUCCESS" state, a small delay is introduced (to allow the EdgeVMs to return to "SUCCESS" state), followed by
+## a verification that all EdgeVMs are indeed in a "SUCCESS" state.
 ##
     - name: Add delay to allow all EdgeVM nodes to reach 'SUCCESS' state
       ansible.builtin.pause:
         minutes: 1
+      when: 
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name:  Verify all EdgeVM Nodes report as being in a realized 'SUCCESS' state
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes/state?status=SUCCESS
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 20
+        force_basic_auth: yes
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and ((result | community.general.json_query(query) | length) == (Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes | length))
+      retries: 10
+      delay: 30
+      vars:
+        # JSON Query returns all EdgeVMs from the list of ALL the Transport Nodes (Host & Edges) we received from the REST API call
+        query: json.results[?node_deployment_state.state=='NODE_READY']
       when: 
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true

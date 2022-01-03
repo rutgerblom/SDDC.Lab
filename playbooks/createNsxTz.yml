@@ -73,7 +73,7 @@
         - DEBUG.DisplayVariables == true
 
     - name: Create NSX-T transport zones
-      nsxt_transport_zones:
+      vmware.ansible_for_nsxt.nsxt_transport_zones:
         hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
@@ -83,6 +83,7 @@
         is_default: "{{ item.value.SetAsDefault }}"
         description: "{{ item.value.Description }}"
         transport_type: "{{ item.value.Type }}"
+        uplink_teaming_policy_names: "{{ item.value.TeamingPolicies }}"
 #        host_switch_name: "{{ item.value.Switch }}" _320_
 #        host_switch_mode: "STANDARD" _320_
         state: "present"

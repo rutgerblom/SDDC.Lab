@@ -1,15 +1,15 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/createNsxEdgeCluster.yml
+##   Filename: playbooks/createNsxDhcpProfiles.yml
 ##
 ---
 - hosts: localhost
-  name: createNsxEdgeCluster.yml
+  name: createNsxDhcpProfiles.yml
   vars:
-      LOCAL_EdgeClusterTemplate: "{{ Target.TemplateFolder }}/vars_NSXT_EdgeClusters.j2"
+      LOCAL_DHCPProfilesTemplate: "{{ Target.TemplateFolder }}/vars_NSXT_DHCPProfiles.j2"
   tasks:
-    - name: createNsxEdgeCluster_Playbook
+    - name: createNsxDhcpProfiles_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -45,13 +45,11 @@
       meta: end_play
       when: Valid_Pod_Config_File is not defined
 
-
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
-
 
                                              Ansible Playbook: {{ ansible_play_name }}
 
@@ -59,17 +57,24 @@
 
                   Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
 
-                               Number of Edge Transport Nodes: {{ Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes | length }}
-           Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes: {{ Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes }}
+                                      Number of DHCP Profiles: {{ Nested_NSXT.Networking.DHCPProfiles | length }}
+                          Nested_NSXT.Networking.DHCPProfiles: {{ Nested_NSXT.Networking.DHCPProfiles }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
 
-    - name: Read the structure from template into a variable
-      ansible.builtin.set_fact:
-        var_EdgeClusters: "{{ lookup('template', LOCAL_EdgeClusterTemplate) | from_yaml }}"
+##
+## For each Edge Cluster, we need it's path for the DHCP Server REST API call.  Thus, let's create a EdgeClusterPath dictionary with Key being 
+## the EdgeCluster Name, and the Value being the given Edge Clusters path.
+##
+    - name: Obtain list of all Edge Clusters
+      vmware.ansible_for_nsxt.nsxt_edge_clusters_facts:
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+      register: EdgeClusters
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
@@ -78,88 +83,104 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display var_EdgeClusters Variable ===================================
+          ================================ Display EdgeClusters Variable ==================================
 
-          var_EdgeTransportNodes:
-            {{ var_EdgeClusters | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+          EdgeClusters:
+            {{ EdgeClusters | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - var_EdgeClusters != ""
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Create EdgeClusterPath dictionary
+      ansible.builtin.set_fact:
+        EdgeClusterPath: "{{ EdgeClusterPath | default({}) | combine({ item.display_name : PathToEdgeCluster }) }}"
+      vars:
+        PathToEdgeCluster: "/infra/sites/default/enforcement-points/default/edge-clusters/{{ item.id }}"
+      loop: "{{ EdgeClusters.results }}"
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================= Display EdgeClusterPath Dictionary  ===============================
+
+          EdgeClusterPath:
+            {{ EdgeClusterPath | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Read DHCP Profiles structure from template into a variable
+      ansible.builtin.set_fact:
+        var_DHCPProfiles: "{{ lookup('template', LOCAL_DHCPProfilesTemplate) | from_yaml }}"
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display var_DHCPProfiles Variable ===================================
+
+          var_DHCPProfiles:
+            {{ var_DHCPProfiles | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
 
 
 ##
-## In NSX-T v3.2.0, during the task where User Accounts password aging is set to 0 (==Do Not Expire), the EdgeVM nodes 
-## transition into "IN_PROGRESS" states for each User Account that is reconfigured.  If any of the Edge VM nodes are 
-## NOT in "SUCCESS" state, the Edge Cluster creation play will fail.  For that reason, we need to verify that all of
-## the EdgeVM Nodes are in "SUCCESS" state before we proceed with the Edge Cluster creation.
+## Create all DHCP Profiles
 ##
-    - name:  Wait until all Edge Nodes deployed report as being in a realized 'SUCCESS' state
+    - name:  Create NSX-T DHCP Server Profiles
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes/state?status=SUCCESS
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/policy/api/v1/infra/dhcp-server-configs/{{ item.display_name }}
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 20
         force_basic_auth: yes
-        method: GET
+        method: PUT
         body_format: json
         return_content: yes
         status_code: 200
+        body: "{{ item }}"
       register: result
-      until: result.status == 200 and ((result | community.general.json_query(query) | length) == (Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes | length))
-      retries: 10
+      loop: "{{ var_DHCPProfiles | default([]) }}"
+      until: result.status == 200
+      retries: 5
       delay: 30
-      vars:
-        # JSON Query returns all EdgeVMs from the list of ALL the Transport Nodes (Host & Edges) we received from the REST API call
-        query: json.results[?node_deployment_state.state=='NODE_READY']
       when: 
+        - item.resource_type == "DhcpServerConfig"
         - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
-        - var_EdgeClusters != ""
 
-
-##
-## At this point, all EdgeVMs are in a "SUCCESS" state, so we can proceed with creating the Edge Cluster.
-##
-    - name: Create NSX-T Edge Cluster
-      vmware.ansible_for_nsxt.nsxt_edge_clusters:
-        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
-        username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        display_name: "{{ item.display_name }}"
-        description: "{{ item.description }}"
-        tags: "{{ item.tags }}"
-        cluster_profile_bindings: "{{ item.cluster_profile_bindings }}"
-        members: "{{ item.members }}"
-        state: present
-      register: edge_cluster
-      loop: "{{ var_EdgeClusters }}"
-      when: 
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
-        - var_EdgeClusters != ""
-
-    - name:  Wait until the NSX-T API reports that the Edge Cluster is in realized state
+    - name:  Create NSX-T DHCP Relay Profiles
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/policy/api/v1/infra/sites/default/enforcement-points/default/edge-clusters/{{ edge_cluster | json_query('results[].id') | first }}
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/policy/api/v1/infra/dhcp-relay-configs/{{ item.display_name }}
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 15
+        timeout: 20
         force_basic_auth: yes
-        method: GET
+        method: PUT
         body_format: json
         return_content: yes
         status_code: 200
+        body: "{{ item }}"
       register: result
+      loop: "{{ var_DHCPProfiles | default([]) }}"
       until: result.status == 200
-      retries: 30
-      delay: 60
+      retries: 5
+      delay: 30
       when: 
+        - item.resource_type == "DhcpRelayConfig"
         - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
-        - var_EdgeClusters != ""

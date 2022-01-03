@@ -1,11 +1,17 @@
 {#
  #      Authors: Luis Chanu & Rutger Blom
- #     Filename: templates/var_NSXT_Segments.j2
+ #     Filename: templates/vars_NSXT_Segments.j2
  #      Used By: This file is used by the playbook createNsxVLANSegments.yml and createNsxOverlaySegments.yml
  #      Purpose: This Jinja2 template file is used to create the data structure that is provided to the nsxt_policy_segments module.
  #
  #  Description: This script creates a data structure containing ALL Segments in the Pod Config file.  It's up 
  #               to the playbook using this template to filter only the type of Segments it wants to process.
+ #
+ #  DHCP Config: The various DHCP values used are all dynamically derived from an Overlay Segment's Gateway address for both IPv4 and IPv6.
+ #                   DHCP Server Address: One higher than the Gateway's IP Address
+ #             DHCP Usable Address Range: Usable addresses in the highest subnet (see below) for both IPv4 and IPv6.
+ #                            IPv4 Range: Highest /28 Subnet
+ #                            IPv6 Range: Highest /120 Subnet
  #}
 {% for Segment in Nested_NSXT.Networking.Segments %}
   - display_name: "{{ Segment.Name }}"
@@ -13,6 +19,10 @@
     admin_state:  "{{ Segment.AdminState }}"
     replication_mode: "{{ Segment.ReplicationMode }}"
     transport_zone_display_name: "{{ Segment.TransportZone }}"
+    domain_name: "{{ Common.DNS.Domain }}"
+{% if DHCPProfilePath[Nested_NSXT.Networking.DHCPProfiles[0].Name] is defined %}    dhcp_config_path: "{{ DHCPProfilePath[Nested_NSXT.Networking.DHCPProfiles[0].Name] }}"{% endif %}
+
+{# DO NOT REMOVE THE EMPTY LINE ABOVE THIS COMMENT #}
 {% if Segment.ConnectedTo is defined %}
 {% if Segment.ConnectedTo.Tier == 0 %}
     tier0_display_name: "{{ Segment.ConnectedTo.GatewayName }}"
@@ -50,6 +60,24 @@
 {% for Subnet in Segment.Subnets %}
 {% if ((Deploy.Setting.IPv4 and Subnet.GatewayCIDR | ipv4) or (Deploy.Setting.IPv6 and Subnet.GatewayCIDR | ipv6)) %}
       - gateway_address: "{{ Subnet.GatewayCIDR }}"
+        dhcp_ranges:
+          - {% if (Subnet.GatewayCIDR | ipv4) %}{{ Subnet.GatewayCIDR | ansible.netcommon.ipaddr('last_usable') | ansible.netcommon.ipsubnet(28) }}{% else %}{{ Subnet.GatewayCIDR | ansible.netcommon.ipaddr('last_usable') | ansible.netcommon.ipsubnet(120) }}{% endif %}
+
+{# DO NOT REMOVE THE EMPTY LINE ABOVE THIS COMMENT #}
+        dhcp_config:
+          resource_type: {% if (Subnet.GatewayCIDR | ipv4) %}"SegmentDhcpV4Config"{% else %}"SegmentDhcpV6Config"{% endif %}
+
+{# DO NOT REMOVE THE EMPTY LINE ABOVE THIS COMMENT #}
+          server_address: "{{ Subnet.GatewayCIDR | ansible.netcommon.ipaddr('2') }}"
+          lease_time: {{ Common.DHCP.LeaseTime }}
+          dns_servers:
+            - {% if (Subnet.GatewayCIDR | ipv4) %}{{ Common.DNS.Server1.IPv4 }}{% else %}{{ Common.DNS.Server1.IPv6 }}{% endif %}
+
+{# DO NOT REMOVE THE EMPTY LINE ABOVE THIS COMMENT #}
+{% if Subnet.GatewayCIDR | ipv6 %}
+          domain_names:
+            - {{ Common.DNS.Domain }}
+{% endif %}{# Subnet.GatewayCIDR | ipv6 #}
 {% endif %}{# Deploy.Setting.IPv4 or Deploy.Setting.IPv6 #}
 {% endfor %}{# Subnet #}
 {% endif %}{# Segment.Subnets is defined #}

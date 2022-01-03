@@ -75,7 +75,7 @@
         - DEBUG.DisplayVariables == true
 
     - name: Register NSX-T Compute Manager to Local Manager
-      nsxt_fabric_compute_managers:
+      vmware.ansible_for_nsxt.nsxt_fabric_compute_managers:
           hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
           username: "{{ Nested_NSXT.Credential.admin.Name }}"
           password: "{{ Nested_NSXT.Credential.admin.Password }}"
@@ -93,7 +93,7 @@
       when: Deploy.Product.NSXT.LocalManager.Deploy == true
 
     - name: Register NSX-T Compute Manager to Global Manager
-      nsxt_fabric_compute_managers:
+      vmware.ansible_for_nsxt.nsxt_fabric_compute_managers:
           hostname: "{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}"
           username: "{{ Nested_NSXT.Credential.admin.Name }}"
           password: "{{ Nested_NSXT.Credential.admin.Password }}"

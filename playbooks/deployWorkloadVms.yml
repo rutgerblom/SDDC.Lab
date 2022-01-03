@@ -1,15 +1,19 @@
 ##
-##    Project: SDDC.Lab
-##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/createNsxTnp.yml
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: playbooks/deployWorkloadVms.yml
+##
+##  Description: This playbook loops through the Workload VMs, and provisions them one-by-one, by "sending" the object to the
+##               "include_tasks_deployWorkloadVm.yml" file.  That file includes ALL of the tasks needed to provision the given
+##               Workload VM from a VM/OVF Template.  That includes connecting the VM to the appropriate Port-Group(s), assigning
+##               NSX-T Tags, and powering on the VM.  See additional comments near the "WorkloadVMs" section in the config_sample.yml
+##               file.
 ##
 ---
 - hosts: localhost
-  name: createNsxTnp.yml
-  vars:
-      LOCAL_TransportNodeProfiles_Template: "{{ Target.TemplateFolder }}/vars_NSXT_TransportNodeProfiles.j2"
+  name: deployWorkloadVms.yml
   tasks:
-    - name: createNsxTnp_Playbook
+    - name: deployWorkloadVms_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -45,59 +49,35 @@
       ansible.builtin.meta: end_play
       when: Valid_Pod_Config_File is not defined
 
-      
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
 
-                                                 Ansible Playbook: {{ ansible_play_name }}
+                                             Ansible Playbook: {{ ansible_play_name }}
 
-                                                Target.Deployment: {{ Target.Deployment }}
+                                            Target.Deployment: {{ Target.Deployment }}
 
-                      Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
+                         Nested_vCenter.ContentLibrary.Enable: {{ Nested_vCenter.ContentLibrary.Enable }}
+                           Nested_vCenter.ContentLibrary.Name: {{ Nested_vCenter.ContentLibrary.Name }}
 
-          Nested_NSXT.System.Fabric.Profile.TransportNodeProfiles: {{ Nested_NSXT.System.Fabric.Profile.TransportNodeProfiles }}
-
-          =================================================================================================
-      when:
-        - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-
-    - name: Get list of Transport Node Profiles
-      ansible.builtin.set_fact:
-        TNPsToCreate: "{{ lookup('template', LOCAL_TransportNodeProfiles_Template) | from_yaml }}"
-      when: Deploy.Product.NSXT.LocalManager.Deploy == true
-
-    - name: DEBUG -- Display Target Variables (Pause)
-      ansible.builtin.pause:
-        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
-        prompt: |
-          ================================ Display TNPsToCreate Variable ===================================
-
-              TNPsToCreate: {{ TNPsToCreate | to_nice_yaml(indent=2) }}
+                       Number of Guest Workload VMs to deploy: {{ WorkloadVMs | length }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - TNPsToCreate != ""
 
-    - name: Create Transport Node Profiles 
-      vmware.ansible_for_nsxt.nsxt_transport_node_profiles:
-        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
-        username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        resource_type: TransportNodeProfile
-        display_name: "{{ item.display_name }}"
-        description: "{{ item.description }}" 
-        host_switch_spec:
-          resource_type: StandardHostSwitchSpec
-          host_switches: "{{item.host_switches}}"
-        state: present
-      loop: "{{ TNPsToCreate }}"
+
+##
+## Provision Workload VMs
+##
+    - name: Provision Workload VMs one at a time
+      ansible.builtin.include_tasks:
+        file: include_tasks_deployWorkloadVm.yml
+      loop: "{{ WorkloadVMs }}"
       when:
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - TNPsToCreate != ""
+        - WorkloadVMs is defined
+        - WorkloadVMs | length > 0
+        - Deploy.WorkloadVMs.Deploy == true
+        - Nested_vCenter.ContentLibrary.Enable == true

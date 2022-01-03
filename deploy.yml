@@ -71,15 +71,15 @@
 
 - ansible.builtin.import_playbook: playbooks/registerNsxComputeManager.yml
 
+- ansible.builtin.import_playbook: playbooks/createNsxUplinkProfiles.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+
 - ansible.builtin.import_playbook: playbooks/createNsxTz.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/createNsxIpPool.yml
-  when: 
-    - Deploy.Product.NSXT.LocalManager.Deploy == true
-
-- ansible.builtin.import_playbook: playbooks/createNsxUplinkProfiles.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy == true
 
@@ -111,6 +111,8 @@
 - ansible.builtin.import_playbook: playbooks/createNsxVLANSegments.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+- ansible.builtin.import_playbook: playbooks/createNsxDhcpProfiles.yml
 
 - ansible.builtin.import_playbook: playbooks/createNsxT0Gateway.yml
   when: 
@@ -171,3 +173,13 @@
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy == true
     - Deploy.Product.NSXT.Edge.Deploy == true
+
+
+# Deploy Workload VM Templates from Content Library
+- ansible.builtin.import_playbook: playbooks/deployWorkloadVms.yml
+  when: 
+    - false                                                                             # Still Testing
+    - Deploy.WorkloadVMs.Deploy == true
+    - Nested_vCenter.ContentLibrary.Enable == true
+    - Deploy.Product.NSXT.Federation.Enable == false or (Deploy.Product.NSXT.Federation.Enable == true and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
+    - Deploy.Product.NSXT.LocalManager.Deploy == true

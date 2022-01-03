@@ -1,0 +1,70 @@
+##
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: playbooks/include_var_DHCPProfilePath.yml
+##
+##  Description: This playbook is NOT meant to be run standalone, but rather, is meant to be imported
+##               by other playbooks that reference the "DHCPProfilePath[ key=DHCPProfileName ]"
+##               dictionary.  The purpose of this playbook is to create the "DHCPProfilePath" dictionary
+##               if not already created, and centralizing the maintenance of the code.
+##
+---
+    - name: include_var_DHCPProfilePath_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                             Ansible Playbook: {{ ansible_play_name }}
+
+                           Does DHCPProfilePath already exist: {{ DHCPProfilePath is defined | bool }}
+
+                                      Number of DHCP Profiles: {{ Nested_NSXT.Networking.DHCPProfiles | length }}
+                          Nested_NSXT.Networking.DHCPProfiles: {{ Nested_NSXT.Networking.DHCPProfiles }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Set flag if DHCPProfilePath dictionary already exists
+      ansible.builtin.set_fact:
+        DHCPProfilePath_Does_Not_Already_Exist: "{{ not (DHCPProfilePath is defined) | bool }}"
+
+    - name: Create DHCPProfilePath dictionary (DHCP Server Profiles)
+      ansible.builtin.set_fact:
+        DHCPProfilePath: "{{ DHCPProfilePath | default({}) | combine({ item.Name : PathToProfile }) }}"
+      vars:
+        PathToProfile: "/infra/dhcp-server-configs/{{ item.Name }}"
+      loop: "{{ Nested_NSXT.Networking.DHCPProfiles }}"
+      when:
+        - item.Type == "DHCP_SERVER"
+        - DHCPProfilePath_Does_Not_Already_Exist
+
+    - name: Create DHCPProfilePath dictionary (DHCP Relay Profiles)
+      ansible.builtin.set_fact:
+        DHCPProfilePath: "{{ DHCPProfilePath | default({}) | combine({ item.Name : PathToProfile }) }}"
+      vars:
+        PathToProfile: "/infra/dhcp-relay-configs/{{ item.Name }}"
+      loop: "{{ Nested_NSXT.Networking.DHCPProfiles }}"
+      when:
+        - item.Type == "DHCP_RELAY"
+        - DHCPProfilePath_Does_Not_Already_Exist
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================= Display DHCPProfilePath Dictionary  ===============================
+
+          DHCPProfilePath_Does_Not_Already_Exist: {{ DHCPProfilePath_Does_Not_Already_Exist }}
+
+          DHCPProfilePath:
+            {{ DHCPProfilePath | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true

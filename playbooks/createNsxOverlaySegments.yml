@@ -65,6 +65,10 @@
       when:
         - DEBUG.DisplayVariables == true
 
+    - name: Define DHCPProfilePath dictionary if it does not already exist
+      ansible.builtin.include_tasks:
+        file: include_var_DHCPProfilePath.yml
+
     - name: Get list of Segments
       ansible.builtin.set_fact:
         SegmentsToCreate: "{{ lookup('template', LOCAL_Segments_Template) | from_yaml }}"
@@ -76,7 +80,8 @@
         prompt: |
           ============================== Display SegmentsToCreate Variable ================================
 
-              SegmentsToCreate: {{ SegmentsToCreate | to_nice_yaml(indent=2) }}
+          SegmentsToCreate:
+            {{ SegmentsToCreate | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
           =================================================================================================
       when:
@@ -85,9 +90,8 @@
         - Deploy.Product.NSXT.Edge.Deploy == true
         - SegmentsToCreate != ""
 
-    ## Create only OVERLAY Segments in var_Segments  ##
-    - name: Create NSX-T Segments
-      nsxt_policy_segment:
+    - name: Create NSX-T Overlay Segments
+      vmware.ansible_for_nsxt.nsxt_policy_segment:
         hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
@@ -99,7 +103,9 @@
         transport_zone_display_name: "{{ item.transport_zone_display_name }}"
         tier0_display_name: "{{ item.tier0_display_name | default(omit) }}"
         tier1_display_name: "{{ item.tier1_display_name | default(omit) }}"
+        domain_name: "{{ item.domain_name }}"
         subnets: "{{ item.subnets | default(omit) }}"
+        dhcp_config_path: "{{ item.dhcp_config_path | default(omit) }}"
         tags: "{{ item.tags }}"
         state: "present"
       loop: "{{ SegmentsToCreate }}"

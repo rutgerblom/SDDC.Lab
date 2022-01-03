@@ -47,16 +47,22 @@ The Ansible controller is the machine from which you will run the Ansible script
 After you've installed the Ubuntu OS and applied the latest updates, some additional software is required to turn this machine into an Ansible controller for your SDDC.Lab Pods. You can simply copy and paste the commands below. Installation of the additional software will only take some minutes.  This project requires Ansible
 version 2.10.x.
 
-1. Python, pip, and xorriso:  
+1. Python, pip, and xorriso:\
 **sudo apt install python3 python3-pip xorriso git**
 
-1. Ansible and the required Python modules:  
+2. Ansible and the required Python modules:\
 **sudo pip3 install ansible pyvim pyvmomi netaddr jmespath dnspython**
 
-1. The required Ansible modules
+3. The required Ansible modules\
 **ansible-galaxy collection install community.general community.vmware ansible.posix**
 
-1. The SDDC.Lab repository cloned to an appropriate location on your Ubuntu machine (e.g. $HOME) with:  
+4. The required [VMware for NSX-T Ansible modules](https://github.com/vmware/ansible-for-nsxt) (regular user install)\
+**ansible-galaxy collection install git+https://github.com/vmware/ansible-for-nsxt.git,v3.2.0**
+
+5. The required [VMware for NSX-T Ansible modules](https://github.com/vmware/ansible-for-nsxt) (sudo user install)\
+**sudo ansible-galaxy collection install git+https://github.com/vmware/ansible-for-nsxt.git,v3.2.0**
+
+6. The SDDC.Lab repository cloned to an appropriate location on your Ubuntu machine (e.g. $HOME) with:\
 **git clone https://github.com/rutgerblom/SDDC.Lab.git**
 
 ## Prepare your Pod configuration files
@@ -107,13 +113,13 @@ There are many settings that you ***can*** change, but only a few that you ***mu
     | Setting                                     | Description                                                                                                          | Default Value
     | :---                                        | :---                                                                                                                 | :---
     | Common.Password.Physical                    | The password used to log in as root (standalone ESXi) or as administrator@vsphere.local (vCenter)                    | VMware1!
-    | Common.DNS.Server1.IPv4/IPv6                | The IP address of the DNS server to be used by the nested environment. You only need to change this if you decide not to deploy the SDDC.Lab DNS/NTP server | 10.203.0.5
-    | Common.NTP.Server1.IPv4/IPv6                | The IP address of the NTP server to be used by the nested environment. You only need to change this if you decide not to deploy the SDDC.Lab DNS/NTP server | 10.203.0.5
+    | Common.DNS.Server1.IPv4/IPv6                | The IP address of the DNS server to be used by the nested environment. You only need to change this if you decide not to deploy the SDDC.Lab DNS/NTP server | 10.203.0.5 / fd00::5
+    | Common.NTP.Server1.IPv4/IPv6                | The IP address of the NTP server to be used by the nested environment. You only need to change this if you decide not to deploy the SDDC.Lab DNS/NTP server | 10.203.0.5 / fd00::5
     | TargetConfig.Deployment                     | The deployment target. Can be either "Host" or "vCenter"                                                             | Host    
-    | TargetConfig.Host/vCenter.FQDN              | The FQDN of your physical ESXi host or your vCenter Server                                                           | Host32.NetLab.Home/NetLab-vCenter.NetLab.Local 
+    | TargetConfig.Host/vCenter.FQDN              | The FQDN of your physical ESXi host or your vCenter Server                                                           | Host32.NetLab.Home / NetLab-vCenter.NetLab.Local 
     | TargetConfig.vCenter.DataCenter             | The DataCenter object where the lab Pods are deployed (only required when deploying to vCenter)                      | SDDC
     | TargetConfig.vCenter.Cluster                | The vSphere cluster within DataCenter wher the lab Pods are deployed (only required when deploying to vCenter)       | Lab-Cluster 
-    | TargetConfig.Host/vCenter.Datastore         | The datastore that will be used to store Pod VMs                                                                     | Local_VMs/Shared_VMs
+    | TargetConfig.Host/vCenter.Datastore         | The datastore that will be used to store Pod VMs                                                                     | Local_VMs / Shared_VMs
     | TargetConfig.Host/vCenter.PortGroup.Uplink  | The portgroup that connects your Pod to the transit segment (e.g. the physical network)                              | Lab-Routers
     | Nested_Router.Protocol                      | The routing protocol used for routing traffic between your Pod and your physical network. Valid options are "Static", "BGP", "OSPF" or "BOTH" (OSPF and BGP)                                    | BOTH
 

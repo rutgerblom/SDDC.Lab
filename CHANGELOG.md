@@ -811,3 +811,63 @@
     - VCSA v7.00U3A, ESXi 7.00U3, NSX-T v3.1.3.3 (2-Site Federation)
     - VCSA v7.00U3A, ESXi 7.00U3, NSX-T v3.1.3.5 (Standalone)
     - VCSA v7.00U3A, ESXi 7.00U3, NSX-T v3.2.0   (Standalone)
+
+## Dev-v4.0.0 27-DEC-2021
+
+### Added by Luis Chanu
+  - Created utils/util_ApplyConfigToTemplate.yml playbook to be able to test any template quickly.  Modify the variable within to indicate what template you want to have it generate.
+  - Began working on createNsxDhcpProfiles.yml playbook to create DHCP Server and DHCP Relay profiles.
+  - Added Nested_NSXT.Networking.DHCPProfiles section to config_sample.yml.
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml
+
+## Dev-v4.0.0 28-DEC-2021
+
+### Added by Luis Chanu
+  - Following changes were made to createNsxEdgeTn.yml playbook:
+    - The nested loop to set password aging to 0 was reversed so that each of the EdgeVMs are cycled through for each user.  This permits the EdgeVM to "recover" to the "SUCCESS" state before the next REST API call is attempted to it.
+    - Added an additional check at the end of the playbook to verify all EdgeVMs are in a "SUCCESS" state before the playbook is completed.  This hopefully ensures all EdgeVMs are ready for other REST API calls.
+
+## Dev-v4.0.0 29-DEC-2021
+
+### Added by Luis Chanu
+  - The SDDC.Lab project was migrated from older local Ansible NSX-T modules to [VMware Ansible modules for NSX-T v3.2.0](https://github.com/vmware/ansible-for-nsxt/tree/v3.2.0).  In order to migrate your installation, follow these steps:
+    - Install VMware Ansible for NSX-T Modules (run BOTH commands):
+      - ansible-galaxy collection install git+https://github.com/vmware/ansible-for-nsxt.git,v3.2.0
+      - sudo ansible-galaxy collection install git+https://github.com/vmware/ansible-for-nsxt.git,v3.2.0
+    - If they exist, comment the following two lines from the ansible.cfg file located at the root of the SDDC.Lab project directory by putting "#" in front of each line:
+      - library = library
+      - module_utils = module_utils
+    - Within the "library" directory, delete all files that begin with "nsxt_" except for the ones listed below.  The following files should remain:
+      - __Module_Info (This file has been updated, so obtain the updated file from the project)
+      - claim_vsan_disks.py
+      - enable_vsan.py
+      - set_drive_type.py
+      - nsxt_gobal_manager_active.py
+      - nsxt_gobal_manager_enable_service.py
+      - nsxt_gobal_manager_registration.py
+      - nsxt_local_manager_registration.py
+      - nsxt_local_managers_compatibility.py
+
+## Dev-v4.0.0 30-DEC-2021
+
+### Added by Luis Chanu
+  - Updated README.md and FirstPod.md files
+  - Within the various playbooks, with the exception of Global Manager modules, all NSX-T module references have been updated to use FQCN naming.  Global Manager modules are still located in the local "library" directory, which is why they were not changed to use FQCN.
+  - Added "include_var_DHCPProfilePath.yml" playbook to centrally generate the DHCProfilePath dictionary variable.
+  - To assist with test workload VMs, a DHCP Local Server was added to each Overlay segment.  Both IPv4 and IPv6 was configured.
+  - Added Common.DHCP section to config_sample.yml
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml
+
+## Dev-v4.0.0 01-JANUARY-2022
+
+### Added by Luis Chanu
+  - Created "deployWorkloadVms.yml" playbook to deploy Workload VM Templates (VM or OVF) from the Content Library after Pod deployment
+  - Created "include_tasks_deployWorkloadVm.yml" file with plays that does the "heavy lifting" of the VM deployment.
+  - Added additional sections to config_sample.yml file, includng:
+    - Deploy.WorkloadVMs section enable WorkloadVMs functionality and provide default settings for Cluster and VMFolder placement of VMs.  These default settings can be over-written at a VM level.
+    - WorkloadVMs section at the end of the file where the various VM/OVF Template workloads that are to be deployed are defined.  Users will need to modify this section to meet their needs.
+  - Added Deploy and WorkloadVMs to Pod_Config.j2 template
+  - The following files were updated so please update your non-sample files:
+    - config_sample.yml
