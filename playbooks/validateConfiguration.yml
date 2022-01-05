@@ -166,12 +166,40 @@
         - Deploy.Product.NSXT.Federation.Enable == True
         - Deploy.Software.NSXT.Version == '3.2.0'
 
-    - name: Set flag if issue found with Pod.BaseNetwork.IPv6
+    - name: Set flag if issue found with Federation Support
       ansible.builtin.set_fact:
         IssueFound: true
       when:
         - Deploy.Product.NSXT.Federation.Enable == True
         - Deploy.Software.NSXT.Version == '3.2.0'
+
+
+##
+## If Workload VM deployment is enabled, verify dependencies are set
+##
+    - name: Verify Workload VM Settings and dependencies
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Deploying WorkloadVMs requires vSphere Content Library to be enabled and subscribed (i.e. not local)
+
+            Configured Values: Deploy.WorkloadVMs.Deploy == {{ Deploy.WorkloadVMs.Deploy }}
+                               Nested_vCenter.ContentLibrary.Enable == {{ Nested_vCenter.ContentLibrary.Enable }}
+                               Nested_vCenter.ContentLibrary.Type == {{ Nested_vCenter.ContentLibrary.Type }}
+
+          =================================================================================================
+      when:
+        - Deploy.WorkloadVMs.Deploy == True
+        - Nested_vCenter.ContentLibrary.Enable != True or Nested_vCenter.ContentLibrary.Type != "subscribed"
+
+    - name: Set flag if issue found with Workload VM Settings and dependencies
+      ansible.builtin.set_fact:
+        IssueFound: true
+      when:
+        - Deploy.WorkloadVMs.Deploy == True
+        - Nested_vCenter.ContentLibrary.Enable != True or Nested_vCenter.ContentLibrary.Type != "subscribed"
 
 
 ##
