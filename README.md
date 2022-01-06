@@ -1,11 +1,12 @@
+```
      _________________  _____       _           _               ___ 
     /  ___|  _  \  _  \/  __ \     | |         | |             /   |                 Developed By
     \ `--.| | | | | | || /  \/     | |     __ _| |__   __   __/ /| |          --------------------------
      `--. \ | | | | | || |         | |    / _` | '_ \  \ \ / / /_| |          Rutger Blom  &  Luis Chanu
     /\__/ / |/ /| |/ / | \__/\  _  | |___| (_| | |_) |  \ V /\___  |          NSX vExpert     VCDX #246
     \____/|___/ |___/   \____/ (_) \_____/\__,_|_.__/    \_/     |_/
-                                                                
-                                                                
+```
+
 ## Table of Contents
 
 * [Description](#Description)
@@ -21,6 +22,7 @@
   * [vSphere Content Libraries](#vSphere-Content-Libraries)
   * [vSphere with Tanzu](#vSphere-with-Tanzu)  **Rutger To Add More Info In This Section Later**
 * [Known Items](#Known-Items)
+* [Issues With Various Software Versions](#Issues-With-Various-Software-Versions)
 * [More Information](#More-Information)
 * [Credits](#Credits)
 
@@ -305,6 +307,15 @@ Here are some known items to be aware of:
 3. SDDC.Lab v3 requires Ansible version 2.10.1 (or later).  Thus, if you are upgrading from SDDC.Lab v2, make 
    sure you upgrade your Ansible to the latest version.  To see your current Ansible version, run the following
    command: ansible --version
+
+## Issues With Various Software Versions
+As we use SDDC.Lab in our labs, every now-and-then we notice some issues/problems.  As we come across those, we'll try to very briefly document the versions and issue(s) below.  We do not test every software version combination, so by no means should this be taken as a comprehensive list of what works and what doesn't.  This is just a "best effort" from us, to you, in the hope that it saves you time and frustration.  Versions listed below match up with the software version used in config_sample.yml and the version "label" used in Software.yml.  Blank fields mean we believe they aren't relavent to the issue found, and thus, don't matter.
+
+| Date | vCenter Server | ESXi    |  NSX-T  | Description Of Issue | Documented By |
+|------|----------------|---------|---------|----------------------|---------------|
+| 5-JAN-2022 | 7.0.0U3        | 7.00U2A |         | Migrating vDS Uplinks in createVds playbook fails.  Deployed fine in ESXi v7.00U3. | Luis Chanu |
+| 5-JAN-2022 |                |         |  3.2.0  | NSX-T Federation deployment not supported. | Luis Chanu |
+
 
 ## More Information
 For detailed installation, preparation, and deployment steps, please see the "[Deploying your first SDDC.Lab Pod](FirstPod.md)" document.
