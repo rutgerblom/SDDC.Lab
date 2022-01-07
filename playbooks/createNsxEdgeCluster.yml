@@ -134,7 +134,7 @@
         description: "{{ item.description }}"
         tags: "{{ item.tags }}"
         cluster_profile_bindings: "{{ item.cluster_profile_bindings }}"
-        members: "{{ item.members }}"
+        members: "{% if item.members %}{{ item.members }}{% else %}{{ omit }}{% endif %}"
         state: present
       register: edge_cluster
       loop: "{{ var_EdgeClusters }}"
