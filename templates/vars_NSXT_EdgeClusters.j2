@@ -26,7 +26,9 @@
       - profile_name: "{{ ClusterProfile }}"
 {% endfor %}{# ClusterProfile #}
     members:
+{% if EdgeCluster.Members %}{# Only add members if they exist #}
 {% for Member in EdgeCluster.Members %}
       - transport_node_name: "{{ Member }}"
 {% endfor %}{# Member #}
+{% endif %}{# EdgeCluster.Members #}
 {% endfor %}{# EdgeCluster #}

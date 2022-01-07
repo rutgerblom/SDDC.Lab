@@ -192,18 +192,6 @@
 
 
 ##
-## Free up "item" variable for use in loop below
-##
-#    - name: Store information about Workload VM being deployed (=='item')
-#      ansible.builtin.set_fact:
-#        WorkloadVM_Info: "{{ item }}"
-#      when:
-#        - item is defined
-#        - Deploy.WorkloadVMs.Deploy == true
-#        - Nested_vCenter.ContentLibrary.Enable == true
-
-
-##
 ## Update VM NIC Configuration
 ##
     - name: Update network Port-Group(s) used by VM '{{ item.VMName }}'

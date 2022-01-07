@@ -871,3 +871,14 @@
   - Added Deploy and WorkloadVMs to Pod_Config.j2 template
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
+
+## Dev-v4.0.0 05-JANUARY-2022
+
+### Added by Luis Chanu
+  - Added markdown code blocks "back-ticks" around header of both README.md and FirstPod.md files.
+  - Added "Issues With Various Software Versions" section to README.md file.
+
+## Dev-v4.0.0 06-JANUARY-2022
+
+### Added by Luis Chanu
+  - Modify createNsxEdgeCluster.yml and vars_NSXT_EdgeClusters.j2 to permit creation of Edge Clusters without any member Edge Nodes.
