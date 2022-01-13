@@ -895,3 +895,9 @@
 
 ### Added by Luis Chanu
   - Corrected issue with test code that was accidentally left in a playbook.  Test code has been removed.
+
+## Dev-v4.0.0 13-JANUARY-2022
+
+### Added by Luis Chanu
+  - Corrected issue with DHCP Server causing Federation deployment to fail as it's not supported by Federation.  Added logic to not implement DHCP Server when Federation is being deployed.
+  - Verified NSX-T Federation deployment completed successfully using NSX-T v3.1.3.5.

@@ -113,6 +113,8 @@
     - Deploy.Product.NSXT.LocalManager.Deploy == true
 
 - ansible.builtin.import_playbook: playbooks/createNsxDhcpProfiles.yml
+  when:
+    - Deploy.Product.NSXT.Federation.Enable == false
 
 - ansible.builtin.import_playbook: playbooks/createNsxT0Gateway.yml
   when: 
