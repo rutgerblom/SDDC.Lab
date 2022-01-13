@@ -102,6 +102,9 @@
         transport_zone_display_name: "{{ item.transport_zone_display_name }}"
         tags: "{{ item.tags }}"
         vlan_ids: "{{ item.vlan_ids }}"
+        advanced_config:
+          # Only include if item.uplink_teaming_policy_name is not empty, else omit line to use 'Default' Teaming Policy
+          uplink_teaming_policy_name: "{% if item.uplink_teaming_policy_name %}{{ item.uplink_teaming_policy_name }}{% else %}{{ omit }}{% endif %}"
         state: "present"
       loop: "{{ SegmentsToCreate }}"
       when: 
