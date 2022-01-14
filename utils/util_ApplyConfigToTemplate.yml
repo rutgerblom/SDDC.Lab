@@ -14,10 +14,10 @@
 - hosts: localhost
   gather_facts: false
   vars:
-    - TemplateToUse: vars_NSXT_Segments.j2
+    - Template: vars_NSXT_Segments.j2
   tasks:
-    - name: Applying Configuration To {{ TemplateToUse }} Template
+    - name: Applying Configuration To {{ Template }} Template
       ansible.builtin.template: 
-        src:  "../templates/{{ TemplateToUse }}"
+        src:  "../templates/{{ Template }}"
         dest: "/tmp/GeneratedTemplate.txt"
         force: yes

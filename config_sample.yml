@@ -2056,6 +2056,7 @@ Nested_NSXT:
         Description: NSX T0-Edge Uplink 1
         TransportZone: TZ-Edge
         ReplicationMode: MTEP                                                                   # ReplicationMode can be "MTEP" or "SOURCE"
+        UplinkTeamingPolicy: ToR-A
         VLANS:
           - "{{ Net.NSXEdgeUplink1.VLAN }}"
         Tags:
@@ -2066,6 +2067,7 @@ Nested_NSXT:
         Description: NSX T0-Edge Uplink 2
         TransportZone: TZ-Edge
         ReplicationMode: MTEP                                                                   # ReplicationMode can be "MTEP" or "SOURCE"
+        UplinkTeamingPolicy: ToR-B
         VLANS:
           - "{{ Net.NSXEdgeUplink2.VLAN }}"
         Tags:
@@ -2076,6 +2078,7 @@ Nested_NSXT:
         Description: Web Segment
         TransportZone: TZ-Overlay
         ReplicationMode: MTEP                                                                   # ReplicationMode can be "MTEP" or "SOURCE"
+        UplinkTeamingPolicy: ""
         ConnectedTo:
           Tier: 1
           GatewayName: T1-Gateway-01
@@ -2091,6 +2094,7 @@ Nested_NSXT:
         Description: App Segment
         TransportZone: TZ-Overlay
         ReplicationMode: MTEP                                                                   # ReplicationMode can be "MTEP" or "SOURCE"
+        UplinkTeamingPolicy: ""
         ConnectedTo:
           Tier: 1
           GatewayName: T1-Gateway-01
@@ -2106,6 +2110,7 @@ Nested_NSXT:
         Description: DB Segment
         TransportZone: TZ-Overlay
         ReplicationMode: MTEP                                                                   # ReplicationMode can be "MTEP" or "SOURCE"
+        UplinkTeamingPolicy: ""
         ConnectedTo:
           Tier: 1
           GatewayName: T1-Gateway-01
@@ -2121,6 +2126,7 @@ Nested_NSXT:
         Description: Example of a Tier-0 Overlay Segment
         TransportZone: TZ-Overlay
         ReplicationMode: MTEP                                                                   # ReplicationMode can be "MTEP" or "SOURCE"
+        UplinkTeamingPolicy: ""
         ConnectedTo:
           Tier: 0
           GatewayName: T0-Gateway-01

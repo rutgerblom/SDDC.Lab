@@ -8,6 +8,7 @@
  #               to the playbook using this template to filter only the type of Segments it wants to process.
  #
  #  DHCP Config: The various DHCP values used are all dynamically derived from an Overlay Segment's Gateway address for both IPv4 and IPv6.
+ #                 Constraint/Limitation: DHCP Server is not supported by Federation.  If Federation is enabled, DHCP support is not included.
  #                   DHCP Server Address: One higher than the Gateway's IP Address
  #             DHCP Usable Address Range: Usable addresses in the highest subnet (see below) for both IPv4 and IPv6.
  #                            IPv4 Range: Highest /28 Subnet
@@ -20,7 +21,9 @@
     replication_mode: "{{ Segment.ReplicationMode }}"
     transport_zone_display_name: "{{ Segment.TransportZone }}"
     domain_name: "{{ Common.DNS.Domain }}"
-{% if DHCPProfilePath[Nested_NSXT.Networking.DHCPProfiles[0].Name] is defined %}    dhcp_config_path: "{{ DHCPProfilePath[Nested_NSXT.Networking.DHCPProfiles[0].Name] }}"{% endif %}
+    uplink_teaming_policy_name: "{{ Segment.UplinkTeamingPolicy }}"
+{# Only add DHCP Profile into structure if Federation is NOT enabled #}
+{% if DHCPProfilePath[Nested_NSXT.Networking.DHCPProfiles[0].Name] is defined and Deploy.Product.NSXT.Federation.Enable == false %}    dhcp_config_path: "{{ DHCPProfilePath[Nested_NSXT.Networking.DHCPProfiles[0].Name] }}"{% endif %}
 
 {# DO NOT REMOVE THE EMPTY LINE ABOVE THIS COMMENT #}
 {% if Segment.ConnectedTo is defined %}
@@ -60,6 +63,7 @@
 {% for Subnet in Segment.Subnets %}
 {% if ((Deploy.Setting.IPv4 and Subnet.GatewayCIDR | ipv4) or (Deploy.Setting.IPv6 and Subnet.GatewayCIDR | ipv6)) %}
       - gateway_address: "{{ Subnet.GatewayCIDR }}"
+{% if Deploy.Product.NSXT.Federation.Enable == false %}
         dhcp_ranges:
           - {% if (Subnet.GatewayCIDR | ipv4) %}{{ Subnet.GatewayCIDR | ansible.netcommon.ipaddr('last_usable') | ansible.netcommon.ipsubnet(28) }}{% else %}{{ Subnet.GatewayCIDR | ansible.netcommon.ipaddr('last_usable') | ansible.netcommon.ipsubnet(120) }}{% endif %}
 
@@ -78,6 +82,7 @@
           domain_names:
             - {{ Common.DNS.Domain }}
 {% endif %}{# Subnet.GatewayCIDR | ipv6 #}
+{% endif %}{# Deploy.Product.NSXT.Federation.Enable == false #}
 {% endif %}{# Deploy.Setting.IPv4 or Deploy.Setting.IPv6 #}
 {% endfor %}{# Subnet #}
 {% endif %}{# Segment.Subnets is defined #}
