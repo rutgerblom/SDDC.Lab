@@ -88,21 +88,21 @@ The following are recommendations based on our experience with deploying Pods:
   * Add the Pod VLANs to your layer-3 switch in case you are deploying the Pod to a vSphere cluster. 
 
 * Install the required software on your Ansible controller:
-  * sudo apt install python3 python3-pip xorriso git
-  * sudo pip3 install --upgrade ansible pyvim pyvmomi netaddr jmespath dnspython paramiko setuptools git+https://github.com/vmware/vsphere-automation-sdk-python.git
-  * git clone https://github.com/rutgerblom/SDDC.Lab.git 
-  * ansible-galaxy collection install -r SDDC.Lab/requirements.yml
+  * ```sudo apt install python3 python3-pip xorriso git```
+  * ```sudo pip3 install --upgrade ansible pyvim pyvmomi netaddr jmespath dnspython paramiko setuptools git+https://github.com/vmware/vsphere-automation-sdk-python.git```
+  * ```git clone https://github.com/rutgerblom/SDDC.Lab.git``` 
+  * ```ansible-galaxy collection install -r SDDC.Lab/requirements.yml```
 
 * Copy/rename the sample files:
-  * cp config_sample.yml config.yml
-  * cp licenses_sample.yml licenses.yml
-  * cp software_sample.yml software.yml
-  * cp templates_sample.yml templates.yml
+  * ```cp config_sample.yml config.yml```
+  * ```cp licenses_sample.yml licenses.yml```
+  * ```cp software_sample.yml software.yml```
+  * ```cp templates_sample.yml templates.yml```
 
-* Modify **config.yml** and **licenses.yml** according to your needs and your environment
+* Modify ```config.yml``` and ```licenses.yml``` files according to your needs and your environment
 
 * Create the Software Library directory structure using:
-  * sudo ansible-playbook utils/util_CreateSoftwareDir.yml
+  * ```sudo ansible-playbook utils/util_CreateSoftwareDir.yml```
 
 * Add installation media to the corresponding directories in the Software Library (/Software)
 
@@ -110,7 +110,7 @@ The following are recommendations based on our experience with deploying Pods:
 Consider the following when upgrading SDDC.Lab to a newer version.
 
 * v2 to v3
-  * Clone the v3 branch to its own directory. For example: git clone https://github.com/rutgerblom/SDDC.Lab.git SDDC.Lab_v3
+  * Clone the v3 branch to its own directory. For example: ```git clone https://github.com/rutgerblom/SDDC.Lab.git SDDC.Lab_v3```
   * As additional PIP and Ansible modules are required by v3, please follow the instructions in the "Preparations" section to ensure all of the required software is installed on the Ansible controller.
   * Use copies of the v3 sample files and update these with your settings. Don't copy any v2 files into the v3 directory.
   * Remove the VyOS ISO file from your software library and let the router deployment script download the latest version of the rolling release.
@@ -189,8 +189,8 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 4 | Reserved | Reserved for Future Use | |
 | 5 | vCenter | vCenter Appliance | Yes |
 | 6 | vRLI | vRealize Log Insight Appliance | Yes |
-| 7 | GM VIP | NSX-T Global Manager VIP | No |
-| 8 | GM1 | NSX-T Global Manager Node 1 | No |
+| 7 | GM VIP | NSX-T Global Manager VIP | Only if deploying NSX-T Federation |
+| 8 | GM1 | NSX-T Global Manager Node 1 | Only if deploying NSX-T Federation |
 | 9 | GM2 | NSX-T Global Manager Node 2 | No |
 | 10 | GM3 | NSX-T Global Manager Node 3 | No |
 | 11 | LM VIP | NSX-T Local Manager VIP | Yes |
@@ -242,15 +242,15 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 
 To deploy a Pod:
 1. Generate a Pod configuration with:  
-**ansible-playbook playbooks/createPodConfig.yml**
+```ansible-playbook playbooks/createPodConfig.yml```
 
 1. Start a Pod deployment per the instructions. For example:  
-**sudo ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" deploy.yml**
+```sudo ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" deploy.yml```
 
 Deploying an SDDC Pod will take somewhere between 1 and 1.5 hours depending on your environment and Pod configuration.
 
 Similary you remove a Pod with:  
-**sudo ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" undeploy.yml**
+```sudo ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" undeploy.yml```
 
 ## Project Features
 
@@ -259,26 +259,26 @@ When deploying NSX-T Federation, keep the following in mind:
 
 1. Each NSX-T Location will be deployed from a separate SDDC.Lab Pod configuration file.
 
-2. All of the Pods that are participating in the NSX-T Federation deployment (i.e. Which will become NSX-T Locations) need to have "Deploy.Product.NSXT.Federation.Enable = true" set in their configuration file.
+2. All of the Pods that are participating in the NSX-T Federation deployment (i.e. Which will become NSX-T Locations) need to have ```Deploy.Product.NSXT.Federation.Enable = true``` set in their configuration file.
 
-3. The Global Manager Cluster (single VM) will be deployed by the Pod specified by "Deploy.Product.NSXT.GlobalManager.SiteCode".  As the value of this variable for each Pod defaults to their own SiteCode, this value can be left at default for the Pod deploying the Global Manager.  All other Pods participating in NSX-T Federation need to update this value to the SiteCode of the Pod deploying the Global Manager.  For example, if the "Pod-100" is deploying the Global Manager, then the other Pods need to change this variable in their respective configurations to "Pod-100".
+3. The Global Manager Cluster (single VM) will be deployed by the Pod specified by ```Deploy.Product.NSXT.GlobalManager.SiteCode```.  As the value of this variable for each Pod defaults to their own ```SiteCode```, this value can be left at default for the Pod deploying the Global Manager.  All other Pods participating in NSX-T Federation need to update this value to the SiteCode of the Pod deploying the Global Manager.  For example, if the "Pod-100" is deploying the Global Manager, then the other Pods need to change this variable in their respective configurations to "Pod-100".
 
 4. The Pod responsible for deploying the Global Manager Cluster is responsible for many aspects of the NSX-T Federation deployment.  Because of these extra steps, there may be instances when the other Pods are waiting for some component to come on-line.  This is normal and by design.
 
 5. NSX-T Federation can only be deployed as part of a complete Pod deployment.  For that reason, the following Pod Configuration settings must all be enabled to deploy NSX-T Federation:\
-  a) Deploy.Product.NSXT.Federation.Enable = true
-  b) Deploy.Product.NSXT.LocalManager.Deploy = true
-  c) Deploy.Product.NSXT.Edge.Deploy = true
+  a) ```Deploy.Product.NSXT.Federation.Enable = true```\
+  b) ```Deploy.Product.NSXT.LocalManager.Deploy = true```\
+  c) ```Deploy.Product.NSXT.Edge.Deploy = true```
 
-6. NSX-T Federation requires an NSX-T Enterprise Plus license, so be sure the proper license is included in your License.yml file.
+6. NSX-T Federation requires an NSX-T Enterprise Plus license, so be sure the proper license is included in your ```License.yml``` file.
 
 7. SDDC.Lab only supports one (1) Tier-0 Gateway when NSX-T Federation is configured.  This Tier-0 Gateway will become the Stretched Tier-0 Gateway.
 
 8. NSX-T Federation support is still being developed, so there might be some functional items missing as part of the automated deployment.
 
-9. The **config_sample.yml** default configuration assumes the Lab-Routers transit segment, and thus communication between NSX-T Federation Locations, is configured with an MTU of 1500 bytes.  If your environment supports Jumbo Frames, you can obtain better performance by changing the MTU values in the Net section.  Keep in mind that the OSPF (by default) requires matching MTU sizes, so you may lose peering with your ToR router.  If you decide to change the MTU values, you need to take this all into account, and are on your own.  For a lab, the default 1500 byte MTU configurations should suffice.
+9. The ```config_sample.yml``` default configuration assumes the Lab-Routers transit segment, and thus communication between NSX-T Federation Locations, is configured with an MTU of 1500 bytes.  If your environment supports Jumbo Frames, you can obtain better performance by changing the MTU values in the Net section.  Keep in mind that the OSPF (by default) requires matching MTU sizes, so you may lose peering with your ToR router.  If you decide to change the MTU values, you need to take this all into account, and are on your own.  For a lab, the default 1500 byte MTU configurations should suffice.
 
-10. SDDC.Lab does not support Federation with NSX-T v3.2.0.  If you want to deploy Federation in your lab, deploy Federation using NSX-T v3.1.3.3, then manually upgrade the Pods to NSX-T v3.2.0.
+10. SDDC.Lab does not support Federation with NSX-T v3.2.0.  If you want to deploy Federation in your lab, deploy Federation using NSX-T v3.1.3.5, then manually upgrade the Pods to NSX-T v3.2.0.
 
 ### vSphere Content Libraries
 SDDC.Lab now supports both local and subscribed vSphere Content Libraries, which can be very helpful in a lab environment by centralizing workload ISOs and VMs (i.e. On the physical vCenter Server or a stand-alone Content Library target), then accessing them via the deployed Pods.  There are a few things to keep in mind with Content Libraries:
@@ -299,14 +299,14 @@ Here are some known items to be aware of:
 1. If you attempt to deploy a pod, and receive a message indicating "Error rmdir /tmp/Pod-###/iso: [Errno 39] Directory not empty: '/tmp/Pod-###/iso'", that's because a previous pod deployment failed (for whatever reason), and some files remained in the /tmp/Pod-### directory.  To resolve this issue, delete the entire /tmp/Pod-### directory, and then re-deploy the Pod.  If an ISO image is still mounted (which you can check by running 'mount'), then you will need to unmount the ISO image before you can delete the /tmp/Pod-### directory.  In all examples, the "###" of Pod-### is the 3-digit Pod Number.
 
 2. The DNS IPv6 reverse zone used is determined by the network used for BaseNetwork.IPv6:\
-   a) If it begins with "fd", then the zone used is **d.f.ip6.arpa**\
+   a) If it begins with "fd", then the zone used is ```d.f.ip6.arpa```\
    b) Otherwise, the zone used is a standard IPv6 reverse DNS zone for the configured /56 network
 
    This is important understand if you need to configure conditional forwarding to reach your SDDC.Lab environment.
 
 3. SDDC.Lab v3 requires Ansible version 2.10.1 (or later).  Thus, if you are upgrading from SDDC.Lab v2, make 
    sure you upgrade your Ansible to the latest version.  To see your current Ansible version, run the following
-   command: ansible --version
+   command: ```ansible --version```
 
 ## Issues With Various Software Versions
 As we use SDDC.Lab in our labs, every now-and-then we notice some issues/problems.  As we come across those, we'll try to very briefly document the versions and issue(s) below.  We do not test every software version combination, so by no means should this be taken as a comprehensive list of what works and what doesn't.  This is just a "best effort" from us, to you, in the hope that it saves you time and frustration.  Versions listed below match up with the software version used in config_sample.yml and the version "label" used in Software.yml.  Blank fields mean we believe they aren't relavent to the issue found, and thus, don't matter.
@@ -319,6 +319,8 @@ As we use SDDC.Lab in our labs, every now-and-then we notice some issues/problem
 
 ## More Information
 For detailed installation, preparation, and deployment steps, please see the "[Deploying your first SDDC.Lab Pod](FirstPod.md)" document.
+
+We also suggest that you watch [our vBrownBag video](https://www.youtube.com/watch?v=caSkrOFs0qs) from VMworld 2021.  In that video, we provide an overview of the SDDC.Lab environment, and go over the various configuration files that need to be modified to deploy your first SDDC.Lab Pod.  We also explain the Pod configuration file, along with the reason why the ```createPodConfig.yml``` playbook needs to be run.  Keep in mind that this video is based on SDDC.Lab version 3.
 
 ## Credits
 A big thank you to [Yasen Simeonov](https://www.linkedin.com/in/yasen/). His project at https://github.com/yasensim/vsphere-lab-deploy was the inspiration for this project. Another big thank you to my companion and lead developer [Luis Chanu](https://www.linkedin.com/in/luischanu/) (VCDX #246) for pushing this project forward all the time. Last but not least thank you vCommunity for trying this out and providing valuable feedback.
