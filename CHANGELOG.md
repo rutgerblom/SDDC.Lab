@@ -917,4 +917,4 @@
 
 ### Added by Rutger Blom
   - Added NSX-T collection to requirements.yml
-  - Updated preparePhysical.yml to remove deprecated and add required parameters to ommunity.vmware.vmware_dvs_portgroup tasks
+  - Updated preparePhysical.yml to remove deprecated and add required parameters to community.vmware.vmware_dvs_portgroup tasks
