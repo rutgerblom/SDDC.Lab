@@ -912,3 +912,9 @@
 
 ### Added by Rutger Blom
   - Updated README.md "Preparations" section so it includes the "testresources" and "cryptography" python packages.
+
+## Dev-v4.0.0 23-JANUARY-2022
+
+### Added by Rutger Blom
+  - Added NSX-T collection to requirements.yml
+  - Updated preparePhysical.yml to remove deprecated and add required parameters to ommunity.vmware.vmware_dvs_portgroup tasks
