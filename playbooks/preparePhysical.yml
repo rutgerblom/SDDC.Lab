@@ -326,8 +326,8 @@
         password: "{{ Target.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         switch_name: "{{ Target.vSwitch }}"
-        portgroup_type: earlyBinding
         portgroup_name: "{{ Target.PortGroup.Management.Name }}"
+        port_binding: static
         vlan_id: "{{ Target.PortGroup.Management.VLAN }}"
         vlan_trunk: false
         num_ports: 48
@@ -345,8 +345,8 @@
         password: "{{ Target.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         switch_name: "{{ Target.vSwitch }}"
-        portgroup_type: earlyBinding
         portgroup_name: "{{ Target.PortGroup.Trunk.Name }}"
+        port_binding: static
         vlan_id: "{{ Target.PortGroup.Trunk.VLAN }}"
         vlan_trunk: true
         num_ports: 48
