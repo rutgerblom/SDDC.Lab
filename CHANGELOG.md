@@ -907,3 +907,8 @@
 ### Added by Luis Chanu
   - Changed font/type used for commands and filenames in README.md file
   - Included information about the vBrownBag video created for VMworld 2021 that goes over the project
+
+## Dev-v4.0.0 23-JANUARY-2022
+
+### Added by Rutger Blom
+  - Updated README.md "Preparations" section so it includes the "testresources" and "cryptography" python packages.
