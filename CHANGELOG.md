@@ -918,3 +918,8 @@
 ### Added by Rutger Blom
   - Added NSX-T collection to requirements.yml
   - Updated preparePhysical.yml to remove deprecated and add required parameters to community.vmware.vmware_dvs_portgroup tasks
+
+## Dev-v4.0.0 24-JANUARY-2022
+
+### Added by Rutger Blom
+  - vRLI 8.6.2 (not tested)
