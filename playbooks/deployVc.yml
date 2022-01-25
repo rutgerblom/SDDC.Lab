@@ -221,7 +221,7 @@
         datacenter_name: "{{ Nested_vCenter.DataCenter }}"
         cluster_name: "{{ item.key }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        enable_drs: "{{ item.value.DRS }}"
+        enable: "{{ item.value.DRS }}"
       loop: "{{ Nested_Cluster | dict2items }}"
       when: 
         - vcenter_check.status != 200

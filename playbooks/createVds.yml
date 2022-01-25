@@ -92,6 +92,7 @@
         vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.VLAN.ID }}"
         num_ports: 8
         portgroup_type: earlyBinding
+        port_binding: static
         state: present
 
     - name: Create vMotion port group
@@ -105,6 +106,7 @@
         vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.VLAN.ID }}"
         num_ports: 8
         portgroup_type: earlyBinding
+        port_binding: static
         state: present
 
     - name: Create vSAN port group
@@ -118,6 +120,7 @@
         vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.VLAN.ID }}"
         num_ports: 8
         portgroup_type: earlyBinding
+        port_binding: static
         state: present
 
     - name: Create IP Storage port group
@@ -131,6 +134,7 @@
         vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.VLAN.ID }}"
         num_ports: 8
         portgroup_type: earlyBinding
+        port_binding: static
         state: present
 
     - name: Create SVM-Management port group
@@ -144,6 +148,7 @@
         vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.VLAN.ID }}"
         num_ports: 8
         portgroup_type: earlyBinding
+        port_binding: static
         state: present
 
     - name: Create list of VLAN IDs used by the Pod
@@ -165,6 +170,7 @@
         vlan_id: "{{ VLAN_List | min }}-{{ VLAN_List | max }}"
         num_ports: 8
         portgroup_type: earlyBinding
+        port_binding: static
         state: present
 
     - name: Create Uplink2 port group
@@ -179,6 +185,7 @@
         vlan_id: "{{ VLAN_List | min }}-{{ VLAN_List | max }}"
         num_ports: 8
         portgroup_type: earlyBinding
+        port_binding: static
         state: present
 
     - name: Create VMNetwork port group
@@ -192,6 +199,7 @@
         vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.VLAN.ID }}"
         num_ports: 8
         portgroup_type: earlyBinding
+        port_binding: static
         state: present
 
     - name: Migrate uplinks to the VDS
