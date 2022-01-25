@@ -923,3 +923,9 @@
 
 ### Added by Rutger Blom
   - vRLI 8.6.2 (not tested)
+
+## Dev-v4.0.0 25-JANUARY-2022
+
+### Added by Luis Chanu
+  - Updated README.md file
+  - Added NSX-T v3.2.0.1 to ```software_sample.yml``` file (Untested)
