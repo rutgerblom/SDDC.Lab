@@ -929,3 +929,12 @@
 ### Added by Luis Chanu
   - Updated README.md file
   - Added NSX-T v3.2.0.1 to ```software_sample.yml``` file (Untested)
+
+## Dev-v4.0.0 28-JANUARY-2022
+
+### Added by Luis Chanu
+  - Updated ```software_sample.yml``` and ```templates_sample.yml``` to support the following software updates:
+    - vCenter Server v7.0 Update 3c
+    - ESXi v7.0 Update 3c
+  - Please be sure to update your ```software.yml``` and ```templates.yml``` files
+  - SDDC.Lab was NOT tested against these new software updates
