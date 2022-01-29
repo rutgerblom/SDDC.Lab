@@ -20,7 +20,6 @@
 * [Project Features](#Project-Features)
   * [NSX-T Federation](#NSX-T-Federation)
   * [vSphere Content Libraries](#vSphere-Content-Libraries)
-  * [vSphere with Tanzu](#vSphere-with-Tanzu)  **Rutger To Add More Info In This Section Later**
 * [Known Items](#Known-Items)
 * [Issues With Various Software Versions](#Issues-With-Various-Software-Versions)
 * [More Information](#More-Information)
@@ -41,6 +40,7 @@ This repository contains Ansible scripts that perform fully automated deployment
 ![Physicaloverview](images/SDDC-Lab-pod2phys.png)
 
 The primary use case is consistent and speedy provisioning of nested VMware SDDC lab environments.
+
 
 ## Requirements
 The following are the requirements for successful Pod deployments:
@@ -80,6 +80,7 @@ The following are recommendations based on our experience with deploying Pods:
   * VMXNET3 network adapter
 * Deploy the pre-configured DNS server for DNS name resolution within Pods instead of using your own.
 
+
 ## Preparations
 
 * Configure your physical network:
@@ -106,6 +107,7 @@ The following are recommendations based on our experience with deploying Pods:
 
 * Add installation media to the corresponding directories in the Software Library (/Software)
 
+
 ## Upgrade Considerations
 Consider the following when upgrading SDDC.Lab to a newer version.
 
@@ -117,6 +119,7 @@ Consider the following when upgrading SDDC.Lab to a newer version.
 
 * v3 to v4
   * TBD - Coming soon
+
 
 ## Networking
 The network configuration is where many users experience issues with the setup of the SDDC.Lab solution.  For that reason, the focus of this section is to give a deep dive into how the SDDC.Lab solution "connects" to the physical network, and what networking components it requires.  We will also give overviews of how the network connectivity is different if you're running:
@@ -178,6 +181,7 @@ When three or more physical ESXi servers are being used to run Pod workloads, yo
 1. Use a single "NetLab-L3-Switch" and connect all servers to it (Suggested)
 2. If the number of available ports on the "NetLab-L3-Switch" is limited, you can use two switches as is shown in the Pod Logical Networking Overview above.  In this configuration, a layer-2 only switch is used for the SDDCLab_vDS vswitch, and a layer-3 switch is used to connect to the "Lab-Routers" segment.
 
+
 ## IP Address Assignments
 When a Pod is deployed, various components are deployed as part of that Pod.  Each of those components are connected to the Pod's Management subnet.  Here is a listing of those components along with their respective host IP address:
 
@@ -238,6 +242,7 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 253 | EdgeVM-02 | NSX-T Edge Transport Node 2 | Yes |
 | 254 | EdgeVM-01 | NSX-T Edge Transport Node 1 | Yes |
 
+
 ## Usage
 
 To deploy a Pod:
@@ -251,6 +256,7 @@ Deploying an SDDC Pod will take somewhere between 1 and 1.5 hours depending on y
 
 Similary you remove a Pod with:  
 ```sudo ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" undeploy.yml```
+
 
 ## Project Features
 
@@ -291,8 +297,6 @@ SDDC.Lab now supports both local and subscribed vSphere Content Libraries, which
 
 4. Only one (1) Content Library can be automatically configured via SDDC.Lab.  If additional Content Libraries are required, those will need to be manually added after the Pod deployment has completed.
 
-### vSphere with Tanzu
-More information about the added Workload Management will be added later.  Requires Local Content Library to be enabled.
 
 ## Known Items
 Here are some known items to be aware of:
@@ -308,6 +312,7 @@ Here are some known items to be aware of:
    sure you upgrade your Ansible to the latest version.  To see your current Ansible version, run the following
    command: ```ansible --version```
 
+
 ## Issues With Various Software Versions
 As we use SDDC.Lab in our labs, every now-and-then we notice some issues/problems.  As we come across those, we'll try to very briefly document the versions and issue(s) below.  We do not test every software version combination, so by no means should this be taken as a comprehensive list of what works and what doesn't.  This is just a "best effort" from us, to you, in the hope that it saves you time and frustration.  Versions listed below match up with the software version used in config_sample.yml and the version "label" used in Software.yml.  Blank fields mean we believe they aren't relavent to the issue found, and thus, don't matter.
 
@@ -321,6 +326,7 @@ As we use SDDC.Lab in our labs, every now-and-then we notice some issues/problem
 For detailed installation, preparation, and deployment steps, please see the "[Deploying your first SDDC.Lab Pod](FirstPod.md)" document.
 
 We also suggest that you watch [our vBrownBag video](https://www.youtube.com/watch?v=caSkrOFs0qs) from VMworld 2021.  In that video, we provide an overview of the SDDC.Lab environment, and go over the various configuration files that need to be modified to deploy your first SDDC.Lab Pod.  We also explain the Pod configuration file, along with the reason why the ```createPodConfig.yml``` playbook needs to be run.  Keep in mind that this video is based on SDDC.Lab version 3.
+
 
 ## Credits
 A big thank you to [Yasen Simeonov](https://www.linkedin.com/in/yasen/). His project at https://github.com/yasensim/vsphere-lab-deploy was the inspiration for this project. Another big thank you to my companion and lead developer [Luis Chanu](https://www.linkedin.com/in/luischanu/) (VCDX #246) for pushing this project forward all the time. Last but not least thank you vCommunity for trying this out and providing valuable feedback.
