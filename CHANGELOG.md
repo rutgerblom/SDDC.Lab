@@ -938,3 +938,9 @@
     - ESXi v7.0 Update 3c
   - Please be sure to update your ```software.yml``` and ```templates.yml``` files
   - SDDC.Lab was NOT tested against these new software updates
+
+## Dev-v4.0.0 30-JANUARY-2022
+
+### Added by Luis Chanu
+  - Updated VyOS URL repository in ```software_sample.yml``` from [https://downloads.vyos.io/rolling/current/amd64](https://downloads.vyos.io/rolling/current/amd64) to [https://vyos.net/get/nightly-builds](https://vyos.net/get/nightly-builds)
+  - Please be sure to update your ```software.yml``` file
