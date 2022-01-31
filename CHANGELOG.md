@@ -949,3 +949,4 @@
   - Modified ```templates/vyos_router.j2``` file to:
     - address change in DHCP option for DNS Server.  "dns-server" changed to "name-server"
     - address change in OSPFv3 argument order for associating an area to an interface
+  - Added comments about potenial issues we may run into using the VyOS Nightly Build ISO image.

@@ -249,7 +249,7 @@ To deploy a Pod:
 1. Generate a Pod configuration with:  
 ```ansible-playbook playbooks/createPodConfig.yml```
 
-1. Start a Pod deployment per the instructions. For example:  
+2. Start a Pod deployment per the instructions. For example:  
 ```sudo ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" deploy.yml```
 
 Deploying an SDDC Pod will take somewhere between 1 and 1.5 hours depending on your environment and Pod configuration.
@@ -312,6 +312,7 @@ Here are some known items to be aware of:
    sure you upgrade your Ansible to the latest version.  To see your current Ansible version, run the following
    command: ```ansible --version```
 
+4. If there is no local [VyOS](https://www.vyos.io/) ISO image in the software repository, SDDC.Lab will automatically download and use the latest nightly build of [VyOS](https://www.vyos.io/).  Keep in mind, however, that this nightly build is part of their development branch.  Because of this, they may make changes to their product or command syntax as part of their development, which might break the deployment of the Pod-Router.  For this reason, if/when you update your VyOS software image within the software repository, we recommend that you do not delete the existing file, but rather, rename it, so that you can always fall-back to that file should there be changes in the newer version.  If after you download an updated [VyOS](https://www.vyos.io/) image you are unable to ping across the Pod-Router, or if you notice the Pod-Router is missing some configuration, this is probably the cause.  This is out of our control, and are very thankful to the [VyOS](https://www.vyos.io/) team for providing the nightly image build to the public for free.  That said, as we identify changes in the [VyOS](https://www.vyos.io/) command syntax, we will do our best to implement those changes in future releases.  As we make changes to this in our development branch, we'll do our best to also document them in the CHANGELOG.md file within our development branch.
 
 ## Issues With Various Software Versions
 As we use SDDC.Lab in our labs, every now-and-then we notice some issues/problems.  As we come across those, we'll try to very briefly document the versions and issue(s) below.  We do not test every software version combination, so by no means should this be taken as a comprehensive list of what works and what doesn't.  This is just a "best effort" from us, to you, in the hope that it saves you time and frustration.  Versions listed below match up with the software version used in config_sample.yml and the version "label" used in Software.yml.  Blank fields mean we believe they aren't relavent to the issue found, and thus, don't matter.
