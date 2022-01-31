@@ -944,3 +944,5 @@
 ### Added by Luis Chanu
   - Updated VyOS URL repository in ```software_sample.yml``` from [https://downloads.vyos.io/rolling/current/amd64](https://downloads.vyos.io/rolling/current/amd64) to [https://vyos.net/get/nightly-builds](https://vyos.net/get/nightly-builds)
   - Please be sure to update your ```software.yml``` file
+  - Added section headers to ```config_sample.yml``` file to aid in finding sections while using Visual Studio Code (VSC) IDE.  No functional changes made, just added headers.
+  - Removed temporary ```config_sample_WithSections.yml``` file
