@@ -955,3 +955,4 @@
 
 ### Added by Luis Chanu
   - Increased memory from 18GB to 20GB on all Nested_ESXi clusters to address Host Preparation "Memory Error" failures with NSX-T v3.2.0.1.
+  - Updated README.md file with Federation support on NSX-T v3.2.0.1.
