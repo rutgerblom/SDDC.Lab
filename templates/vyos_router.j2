@@ -149,12 +149,11 @@ set protocols ospf area {{ Nested_Router.OSPF.NSXEdge.Area }} network {{ "{}/{}"
 {% if Nested_Router.Protocol == "OSPF" or Nested_Router.Protocol == "BOTH" -%}
 {% if Deploy.Setting.IPv6 -%}
 set protocols ospfv3 parameters router-id {{ Nested_Router.OSPF.RouterID }}
-set protocols ospfv3 area {{ (((Nested_Router.OSPF.Uplink.Area / (256 | pow(3)))|int) % 256)|int }}.{{ (((Nested_Router.OSPF.Uplink.Area / (256 | pow(2)))|int) % 256)|int }}.{{ (((Nested_Router.OSPF.Uplink.Area / 256)|int) % 256)|int }}.{{ (Nested_Router.OSPF.Uplink.Area % 256)|int }} interface eth0
+set protocols ospfv3 interface eth0 area {{ (((Nested_Router.OSPF.Uplink.Area / (256 | pow(3)))|int) % 256)|int }}.{{ (((Nested_Router.OSPF.Uplink.Area / (256 | pow(2)))|int) % 256)|int }}.{{ (((Nested_Router.OSPF.Uplink.Area / 256)|int) % 256)|int }}.{{ (Nested_Router.OSPF.Uplink.Area % 256)|int }}
 set protocols ospfv3 redistribute bgp
 set protocols ospfv3 redistribute connected
 {% endif -%}{# Deploy.Setting.IPv6 #}
 {% endif -%}{# Nested_Router.Protocol == OSPF or BOTH #}
-
 
 
 
@@ -184,7 +183,7 @@ set service ssh port 22
 {% if Deploy.Setting.IPv4 -%}
 set service dhcp-server shared-network-name vmnetwork authoritative
 set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} default-router {{ Nested_Router.Interface.VMNetwork.IPv4.Address }}
-set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} dns-server {{ Common.DNS.Server1.IPv4 }}
+set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} name-server {{ Common.DNS.Server1.IPv4 }}
 set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} lease 300
 set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} range VMNetworkRange start {{ Net.VMNetwork.IPv4.Network }}.20
 set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} range VMNetworkRange stop  {{ Net.VMNetwork.IPv4.Network }}.50

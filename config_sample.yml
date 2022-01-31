@@ -12,8 +12,28 @@ DEBUG:
   DisplayDelayInSeconds: 5
 
 
+
+
+##
+## ███████ ██ ████████ ███████  ██████  ██████  ██████  ███████
+## ██      ██    ██    ██      ██      ██    ██ ██   ██ ██
+## ███████ ██    ██    █████   ██      ██    ██ ██   ██ █████
+##      ██ ██    ██    ██      ██      ██    ██ ██   ██ ██
+## ███████ ██    ██    ███████  ██████  ██████  ██████  ███████
+##
+
 SiteCode: "Pod-{{ '%03d'|format(Pod.Number|int) }}"       # SiteCode defaults to 'Pod-###'.  This should NOT include the trailing '-', and can be changed, if needed, to represent a textual SiteCode like SFO or NYC.
 
+
+
+
+##
+## ██████   ██████  ██████
+## ██   ██ ██    ██ ██   ██
+## ██████  ██    ██ ██   ██
+## ██      ██    ██ ██   ██
+## ██       ██████  ██████
+##
 
 Pod:
   Number: 240                                             # Number - The number of the Pod to be deployed must be between 10-240.
@@ -22,6 +42,16 @@ Pod:
     IPv4: '10.203'                                        # IPv4 BaseNetwork must be the first two octets of the IPv4 address space used by the nested environment.
     IPv6: fd00:0000:0000:00                               # IPv6 BaseNetwork must be a fully expanded /56 prefix.  All nested IPv6 networks build off of this IPv6 base network.
 
+
+
+
+##
+## ██████  ███████ ██████  ██       ██████  ██    ██
+## ██   ██ ██      ██   ██ ██      ██    ██  ██  ██
+## ██   ██ █████   ██████  ██      ██    ██   ████
+## ██   ██ ██      ██      ██      ██    ██    ██
+## ██████  ███████ ██      ███████  ██████     ██
+##
 
 Deploy:
   Product:
@@ -102,6 +132,16 @@ Deploy:
       Installer: "{{ SiteCode }}-Installer-Ubuntu"
 
 
+
+
+##
+##  ██████  ██████  ███    ███ ███    ███  ██████  ███    ██
+## ██      ██    ██ ████  ████ ████  ████ ██    ██ ████   ██
+## ██      ██    ██ ██ ████ ██ ██ ████ ██ ██    ██ ██ ██  ██
+## ██      ██    ██ ██  ██  ██ ██  ██  ██ ██    ██ ██  ██ ██
+##  ██████  ██████  ██      ██ ██      ██  ██████  ██   ████
+##
+
 ##
 ## The 'Common' section are settings used by the various nested lab components, except for the Nested_Router.
 ## The physical real-world NTP time server that is used to obtain time for the lab is defined in the Nested_Router section.
@@ -146,6 +186,16 @@ Common:
   Annotation: '*** Auto-Deployed by SDDC.Lab ***'
 
 
+
+
+##
+## ██████   █████   ██████ ██   ██ ██    ██ ██████      ███████ ███████ ██████  ██    ██ ███████ ██████
+## ██   ██ ██   ██ ██      ██  ██  ██    ██ ██   ██     ██      ██      ██   ██ ██    ██ ██      ██   ██
+## ██████  ███████ ██      █████   ██    ██ ██████      ███████ █████   ██████  ██    ██ █████   ██████
+## ██   ██ ██   ██ ██      ██  ██  ██    ██ ██               ██ ██      ██   ██  ██  ██  ██      ██   ██
+## ██████  ██   ██  ██████ ██   ██  ██████  ██          ███████ ███████ ██   ██   ████   ███████ ██   ██
+##
+
 ##
 ## Unable to put BackupServer in Common due to circular reference.  Must be stand-alone
 ##
@@ -158,6 +208,16 @@ BackupServer:
     FQDN: "{{ Nested_DNSServer.FQDN }}"                                       # Server FQDN
     Path: "/home/{{ Nested_DNSServer.OS.Credential.User }}"                   # Must be an absolute path
 
+
+
+
+##
+## ████████  █████  ██████   ██████  ███████ ████████      ██████  ██████  ███    ██ ███████ ██  ██████
+##    ██    ██   ██ ██   ██ ██       ██         ██        ██      ██    ██ ████   ██ ██      ██ ██
+##    ██    ███████ ██████  ██   ███ █████      ██        ██      ██    ██ ██ ██  ██ █████   ██ ██   ███
+##    ██    ██   ██ ██   ██ ██    ██ ██         ██        ██      ██    ██ ██  ██ ██ ██      ██ ██    ██
+##    ██    ██   ██ ██   ██  ██████  ███████    ██         ██████  ██████  ██   ████ ██      ██  ██████
+##
 
 ##
 ## Users should specify their deployment target settings in the 'TargetConfig' section
@@ -210,6 +270,16 @@ TargetConfig:
         VLAN: "{{ Net.Management.VLAN }}-{{ Net.VMNetwork.VLAN }}"            # VLAN - Pod specific VLAN Range
 
 
+
+
+##
+## ████████  █████  ██████   ██████  ███████ ████████
+##    ██    ██   ██ ██   ██ ██       ██         ██
+##    ██    ███████ ██████  ██   ███ █████      ██
+##    ██    ██   ██ ██   ██ ██    ██ ██         ██
+##    ██    ██   ██ ██   ██  ██████  ███████    ██
+##
+
 ##
 ## Determine effective Target settings to use throughout deployment script -- Do NOT edit Target
 ##
@@ -236,6 +306,17 @@ Target:
     Trunk:
       Name:       "{{ TargetConfig[TargetConfig.Deployment]['PortGroup']['Trunk'].Name }}"
       VLAN:       "{{ TargetConfig[TargetConfig.Deployment]['PortGroup']['Trunk'].VLAN }}"
+
+
+
+
+##
+## ███    ██ ███████ ████████
+## ████   ██ ██         ██
+## ██ ██  ██ █████      ██
+## ██  ██ ██ ██         ██
+## ██   ████ ███████    ██
+##
 
 Net:
   Uplink:
@@ -360,6 +441,16 @@ Net:
       Prefix: 64
       Network: "{{ Pod.BaseNetwork.IPv6 }}{{ '%02x'|format(Pod.Number+9|int) }}"
 
+
+
+
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ██████   ██████  ██    ██ ████████ ███████ ██████
+## ████   ██ ██      ██         ██    ██      ██   ██         ██   ██ ██    ██ ██    ██    ██    ██      ██   ██
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██████  ██    ██ ██    ██    ██    █████   ██████
+## ██  ██ ██ ██           ██    ██    ██      ██   ██         ██   ██ ██    ██ ██    ██    ██    ██      ██   ██
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████ ██   ██  ██████   ██████     ██    ███████ ██   ██
+##
 
 Nested_Router:
   Name: "{{ SiteCode }}-Router"
@@ -514,6 +605,16 @@ Nested_Router:
             Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(3) }}"
 
 
+
+
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ██    ██ ██████  ██      ██
+## ████   ██ ██      ██         ██    ██      ██   ██         ██    ██ ██   ██ ██      ██
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██    ██ ██████  ██      ██
+## ██  ██ ██ ██           ██    ██    ██      ██   ██          ██  ██  ██   ██ ██      ██
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████   ████   ██   ██ ███████ ██
+##
+
 Nested_vRLI:
   VMName: "{{ SiteCode }}-vRLI"
   FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-vRLI.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.6{% endif %}"
@@ -536,6 +637,16 @@ Nested_vRLI:
       Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(6) }}"
       Prefix:  "{{ Net.Management.IPv6.Prefix }}"
 
+
+
+
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ██████  ███    ██ ███████
+## ████   ██ ██      ██         ██    ██      ██   ██         ██   ██ ████   ██ ██
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██   ██ ██ ██  ██ ███████
+## ██  ██ ██ ██           ██    ██    ██      ██   ██         ██   ██ ██  ██ ██      ██
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████ ██████  ██   ████ ███████
+##
 
 Nested_DNSServer:
   FQDN: "DNS.{{ Common.DNS.Domain }}"
@@ -573,6 +684,16 @@ Nested_DNSServer:
           IPv4: 8.8.8.8                                                                 # DNS forwarders used by BIND.  Update as required for your environment.
           IPv6: 2001:4860:4860::8888
 
+
+
+
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████           ██████ ██      ██    ██ ███████ ████████ ███████ ██████
+## ████   ██ ██      ██         ██    ██      ██   ██         ██      ██      ██    ██ ██         ██    ██      ██   ██
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██      ██      ██    ██ ███████    ██    █████   ██████
+## ██  ██ ██ ██           ██    ██    ██      ██   ██         ██      ██      ██    ██      ██    ██    ██      ██   ██
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████  ██████ ███████  ██████  ███████    ██    ███████ ██   ██
+##
 
 Nested_Cluster:
   Management:
@@ -715,6 +836,16 @@ Nested_Cluster:
               Network: "{{ Net.VMNetwork.IPv4.Network }}.144"
               Prefix: 28
 
+
+
+
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ███████ ███████ ██   ██ ██
+## ████   ██ ██      ██         ██    ██      ██   ██         ██      ██       ██ ██  ██
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         █████   ███████   ███   ██
+## ██  ██ ██ ██           ██    ██    ██      ██   ██         ██           ██  ██ ██  ██
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████ ███████ ███████ ██   ██ ██
+##
 
 Nested_ESXi:
   HardwareSettings:
@@ -1539,6 +1670,16 @@ Nested_ESXi:
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
 
+
+
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ██    ██  ██████ ███████ ███    ██ ████████ ███████ ██████
+## ████   ██ ██      ██         ██    ██      ██   ██         ██    ██ ██      ██      ████   ██    ██    ██      ██   ██
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██    ██ ██      █████   ██ ██  ██    ██    █████   ██████
+## ██  ██ ██ ██           ██    ██    ██      ██   ██          ██  ██  ██      ██      ██  ██ ██    ██    ██      ██   ██
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████   ████    ██████ ███████ ██   ████    ██    ███████ ██   ██
+##
+
 Nested_vCenter:
   Question:
     EULA:
@@ -1682,6 +1823,16 @@ Nested_vCenter:
             ForgedTransmits: false
             PromiscuousMode: false
 
+
+
+
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ███    ██ ███████ ██   ██ ████████
+## ████   ██ ██      ██         ██    ██      ██   ██         ████   ██ ██       ██ ██     ██
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██ ██  ██ ███████   ███      ██
+## ██  ██ ██ ██           ██    ██    ██      ██   ██         ██  ██ ██      ██  ██ ██     ██
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████ ██   ████ ███████ ██   ██    ██
+##
 
 Nested_NSXT:
   Question:
@@ -2369,6 +2520,16 @@ Nested_NSXT:
             User: "{{ Nested_vCenter.User }}"
             Password: "{{ Nested_vCenter.Password }}"
 
+
+
+
+##
+## ██     ██  ██████  ██████  ██   ██ ██       ██████   █████  ██████      ██    ██ ███    ███ ███████
+## ██     ██ ██    ██ ██   ██ ██  ██  ██      ██    ██ ██   ██ ██   ██     ██    ██ ████  ████ ██
+## ██  █  ██ ██    ██ ██████  █████   ██      ██    ██ ███████ ██   ██     ██    ██ ██ ████ ██ ███████
+## ██ ███ ██ ██    ██ ██   ██ ██  ██  ██      ██    ██ ██   ██ ██   ██      ██  ██  ██  ██  ██      ██
+##  ███ ███   ██████  ██   ██ ██   ██ ███████  ██████  ██   ██ ██████        ████   ██      ██ ███████
+##
 
 ##
 ## Users need to modify the following 'WorkloadVMs' section to meet their environment, as this is just a sample.

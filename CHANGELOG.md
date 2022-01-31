@@ -938,3 +938,15 @@
     - ESXi v7.0 Update 3c
   - Please be sure to update your ```software.yml``` and ```templates.yml``` files
   - SDDC.Lab was NOT tested against these new software updates
+
+## Dev-v4.0.0 30-JANUARY-2022
+
+### Added by Luis Chanu
+  - Updated VyOS URL repository in ```software_sample.yml``` from [https://downloads.vyos.io/rolling/current/amd64](https://downloads.vyos.io/rolling/current/amd64) to [https://s3.amazonaws.com/s3-us.vyos.io/rolling/current](https://s3.amazonaws.com/s3-us.vyos.io/rolling/current)
+  - Please be sure to update your ```software.yml``` file
+  - Added section headers to ```config_sample.yml``` file to aid in finding sections while using Visual Studio Code (VSC) IDE.  No functional changes made, just added headers.
+  - Removed temporary ```config_sample_WithSections.yml``` file
+  - Modified ```templates/vyos_router.j2``` file to:
+    - address change in DHCP option for DNS Server.  "dns-server" changed to "name-server"
+    - address change in OSPFv3 argument order for associating an area to an interface
+  - Added comments about potenial issues we may run into using the VyOS Nightly Build ISO image.
