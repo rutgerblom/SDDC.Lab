@@ -149,12 +149,11 @@ set protocols ospf area {{ Nested_Router.OSPF.NSXEdge.Area }} network {{ "{}/{}"
 {% if Nested_Router.Protocol == "OSPF" or Nested_Router.Protocol == "BOTH" -%}
 {% if Deploy.Setting.IPv6 -%}
 set protocols ospfv3 parameters router-id {{ Nested_Router.OSPF.RouterID }}
-set protocols ospfv3 area {{ (((Nested_Router.OSPF.Uplink.Area / (256 | pow(3)))|int) % 256)|int }}.{{ (((Nested_Router.OSPF.Uplink.Area / (256 | pow(2)))|int) % 256)|int }}.{{ (((Nested_Router.OSPF.Uplink.Area / 256)|int) % 256)|int }}.{{ (Nested_Router.OSPF.Uplink.Area % 256)|int }} interface eth0
+set protocols ospfv3 interface eth0 area {{ (((Nested_Router.OSPF.Uplink.Area / (256 | pow(3)))|int) % 256)|int }}.{{ (((Nested_Router.OSPF.Uplink.Area / (256 | pow(2)))|int) % 256)|int }}.{{ (((Nested_Router.OSPF.Uplink.Area / 256)|int) % 256)|int }}.{{ (Nested_Router.OSPF.Uplink.Area % 256)|int }}
 set protocols ospfv3 redistribute bgp
 set protocols ospfv3 redistribute connected
 {% endif -%}{# Deploy.Setting.IPv6 #}
 {% endif -%}{# Nested_Router.Protocol == OSPF or BOTH #}
-
 
 
 

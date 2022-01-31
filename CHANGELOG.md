@@ -946,5 +946,6 @@
   - Please be sure to update your ```software.yml``` file
   - Added section headers to ```config_sample.yml``` file to aid in finding sections while using Visual Studio Code (VSC) IDE.  No functional changes made, just added headers.
   - Removed temporary ```config_sample_WithSections.yml``` file
-  - Modified ```templates/vyos_router.j2``` file to address change in DHCP option for DNS Server.  "dns-server" changed to "name-server"
-  - ISSUE: There still remains an issue with the "OSPFv3 area 0.0.0.0 interface eth0" line, which needs to be researched and resolved.  This will cause your VyOS router to not have a configuration when deployed.
+  - Modified ```templates/vyos_router.j2``` file to:
+    - address change in DHCP option for DNS Server.  "dns-server" changed to "name-server"
+    - address change in OSPFv3 argument order for associating an area to an interface
