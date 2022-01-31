@@ -950,3 +950,8 @@
     - address change in DHCP option for DNS Server.  "dns-server" changed to "name-server"
     - address change in OSPFv3 argument order for associating an area to an interface
   - Added comments about potenial issues we may run into using the VyOS Nightly Build ISO image.
+
+## Dev-v4.0.0 31-JANUARY-2022
+
+### Added by Luis Chanu
+  - Increased memory from 18GB to 20GB on all Nested_ESXi clusters to address Host Preparation "Memory Error" failures with NSX-T v3.2.0.1.
