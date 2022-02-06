@@ -956,3 +956,10 @@
 ### Added by Luis Chanu
   - Increased memory from 18GB to 20GB on all Nested_ESXi clusters to address Host Preparation "Memory Error" failures with NSX-T v3.2.0.1.
   - Updated README.md file with Federation support on NSX-T v3.2.0.1.
+
+## Dev-v4.0.0 5-FEBRUARY-2022
+
+### Added by Luis Chanu
+  - Moved ansible-galaxy installation of VMware NSX-T modules from ```requirements.yml``` file to the README document.  This was done because the installation of the NSX-T modules needs to be performed using ```sudo``` to ensure the modules are installed in the appropriate location as the ansible playbooks are run using ```sudo```.
+  - Modified ansible-galaxy installation line to install supported v3.2.0 of the modules, rather than the latest versions from the development branch.
+  - Added additional comments in README.
