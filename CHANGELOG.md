@@ -973,3 +973,5 @@
     - NSX-T v3.1.3.6
   - Please be sure to update your ```software.yml``` and ```templates.yml``` files
   - SDDC.Lab was **NOT** tested against these new software updates
+  - Renamed VMFolder for vCenter Server target deployments from "SDDC Labs" to "SDDC Pods" in ```config_sample.yml```.
+  - Please be sure to update your configuration files and rename your VM Folder from "SDDC Labs" to "SDDC Pods" within your target vCenter Server.

@@ -121,7 +121,8 @@ Consider the following when upgrading SDDC.Lab to a newer version.
   * Remove the VyOS ISO file from your software library and let the router deployment script download the latest version of the rolling release.
 
 * v3 to v4
-  * TBD - Coming soon
+  * The "SDDC Labs" folder has been renamed to "SDDC Pods" within the ```config_sample.yml``` configuration file.  It's suggestd that you renamed your folder and update this as part of updating your configuration files for v4.
+  * TBD - More to come...
 
 
 ## Networking
