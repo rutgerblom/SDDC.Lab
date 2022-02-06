@@ -93,6 +93,9 @@ The following are recommendations based on our experience with deploying Pods:
   * ```sudo pip3 install --upgrade ansible pyvim pyvmomi netaddr jmespath dnspython paramiko setuptools testresources cryptography git+https://github.com/vmware/vsphere-automation-sdk-python.git```
   * ```git clone https://github.com/rutgerblom/SDDC.Lab.git``` 
   * ```ansible-galaxy collection install -r SDDC.Lab/requirements.yml```
+  * ```sudo ansible-galaxy collection install git+https://github.com/vmware/ansible-for-nsxt.git,v3.2.0```
+
+The remaining commands in this section are performed from with the SDDC.Lab parent directory.
 
 * Copy/rename the sample files:
   * ```cp config_sample.yml config.yml```
