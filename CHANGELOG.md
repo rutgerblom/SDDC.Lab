@@ -978,3 +978,4 @@
   - In validateConfiguration.yml, changed DIG target from ```www.google.com``` to ```github.com``` because it was oberved that ipaddr returns ```False``` when multiple A records are returned.
   - Change permissions set within ```util_CreateSoftwareDir.yml``` from 775 to 777 to ensure non-root user can update the software repsoritory.
   - Modified ```util_CreateSoftwareDir.yml``` to set 777 permissions to top-level RootDirectory (/Software) directory as well.
+  - Enabled ```deployWorkloadVMs.yml``` task in ```deploy.yml```.
