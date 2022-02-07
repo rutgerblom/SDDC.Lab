@@ -963,3 +963,19 @@
   - Moved ansible-galaxy installation of VMware NSX-T modules from ```requirements.yml``` file to the README document.  This was done because the installation of the NSX-T modules needs to be performed using ```sudo``` to ensure the modules are installed in the appropriate location as the ansible playbooks are run using ```sudo```.
   - Modified ansible-galaxy installation line to install supported v3.2.0 of the modules, rather than the latest versions from the development branch.
   - Added additional comments in README.
+
+## Dev-v4.0.0 6-FEBRUARY-2022
+
+### Added by Luis Chanu
+  - Added the following software entries in ```software_sample.yml``` and ```templates_sample.yml```:
+    - vCenter Server v6.7 Update 3p
+    - NSX-T v3.0.3.1
+    - NSX-T v3.1.3.6
+  - Please be sure to update your ```software.yml``` and ```templates.yml``` files
+  - SDDC.Lab was **NOT** tested against these new software updates
+  - Renamed VMFolder for vCenter Server target deployments from "SDDC Labs" to "SDDC Pods" in ```config_sample.yml```.
+  - Please be sure to update your configuration files and rename your VM Folder from "SDDC Labs" to "SDDC Pods" within your target vCenter Server.
+  - In validateConfiguration.yml, changed DIG target from ```www.google.com``` to ```github.com``` because it was oberved that ipaddr returns ```False``` when multiple A records are returned.
+  - Change permissions set within ```util_CreateSoftwareDir.yml``` from 775 to 777 to ensure non-root user can update the software repsoritory.
+  - Modified ```util_CreateSoftwareDir.yml``` to set 777 permissions to top-level RootDirectory (/Software) directory as well.
+  - Enabled ```deployWorkloadVMs.yml``` task in ```deploy.yml```.

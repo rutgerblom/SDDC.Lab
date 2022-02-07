@@ -358,9 +358,9 @@
 ##
 ## Verify Ansible Control Station can resolve DNS
 ##
-    - name: Perform DNS lookup for www.google.com
+    - name: Perform DNS lookup for github.com
       ansible.builtin.set_fact:
-        dns_succeeded: "{{ lookup('dig', 'www.google.com./A') | ipaddr }}"                                 # This will result in 'False' if an IP is not returned from query
+        dns_succeeded: "{{ lookup('dig', 'github.com./A') | ipaddr }}"                                     # This will result in 'False' if an IP is not returned from query
       when:
         - Deploy.Setting.UseDNS == true
 
@@ -370,7 +370,7 @@
         prompt: |
           =================================== Configuration Issue Found ===================================
 
-                        Issue: Ansible Control Station was not able to resolve www.google.com
+                        Issue: Ansible Control Station was not able to resolve github.com
 
             Response Received: {{ dns_succeeded }}
 
@@ -379,7 +379,7 @@
         - Deploy.Setting.UseDNS == true
         - dns_succeeded == False
 
-    - name: Set flag if issue found with DNS lookup of www.google.com
+    - name: Set flag if issue found with DNS lookup of github.com
       ansible.builtin.set_fact:
         IssueFound: true
       when:
