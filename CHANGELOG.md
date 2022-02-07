@@ -975,3 +975,4 @@
   - SDDC.Lab was **NOT** tested against these new software updates
   - Renamed VMFolder for vCenter Server target deployments from "SDDC Labs" to "SDDC Pods" in ```config_sample.yml```.
   - Please be sure to update your configuration files and rename your VM Folder from "SDDC Labs" to "SDDC Pods" within your target vCenter Server.
+  - In validateConfiguration.yml, changed DIG target from ```www.google.com``` to ```github.com``` because it was oberved that ipaddr returns ```False``` when multiple A records are returned.
