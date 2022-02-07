@@ -8,6 +8,17 @@
   vars_files:
     - ../software.yml
   tasks:
+
+##
+## Set Software Repository RootDirectory Permissions
+##
+    - name: Set permissions on {{ RootDirectory }}
+      file:
+        path: "{{ RootDirectory }}"
+        state: directory
+        mode: "0777"
+
+
 ##
 ## VMware
 ##
