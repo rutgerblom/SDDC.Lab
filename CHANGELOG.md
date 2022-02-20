@@ -979,3 +979,9 @@
   - Change permissions set within ```util_CreateSoftwareDir.yml``` from 775 to 777 to ensure non-root user can update the software repsoritory.
   - Modified ```util_CreateSoftwareDir.yml``` to set 777 permissions to top-level RootDirectory (/Software) directory as well.
   - Enabled ```deployWorkloadVMs.yml``` task in ```deploy.yml```.
+
+## Dev-v4.0.0 20-FEBRUARY-2022
+
+### Added by Luis Chanu
+  - Added Tranpsort MTU to NSX-T Uplink Profile creation.
+  - Modified config_sample.yml to configure MTU value on UplinkProfiles dynamically, to the MTU that is set on the Transport (TEP) segment.
