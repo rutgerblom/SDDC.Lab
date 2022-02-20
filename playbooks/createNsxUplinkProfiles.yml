@@ -95,9 +95,9 @@
         display_name: "{{ item.display_name }}"
         description: "{{ item.description }}"                              # Description
         transport_vlan: "{{ item.transport_vlan }}"                        # Overlay Transport VLAN
-        mtu: "{{ item.mtu }}"                                              # MTU
+        mtu: "{{ item.mtu | default(omit) }}"                              # MTU, but omit if it does not exist - Needed to support VDS v7.0
         teaming: "{{ item.teaming }}"                                      # Default NIC Teaming
-        named_teamings: "{{ item.named_teamings | default(omit) }}"        # Named Teaming Policy, but omit it if it does not exist
+        named_teamings: "{{ item.named_teamings | default(omit) }}"        # Named Teaming Policy, but omit if it does not exist
         state: "present"
       with_list: "{{ UplinkProfilesToCreate }}"
       when:

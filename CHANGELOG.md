@@ -984,4 +984,7 @@
 
 ### Added by Luis Chanu
   - Added Tranpsort MTU to NSX-T Uplink Profile creation.
-  - Modified config_sample.yml to configure MTU value on UplinkProfiles dynamically, to the MTU that is set on the Transport (TEP) segment.
+  - Modified ```config_sample.yml``` to configure MTU value on UplinkProfiles dynamically, to the MTU that is set on the Transport (TEP) segment.
+  - Modified ```config_sample.yml```, playbooks, and templates, to allow Host Uplink Profile MTU to be empty, which is required for VDS v7 support.
+  - Removed MTU value from ```ESXi-Uplink-Profile``` within ```config_sample.yml``` file.
+  - As ```config_sample.yml``` was modified, please update your config files accordingly.

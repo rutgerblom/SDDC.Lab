@@ -2324,7 +2324,7 @@ Nested_NSXT:
             Description: ESXi Host Transport Node Uplink Profile
             Transport:
               VLAN: "{{ Net.Transport.VLAN }}"
-              MTU: "{{ Net.Transport.MTU }}"
+              MTU:                                                                              # Leave MTU value empty if uplink is for ESXi hosts using VDS in Transport Node Profiles (TNP), as MTU is defined on the VDS within vCenter.  If not ESXi, use "{{ Net.Transport.MTU }}"
             DefaultTeaming:
               Policy: LOADBALANCE_SRCID                                                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
               ActiveUplinks:
@@ -2336,7 +2336,7 @@ Nested_NSXT:
             Description: Edge Transport Node Uplink Profile
             Transport:
               VLAN: "{{ Net.Transport.VLAN }}"
-              MTU: "{{ Net.Transport.MTU }}"
+              MTU: "{{ Net.Transport.MTU }}"                                                    # Leave MTU value empty if uplink is for ESXi hosts using VDS in Transport Node Profiles (TNP), as MTU is defined on the VDS within vCenter.  If not ESXi, use "{{ Net.Transport.MTU }}"
             DefaultTeaming:
               Policy: LOADBALANCE_SRCID                                                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
               ActiveUplinks:
@@ -2359,7 +2359,7 @@ Nested_NSXT:
             Description: Sample Uplink Profile
             Transport:
               VLAN: "{{ Net.Transport.VLAN }}"
-              MTU: "{{ Net.Transport.MTU }}"
+              MTU: "{{ Net.Transport.MTU }}"                                                    # Leave MTU value empty if uplink is for ESXi hosts using VDS in Transport Node Profiles (TNP), as MTU is defined on the VDS within vCenter.  If not ESXi, use "{{ Net.Transport.MTU }}"
             DefaultTeaming:
               Policy: LOADBALANCE_SRCID                                                         # Options: LOADBALANCE_SRCID, FAILOVER_ORDER
               ActiveUplinks:
