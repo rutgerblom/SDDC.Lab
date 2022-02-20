@@ -9,6 +9,10 @@
   - display_name:  "{{ UplinkProfile.Name }}"
     description:   "{{ UplinkProfile.Description }}"
     transport_vlan: {{ UplinkProfile.Transport.VLAN }}
+{# Only include MTU if it has been assigned a value #}
+{% if UplinkProfile.Transport.MTU %}
+    mtu: {{ UplinkProfile.Transport.MTU }}
+{% endif %}{# UplinkProfile.Transport.MTU #}
 {############# Default Teaming Policy #############}
     teaming:
       policy: "{{ UplinkProfile.DefaultTeaming.Policy }}"

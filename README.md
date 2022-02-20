@@ -323,9 +323,10 @@ As we use SDDC.Lab in our labs, every now-and-then we notice some issues/problem
 
 | Date | vCenter Server | ESXi    |  NSX-T  | Description Of Issue | Documented By |
 |------|----------------|---------|---------|----------------------|---------------|
-| 5-JAN-2022 | 7.0.0U3        | 7.00U2A |         | Migrating vDS Uplinks in createVds playbook fails.  Deployed fine in ESXi v7.00U3. | Luis Chanu |
-| 5-JAN-2022 |                |         |  3.2.0  | NSX-T Federation deployment not supported. | Luis Chanu |
-| 31-JAN-2022 |                |         |  3.2.0.1  | NSX-T Federation deployment not supported. | Luis Chanu |
+| 5-JAN-2022 | 7.0.0U3  | 7.00U2A |         | Migrating vDS Uplinks in createVds playbook fails.  Deployed fine in ESXi v7.00U3. | Luis Chanu |
+| 5-JAN-2022 |          |         |  3.2.0  | NSX-T Federation deployment not supported. | Luis Chanu |
+| 31-JAN-2022 |         |         |  3.2.0.1  | NSX-T Federation deployment not supported. | Luis Chanu |
+| 20-FEB-2022 |         |         |  3.2.0.1  | NSX-T Global MTU Settings are not properly set. | Luis Chanu |
 
 
 ## More Information
