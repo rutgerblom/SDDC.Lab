@@ -988,3 +988,9 @@
   - Modified ```config_sample.yml```, playbooks, and templates, to allow Host Uplink Profile MTU to be empty, which is required for VDS v7 support.
   - Removed MTU value from ```ESXi-Uplink-Profile``` within ```config_sample.yml``` file.
   - As ```config_sample.yml``` was modified, please update your config files accordingly.
+
+## Dev-v4.0.0 9-MARCH-2022
+
+### Added by Luis Chanu
+  - Changed DHCP lease time in ```config_sample.yml``` from 1 day (86400 seconds) to 1 hour (3600 seconds)
+  - As ```config_sample.yml``` was modified, please update your config files accordingly.
