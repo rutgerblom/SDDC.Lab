@@ -9,21 +9,22 @@
 
 ## Table of Contents
 
-* [Description](#Description)
-* [Requirements](#Requirements)
-  * [Recommendations](#Recommendations)
-* [Preparations](#Preparations)
-* [Upgrade Considerations](#Upgrade-Considerations)
-* [Networking](#Networking)
-* [IP Address Assignments](#IP-Address-Assignments)
-* [Usage](#Usage)
-* [Project Features](#Project-Features)
-  * [NSX-T Federation](#NSX-T-Federation)
-  * [vSphere Content Libraries](#vSphere-Content-Libraries)
-* [Known Items](#Known-Items)
-* [Issues With Various Software Versions](#Issues-With-Various-Software-Versions)
-* [More Information](#More-Information)
-* [Credits](#Credits)
+* [Description](#description)
+* [Requirements](#requirements)
+  * [Recommendations](#recommendations)
+* [Preparations](#preparations)
+* [Upgrade Considerations](#upgrade-considerations)
+* [Networking](#networking)
+* [IP Address Assignments](#ip-address-assignments)
+* [Usage](#usage)
+* [Project Features](#project-features)
+  * [NSX-T Federation](#nsx-t-federation)
+  * [vSphere Content Libraries](#vsphere-content-libraries)
+  * [Deploy Test Workloads](#deploy-test-workloads)
+* [Known Items](#known-items)
+* [Issues With Various Software Versions](#issues-with-various-software-versions)
+* [More Information](#more-information)
+* [Credits](#credits)
 
 
 ## Description
@@ -297,9 +298,22 @@ SDDC.Lab now supports both local and subscribed vSphere Content Libraries, which
 
 2. If a specific datatstore is not specified in the config_sample.yml file (default), then the datastore used is dynamically selected from the available vSphere clusters.  If multiple vSphere clusters are deployed, the 'Edge' datastore is not used as it's assumed it's storage will be needed for NSX-T EdgeVMs.
 
-3. By default, config_sample.yml assumes the published content library exists on the physical vCenter Server servicing the SDDC.Lab environment.
+3. By default, config_sample.yml assumes the published content library exists on the physical vCenter Server servicing the SDDC.Lab environment.  The default name of this content library is ```SDDC.Lab Content Library```.
 
 4. Only one (1) Content Library can be automatically configured via SDDC.Lab.  If additional Content Libraries are required, those will need to be manually added after the Pod deployment has completed.
+
+### Deploy Test Workloads
+SDDC.Lab has a feature where it can automatically deploy test workload VMs from the Pod's content library at the end of the Pod deployment process.  The test workload VMs to deploy are defined in the ```WorkloadVMs``` section of the ```config_sample.yml``` file.  The default test workload VM included in ```config_sample.yml``` is called [TinyVM](https://github.com/luischanu/TinyVM), and it can be downloaded from the [TinyVM](https://github.com/luischanu/TinyVM) project site.  If you decide to leverage this feature, here are the items that need to be configured to enable the deployment of test workload VMs:
+
+1. On your physical vCenter Server, create a content library called ```SDDC.Lab Content Library```, and enable the ```Enable publishing``` flag.
+
+2. Add your test VM(s) to the ```SDDC.Lab Content Library``` on the physical vCenter Server.
+
+3. Have your Pod's content library subscribe to the ```SDDC.Lab Content Library``` on the physical vCenter Server.  This is done by changing ```Nested_vCenter.ContentLibrary.Type``` to ```subscribed``` instead of ```local```.
+
+4. Configure your test VM workloads in the ```WorkloadVMs``` section of ```config_sample.yml```.
+
+5. Enable the WorkloadVMs functionality by setting ```Deploy.WorkloadVMs.Deploy``` to ```true``` in the ```config_sample.yml``` file.  By default, this setting is set to ```false```, thereby preventing the test workload VMs from being deployed.
 
 
 ## Known Items
