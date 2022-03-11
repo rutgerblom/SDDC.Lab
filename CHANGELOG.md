@@ -988,3 +988,18 @@
   - Modified ```config_sample.yml```, playbooks, and templates, to allow Host Uplink Profile MTU to be empty, which is required for VDS v7 support.
   - Removed MTU value from ```ESXi-Uplink-Profile``` within ```config_sample.yml``` file.
   - As ```config_sample.yml``` was modified, please update your config files accordingly.
+
+## Dev-v4.0.0 9-MARCH-2022
+
+### Added by Luis Chanu
+  - Changed DHCP lease time in ```config_sample.yml``` from 1 day (86400 seconds) to 1 hour (3600 seconds)
+  - As ```config_sample.yml``` was modified, please update your config files accordingly.
+
+## Dev-v4.0.0 10-MARCH-2022
+
+### Added by Luis Chanu
+  - Changed test VM workload to use from [yVM](https://cloudarchitectblog.wordpress.com/2015/11/11/how-to-build-your-own-yvm-step-by-step-process/) to [TinyVM](https://github.com/luischanu/TinyVM) within the WorkloadVMs section of ```config_sample.yml```
+  - To leverage [TinyVM](https://github.com/luischanu/TinyVM), but sure to add it to ```SDDC.Lab Content Library``` on the physical vCenter Server, then sync the VM Template to your SDDC.Lab Pods.
+  - Corrected Table of Content entries to work correctly in ```README.md``` file.
+  - Added instructions to ```README.md``` regarding [TinyVM](https://github.com/luischanu/TinyVM) and how to enable the deployment of Test Workload VMs.
+  - As ```config_sample.yml``` was modified, please update your config files accordingly.
