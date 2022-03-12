@@ -1003,3 +1003,9 @@
   - Corrected Table of Content entries to work correctly in ```README.md``` file.
   - Added instructions to ```README.md``` regarding [TinyVM](https://github.com/luischanu/TinyVM) and how to enable the deployment of Test Workload VMs.
   - As ```config_sample.yml``` was modified, please update your config files accordingly.
+
+## Dev-v4.0.0 11-MARCH-2022
+
+### Added by Luis Chanu
+  - Corrected issue with DHCP Lease Time in ```config_sample.yml```.
+  - As ```config_sample.yml``` was modified, please update your config files accordingly.
