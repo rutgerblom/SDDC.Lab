@@ -1003,3 +1003,8 @@
   - Corrected Table of Content entries to work correctly in ```README.md``` file.
   - Added instructions to ```README.md``` regarding [TinyVM](https://github.com/luischanu/TinyVM) and how to enable the deployment of Test Workload VMs.
   - As ```config_sample.yml``` was modified, please update your config files accordingly.
+
+## Dev-v4.0.0 13-MARCH-2022
+
+### Added by Rutger Blom
+- Moved configuring NTP on nested ESXi hosts from kickstart file to an Ansible task in "configureNestedEsxi.yml". 
