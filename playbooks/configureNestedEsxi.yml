@@ -146,3 +146,19 @@
       loop: "{{ Nested_Cluster | dict2items }}"
       when:
         - Nested_Cluster[item.key]['DeployHosts'] == true
+
+    - name: Set NTP servers for all ESXi Host in given Cluster
+      community.vmware.vmware_host_ntp:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        cluster_name: "{{ item.key }}"
+        state: present
+        ntp_servers:
+            - "{{ Common.NTP.Server1.IPv4 }}"
+            - "{{ Common.NTP.Server2.IPv4 }}"
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when:
+        - Nested_Cluster[item.key]['DeployHosts'] == true
+        
