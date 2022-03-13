@@ -1009,3 +1009,8 @@
 ### Added by Luis Chanu
   - Corrected issue with DHCP Lease Time in ```config_sample.yml```.
   - As ```config_sample.yml``` was modified, please update your config files accordingly.
+
+## Dev-v4.0.0 13-MARCH-2022
+
+### Added by Rutger Blom
+- Moved configuring NTP on nested ESXi hosts from kickstart file to an Ansible task in "configureNestedEsxi.yml". 

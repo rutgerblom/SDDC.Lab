@@ -27,15 +27,6 @@ vim-cmd hostsvc/start_esx_shell
 # Supress ESXi Shell warning
 esxcli system settings advanced set -o /UserVars/SuppressShellWarning -i 1
 {% endif %}{# item.value.EnableSSH #}
-# Configure NTP Server addresses
-echo "server {{ Common.NTP.Server1.IPv4 }}" >> /etc/ntp.conf;
-echo "server {{ Common.NTP.Server2.IPv4 }}" >> /etc/ntp.conf;
-
-# Allow NTP through firewall
-esxcfg-firewall -e ntpClient
-     
-# Enable NTP autostartup
-/sbin/chkconfig ntpd on;
 
 # Mark vSAN cache disk as Flash disk
 # esxcli storage nmp satp rule add -s VMW_SATP_LOCAL -d "$(esxcli storage core device capacity list | grep `expr {{ Nested_ESXi.HardwareSettings[item.value.Cluster].vSAN.CacheSize }} \* 1024`\ MiB | sed 's/.*\(mpx.*L[0-9]\).*/\1/')" -o enable_ssd
