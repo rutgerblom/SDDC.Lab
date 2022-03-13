@@ -161,4 +161,19 @@
       loop: "{{ Nested_Cluster | dict2items }}"
       when:
         - Nested_Cluster[item.key]['DeployHosts'] == true
+
+    - name: Start ntpd service setting for all ESXi Host in given Cluster
+      community.vmware.vmware_host_service_manager:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        cluster_name: "{{ item.key }}"
+        service_name: ntpd
+        service_policy: on
+        state: present
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when:
+        - Nested_Cluster[item.key]['DeployHosts'] == true
+
         
