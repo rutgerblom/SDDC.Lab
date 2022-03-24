@@ -1717,7 +1717,7 @@ Nested_vCenter:
       User: "{{ Target.User }}"
       Password: "{{ Target.Password }}"
       PublishedLibraryName: "SDDC.Lab Content Library"                                  # Name must EXACTLY match the name of the published library to which you are subscribing
-      UpdateOnDemand: true                                                              # Setting to 'true' will download files as they are needed, while 'false' will download the entire content library ahead of time
+      UpdateOnDemand: false                                                             # Setting to 'true' will download files as they are needed, while 'false' will download the entire content library ahead of time
   Networking:
     vSwitch:
       Name: "{{ SiteCode }}-VDS"
@@ -2129,7 +2129,7 @@ Nested_NSXT:
       - Name: DHCP-Server-Profile                                                               # The first profile is used by the DHCP Local Server to provide IP's to all Overlay Segments
         Type: DHCP_SERVER                                                                       # Type is either DHCP_SERVER or DHCP_RELAY
         ServerAddresses: []                                                                     # List of Server Address(es).  Required for DHCP_RELAY, but can be left as empty list ("[]") for DHCP_SERVER
-        LeaseTime: 86400
+        LeaseTime: "{{ Common.DHCP.LeaseTime }}"                                                # Set DHCP Lease Time to the Common DHCP Lease Time
         EdgeCluster: "{{ SiteCode }}-T0-Edge-Cluster-01"                                        # Edge Cluster where DHCP Server service is instantiated.
         Tags:
           - Tag: Auto-Created
