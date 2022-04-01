@@ -1019,3 +1019,9 @@
 
 ### Added by Luis Chanu
   - Added an additional NSX-T Tag to all ```TinyVM``` WorkloadVMs
+
+## Dev-v4.0.0 1-APRIL-2022
+
+### Added by Luis Chanu
+  - Added vCenter Server and ESXi versions 7.0U3D to software repository
+  - Updated ```software_sample.yml``` and ```templates_sample.yml``` files.
