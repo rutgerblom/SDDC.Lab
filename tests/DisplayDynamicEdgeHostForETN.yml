@@ -1,0 +1,193 @@
+##
+## Develop script to loop through the list of hosts in the Edge cluster, randomly selecting on at each iteration
+##
+---
+- hosts: localhost
+  vars:
+      LOCAL_EdgeTnTemplate: "./DisplayDynamicEdgeHostForETN.j2"
+  tasks:
+##
+## Get vCenter session ID
+##
+    - name: Authenticate to vCenter to obtain a Session ID
+      ansible.builtin.uri:
+        url: "https://{{ Nested_vCenter.FQDN }}/rest/com/vmware/cis/session"
+        headers: "{ 'vmware-use-header-authn':'test' }"
+        method: POST
+        validate_certs: no
+        timeout: 10
+        force_basic_auth: yes
+        url_username: "{{ Nested_vCenter.User }}"
+        url_password: "{{ Nested_vCenter.Password }}"
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: vcenter_auth_result
+
+    - name: DEBUG -- Display vcenter_auth_result
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: vcenter_auth_result
+          =============================
+          {{ vcenter_auth_result | to_nice_yaml }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - vcenter_auth_result is defined
+
+    - name: Store vCenter Session ID for later use
+      ansible.builtin.set_fact:
+        vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
+
+    - name: DEBUG -- Display vCenter_SessionID
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          =================================================================================================
+
+          Variable: vCenter_SessionID
+          ===========================
+          {{ vCenter_SessionID | to_nice_yaml }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - vCenter_SessionID is defined
+
+##
+## Get vSphere Cluster ID
+##
+
+    - name: Get the vSphere Cluster's Object ID (MoREF)
+      ansible.builtin.uri:
+        url: "https://{{ Nested_vCenter.FQDN }}/rest/vcenter/cluster?filter.names={{ Nested_NSXT.System.Fabric.Nodes.vSphereEdgeCluster }}"
+        headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
+        method: GET
+        validate_certs: no
+        timeout: 10
+        force_basic_auth: yes
+        url_username: "{{ Nested_vCenter.User }}"
+        url_password: "{{ Nested_vCenter.Password }}"
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: cluster_info
+
+    - name: DEBUG -- Display cluster_info
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: cluster_info
+          ======================
+          {{ cluster_info | to_nice_yaml }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - cluster_info is defined
+
+    - name: Store vSphere Cluster Object ID (MoREF) for later use
+      ansible.builtin.set_fact:
+        Cluster_ID: "{{ cluster_info.json.value[0].cluster | default(None) }}"
+
+    - name: DEBUG -- Display Cluster_ID
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: Cluster_ID
+          ====================
+          {{ Cluster_ID }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Cluster_ID is defined
+
+##
+## Get all of the hosts in the vSphere cluster
+##
+    - name: Get ESXi hosts in vSphere Cluster
+      ansible.builtin.uri:
+        url: "https://{{ Nested_vCenter.FQDN }}/rest/vcenter/host?filter.clusters={{ Cluster_ID }}"
+        headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
+        method: GET
+        validate_certs: no
+        timeout: 10
+        force_basic_auth: yes
+        url_username: "{{ Nested_vCenter.User }}"
+        url_password: "{{ Nested_vCenter.Password }}"
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: cluster_hosts
+
+    - name: DEBUG -- Display cluster_hosts
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: cluster_hosts
+          =======================
+          {{ cluster_hosts | to_nice_yaml }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - cluster_hosts is defined
+
+    - name: Create list containing just the FQDN EdgeHosts
+      ansible.builtin.set_fact:
+        EdgeHosts: "{{ EdgeHosts | default([]) + [ item.name ] }}"
+      loop: "{{ cluster_hosts.json.value }}"
+
+    - name: DEBUG -- Display EdgeHosts
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: EdgeHosts (Length={{ EdgeHosts|length }})
+          =======================
+          {{ EdgeHosts | to_nice_yaml }}
+
+          0: {{ EdgeHosts[0] }}
+          1: {{ EdgeHosts[1] }}
+          2: {{ EdgeHosts[2] }}
+          3: {{ EdgeHosts[3] }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - EdgeHosts is defined
+
+    - name: Read the structure from template into a variable
+      ansible.builtin.set_fact:
+        var_EdgeTransportNodes: "{{ lookup('template', LOCAL_EdgeTnTemplate) | from_yaml }}"
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display var_EdgeTransportNodes Variable ===================================
+
+              var_EdgeTransportNodes: {{ var_EdgeTransportNodes | to_nice_yaml(indent=2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - var_EdgeTransportNodes != ""
+

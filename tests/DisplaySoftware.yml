@@ -1,0 +1,52 @@
+---
+- hosts: localhost
+  vars_files:
+    - ../config.yml
+    - ../answerfile.yml
+    - ../software.yml
+    - ../licenses.yml
+  tasks:
+    - name: Display software
+      ansible.builtin.debug:
+        msg: "{{ Software }}"
+
+    - name: Display Deploy.Software.vCenter.Vendor
+      ansible.builtin.debug:
+        msg: "{{ Deploy.Software.vCenter.Vendor }}"
+
+    - name: Display Deploy.Software.vCenter.Product
+      ansible.builtin.debug:
+        msg: "{{ Deploy.Software.vCenter.Product }}"
+
+    - name: Display Deploy.Software.vCenter.Version
+      ansible.builtin.debug:
+        msg: "{{ Deploy.Software.vCenter.Version }}"
+
+    - name: Display Deploy.Software.vCenter.Template
+      ansible.builtin.debug:
+        msg: "{{ Deploy.Software.vCenter.Template }}"
+
+    - name: Display Software Vendor
+      ansible.builtin.debug:
+        msg: "{{ Software[Deploy.Software.vCenter.Vendor] }}"
+
+    - name: Display Software Product
+      ansible.builtin.debug:
+        msg: "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product] }}"
+
+    - name: Display Software Installers
+      ansible.builtin.debug:
+        msg: "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version] }}"
+
+    - name: Display Software Location
+      ansible.builtin.debug:
+        msg: "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].Location }}"
+
+    - name: Display Software File
+      debansible.builtin.debugug:
+        msg: "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].File }}"
+
+    - name: Display Software Full Path
+      ansible.builtin.debug:
+        msg: "{{ Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].Location }}/{{Software[Deploy.Software.vCenter.Vendor][Deploy.Software.vCenter.Product]['Installers'][Deploy.Software.vCenter.Version].File }}"
+

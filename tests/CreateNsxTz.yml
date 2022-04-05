@@ -1,0 +1,23 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: tests/CreateNsxTz.yml
+##
+---
+- hosts: localhost
+  tasks:
+    - name: Create NSX-T transport zones
+      vmware.ansible_for_nsxt.nsxt_transport_zones:
+        hostname: Pod-050-NSXT-LM-1.SDDC.Lab
+        username: admin
+        password: VMware1!VMware1!
+        validate_certs: false
+        resource_type: TransportZone
+        display_name: TZ-Test-DeleteMe
+        is_default: false
+        description: This is a dummy test TZ
+        transport_type: OVERLAY
+#        host_switch_name: "{{ item.value.Switch }}"
+#        host_switch_mode: "STANDARD"
+        state: present
+      register: result

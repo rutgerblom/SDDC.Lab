@@ -1,0 +1,48 @@
+---
+- hosts: localhost
+  tasks:
+
+
+
+
+#    - name: Configure vMotion TCP/IP Stack Gateway Address on Nested_ESXi hosts
+#      community.vmware.vmware_vm_shell:
+#        hostname: "{{ Target.FQDN }}"
+#        username: "{{ Target.User }}"
+#        password: "{{ Target.Password }}"
+#        cluster: "{{ Target.Cluster }}"
+#        datacenter: "{{ Target.DataCenter }}"
+#        folder: "{{ Target.VMFolder }}"
+#        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+#        vm_id: "{{ item.value.VMName }}"
+#        vm_username: "{{ item.value.User }}"
+#        vm_password: "{{ item.value.Password }}"
+#        vm_shell: /bin/esxcli
+#        vm_shell_args: "network ip route ipv4 add --netstack vmotion --network default --gateway {{ item.value.vmk.vmk1.Address.IPv4.Gateway }}"
+#      loop: "{{ Nested_ESXi.Host | dict2items }}"
+#      when:
+#        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+
+
+    - name: Configure vMotion TCP/IP stack gateway
+      community.vmware.vmware_host_tcpip_stacks:
+        hostname: "Pod-110-vCenter.SDDC.Lab"
+        username: "administrator@vsphere.local"
+        password: "VMware1!"
+        esxi_hostname: "pod-110-computea-1.sddc.lab"
+        validate_certs: no
+        vmotion:
+          gateway: 10.203.111.1
+        nsx-overlay:
+          gateway: 10.203.114.2
+      register: results
+
+    - name: Display Results
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          =================================================================================================
+
+            results: {{ results | to_nice_yaml }}
+
+          =================================================================================================

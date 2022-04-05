@@ -1,0 +1,68 @@
+---
+- hosts: localhost
+  vars_files:
+    - ../config.yml
+#    - ../answerfile.yml
+    - ../software.yml
+    - ../licenses.yml
+  tasks:
+    - name: Display Nested.Router.Interface.Management.VLAN
+      ansible.builtin.debug:
+        msg: "{{ Nested.Router.Interface.Management.VLAN }}"
+
+    - name: Display Nested.Router.Name
+      ansible.builtin.debug:
+        msg: "{{ Nested.Router.Name }}"
+
+    - name: Display Nested.ESXi.Hosts
+      ansible.builtin.debug:
+        msg: "{{ Nested.ESXi.Hosts }}"
+
+    - name: Display Nested.vCenter.User
+      ansible.builtin.debug:
+        msg: "{{ Nested.vCenter.User }}"
+
+    - name: Display Target
+      ansible.builtin.debug:
+        msg: "{{ Target }}"
+
+    - name: Display Target.FQDN
+      ansible.builtin.debug:
+        msg: "{{ Target.FQDN }}"
+
+    - name: Display Target.User
+      ansible.builtin.debug:
+        msg: "{{ Target.User }}"
+
+    - name: Display Target.Password
+      ansible.builtin.debug:
+        msg: "{{ Target.Password }}"
+
+    - name: Display Target.DataCenter
+      ansible.builtin.debug:
+        msg: "{{ Target.DataCenter }}"
+
+    - name: Display Target.VMFolder
+      ansible.builtin.debug:
+        msg: "{{ Target.VMFolder }}"
+
+    - name: Display The Name
+      ansible.builtin.debug:
+        msg: "{{ Nested.Router.Name }}"
+
+    - name: Display Deploy.Product.Router.Deploy
+      ansible.builtin.debug:
+        msg: "{{ Deploy.Product.Router.Deploy }}"
+
+    - name: Display Target.PortGroup
+      ansible.builtin.debug:
+        msg: "{{ Target.PortGroup }}"
+
+    - name: Display Target.PortGroup.Management.Name
+      ansible.builtin.debug:
+        msg: "{{ Target.PortGroup.Management.Name }}"
+
+    - name: Show Target Variables
+      ansible.builtin.debug:
+        msg: "Target.FQDN={{ Target.FQDN }},   Target.User={{ Target.User }},  Target.Password={{ Target.Password }}, Target.DataCenter={{ Target.DataCenter }},  Target.VMFolder={{ Target.VMFolder }}, Nested.Router.Name={{ Nested.Router.Name }},  Deploy.Product.Router.Deploy={{ Deploy.Product.Router.Deploy }}"
+

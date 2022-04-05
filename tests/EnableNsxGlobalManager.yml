@@ -1,0 +1,33 @@
+---
+- hosts: localhost
+  tasks:
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+
+                       Nested_NSXT.Component.GlobalManager_VIP.FQDN: {{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}
+                                   Nested_NSXT.Credential.admin.name: {{ Nested_NSXT.Credential.admin.Name }}
+                               Nested_NSXT.Credential.admin.Password: {{ Nested_NSXT.Credential.admin.Password }}
+
+          =================================================================================================
+#      when:
+#        - DEBUG.DisplayVariables == true
+
+##
+## Enable & Activate Newly Deployed Global Manager
+##
+
+    - name: Enable and Activate NSX-T Global Manager
+      vmware.ansible_for_nsxt.nsxt_global_manager_enable_service:
+        hostname: "{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: False
+        display_name: "{{ Nested_NSXT.Component.GlobalManager_VIP.VMName }}"
+        id: "{{ Nested_NSXT.Component.GlobalManager_VIP.VMName }}"
+      when:
+        - Deploy.Product.NSXT.GlobalManager.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
