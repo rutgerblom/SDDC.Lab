@@ -1,0 +1,34 @@
+{#
+ #    Authors: Luis Chanu & Rutger Blom
+ #   Filename: templates/vars_NSXT_EdgeTransportNodes.j2
+ #    Used By: This file is used by the playbook createNsxEdgeCluster.yml
+ #    Purpose: This Jinja2 template file is used to create the data structure that is provided to the nsxt_edge_clusters module.
+ #
+ #}
+{% for EdgeCluster in Nested_NSXT.System.Fabric.Nodes.EdgeClusters %}
+  - display_name: "{{ EdgeCluster.Name }}"
+    tags:
+{###### Make sure Tags is defined #####}
+{% if (EdgeCluster.Tags is defined) %}
+{###### If Tags is defined, add them to the list #}
+{% for SingleTag in EdgeCluster.Tags %}
+      - tag: "{{ SingleTag.Tag | default(None) }}"
+        scope: "{{ SingleTag.Scope | default(None) }}"
+{% endfor %}{# Tag #}
+{###### If not defined, add one set of "None" entries to ensure 'tags' header has a list member #####}
+{% else %}
+      - tag: ""
+        scope: ""
+{% endif %}{# EdgeCluster.Tags is defined #}
+    description: "{{ EdgeCluster.Description }}"
+    cluster_profile_bindings:
+{% for ClusterProfile in EdgeCluster.ClusterProfiles %}
+      - profile_name: "{{ ClusterProfile }}"
+{% endfor %}{# ClusterProfile #}
+    members:
+{% if EdgeCluster.Members %}{# Only add members if they exist #}
+{% for Member in EdgeCluster.Members %}
+      - transport_node_name: "{{ Member }}"
+{% endfor %}{# Member #}
+{% endif %}{# EdgeCluster.Members #}
+{% endfor %}{# EdgeCluster #}

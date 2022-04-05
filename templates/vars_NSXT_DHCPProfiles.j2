@@ -1,0 +1,42 @@
+{#
+ #    Authors: Luis Chanu & Rutger Blom
+ #   Filename: templates/vars_NSXT_DHCPProfiles.j2
+ #    Used By: This file is used by the playbook createNsxDHCPProfiles.yml
+ #    Purpose: This Jinja2 template file is used to create the data structure that is provided to the /policy/api/v1/infra/dhcp-server-configs REST API call.
+ #
+ #  IMPORTANT: Do NOT remove the blank line before the 'tags:' line below.  It's needed because EdgeClusterPath if statement does not add a blank line.
+ #             Because of this, if the blank line is removed, it will cause a failure on 'tags:'.
+ #
+ #  URL To NSX-T v3.2.0 REST API Call:
+ #      https://vdc-download.vmware.com/vmwb-repository/dcr-public/ce4128ae-8334-4f91-871b-ecce254cf69e/488f1280-204c-441d-8520-8279ac33d54b/api_includes/method_CreateOrReplaceDhcpServerConfig.html
+ #
+ #}
+{% for Profile in Nested_NSXT.Networking.DHCPProfiles %}
+{# Common items #}
+  - display_name: "{{ Profile.Name }}"
+    server_addresses: {{ Profile.ServerAddresses }}
+{# DHCP Server Structure #}
+{% if Profile.Type == "DHCP_SERVER" %}
+    resource_type: "DhcpServerConfig"
+    lease_time: {{ Profile.LeaseTime }}
+{% if EdgeClusterPath[Profile.EdgeCluster] is defined %}    edge_cluster_path: {{ EdgeClusterPath[Profile.EdgeCluster] }}{% endif %}
+
+{# DO NOT REMOVE THE EMPTY LINE ABOVE THIS COMMENT #}
+{% else %}{# Assume DHCP_RELAY #}
+{# DHCP Relay Structure #}
+    resource_type: "DhcpRelayConfig"
+{% endif %}{# Profile.Type #}
+    tags:
+{###### Make sure Tags is defined #####}
+{% if (Profile.Tags is defined) %}
+{###### If Tags is defined, add them to the list #}
+{% for SingleTag in Profile.Tags %}
+      - tag: "{{ SingleTag.Tag | default(None) }}"
+        scope: "{{ SingleTag.Scope | default(None) }}"
+{% endfor %}{# SingleTag #}
+{###### If not defined, add one set of "None" entries to ensure 'tags' header has a list member #####}
+{% else %}
+      - tag: ""
+        scope: ""
+{% endif %}{# Profile.Tags is defined #}
+{% endfor %}{# Profile #}

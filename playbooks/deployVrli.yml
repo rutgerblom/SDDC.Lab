@@ -1,0 +1,240 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/deployVrli.yml
+##
+---
+- hosts: localhost
+  name: deployVrli.yml
+  tasks:
+    - name: deployVrli_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+
+                                         vRLI Version: {{ Deploy.Software.vRLI.Version }}
+                                            vRLI FQDN: {{ Nested_vRLI.FQDN }}
+                                          vRLI VMName: {{ Nested_vRLI.VMName }}
+                                      vRLI Admin User: {{ Nested_vRLI.Credential.admin.Name }}
+                                  vRLI Admin Password: {{ Nested_vRLI.Credential.admin.Password }}
+
+
+                                                OVF Variables
+                                                =============
+
+                                            vRLI Size: {{ Nested_vRLI.Deployment.Size }}
+                                    Network PortGroup: {{ Target.PortGroup.Management.Name }}
+
+                                 Network IPv4 Address: {{ Nested_vRLI.Address.IPv4.Address }}
+                                      Network Netmask: {{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) | ipaddr('netmask') }}
+                                      Network Gateway: {{ Nested_vRLI.Address.IPv4.Gateway }}
+
+                                   Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                   Network DNS Domain: {{ Common.DNS.Domain }}
+
+                                   vRLI Root Password: {{ Nested_vRLI.Credential.root.Password }}
+
+                                      vRLI Media Path: {{ Deploy.Software.vRLI.Directory }}
+                                      vRLI Media File: {{ Deploy.Software.vRLI.File }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Check if vRLI is already installed
+      ansible.builtin.uri:
+        url: https://{{ Nested_vRLI.FQDN }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+      register: vrli_check
+      ignore_errors: true
+      failed_when: false
+      no_log: true
+      when: Deploy.Product.vRLI.Deploy == true
+
+    - name: Deploy vRLI from OVA
+      community.vmware.vmware_deploy_ovf:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datastore: "{{ Target.Datastore }}"
+        allow_duplicates: false
+        folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}{% else %}{{ Target.VMFolder }}{% endif %}"         # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
+        datacenter: "{{ Target.DataCenter }}"
+        cluster: "{{ Target.Cluster }}"
+        name: "{{ Nested_vRLI.VMName }}"
+        ovf: "{{ Deploy.Software.vRLI.Directory }}/{{ Deploy.Software.vRLI.File }}"
+        deployment_option: "{{ Nested_vRLI.Deployment.Size }}"
+        networks:
+          "Network 1": "{{ Target.PortGroup.Management.Name }}"
+        disk_provisioning: "{{ Common.DiskProvisioning }}"
+        power_on: true
+        wait_for_ip_address: true
+        inject_ovf_env: true
+        properties:
+          vm.vmname: "{% if Target.Deployment == 'Host' %}VMware_vCenter_Log_Insight{% else %}{{ omit }}{% endif %}"                                         # Host requires static vmname value, vCenter complains, so omitting property from vCenter Deployment
+          preferipv6: "False"
+          rootpw: "{{ Nested_vRLI.Credential.root.Password }}"
+          hostname: "{{ Nested_vRLI.FQDN }}"
+          vami.DNS.VMware_vCenter_Log_Insight: "{{ Common.DNS.Server1.IPv4 }}"
+          vami.domain.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
+          vami.gateway.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Address.IPv4.Gateway }}"
+          vami.ip0.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Address.IPv4.Address }}"
+          vami.netmask0.VMware_vCenter_Log_Insight: "{{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) | ipaddr('netmask') }}"
+          vami.searchpath.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
+      when:
+        - Deploy.Product.vRLI.Deploy == true
+        - vrli_check.status != 200
+
+    - name: Start checking if the vRLI Web UI is available
+      ansible.builtin.uri:
+        url: https://{{ Nested_vRLI.FQDN }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+      register: vrli_webui_check
+      until: vrli_webui_check.status == 200
+      when:
+        - Deploy.Product.vRLI.Deploy == true
+        - vrli_check.status != 200
+      retries: 10
+      delay: 60
+
+    - name: Perform vRLI bootstrap
+      ansible.builtin.uri:
+        url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/deployment/new
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        method: POST
+        timeout: 240
+        body:
+          user:
+            userName: "{{ Nested_vRLI.Credential.admin.Name }}"
+            password: "{{ Nested_vRLI.Credential.admin.Password }}"
+            email: "{{ (Nested_vRLI.Credential.admin.Name + '@' + Common.DNS.Domain) }}"
+        body_format: json
+      when:
+        - Deploy.Product.vRLI.Deploy == true
+        - vrli_check.status != 200
+
+    - name: Obtain a session ID from the vRLI API 
+      ansible.builtin.uri:
+        url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/sessions
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        method: POST
+        body:
+          username: "{{ Nested_vRLI.Credential.admin.Name }}"
+          password: "{{ Nested_vRLI.Credential.admin.Password }}"
+          provider: "Local"
+        body_format: json
+      register: vrli_session
+      when:
+        - Deploy.Product.vRLI.Deploy == true
+        - vrli_check.status != 200
+
+    - name: Add vSphere to vRLI
+      ansible.builtin.uri:
+        url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/vsphere
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        method: POST
+        timeout: 240
+        headers:
+          Authorization: "Bearer {{ vrli_session.json.sessionId }}"
+        body:
+          hostname: "{{ Nested_vCenter.FQDN }}"
+          username: "{{ Nested_vCenter.User }}"
+          password: "{{ Nested_vCenter.Password }}"
+          acceptCert: true
+          syslogProtocol: "tcp"
+          configureNewEsxiHostsAutomatically: true
+          vsphereEventsEnabled: true
+          target: "{{ Nested_vRLI.Address.IPv4.Address }}"
+        body_format: json
+        status_code: 201
+      when:
+        - Deploy.Product.vRLI.Deploy == true
+        - vrli_check.status != 200
+
+    - name: Configure NTP
+      ansible.builtin.uri:
+        url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/time/config
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        method: PUT
+        timeout: 240
+        headers:
+          Authorization: "Bearer {{ vrli_session.json.sessionId }}"
+        body:
+          timeReference: NTP_SERVER
+          ntpServers:
+            - "{{ Common.NTP.Server1.IPv4 }}"
+        body_format: json
+        status_code: 200
+      when:
+        - Deploy.Product.vRLI.Deploy == true
+        - vrli_check.status != 200
+
+    - name: Write annotation on the vRLI VM
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
+        name: "{{ Nested_vRLI.VMName }}"
+        annotation: | 
+                    {{ Common.Annotation }}
+                    {{ Deploy.Software.vRLI.Vendor }} {{ Deploy.Software.vRLI.Product }} {{ Deploy.Software.vRLI.Version }}
+                    Username: {{ Nested_vRLI.Credential.admin.Name }}
+                    Password: {{ Nested_vRLI.Credential.admin.Password }}

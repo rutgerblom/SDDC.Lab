@@ -1,0 +1,314 @@
+##
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: playbooks/include_tasks_deployWorkloadVm.yml
+##
+##    IMPORTANT: This is NOT a stand-alone runable playbook.
+##
+##  Description: This playbook contains the "block" of Ansible code to deploy a single VM/OVF Template from a
+##               Content Library.  This "block" of code is called by deployWorkloadVms.yml for each workload
+##               it needs to provision.  Once provisioned, this "block" of code connects the workloads to the
+##               respective port-group (NSX-T segment), adds NSX-T tags (if any), and finally powers on the VM.
+##
+---
+    - name: include_tasks_deployWorkloadVm
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: DEBUG -- Display 'item' (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display 'item' Being Processed =================================
+
+          item:
+            {{ item | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - item is defined
+
+
+##
+## Create Nested vCenter Top-Level VM Folder for Workload VMs
+##
+    - name: Create Top-Level VM Folder for Workload VM '{{ item.VMName }}'
+      community.vmware.vcenter_folder:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datacenter: "{{ Nested_vCenter.DataCenter }}"
+        folder_type: vm
+        parent_folder: ""
+        folder_name: "{{ item.VMFolder }}"
+        state: present
+      register: result
+      when:
+        - item is defined
+        - Deploy.WorkloadVMs.Deploy == true
+        - Nested_vCenter.ContentLibrary.Enable == true
+
+    - name: DEBUG -- Display 'result' from VM Folder creation for Workload VM '{{ item.VMName }}'
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ======================= Display 'result' from Top-Level VM Folder Creation =======================
+
+          Workload VM: {{ item.VMName }}
+
+          result:
+            {{ result | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          ==================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - item is defined
+        - Deploy.WorkloadVMs.Deploy == true
+        - Nested_vCenter.ContentLibrary.Enable == true
+
+
+##
+## Deploy VM/OVF Template from Content Library
+##
+    - name: Deploy VM Template from Content Library for Workload VM '{{ item.VMName }}'
+      community.vmware.vmware_content_deploy_template:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        library: "{{ item.ContentLibrary }}"
+        template: "{{ item.Template.Name }}"
+        datacenter: "{{ item.DataCenter }}"
+        cluster: "{{ item.Cluster }}"
+        folder: "{{ item.VMFolder | default(omit) }}"
+        datastore: "{{ Nested_Cluster[ item.Cluster ].vsanDatastore }}"
+        name: "{{ item.VMName }}"
+        state: present                                                                  # Provision VM, but do NOT power it on.  We power it on after connecting it to the network.
+      register: result
+      ignore_errors: yes                                                                # Do not stop if there be an error
+      when:
+        - item is defined
+        - item.Template.Type == "VM_TEMPLATE"
+        - Deploy.WorkloadVMs.Deploy == true
+        - Nested_vCenter.ContentLibrary.Enable == true
+
+    - name: DEBUG -- Display 'result' for VM Template deploy for Workload VM '{{ item.VMName }}'
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ======================================= Display 'result' ========================================
+
+                   Workload VM Name: {{ item.VMName }}
+          Workload VM Template Type: {{ item.Template.Type }}
+
+          result:
+            {{ result | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - item is defined
+        - Deploy.WorkloadVMs.Deploy == true
+        - Nested_vCenter.ContentLibrary.Enable == true
+
+    - name: Deploy OVF Template from Content Library for Workload VM '{{ item.VMName }}'
+      community.vmware.vmware_content_deploy_ovf_template:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        library: "{{ item.ContentLibrary }}"
+        template: "{{ item.Template.Name }}"
+        datacenter: "{{ item.DataCenter }}"
+        cluster: "{{ item.Cluster }}"
+        folder: "{{ item.VMFolder | default(omit) }}"
+        datastore: "{{ Nested_Cluster[ item.Cluster ].vsanDatastore }}"
+        name: "{{ item.VMName }}"
+        storage_provisioning: "{{ item.Config.Guest.DiskProvisioning }}"
+      register: result
+      ignore_errors: yes                                                                # Do not stop if there be an error
+      when:
+        - item is defined
+        - item.Template.Type == "OVF_TEMPLATE"
+        - Deploy.WorkloadVMs.Deploy == true
+        - Nested_vCenter.ContentLibrary.Enable == true
+
+    - name: DEBUG -- Display 'result' for OVF Template deploy for Workload VM '{{ item.VMName }}'
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================== Display 'result' ==================================
+
+                   Workload VM Name: {{ item.VMName }}
+          Workload VM Template Type: {{ item.Template.Type }}
+
+          result:
+            {{ result | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - item is defined
+        - Deploy.WorkloadVMs.Deploy == true
+        - Nested_vCenter.ContentLibrary.Enable == true
+
+
+
+##
+## Handle VM NICs -- Gather Networking Information
+##
+    - name: Gather networking information for VM '{{ item.VMName }}'
+      community.vmware.vmware_guest_network:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datacenter: "{{ item.DataCenter }}"
+        name: "{{ item.VMName }}"
+        gather_network_info: true
+      register: VMNetInfo
+      when:
+        - item is defined
+        - Deploy.WorkloadVMs.Deploy == true
+        - Nested_vCenter.ContentLibrary.Enable == true
+
+    - name: DEBUG -- Display 'VMNetInfo' for '{{ item.VMName }}'
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ====================================== Display 'VMNetInfo' ======================================
+
+          VMNetInfo:
+            {{ VMNetInfo | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - VMNetInfo is defined
+        - Deploy.WorkloadVMs.Deploy == true
+        - Nested_vCenter.ContentLibrary.Enable == true
+
+
+##
+## Update VM NIC Configuration
+##
+    - name: Update network Port-Group(s) used by VM '{{ item.VMName }}'
+      community.vmware.vmware_guest_network:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datacenter: "{{ item.DataCenter }}"
+        name: "{{ item.VMName }}"
+        mac_address: "{{ network_adapter.mac_address }}"
+        network_name: "{{ item.Config.Guest.Networks[ ansible_loop.index0 ].PortGroup }}"
+        start_connected: "{{ item.Config.Guest.Networks[ ansible_loop.index0 ].StartConnected }}"
+      register: result
+      loop: "{{ VMNetInfo.network_info }}"
+      loop_control:
+        loop_var: network_adapter
+        extended: yes                                                                   # Expose ansible_loop.index0
+      when:
+        - item is defined
+        - VMNetInfo.network_info is defined
+        - Deploy.WorkloadVMs.Deploy == true
+        - Nested_vCenter.ContentLibrary.Enable == true
+
+    - name: DEBUG -- Display 'result' from NIC Configuration for '{{ item.VMName }}'
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ======================================== Display 'result' =======================================
+
+          result:
+            {{ result | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - item is defined
+        - result is defined
+        - Deploy.WorkloadVMs.Deploy == true
+        - Nested_vCenter.ContentLibrary.Enable == true
+
+
+##
+## Apply NSX-T Tags & Scopes to Workload VM
+##
+    - name: Update NSX-T Tags on newly deployed Virtual Machine
+      vmware.ansible_for_nsxt.nsxt_vm_tags:
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        virtual_machine_display_name: "{{ item.VMName }}"
+        add_tags:
+          - tag: "{{ SingleTag.Tag }}"
+            scope: "{{ SingleTag.Scope }}"
+      register: result
+      loop: "{{ item.Config.NSXT.Tags }}"
+      loop_control:
+        loop_var: SingleTag
+      when:
+        - item is defined
+        - SingleTag is defined
+        - Deploy.WorkloadVMs.Deploy == true
+        - Nested_vCenter.ContentLibrary.Enable == true
+
+    - name: DEBUG -- Display 'result' from NSX-T VM Tags for '{{ item.VMName }}'
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ======================================== Display 'result' =======================================
+
+          result:
+            {{ result | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - item is defined
+        - result is defined
+        - Deploy.WorkloadVMs.Deploy == true
+        - Nested_vCenter.ContentLibrary.Enable == true
+
+
+##
+## Power-On Workload VM
+##
+    - name: Power-On Workload VM '{{ item.VMName }}'
+      community.vmware.vmware_guest_powerstate:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datacenter: "{{ item.DataCenter }}"
+        name: "{{ item.VMName }}"
+        state: powered-on
+      register: result
+      when:
+        - item is defined
+        - item.PowerOn == true
+        - Deploy.WorkloadVMs.Deploy == true
+        - Nested_vCenter.ContentLibrary.Enable == true
+
+    - name: DEBUG -- Display 'result' from Power-On of Workload VM '{{ item.VMName }}'
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ======================================== Display 'result' =======================================
+
+          Workload VM Power-On Setting: {{ item.PowerOn }}
+
+          result:
+            {{ result | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - item is defined
+        - result is defined
+        - Deploy.WorkloadVMs.Deploy == true
+        - Nested_vCenter.ContentLibrary.Enable == true

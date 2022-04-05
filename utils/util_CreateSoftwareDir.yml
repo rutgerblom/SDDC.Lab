@@ -1,0 +1,75 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: utils/util_CreateSoftwareDir.yml
+##
+---
+- hosts: localhost
+  vars_files:
+    - ../software.yml
+  tasks:
+
+##
+## Set Software Repository RootDirectory Permissions
+##
+    - name: Set permissions on {{ RootDirectory }}
+      file:
+        path: "{{ RootDirectory }}"
+        state: directory
+        mode: "0777"
+
+
+##
+## VMware
+##
+    - name: Create VMware vCenter directories
+      file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0777"
+      loop: "{{ Software.VMware.vCenter.Installers | dict2items }}"
+      when: Software.VMware.vCenter.Installers is defined
+
+    - name: Create VMware ESXi directories
+      file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0777"
+      loop: "{{ Software.VMware.ESXi.Installers | dict2items }}"
+      when: Software.VMware.ESXi.Installers is defined
+
+    - name: Create VMware NSXT directories
+      file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0777"
+      loop: "{{ Software.VMware.NSXT.Installers | dict2items }}"
+      when: Software.VMware.NSXT.Installers is defined
+
+    - name: Create VMware vRLI directories
+      file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0777"
+      loop: "{{ Software.VMware.vRLI.Installers | dict2items }}"
+      when: Software.VMware.vRLI.Installers is defined
+
+    - name: Create Ubuntu directories
+      file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0777"
+      loop: "{{ Software.Ubuntu.Server.Installers | dict2items }}"
+      when: Software.Ubuntu.Server.Installers is defined
+
+
+##
+## VyOS
+##
+    - name: Create VyOS directories
+      file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0777"
+      loop: "{{ Software.VyOS.Router.Installers | dict2items }}"
+      when: Software.VyOS.Router.Installers is defined

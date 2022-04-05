@@ -1,0 +1,37 @@
+{#
+ #      Authors: Luis Chanu & Rutger Blom
+ #     Filename: templates/vars_NSXT_T0Gateways_Interfaces.j2
+ #      Used By: This file is used by the federateNsxEdgeNodes.yml playbook
+ #        Notes: Because this file is used with Federation, it only processes the first Tier-0 Gateway.
+ #
+ #}
+{% for Interface in Nested_NSXT.Networking.Tier0Gateways[0].BGP.Interfaces %}
+  - id: "{{ Interface.Name }}"
+    display_name: "{{ Interface.Name }}"
+    description: "{{ Interface. Description }}"
+    type: "{{ Interface.Type }}"
+    urpf_mode: "{{ Interface.URPFMode }}"
+    segment_path: "{{ T0Segments[ Interface.SegmentName ] }}"
+    edge_path: "{{ T0Edges[ Interface.EdgeNodeInfo.EdgeNodeName ] }}"
+    subnets:
+{% for Subnet in Interface.Subnets %}
+{##### Only add Interface Address types that match allowed Deploy IP types #####}
+{% if ((Deploy.Setting.IPv4 and Subnet.Address | ipv4) or (Deploy.Setting.IPv6 and Subnet.Address | ipv6)) %}
+      - ip_addresses: ["{{ Subnet.Address }}"]
+        prefix_len: {{ Subnet.Prefix }}
+{% endif %}{# Deploy.Setting.IPv4 or Deploy.Setting.IPv6 #}
+{% endfor %}{# Subnet #}
+    tags:
+{###### Make sure Tags is defined #####}
+{% if (Interface.Tags is defined) %}
+{###### If Tags is defined, add them to the list #}
+{% for SingleTag in Interface.Tags %}
+      - tag: "{{ SingleTag.Tag | default(None) }}"
+        scope: "{{ SingleTag.Scope | default(None) }}"
+{% endfor %}{# SingleTag #}
+{###### If not defined, add one set of "None" entries to ensure 'tags' header has a list member #####}
+{% else %}
+      - tag: ""
+        scope: ""
+{% endif %}{# Interface.Tags is defined #}
+{% endfor %}{# Interface #}

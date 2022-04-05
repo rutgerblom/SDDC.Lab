@@ -1,0 +1,23 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: utils/util_CreateSwitchConfig.yml
+##
+##
+## This playbook utility creates the a file called "SwitchConfig.txt" in your home directory, which can then be used to create the ENTIRE VLAN range for all of the Pod possible given the Pod-XXX-Config.yml file.
+##
+## The command syntax to run this script is the same as is used to deploy a SDDC Lab, except you execut this script.  That command looks like this:
+##
+##                                                     ansible-playbook  -e "@~/Pod-XXX-Config.yml" utils/util_CreateSwitchConfig.yml
+##
+## The resultant configuration file is written to the users home directory, and is called "SwitchConfig.txt"
+##
+---
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Generate  switch configuration
+      ansible.builtin.template: 
+        src:  util_CreateSwitchConfig_Template.j2
+        dest: "{{ lookup('env','HOME') }}/SwitchConfig.txt"
+        force: yes

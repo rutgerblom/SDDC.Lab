@@ -1,0 +1,186 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/createNsxDhcpProfiles.yml
+##
+---
+- hosts: localhost
+  name: createNsxDhcpProfiles.yml
+  vars:
+      LOCAL_DHCPProfilesTemplate: "{{ Target.TemplateFolder }}/vars_NSXT_DHCPProfiles.j2"
+  tasks:
+    - name: createNsxDhcpProfiles_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                             Ansible Playbook: {{ ansible_play_name }}
+
+                                            Target.Deployment: {{ Target.Deployment }}
+
+                  Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
+
+                                      Number of DHCP Profiles: {{ Nested_NSXT.Networking.DHCPProfiles | length }}
+                          Nested_NSXT.Networking.DHCPProfiles: {{ Nested_NSXT.Networking.DHCPProfiles }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+##
+## For each Edge Cluster, we need it's path for the DHCP Server REST API call.  Thus, let's create a EdgeClusterPath dictionary with Key being 
+## the EdgeCluster Name, and the Value being the given Edge Clusters path.
+##
+    - name: Obtain list of all Edge Clusters
+      vmware.ansible_for_nsxt.nsxt_edge_clusters_facts:
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+      register: EdgeClusters
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display EdgeClusters Variable ==================================
+
+          EdgeClusters:
+            {{ EdgeClusters | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Create EdgeClusterPath dictionary
+      ansible.builtin.set_fact:
+        EdgeClusterPath: "{{ EdgeClusterPath | default({}) | combine({ item.display_name : PathToEdgeCluster }) }}"
+      vars:
+        PathToEdgeCluster: "/infra/sites/default/enforcement-points/default/edge-clusters/{{ item.id }}"
+      loop: "{{ EdgeClusters.results }}"
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================= Display EdgeClusterPath Dictionary  ===============================
+
+          EdgeClusterPath:
+            {{ EdgeClusterPath | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Read DHCP Profiles structure from template into a variable
+      ansible.builtin.set_fact:
+        var_DHCPProfiles: "{{ lookup('template', LOCAL_DHCPProfilesTemplate) | from_yaml }}"
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display var_DHCPProfiles Variable ===================================
+
+          var_DHCPProfiles:
+            {{ var_DHCPProfiles | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+
+##
+## Create all DHCP Profiles
+##
+    - name:  Create NSX-T DHCP Server Profiles
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/policy/api/v1/infra/dhcp-server-configs/{{ item.display_name }}
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 20
+        force_basic_auth: yes
+        method: PUT
+        body_format: json
+        return_content: yes
+        status_code: 200
+        body: "{{ item }}"
+      register: result
+      loop: "{{ var_DHCPProfiles | default([]) }}"
+      until: result.status == 200
+      retries: 5
+      delay: 30
+      when: 
+        - item.resource_type == "DhcpServerConfig"
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name:  Create NSX-T DHCP Relay Profiles
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/policy/api/v1/infra/dhcp-relay-configs/{{ item.display_name }}
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 20
+        force_basic_auth: yes
+        method: PUT
+        body_format: json
+        return_content: yes
+        status_code: 200
+        body: "{{ item }}"
+      register: result
+      loop: "{{ var_DHCPProfiles | default([]) }}"
+      until: result.status == 200
+      retries: 5
+      delay: 30
+      when: 
+        - item.resource_type == "DhcpRelayConfig"
+        - Deploy.Product.NSXT.LocalManager.Deploy == true

@@ -1,0 +1,174 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/prepareISOInstaller.yml
+##
+---
+- hosts: localhost
+  name: prepareISOInstaller.yml
+  vars:
+    ISOMountPoint: "{{ Target.ISOMount }}/{{ Deploy.Software.ESXi.Vendor }}_{{ Deploy.Software.ESXi.Product }}_{{ Deploy.Software.ESXi.Version }}"
+  tasks:
+    - name: prepareISOInstaller_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    sudo ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                     Target.ISOFolder: {{ Target.ISOFolder }}
+                                    Target.TempFolder: {{ Target.TempFolder }}
+
+                                        ISOMountPoint: {{ ISOMountPoint }}
+
+                         Deploy.Software.ESXi.Version: {{ Deploy.Software.ESXi.Version }}
+                       Deploy.Software.ESXi.Installer: {{ Deploy.Software.ESXi.Installer }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Create temp directory
+      ansible.builtin.file:
+        path: "{{ Target.TempFolder }}"
+        state: directory
+
+    - name: Mount ESXi ISO as read-only and do not automatically mount with 'mount -a'
+      ansible.posix.mount:
+        path:   "{{ ISOMountPoint }}"
+        src:    "{{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }}"
+        fstype: iso9660
+        opts:   ro,noauto
+        state:  mounted
+      tags: esxi-install-media
+
+    - name: Copy boot.cfg from the ESXi ISO
+      ansible.builtin.copy: 
+        src: "{{ ISOMountPoint }}/boot.cfg"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
+        mode: "666"
+      tags: esxi-install-media
+
+    - name: Edit boot.cfg
+      ansible.builtin.replace:
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/boot.cfg"
+        regexp: 'kernelopt=.*'
+        replace: 'kernelopt=ks=cdrom:/{{ Deploy.Software.ESXi.Config }}'
+      tags: esxi-install-media
+
+    - name: Create a directory for each nested ESXi host
+      ansible.builtin.file:
+        path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
+        state: directory
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+      tags: esxi-install-media
+
+    - name: Create kickstart file for each nested ESXi host
+      ansible.builtin.template: 
+        src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.ESXi.Template }}"
+        dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
+        mode: "666"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+      tags: esxi-install-media
+
+    - name: Create custom ESXi ISO for each nested ESXi host
+      ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }} -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ ISOMountPoint }}/ {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/ {{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
+      args:
+        chdir: "{{ Target.TempFolder }}/{{ item.value.VMName }}/"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+      tags: esxi-install-media
+
+    - name: Unmount ESXi ISO
+      ansible.posix.mount:
+        path:  "{{ ISOMountPoint }}"
+        state: absent
+      when: Deploy.Software.Options.UnmountISO
+      tags: esxi-install-media
+
+    - name: Upload the ESXi ISO to the datastore
+      community.vmware.vsphere_copy: 
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datacenter: "{{ Target.DataCenter }}"
+        src: "{{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }}" 
+        datastore: "{{ Target.Datastore }}" 
+        path: "{{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+      tags: esxi-install-media
+      
+    - name: Delete local ISO content directory
+      ansible.builtin.file:
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}"
+        state: absent
+      when: DEBUG.KeepInstallerFiles != true
+      tags: esxi-install-media
+
+    - name: Delete nested ESXi host directories
+      ansible.builtin.file:
+        path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
+        state: absent
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when: 
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+        - DEBUG.KeepInstallerFiles != true
+      tags: esxi-install-media
+
+    - name: Delete the ESXi ISO files
+      ansible.builtin.file:
+        path: "{{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }}" 
+        state: absent
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when: 
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+        - DEBUG.KeepInstallerFiles != true
+      tags: esxi-install-media

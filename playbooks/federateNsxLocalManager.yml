@@ -1,0 +1,445 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/federateNsxLocalManager.yml
+##
+##      Notes: This module registers the NSX-T Local Manager to the NSX-T Global Manager, and imports it's objects.  Once completed, the site has been brought into the NSX-T Federation as a Location.
+##
+---
+- hosts: localhost
+  name: federateNsxLocalManager.yml
+  tasks:
+    - name: federateNsxLocalManager_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                          Ansible Playbook: {{ ansible_play_name }}
+
+             Nested_NSXT.Component.GlobalManager_VIP.FQDN: {{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}
+           Nested_NSXT.Component.GlobalManager_VIP.VMName: {{ Nested_NSXT.Component.GlobalManager_VIP.VMName }}
+
+              Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
+            Nested_NSXT.Component.LocalManager_VIP.VMName: {{ Nested_NSXT.Component.LocalManager_VIP.VMName }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+
+##
+## Steps to obtain the NSX-T Local Manager Cluster API Certificate Thumbprint
+##
+
+    - name: Obtain NSX-T Local Manager API Cluster Certificate ID
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/cluster/api-certificate
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 10
+      delay: 10
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name: Store Local Manager Cluster Certificate ID into variable for easier use
+      ansible.builtin.set_fact:
+        lm_cluster_cert_id: "{{ result.json.certificate_id }}"
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - result.status == 200
+
+    - name: Obtain API Cluster Certificate using ID
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/trust-management/certificates/{{ lm_cluster_cert_id }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name: Store Local Manager Cluster Certificate (PEM format) into variable for easier use
+      ansible.builtin.set_fact:
+        lm_cluster_cert_pem: "{{ result.json.pem_encoded }}"
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - result.status == 200
+
+    - name: Obtain Information about Local Manager Cluster Certificate
+      community.crypto.x509_certificate_info:
+        content: "{{ lm_cluster_cert_pem }}"
+      register: lm_cluster_cert_info
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - result.status == 200
+
+    - name: Store Local Manager Cluster Certificate SHA256 Thumbprint (without colons) for easier use
+      ansible.builtin.set_fact:
+        lm_cluster_api_cert_thumbprint: "{{ lm_cluster_cert_info.fingerprints['sha256'].replace(':','') | lower }}"
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - result.status == 200
+
+    - name: DEBUG -- Display Local Manager Cluster Certificate Thumbprint (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+           Local Manager Cluster Certificate Thumbprint: {{ lm_cluster_api_cert_thumbprint | default(None) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+##
+## Get Backup ID from NSX-T Local Manager
+##
+
+    - name: Obtain NSX-T Local Manager backup history to obtain Backup_ID
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/cluster/backups/history
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 10
+      delay: 10
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name: Store NSX-T Local Manager backup_id for later use
+      ansible.builtin.set_fact:
+        lm_backup_id: "{{ result.json.cluster_backup_statuses[0].backup_id | default('{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}-Backup') }}"
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - result.status == 200
+
+    - name: DEBUG -- Display Local Manager Cluster Backup ID (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+           Local Manager Cluster Backup ID: {{ lm_backup_id | default(None) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+
+##
+## Now that we have the Thumbprint, let's go use it
+##
+
+    - name: Wait until the NSX-T Global Manager cluster VIP is responding and has been made "ACTIVE"
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/gm-operational-state
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.status == "ACTIVE"
+      retries: 120
+      delay: 60
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+
+    - name: Verify NSX-T Local Manager is compatible with NSX-T Global Manager
+      nsxt_local_managers_compatibility:
+        hostname: "{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        site_connection_info:
+          fqdn: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
+          username: "{{ Nested_NSXT.Credential.admin.Name }}"
+          password: "{{ Nested_NSXT.Credential.admin.Password }}"
+          thumbprint: "{{ lm_cluster_api_cert_thumbprint }}"
+      register: result
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+
+    - name: DEBUG -- Display "nsxt_local_managers_compatibility" result (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ======================================= Display "result" ========================================
+
+          {{ result }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+
+#
+# A Race condition exists where the following "nsxt_local_manager_registration" module will return a FAILURE 
+# if two sites attempt to onboard at the same time.  To address this race condition, the following was done:
+#   a) added the "ignore_errors" argument to ignore the error when it occurs
+#   b) added the UNTIL condition which checks for when the object was changed/updated (failure returns the object as NOT having been changed)
+#   c) looking for the word "created" in the returned message
+#   d) Because failures return the error message in "msg" instead of "messages", the 'default(None)' is added in case the 'message' variable is not in the response (i.e. Failure)
+# Other option would be to convert this to the NSX-T REST API call which is (_revision required):
+#                         PUT /global-manager/api/v1/global-infra/sites/<site-id>
+#
+    - name: Register NSX-T Local Manager with NSX-T Global Manager
+      nsxt_local_manager_registration:
+        hostname: "{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        display_name: "{{ SiteCode }}"
+        id: "{{ SiteCode }}"
+        site_connection_info:
+          fqdn: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
+          username: "{{ Nested_NSXT.Credential.admin.Name }}"
+          password: "{{ Nested_NSXT.Credential.admin.Password }}"
+          thumbprint: "{{ lm_cluster_api_cert_thumbprint }}"
+        state: present
+      ignore_errors: true
+      register: result
+      until: result.changed == true and '"created" in (result.message | default(None))'
+      retries: 60
+      delay: 30
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - result.version_compatible == true
+
+
+##
+## Determine NSX-T Federation On-Boarding Preferences
+##
+    - name: Determinte NSX-T Federation Import - Global Manager Site [Import] - FOR ALL SITES
+      ansible.builtin.set_fact:
+        ignore_import: false
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+#        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+
+#
+#    - name: Determinte NSX-T Federation Import - Non-Global Manager Site [Do Not Import]
+#      ansible.builtin.set_fact:
+#        ignore_import: true
+#      when:
+#        - Deploy.Product.NSXT.Federation.Enable == true
+#        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+#
+
+    - name: Set on-boarding preferences for NSX-T Local Manager objects into NSX-T Global Manager for the on-boarding process
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding/preferences
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: PUT
+        body_format: json
+        body:
+          {
+            "id" : "{{ SiteCode }}",
+            "site_id" : "{{ SiteCode }}",
+            "display_name" : "{{ SiteCode }}",
+            "ignore_import": "{{ ignore_import }}",
+            "resource_type": "SiteOnboardingPreference"
+          }
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 60
+      delay: 10
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+
+##
+## May not be needed, but performed by GUI
+##
+    - name: Obtain summary of features supported by the Site being onboarded
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding/feature-summary
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 60
+      delay: 10
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name: Keep checking status of newly added site until it reaches "ALLOWED" status
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding/status
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.status == "ALLOWED"
+      retries: 60
+      delay: 30
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name: Check for on-boarding conflicts of importing objects
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding?action=check_conflict
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: POST
+        body_format: json
+        body:
+          {
+            "site_id":"{{ SiteCode }}",
+            "prefix":""
+          }
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.status == "NO_CONFLICTS"
+      retries: 60
+      delay: 10
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name: On-board the NSX-T Local Manager site objects into NSX-T Global Manager (One Site At A Time So High Retry Number)
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding?action=start_onboarding
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: POST
+        body_format: json
+        body:
+          {
+            "site_id": "{{ SiteCode }}",
+            "prefix": "",
+            "site_backup_reference": "{{ lm_backup_id }}"
+          }
+        return_content: yes
+        status_code: 200
+      register: result
+# IN_PROGRESS is what we would normally expect.  However, if the server is fast, it might complete that before being checked.  For that reason, checking for both conditions
+      until: result.status == 200 and (result.json.status == "IN_PROGRESS" or result.json.status == "SUCCESS")
+      retries: 120
+      delay: 60
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name: Continue to check the status of the newly added site until it reaches "SUCCESS"
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/onboarding/status
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.status == "SUCCESS"
+      retries: 60
+      delay: 10
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true

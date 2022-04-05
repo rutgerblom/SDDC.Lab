@@ -1,0 +1,159 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/createPodConfig.yml
+##
+---
+- hosts: localhost
+  name: createPodConfig.yml
+  gather_facts: no
+  vars_files:
+    - ../software.yml
+    - ../templates.yml
+
+  vars:
+    - PodTemplate: "Pod_Config.j2"
+    - PodTempConfigFile: "{{ SiteCode }}-Config_Temp.yml"
+    - PodConfigFile: "{{ SiteCode }}-Config_VCSAv{{ Deploy.Software.vCenter.Version }}_ESXIv{{ Deploy.Software.ESXi.Version }}_NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}_Fed-{% if Deploy.Product.NSXT.Federation.Enable == true %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}{% else %}N{% endif %}{% endif %}.yml"
+
+  vars_prompt:
+
+    - name: SourceConfigPath
+      prompt: "In which directory is the Pod-Config file you want to have prepared located?"
+      unsafe: yes
+      private: no
+      default: "{{ lookup('env','PWD') }}"
+
+    - name: SourceConfigFile
+      prompt: "What is the name of the configuration file that you would like to have prepared?"
+      unsafe: yes
+      private: no
+      default: "config.yml"
+
+  tasks:
+    - name: Check to see if the Pod-Config file to be prepared exists
+      ansible.builtin.stat:
+        path: "{{ SourceConfigPath }}/{{ SourceConfigFile }}"
+      register: ConfigFileCheck
+
+
+    - name: Display error message if Pod-Config file is not found
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            The provided Pod-Config file could not be found, so this playbook is ending WITHOUT creating any
+            output file.  The following provided Pod-Config file could not be found:
+
+                                    {{ SourceConfigPath }}/{{ SourceConfigFile }}
+
+            Please verify the file name provided is correct, and that it is located in the path provided.
+
+          *****************************************************************************************************
+      when:
+        - ConfigFileCheck.stat.exists != true
+
+
+    - name: Exit Ansible playbook if Pod-Config file does not exist
+      ansible.builtin.meta: end_play
+      when:
+        - ConfigFileCheck.stat.exists != true
+
+
+    - name: Include Pod-Config variables into playbook
+      ansible.builtin.include_vars:
+        file: "{{ SourceConfigPath }}/{{ SourceConfigFile }}"
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                           Pod.Number: {{ Pod.Number }}
+
+                       Pod-Config File Being Prepared: {{ SourceConfigPath }}/{{ SourceConfigFile }}
+                               Configuration Template: {{ Target.TemplateFolder }}/{{ PodTemplate }}
+                       Target Temp Configuration File: {{ PodTempConfigFile }}
+                            Target Configuration File: {{ PodConfigFile }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+
+    - name: Notify user that this will take some time
+      ansible.builtin.pause:
+        seconds: 2
+        prompt: |
+          ====================================================================================================
+          =============================================  NOTICE  =============================================
+          ====================================================================================================
+
+          Generating static configuration file for Pod {{ Pod.Number }}.   Please be patient, as this can take
+          some time.  On average, it takes between 1.25 to 2 hours to complete, but this time may vary depending
+          on the size of your lab, and the speed of your Ansible Control Station (a.k.a. Ansible Controller).
+
+              The following source file is being prepared: {{ SourceConfigPath }}/{{ SourceConfigFile }}
+             Once prepared, it will be saved to this file: {{ lookup('env','HOME') }}/{{ PodConfigFile }}
+
+          Once prepared, you can deploy the Pod using the following command:
+              sudo ansible-playbook -e "@{{ lookup('env','HOME') }}/{{ PodConfigFile }}" deploy.yml
+
+          ====================================================================================================
+
+
+    - name: Delete existing temp configuration file if it exists
+      ansible.builtin.file:
+        path: "{{ lookup('env','HOME') }}/{{ PodTempConfigFile }}"
+        state: absent
+
+    - name: Create variable with current date and time
+      ansible.builtin.set_fact: 
+        time: "{{lookup('pipe','date \"+%d-%B-%Y %H:%M\"')}}"
+ 
+    - name: Create Temp Pod Configuration File (Used For Pod Deployment)
+      ansible.builtin.template: 
+        src: "{{ Target.TemplateFolder }}/{{ PodTemplate }}"
+        dest: "{{ lookup('env','HOME') }}/{{ PodTempConfigFile }}"
+        mode: "666"
+        force: yes
+      when: 
+        - Pod.Number is defined
+        - Pod.Number >= 10
+        - Pod.Number <= 240
+
+    - name: Verify Temp Pod Configuration File Exists
+      ansible.builtin.stat: path="{{ lookup('env','HOME') }}/{{ PodTempConfigFile }}"
+      register: result
+
+    - name: Delete Pod Configuration file if Temp Pod Config file exists
+      ansible.builtin.file:
+        path: "{{ lookup('env','HOME') }}/{{ PodConfigFile }}"
+        state: absent
+      when: result.stat.exists
+
+    - name: Move/Rename Temp Pod Config to Pod Config
+      ansible.builtin.command: mv {{ lookup('env','HOME') }}/{{ PodTempConfigFile }} {{ lookup('env','HOME') }}/{{ PodConfigFile }}
+      when: result.stat.exists
+
+    - name: Display command to deploy SDDC.Lab Pod
+      ansible.builtin.pause:
+        seconds: 2
+        prompt: |
+          ====================================================================================================
+          =============================================  NOTICE  =============================================
+          ====================================================================================================
+
+           You can deploy the Pod using the following command:
+              sudo ansible-playbook -e "@{{ lookup('env','HOME') }}/{{ PodConfigFile }}" deploy.yml
+
+          ====================================================================================================

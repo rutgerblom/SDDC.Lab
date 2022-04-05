@@ -1,0 +1,40 @@
+{#
+ #     Author: Luis Chanu
+ #   Filename: utils/util_CreateSwitchConfig_Template.j2
+ #    Used By: This file is used by the playbook util_CreateSwitchConfig.yml
+ #    Purpose: This Jinja2 template file is used to create the commands needed to create VLANs on the physical switch
+ #
+ #}
+{# Add any infrastructure VLANs that might be needed to the InfrastructureVLANList.  Normally, none are required. #}
+{% set InfrastructureVLANList = "" %}
+!!
+!! Pod.VLANOffset = {{ Pod.VLANOffset }}
+!!
+!!
+!! Create Pod VLANs For the Layer-2 Switch Which SDDCLab_vDS Connects To
+!! ======================================================================
+!!
+{% for PodNumber in range(1,25) %}
+{% for Network in range(0,10) %}
+vlan {{ Pod.VLANOffset + (PodNumber * 10) + Network }}
+  name SDDC.Lab__Pod-{{ '%03d'|format((PodNumber*10)|int) }}__VLAN-{{ '%04d'|format(Pod.VLANOffset + (PodNumber * 10) + Network) }}
+{% endfor %}{# Network #}
+{% endfor %}{# Pod #}
+
+
+
+
+!!
+!! Sample Interface Configuration (May vary by switch make and model)
+!! ==================================================================
+!!
+interface Ethernet1/1
+  description ** 802.1Q Trunk To SDDC.Lab Server **
+  switchport mode trunk
+{% if InfrastructureVLANList is defined and InfrastructureVLANList != "" %}
+  switchport trunk allowed vlan {{ InfrastructureVLANList }},{{ Pod.VLANOffset + 10 }}-{{ Pod.VLANOffset + 249 }}
+{% else %}
+  switchport trunk allowed vlan {{ Pod.VLANOffset + 10 }}-{{ Pod.VLANOffset + 249 }}
+{% endif %}
+  spanning-tree port type edge trunk
+  no shutdown

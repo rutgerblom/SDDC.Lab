@@ -1,0 +1,89 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/createPodDoc.yml
+##
+---
+- hosts: localhost
+  name: createPodDoc.yml
+  vars:
+    - LOCAL_PodDocHTML: "{{ SiteCode }}-Doc.html"
+    - LOCAL_PodDocTemplate: "Pod_Doc.j2"
+    - LOCAL_PodDocDestination: "/home/{{ lookup('env','SUDO_USER') }}"
+  tasks:
+    - name: createPodDoc_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    sudo ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                           Pod.Number: {{ Pod.Number }}
+
+                               Pod Documentation Path: {{ LOCAL_PodDocDestination }}/{{ LOCAL_PodDocHTML }}
+                               Configuration Template: {{ Target.TemplateFolder }}/{{ LOCAL_PodDocTemplate }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Inform user of Pod documentation HTML file location
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =====================================================================================================
+          =============================================  NOTICE  ==============================================
+          =====================================================================================================
+
+          Generating the Pod documentation for Pod {{ Pod.Number }}.
+
+               Once generated, it will be saved to {{ LOCAL_PodDocDestination }}/{{ LOCAL_PodDocHTML }}
+
+          =====================================================================================================
+
+    - name: Create variable with current date and time
+      ansible.builtin.set_fact: 
+        time: "{{lookup('pipe','date \"+%d-%B-%Y %H:%M\"')}}"
+
+    - name: Write Pod Documentation in HTML format
+      ansible.builtin.template: 
+        src: "{{ Target.TemplateFolder }}/{{ LOCAL_PodDocTemplate }}"
+        dest: "{{ LOCAL_PodDocDestination }}/{{ LOCAL_PodDocHTML }}"
+        mode: "666"
+      ignore_errors: true

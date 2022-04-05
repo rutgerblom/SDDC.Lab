@@ -1,0 +1,179 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/configureNestedEsxi.yml
+##
+---
+- hosts: localhost
+  name: configureNestedEsxi.yml
+  tasks:
+    - name: configureNestedEsxi_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    sudo ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                  Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN | lower }}
+                                  Nested_vCenter.User: {{ Nested_vCenter.User }}
+                              Nested_vCenter.Password: {{ Nested_vCenter.Password }}
+                            Nested_vCenter.DataCenter: {{ Nested_vCenter.DataCenter }}
+
+                               Common.NFS.Server.IPv4: {{ Common.NFS.Server.IPv4 }}
+                                      Common.NFS.Path: {{ Common.NFS.Path  }} 
+                                 Common.NFS.Datastore: {{ Common.NFS.Datastore }}
+                                 Common.NFS.Datastore: {{ Common.NFS.Type }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Check if the nested ESXi hosts are ready
+      community.vmware.vmware_guest_info:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datacenter: "{{ Target.DataCenter }}"
+        name: "{{ item.value.VMName }}"
+        schema: "vsphere"
+      register: vm_facts
+      until: vm_facts is search(item.value.vmk.vmk0.Address.IPv4.Address)
+      retries: 15
+      delay: 60
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when: 
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+
+    - name: Add nested ESXi host to vCenter
+      community.vmware.vmware_host:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        datacenter_name: "{{ Nested_vCenter.DataCenter }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        cluster_name: "{{ item.value.Cluster }}"
+        esxi_hostname: "{{ item.value.FQDN }}"
+        esxi_username: "{{ item.value.User }}"
+        esxi_password: "{{ item.value.Password }}"
+        state: present
+      ignore_errors: true
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when: 
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+
+    - name: Mount NFS datastore on nested ESXi host
+      community.vmware.vmware_host_datastore:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        esxi_hostname: "{{ item.value.FQDN }}"
+        datastore_name: "{{ Common.NFS.Datastore }}"
+        datastore_type: "{{ Common.NFS.Type }}"
+        nfs_server: "{{ Common.NFS.Server.IPv4 }}"
+        nfs_path: "{{ Common.NFS.Path }}"
+        nfs_ro: no
+        state: present
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      async: 1800
+      poll: 0
+      when: 
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+        - Deploy.Setting.UseNFS == true
+
+    - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the datastore
+      community.vmware.vsphere_file:
+        host: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datacenter: "{{ Target.DataCenter }}"
+        datastore: "{{ Target.Datastore }}"
+        path: "{{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
+        state: absent
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when: 
+        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+        - DEBUG.KeepInstallerFiles != true
+
+##
+## Nested ESXi host deployment complete, so below we apply configuration settings to the ESXi hosts
+##
+
+    - name: Configure deployed ESXi hosts firewall to permit syslog traffic
+      community.vmware.vmware_host_firewall_manager:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        cluster_name: "{{ item.key }}"
+        rules: "{{ Nested_ESXi.FirewallRules }}"
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when:
+        - Nested_Cluster[item.key]['DeployHosts'] == true
+
+    - name: Set NTP servers for all ESXi Host in given Cluster
+      community.vmware.vmware_host_ntp:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        cluster_name: "{{ item.key }}"
+        state: present
+        ntp_servers:
+            - "{{ Common.NTP.Server1.IPv4 }}"
+            - "{{ Common.NTP.Server2.IPv4 }}"
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when:
+        - Nested_Cluster[item.key]['DeployHosts'] == true
+
+    - name: Start ntpd service setting for all ESXi Host in given Cluster
+      community.vmware.vmware_host_service_manager:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        cluster_name: "{{ item.key }}"
+        service_name: ntpd
+        service_policy: on
+        state: present
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when:
+        - Nested_Cluster[item.key]['DeployHosts'] == true
+
+        

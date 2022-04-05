@@ -1,0 +1,186 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: deploy.yml
+##
+---
+# Validate Configuration File and Environment
+- ansible.builtin.import_playbook: playbooks/validateConfiguration.yml
+
+# Create Pod documentation
+- ansible.builtin.import_playbook: playbooks/createPodDoc.yml
+
+# Prepare the physical environment
+- ansible.builtin.import_playbook: playbooks/preparePhysical.yml
+
+# Deploy DNS server
+- ansible.builtin.import_playbook: playbooks/deployDNSServer.yml
+  when: 
+    - Deploy.Product.DNSServer.Deploy == true
+
+# Populate DNS with forward and reverse DNS records
+- ansible.builtin.import_playbook: playbooks/updateDNS.yml
+  when:
+    - Deploy.Setting.UseDNS == true
+
+# Deploy router
+- ansible.builtin.import_playbook: playbooks/deployRouter.yml
+  when: 
+    - Deploy.Product.Router.Deploy == true
+
+# Configure router
+- ansible.builtin.import_playbook: playbooks/configureRouter.yml
+  when: 
+    - Deploy.Product.Router.Deploy == true
+
+# Deploy nested vSphere
+- ansible.builtin.import_playbook: playbooks/prepareISOInstaller.yml
+- ansible.builtin.import_playbook: playbooks/deployNestedEsxi.yml
+
+- name: Verify Replication Partner vCenter Server is ready
+  ansible.builtin.import_playbook: playbooks/checkVcReplicationPartner.yml
+  when:
+    - Nested_vCenter.SSO.ReplicationPartner != ""
+
+- ansible.builtin.import_playbook: playbooks/deployVc.yml
+- ansible.builtin.import_playbook: playbooks/configureNestedEsxi.yml
+- ansible.builtin.import_playbook: playbooks/createVds.yml
+- ansible.builtin.import_playbook: playbooks/configureVsan.yml
+- ansible.builtin.import_playbook: playbooks/configureHA.yml
+- ansible.builtin.import_playbook: playbooks/createContentLibrary.yml
+- ansible.builtin.import_playbook: playbooks/license_vSphere.yml
+
+
+# Deploy NSX-T
+- ansible.builtin.import_playbook: playbooks/deployNsxGlobalManager.yml
+  when: 
+    - Deploy.Product.NSXT.Federation.Enable == true
+    - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+
+- ansible.builtin.import_playbook: playbooks/deployNsxLocalManager.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+- ansible.builtin.import_playbook: playbooks/license_NSXT-LM.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+- ansible.builtin.import_playbook: playbooks/configureNsxFabricMTU.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+- ansible.builtin.import_playbook: playbooks/registerNsxComputeManager.yml
+
+- ansible.builtin.import_playbook: playbooks/createNsxUplinkProfiles.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+- ansible.builtin.import_playbook: playbooks/createNsxTz.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+- ansible.builtin.import_playbook: playbooks/createNsxIpPool.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+- ansible.builtin.import_playbook: playbooks/createNsxTnp.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+- ansible.builtin.import_playbook: playbooks/attachNsxTnp.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+- ansible.builtin.import_playbook: playbooks/createNsxEdgeTn.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+    - Deploy.Product.NSXT.Edge.Deploy == true
+
+- ansible.builtin.import_playbook: playbooks/createNsxEdgeCluster.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+    - Deploy.Product.NSXT.Edge.Deploy == true
+
+
+# Provision NSX-T logical networking
+- ansible.builtin.import_playbook: playbooks/enableNsxIPv6.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+    - Deploy.Setting.IPv6 == true
+
+- ansible.builtin.import_playbook: playbooks/createNsxVLANSegments.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+- ansible.builtin.import_playbook: playbooks/createNsxDhcpProfiles.yml
+  when:
+    - Deploy.Product.NSXT.Federation.Enable == false
+
+- ansible.builtin.import_playbook: playbooks/createNsxT0Gateway.yml
+  when: 
+    - Deploy.Product.NSXT.Federation.Enable == false or (Deploy.Product.NSXT.Federation.Enable == true and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+    - Deploy.Product.NSXT.Edge.Deploy == true
+
+- ansible.builtin.import_playbook: playbooks/createNsxT1Gateway.yml
+  when: 
+    - Deploy.Product.NSXT.Federation.Enable == false or (Deploy.Product.NSXT.Federation.Enable == true and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+    - Deploy.Product.NSXT.Edge.Deploy == true
+
+- ansible.builtin.import_playbook: playbooks/createNsxOverlaySegments.yml
+  when: 
+    - Deploy.Product.NSXT.Federation.Enable == false or (Deploy.Product.NSXT.Federation.Enable == true and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+    - Deploy.Product.NSXT.Edge.Deploy == true
+
+- ansible.builtin.import_playbook: playbooks/configureNsxBackup.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+- ansible.builtin.import_playbook: playbooks/federateNsxLocalManager.yml
+  when: 
+    - Deploy.Product.NSXT.Federation.Enable == true
+
+- ansible.builtin.import_playbook: playbooks/federateNsxEdgeNodes.yml
+  when: 
+    - Deploy.Product.NSXT.Federation.Enable == true
+
+- ansible.builtin.import_playbook: playbooks/federateNsxT0RouteReDist.yml
+  when: 
+    - Deploy.Product.NSXT.Federation.Enable == true
+
+- ansible.builtin.import_playbook: playbooks/federateNsxT0BGPNeighbors.yml
+  when: 
+    - Deploy.Product.NSXT.Federation.Enable == true
+
+
+# Deploy vRealize products
+- ansible.builtin.import_playbook: playbooks/deployVrli.yml
+  when: 
+    - Deploy.Product.vRLI.Deploy == true
+
+- ansible.builtin.import_playbook: playbooks/license_vRLI.yml
+  when: 
+    - Deploy.Product.vRLI.Deploy == true
+
+
+# Deploy Tanzu
+- ansible.builtin.import_playbook: playbooks/enableWorkloadManagement.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+    - Deploy.Product.NSXT.Edge.Deploy == true
+
+- ansible.builtin.import_playbook: playbooks/license_Tanzu.yml
+  when: 
+    - Deploy.Product.NSXT.LocalManager.Deploy == true
+    - Deploy.Product.NSXT.Edge.Deploy == true
+
+
+# Deploy Workload VM Templates from Content Library
+- ansible.builtin.import_playbook: playbooks/deployWorkloadVms.yml
+  when: 
+    - Deploy.WorkloadVMs.Deploy == true
+    - Nested_vCenter.ContentLibrary.Enable == true
+    - Deploy.Product.NSXT.Federation.Enable == false or (Deploy.Product.NSXT.Federation.Enable == true and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
+    - Deploy.Product.NSXT.LocalManager.Deploy == true

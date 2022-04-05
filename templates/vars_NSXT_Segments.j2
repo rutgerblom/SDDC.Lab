@@ -1,0 +1,90 @@
+{#
+ #      Authors: Luis Chanu & Rutger Blom
+ #     Filename: templates/vars_NSXT_Segments.j2
+ #      Used By: This file is used by the playbook createNsxVLANSegments.yml and createNsxOverlaySegments.yml
+ #      Purpose: This Jinja2 template file is used to create the data structure that is provided to the nsxt_policy_segments module.
+ #
+ #  Description: This script creates a data structure containing ALL Segments in the Pod Config file.  It's up 
+ #               to the playbook using this template to filter only the type of Segments it wants to process.
+ #
+ #  DHCP Config: The various DHCP values used are all dynamically derived from an Overlay Segment's Gateway address for both IPv4 and IPv6.
+ #                 Constraint/Limitation: DHCP Server is not supported by Federation.  If Federation is enabled, DHCP support is not included.
+ #                   DHCP Server Address: One higher than the Gateway's IP Address
+ #             DHCP Usable Address Range: Usable addresses in the highest subnet (see below) for both IPv4 and IPv6.
+ #                            IPv4 Range: Highest /28 Subnet
+ #                            IPv6 Range: Highest /120 Subnet
+ #}
+{% for Segment in Nested_NSXT.Networking.Segments %}
+  - display_name: "{{ Segment.Name }}"
+    description:  "{{ Segment.Description }}"
+    admin_state:  "{{ Segment.AdminState }}"
+    replication_mode: "{{ Segment.ReplicationMode }}"
+    transport_zone_display_name: "{{ Segment.TransportZone }}"
+    domain_name: "{{ Common.DNS.Domain }}"
+    uplink_teaming_policy_name: "{{ Segment.UplinkTeamingPolicy }}"
+{# Only add DHCP Profile into structure if Federation is NOT enabled #}
+{% if DHCPProfilePath[Nested_NSXT.Networking.DHCPProfiles[0].Name] is defined and Deploy.Product.NSXT.Federation.Enable == false %}    dhcp_config_path: "{{ DHCPProfilePath[Nested_NSXT.Networking.DHCPProfiles[0].Name] }}"{% endif %}
+
+{# DO NOT REMOVE THE EMPTY LINE ABOVE THIS COMMENT #}
+{% if Segment.ConnectedTo is defined %}
+{% if Segment.ConnectedTo.Tier == 0 %}
+    tier0_display_name: "{{ Segment.ConnectedTo.GatewayName }}"
+{% elif Segment.ConnectedTo.Tier == 1 %}
+    tier1_display_name: "{{ Segment.ConnectedTo.GatewayName }}"
+{% endif %}{# Segment.ConnectedTo.Tier == 0 #}
+{% endif %}{# Segment.ConnectedTo is defined #}
+    tags:
+{###### Make sure Tags is defined #####}
+{% if (Segment.Tags is defined) %}
+{###### If Tags is defined, add them to the list #}
+{% for SingleTag in Segment.Tags %}
+      - tag: "{{ SingleTag.Tag | default(None) }}"
+        scope: "{{ SingleTag.Scope | default(None) }}"
+{% endfor %}{# Tag #}
+{###### If not defined, add one set of "None" entries to ensure 'tags' header has a list member #####}
+{% else %}
+      - tag: ""
+        scope: ""
+{% endif %}{# Segment.Tags is defined #}
+{###### Only include 'vlan_ids' for VLAN-backed segments #####}
+{% if Nested_NSXT.System.Fabric.TransportZone[Segment.TransportZone].Type == "VLAN" %}
+{###### Verify user included VLANS variable with at least one entry  #####}
+{% if (Segment.VLANS is defined) and (Segment.VLANS|length) > 0 %}
+    vlan_ids:
+{% for VLAN in Segment.VLANS %}
+      - "{{ VLAN }}"
+{% endfor %}{# VLAN #}
+{% endif %}{# Segment.VLANS is defined #}
+{% endif %}{# Type==VLAN #}
+{###### Only include Subnets for Overlay-backed segments #####}
+{% if Nested_NSXT.System.Fabric.TransportZone[Segment.TransportZone].Type == "OVERLAY" %}
+{% if (Segment.Subnets is defined) and (Segment.Subnets|length) > 0 %}
+    subnets:
+{% for Subnet in Segment.Subnets %}
+{% if ((Deploy.Setting.IPv4 and Subnet.GatewayCIDR | ipv4) or (Deploy.Setting.IPv6 and Subnet.GatewayCIDR | ipv6)) %}
+      - gateway_address: "{{ Subnet.GatewayCIDR }}"
+{% if Deploy.Product.NSXT.Federation.Enable == false %}
+        dhcp_ranges:
+          - {% if (Subnet.GatewayCIDR | ipv4) %}{{ Subnet.GatewayCIDR | ansible.netcommon.ipaddr('last_usable') | ansible.netcommon.ipsubnet(28) }}{% else %}{{ Subnet.GatewayCIDR | ansible.netcommon.ipaddr('last_usable') | ansible.netcommon.ipsubnet(120) }}{% endif %}
+
+{# DO NOT REMOVE THE EMPTY LINE ABOVE THIS COMMENT #}
+        dhcp_config:
+          resource_type: {% if (Subnet.GatewayCIDR | ipv4) %}"SegmentDhcpV4Config"{% else %}"SegmentDhcpV6Config"{% endif %}
+
+{# DO NOT REMOVE THE EMPTY LINE ABOVE THIS COMMENT #}
+          server_address: "{{ Subnet.GatewayCIDR | ansible.netcommon.ipaddr('2') }}"
+          lease_time: {{ Common.DHCP.LeaseTime }}
+          dns_servers:
+            - {% if (Subnet.GatewayCIDR | ipv4) %}{{ Common.DNS.Server1.IPv4 }}{% else %}{{ Common.DNS.Server1.IPv6 }}{% endif %}
+
+{# DO NOT REMOVE THE EMPTY LINE ABOVE THIS COMMENT #}
+{% if Subnet.GatewayCIDR | ipv6 %}
+          domain_names:
+            - {{ Common.DNS.Domain }}
+{% endif %}{# Subnet.GatewayCIDR | ipv6 #}
+{% endif %}{# Deploy.Product.NSXT.Federation.Enable == false #}
+{% endif %}{# Deploy.Setting.IPv4 or Deploy.Setting.IPv6 #}
+{% endfor %}{# Subnet #}
+{% endif %}{# Segment.Subnets is defined #}
+{% endif %}{# OVERLAY #}
+{% endfor %}{# Segment #}

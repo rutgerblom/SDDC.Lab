@@ -1,0 +1,105 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/createNsxUplinkProfiles.yml
+##
+---
+- hosts: localhost
+  name: createNsxUplinkProfiles.yml
+  vars:
+    LOCAL_UplinkProfiles_Template: "{{ Target.TemplateFolder }}/vars_NSXT_UplinkProfiles.j2"
+  tasks:
+    - name: createNsxUplinkProfiles_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                          Ansible Playbook: {{ ansible_play_name }}
+
+                                         Target.Deployment: {{ Target.Deployment }}
+
+               Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
+
+          Nested_NSXT.System.Fabric.Profile.UplinkProfiles: {{ Nested_NSXT.System.Fabric.Profile.UplinkProfiles }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name: Get list of Uplink Profiles
+      ansible.builtin.set_fact:
+        UplinkProfilesToCreate: "{{ lookup('template', LOCAL_UplinkProfiles_Template) | from_yaml }}"
+      when: Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display UplinkProfilesToCreate Variable ===================================
+
+              UplinkProfilesToCreate: {{ UplinkProfilesToCreate | to_nice_yaml(indent=2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - UplinkProfilesToCreate != ""
+
+    - name: Create Uplink Profiles
+      vmware.ansible_for_nsxt.nsxt_uplink_profiles:
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        resource_type: UplinkHostSwitchProfile
+        display_name: "{{ item.display_name }}"
+        description: "{{ item.description }}"                              # Description
+        transport_vlan: "{{ item.transport_vlan }}"                        # Overlay Transport VLAN
+        mtu: "{{ item.mtu | default(omit) }}"                              # MTU, but omit if it does not exist - Needed to support VDS v7.0
+        teaming: "{{ item.teaming }}"                                      # Default NIC Teaming
+        named_teamings: "{{ item.named_teamings | default(omit) }}"        # Named Teaming Policy, but omit if it does not exist
+        state: "present"
+      with_list: "{{ UplinkProfilesToCreate }}"
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - UplinkProfilesToCreate != ""

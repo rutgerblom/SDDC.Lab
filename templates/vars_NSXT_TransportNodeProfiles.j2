@@ -1,0 +1,32 @@
+{#
+ #    Authors: Luis Chanu & Rutger Blom
+ #   Filename: templates/vars_NSXT_TransportNodeProfiles.j2
+ #    Used By: This file is used by the playbook createNsxTnp.yml
+ #    Purpose: This Jinja2 template file is used to create the data structure that is provided to the nsxt_transport_node_profiles module.
+ #
+ #}
+{% for TransportNodeProfile in Nested_NSXT.System.Fabric.Profile.TransportNodeProfiles %}
+  - display_name: "{{ TransportNodeProfile.Name }}"
+    description:  "{{ TransportNodeProfile.Description }}"
+    host_switches:
+{% for HostSwitch in TransportNodeProfile.HostSwitches %}
+    - host_switch_profiles:
+      - name: "{{ HostSwitch.UplinkProfile.Name }}"
+        type: "UplinkHostSwitchProfile"
+      host_switch_name: "{{ HostSwitch.Name }}"
+      host_switch_mode: "{{ HostSwitch.Mode }}"
+      host_switch_type: "{{ HostSwitch.Type }}"
+      uplinks:
+{% for Uplink in HostSwitch.Uplinks %}
+      - uplink_name: "{{ Uplink.NSXUplinkName }}"
+        vds_uplink_name: "{{ Uplink.VDSUplinkName }}"
+{% endfor %}{# Uplink #}
+      ip_assignment_spec:
+        resource_type: "{{ HostSwitch.IPPool.Type }}"
+        ip_pool_name: "{{ HostSwitch.IPPool.Name }}"
+      transport_zone_endpoints:
+{% for TransportZone in HostSwitch.TransportZones %}
+      - transport_zone_name: "{{ TransportZone.Name }}"
+{% endfor %}{# TransportZone #}
+{% endfor %}{# HostSwitch #}
+{% endfor %}{# TransportNodeProfile #}

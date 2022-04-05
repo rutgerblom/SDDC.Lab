@@ -1,0 +1,51 @@
+# Accept the VMware End User License Agreement
+vmaccepteula
+
+# Set the root password
+rootpw {{ Common.Password.Nested }}
+
+# Install ESXi to the local disk
+install --firstdisk --overwritevmfs
+
+# Host Network Settings
+network --bootproto=static --addvmportgroup=0 --ip={{ item.value.vmk.vmk0.Address.IPv4.Address }} --netmask={{ (item.value.vmk.vmk0.Address.IPv4.Address + '/' + item.value.vmk.vmk0.Address.IPv4.Prefix) | ipaddr('netmask') }} --gateway={{ item.value.vmk.vmk0.Address.IPv4.Gateway }} --vlanid={{ item.value.vmk.vmk0.VLAN }} --nameserver={{ Common.DNS.Server1.IPv4 }} --hostname={{ item.value.FQDN }}
+
+# Reboot ESXi host
+reboot
+
+# Open busybox and launch commands
+%firstboot --interpreter=busybox
+{% if item.value.EnableSSH %}
+# Enable & start remote ESXi Shell (SSH)
+vim-cmd hostsvc/enable_ssh
+vim-cmd hostsvc/start_ssh
+
+# Enable & start ESXi Shell (TSM)
+vim-cmd hostsvc/enable_esx_shell
+vim-cmd hostsvc/start_esx_shell
+
+# Supress ESXi Shell warning
+esxcli system settings advanced set -o /UserVars/SuppressShellWarning -i 1
+{% endif %}{# item.value.EnableSSH #}
+
+# Mark vSAN cache disk as Flash disk
+# esxcli storage nmp satp rule add -s VMW_SATP_LOCAL -d "$(esxcli storage core device capacity list | grep `expr {{ Nested_ESXi.HardwareSettings[item.value.Cluster].vSAN.CacheSize }} \* 1024`\ MiB | sed 's/.*\(mpx.*L[0-9]\).*/\1/')" -o enable_ssd
+
+# Reclaim vSAN Flash disk
+# esxcli storage core claiming reclaim -d "$(esxcli storage core device capacity list | grep `expr {{ Nested_ESXi.HardwareSettings[item.value.Cluster].vSAN.CacheSize }} \* 1024`\ MiB | sed 's/.*\(mpx.*L[0-9]\).*/\1/')"
+
+# Mark vSAN capacity disk as Hard Disk Drive (i.e. NOT Flash) in case storage on physical host is Flash/SSD.  Required to ensure auto-claiming of drives for vSAN is handled properly.
+# esxcli storage nmp satp rule add -s VMW_SATP_LOCAL -d "$(esxcli storage core device capacity list | grep `expr {{ Nested_ESXi.HardwareSettings[item.value.Cluster].vSAN.CapacitySize }} \* 1024`\ MiB | sed 's/.*\(mpx.*L[0-9]\).*/\1/')" -o disable_ssd
+
+# Disable CEIP
+esxcli system settings advanced set -o /UserVars/HostClientCEIPOptIn -i 2
+
+# Configure Syslog servers
+esxcli system syslog config set --loghost={{ Common.Syslog.Protocol }}://{{ Common.Syslog.IPv4 }}:{{ Common.Syslog.Port }}
+
+# Configure DNS servers
+esxcli network ip dns server add --server={{ Common.DNS.Server1.IPv4 }}
+esxcli network ip dns server add --server={{ Common.DNS.Server2.IPv4 }}
+
+# Reboot ESXi host
+reboot

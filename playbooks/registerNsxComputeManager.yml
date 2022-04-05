@@ -1,0 +1,113 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/registerNsxComputeManager.yml
+##
+---
+- hosts: localhost
+  name: registerNsxComputeManager.yml
+  tasks:
+    - name: registerNsxComputeManager_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                       Ansible Playbook: {{ ansible_play_name }}
+
+                                      Target.Deployment: {{ Target.Deployment }}
+
+                                            Target.FQDN: {{ Target.FQDN }}
+                                            Target.User: {{ Target.User }}
+                                        Target.Password: {{ Target.Password }}
+                                         Target.Cluster: {{ Target.Cluster }}
+                                      Target.DataCenter: {{ Target.DataCenter }}
+                                       Target.Datastore: {{ Target.Datastore }}
+                                        Target.VMFolder: {{ Target.VMFolder }}
+
+            Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
+              Nested_NSXT.Component.LocalManager.VMName: {{ Nested_NSXT.Component.LocalManager.VMName }}
+
+                                    Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN }}
+                                  Nested_vCenter.VMName: {{ Nested_vCenter.VMName }}
+                                    Nested_vCenter.User: {{ Nested_vCenter.User }}
+                                Nested_vCenter.Password: {{ Nested_vCenter.Password }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Register NSX-T Compute Manager to Local Manager
+      vmware.ansible_for_nsxt.nsxt_fabric_compute_managers:
+          hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
+          username: "{{ Nested_NSXT.Credential.admin.Name }}"
+          password: "{{ Nested_NSXT.Credential.admin.Password }}"
+          validate_certs: "{{ Common.PKI.ValidateCerts }}"
+          display_name: "{{ item.Name }}"
+          server: "{{ item.Address }}"
+          origin_type: "{{ item.Type }}"
+          set_as_oidc_provider: "{% if Deploy.Software.vCenter.Version.startswith('6.') %}{{ omit }}{% else %}{{ item.Trust }}{% endif %}"
+          credential:
+            credential_type: "{{ item.Credential.Type }}"
+            username: "{{ item.Credential.User }}"
+            password: "{{ item.Credential.Password }}"
+          state: present
+      loop: "{{ Nested_NSXT.System.Fabric.ComputeManagers }}"
+      when: Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name: Register NSX-T Compute Manager to Global Manager
+      vmware.ansible_for_nsxt.nsxt_fabric_compute_managers:
+          hostname: "{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}"
+          username: "{{ Nested_NSXT.Credential.admin.Name }}"
+          password: "{{ Nested_NSXT.Credential.admin.Password }}"
+          validate_certs: "{{ Common.PKI.ValidateCerts }}"
+          display_name: "{{ item.Name }}"
+          server: "{{ item.Address }}"
+          origin_type: "{{ item.Type }}"
+          set_as_oidc_provider: "{% if Deploy.Software.vCenter.Version.startswith('6.') %}{{ omit }}{% else %}{{ item.Trust }}{% endif %}"
+          credential:
+            credential_type: "{{ item.Credential.Type }}"
+            username: "{{ item.Credential.User }}"
+            password: "{{ item.Credential.Password }}"
+          state: present
+      loop: "{{ Nested_NSXT.System.Fabric.ComputeManagers }}"
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode

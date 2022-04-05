@@ -1,0 +1,610 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/federateNsxEdgeNodes.yml
+##
+##      Notes: The purpose of this module is to perform the following actions:
+##             1) Configure RTEP Networking/Interfaces using "{{SiteCode}}-RTEP-Pool" for IPs
+##             2) Add Non-GM SiteCodes as Locations on the Tier-0 Gateway and make it Primary (==All_Primaries)
+##             3) Configure Tier-0 Interfaces (==IP addresses on EdgeNode interfaces)
+
+##
+##
+---
+- hosts: localhost
+  name: federateNsxEdgeNodes.yml
+  vars:
+    LOCAL_T0GatewayInterfaces_Template: "{{ Target.TemplateFolder }}/vars_NSXT_T0Gateway_Interfaces.j2"
+  tasks:
+    - name: federateNsxEdgeNodes_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                         Ansible Playbook: {{ ansible_play_name }}
+
+             Nested_NSXT.Component.GlobalManager_VIP.FQDN: {{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}
+           Nested_NSXT.Component.GlobalManager_VIP.VMName: {{ Nested_NSXT.Component.GlobalManager_VIP.VMName }}
+
+              Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
+            Nested_NSXT.Component.LocalManager_VIP.VMName: {{ Nested_NSXT.Component.LocalManager_VIP.VMName }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+
+##
+#######################################################################################################
+##              Wait until the Tier-0 Gateway has been imported into the Global Manager              ##
+#######################################################################################################
+##
+    - name: Wait until the Tier-0 Gateway has been imported into the Global Manager
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 120
+      delay: 60
+      when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+
+
+##
+#######################################################################################################
+##          Configure Remote Tunnel End-Point (RTEP) Networking/Interface on Edge Cluster            ##
+#######################################################################################################
+##
+
+##
+## Obtain Global Manager Unique ID for our Site
+##
+    - name: Obtain information about our Site
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 10
+      delay: 5
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Store the Unique ID of our Site for later use
+      ansible.builtin.set_fact:
+        site_id: "{{ result.json.unique_id }}"
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - result.status == 200
+
+
+##
+## Obtain Pool Object ID for the RTEP Pool
+##
+    - name: Obtain list of all IP Pools
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/pools/ip-pools
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 30
+      delay: 10
+      when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: DEBUG -- Display IP Pools result.json.results
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ====================== Display IP Pools 'result.json.results' Variable ==========================
+
+          Quantity: {{ result.json.results | length }}
+
+          result.json.results:
+            {{ result.json.results | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Locate and store information about the RTEP Pool
+      ansible.builtin.set_fact:
+        rtep_pool_id: "{{ result.json | community.general.json_query(query) }}"
+      vars:
+        query: results[?display_name=='{{ SiteCode }}-RTEP-Pool']|[0].id
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - result.status == 200
+
+    - name: DEBUG -- Display RTEP Pool ID
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================== Display 'rtep_pool_id' Variable ==================================
+
+          rtep_pool_id: {{ rtep_pool_id }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+
+##
+## Obtain configuration details on all NSX-T Edge Nodes
+##
+    - name: Obtain list of Edge Nodes from the Local Manager
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes?node_types=EdgeNode
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 30
+      delay: 10
+      when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: DEBUG -- Display EdgeVM result
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =============================== Display EdgeVM result Variable ==================================
+
+          Quantity: {{ result | length }}
+
+          result:
+            {{ result | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Create list of Edge Nodes with additional RTEP configuration
+      ansible.builtin.set_fact:
+        EdgeNodes: "{{ EdgeNodes | default([]) + [ item | combine(RemoteTunnel) ] }}"
+      vars:
+        RemoteTunnel: |
+          {
+            "remote_tunnel_endpoint": {
+              "host_switch_name": "NVDS-1",
+              "rtep_vlan": {{ Net.RTEP.VLAN }},
+              "ip_assignment_spec": {
+                "resource_type": "StaticIpPoolSpec",
+                "ip_pool_id": "{{ rtep_pool_id }}"
+              }
+            }
+          }
+      loop: "{{ result.json.results }}"
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: DEBUG -- Display merged Edge Nodes with TunnelEndpoint result
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =============================== Display EdgeNodes Variable ==================================
+
+          Quantity: {{ EdgeNodes | length }}
+
+          EdgeNodes:
+            {{ EdgeNodes | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Configure RTEP on Edge Nodes via Global Manager
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/remote/{{ site_id }}/api/v1/transport-nodes/{{ item.node_id }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: PUT
+        body_format: json
+        body: "{{ item }}"
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 30
+      delay: 10
+      loop: "{{ EdgeNodes }}"
+      when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+
+
+##
+#######################################################################################################
+##   Add Non-GM SiteCodes as Locations on the Tier-0 Gateway and make it Primary (==ALL_PRIMARIES)   ##
+#######################################################################################################
+##
+
+##
+## Obtain Edge Cluster Path
+##
+    - name: Obtain our Edge Clusters path (Non-GM SiteCodes only)
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/enforcement-points/default/edge-clusters
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 30
+      delay: 10
+      when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+    - name: DEBUG -- Display Edge Clusters result.json.results
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ===================== Display Edge Clusters 'result.json.results' Variable ======================
+
+          Quantity: {{ result.json.results | length }}
+
+          result.json.results:
+            {{ result.json.results | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+    - name: Locate and store the Edge Cluster Path for later use
+      ansible.builtin.set_fact:
+        edge_cluster_path: "{{ result.json | community.general.json_query(query) }}"
+      vars:
+        query: results[?display_name=='{{ Nested_NSXT.System.Fabric.Nodes.EdgeClusters[0].Name }}']|[0].path
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+        - result.status == 200
+
+    - name: DEBUG -- Display Edge Cluster Path
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================= Display 'edge_cluster_path' Variable ==============================
+
+          edge_cluster_path: {{ edge_cluster_path }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+
+##
+## Perform NSX-T REST API call to add Non-GM SiteCode as a Location to the first Tier-0 Gateway
+##
+    - name: Add Non-GM SiteCode Site as a Location to the first Tier-0 Gateway
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ SiteCode }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: PUT
+        body_format: json
+        body: |
+          {
+            "resource_type": "LocaleServices",
+            "display_name": "{{ SiteCode }}",
+            "id": "{{ SiteCode }}",
+            "edge_cluster_path": "{{ edge_cluster_path }}"
+          }
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 30
+      delay: 30
+      when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+
+
+##
+#######################################################################################################
+##       Configure Tier-0 Gateway Interfaces (==Edge Node Interfaces) For Newly Added Location       ##
+#######################################################################################################
+##
+
+##
+## Create a dictionary where key=SegmentName and value=segment_path
+##
+    - name: Obtain information on each segment of the first Tier-0 Gateway
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/segments/{{ item.SegmentName }}
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      loop: "{{ Nested_NSXT.Networking.Tier0Gateways[0].BGP.Interfaces }}"
+      retries: 30
+      delay: 10
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+    - name: Create T0Segments dictionary
+      ansible.builtin.set_fact:
+        T0Segments: "{{ T0Segments|default({}) | combine( {item.json.display_name: item.json.path} ) }}"
+      loop: "{{ result.results }}"
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+    - name: DEBUG -- Display T0Segments Variable (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================= Display 'T0Segments' Variable ====================================
+
+          T0Segments:
+            {{ T0Segments | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+
+##
+## Create dictionary where key=EdgeVM Node Name and value=EdgeVM Node Path
+##
+    - name: Obtain information on each segment of the first Tier-0 Gateway
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1{{ edge_cluster_path }}/edge-nodes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      retries: 30
+      delay: 10
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+    - name: Create T0Edges dictionary
+      ansible.builtin.set_fact:
+        T0Edges: "{{ T0Edges|default({}) | combine( {item.display_name: item.path} ) }}"
+      loop: "{{ result.json.results }}"
+      when:
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+    - name: DEBUG -- Display T0Segments Variable (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================= Display 'T0Edges' Variable ====================================
+
+          T0Edges:
+            {{ T0Edges | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+
+
+##
+## Generate body (using a Jinga2 template) for the REST API call that adds the interfaces to the Tier-0 Gateway
+##
+    - name: Add delay to address race condition issue with variables
+      ansible.builtin.pause:
+        seconds: 3
+
+    - name: Generate body of REST API call to add the Tier-0 Gateway Interfaces
+      ansible.builtin.set_fact:
+        T0GatewayInterfaces: "{{ lookup('template', LOCAL_T0GatewayInterfaces_Template) | from_yaml }}"
+      when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+    - name: DEBUG -- Display T0GatewayInterfaces Variable (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display T0GatewayInterfaces Variable ===================================
+
+          Quantity: {{ T0GatewayInterfaces | length }}
+
+          T0GatewayInterfaces (YAML):
+            {{ T0GatewayInterfaces | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+          
+          T0GatewayInterfaces (JSON):
+            {{ T0GatewayInterfaces | to_nice_json(indent=2) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+
+
+##
+## Peform the NSXT REST API call that addes the interfaces
+##
+    - name: Add interfaces to Tier-0 Gateway
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ SiteCode }}/interfaces/{{ item.display_name }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 15
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: PUT
+        body_format: json
+        body: "{{ item | to_json }}"
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200
+      loop: "{{ T0GatewayInterfaces }}"
+      retries: 30
+      delay: 10
+      when: 
+        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode

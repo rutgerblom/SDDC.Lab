@@ -1,0 +1,279 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/license_vSphere.yml
+##
+---
+- hosts: localhost
+  name: license_vSphere.yml
+  vars:
+    - LOCAL_LicenseFile: ../licenses.yml
+  tasks:
+    - name: license_vSphere_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+
+                                         License File: {{ LOCAL_LicenseFile }}
+
+                                               vCenter Server
+                                               ==============
+                                               Vendor: {{ Deploy.Software.vCenter.Vendor }}
+                                              Product: {{ Deploy.Software.vCenter.Product }}
+                                              Version: {{ Deploy.Software.vCenter.Version }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+###
+### GOAL: If License file does not exist, then skip all licensing, and leave the components in Evauation state.
+###
+
+    - name: Check for existance of license file
+      ansible.builtin.stat:
+        path: "{{ LOCAL_LicenseFile }}"
+        get_checksum: no
+      register: stat_results
+
+    - name: Assume file does not exist, so set flag to skip licensing products
+      ansible.builtin.set_fact:
+        LicenseProducts: False
+
+    - name: If License file does exist and is a regular file, then set flag to license products
+      ansible.builtin.set_fact:
+        LicenseProducts: True
+      when:
+        - stat_results.stat.exists == True
+        - stat_results.stat.isreg == True
+
+    - name: If not licensing products, notify user
+      ansible.builtin.pause:
+        seconds: 20
+        prompt: |
+          =========================================================================
+          =========================== Licensing Notice  ===========================
+          =========================================================================
+
+             The following licensing file does not appear to exist:
+                                 {{ LOCAL_LicenseFile }}
+
+             For that reason, the following products will NOT be licensed, and
+             will operate with their respective evaluation license(s):
+
+                                 vCenter Server
+                                 ESXi Hosts
+                                 vSAN
+
+          =========================================================================
+      when:
+        - LicenseProducts != True
+
+    - name: If we are licensing products, read in license information
+      ansible.builtin.include_vars:
+        file: "{{ LOCAL_LicenseFile }}"
+      no_log: true
+      when: LicenseProducts == True
+
+
+##
+## License vCenter Server
+##
+    - name: License vCenter Server
+      community.vmware.vcenter_license:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        license: "{{ item.KeyCode }}"
+        state: present
+      loop: "{{ License.VMware.vCenter.Licenses | default([]) }}"
+      ignore_errors: yes                                                             # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
+      no_log: true
+      when:
+        - Deploy.Software.vCenter.Version is match( item.Version )
+        - LicenseProducts == True
+        - item.KeyCode != "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+
+##
+## License ESXi Hosts
+##
+    - name: Assume no usable ESXi License exists in License file
+      ansible.builtin.set_fact:
+        ESXi_License_Exists: False
+
+    - name: Check to see if a usable (i.e. non-XXXXX) ESXi license exists
+      ansible.builtin.set_fact:
+        ESXi_License_Exists: True
+      loop: "{{ License.VMware.ESXi.Licenses | default([]) }}"
+      no_log: true
+      when:
+        - Deploy.Software.ESXi.Version is match( item.Version )
+        - LicenseProducts == True
+        - item.KeyCode != "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+
+    - name: Create list of all applicable ESXi licenses
+      ansible.builtin.set_fact:
+        ESXi_Licenses: "{{ (ESXi_Licenses | default([])) + [ item ] }}"
+      loop: "{{ License.VMware.ESXi.Licenses | default([]) }}"
+      no_log: true
+      when:
+        - Deploy.Software.ESXi.Version is match( item.Version )
+        - LicenseProducts == True
+        - item.KeyCode != "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+        - ESXi_License_Exists
+
+    - name: Assign an ESXi license to each deployed ESXi host
+      ansible.builtin.set_fact:
+        HostsToLicense: "{{ lookup('template', '{{ Target.TemplateFolder }}/vars_License_ESXi.j2') | from_yaml }}"
+      no_log: true
+      when:
+        - LicenseProducts == True
+        - ESXi_License_Exists
+
+    - name: DEBUG -- Display ESXi Hosts and assigned Licenses (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================== Display HostsToLicense Variable ==================================
+
+              HostsToLicense: {{ HostsToLicense | to_nice_yaml(indent=2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - LicenseProducts == True
+        - ESXi_License_Exists
+
+    - name: License ESXi Hosts
+      community.vmware.vcenter_license:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        esxi_hostname: "{{ item.Host | lower }}"
+        license: "{{ item.License }}"
+        state: present
+      loop: "{{ HostsToLicense }}"
+      ignore_errors: yes                                                             # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
+      no_log: true
+      when:
+        - LicenseProducts == True
+        - ESXi_License_Exists
+
+
+##
+## License vSAN
+##
+    - name: Assume no usable vSAN License exists in License file
+      ansible.builtin.set_fact:
+        vSAN_License_Exists: False
+
+    # Use ESXi version to match against vSAN License Version
+    - name: Check to see if a usable (i.e. non-XXXXX) vSAN license exists
+      ansible.builtin.set_fact:
+        vSAN_License_Exists: True
+      loop: "{{ License.VMware.vSAN.Licenses | default([]) }}"
+      no_log: true
+      when:
+        - Deploy.Software.vCenter.Version is match( item.Version )
+        - LicenseProducts == True
+        - item.KeyCode != "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+
+    # Use ESXi version to match against vSAN License Version
+    - name: Create list of all applicable vSAN licenses
+      ansible.builtin.set_fact:
+        vSAN_Licenses: "{{ (vSAN_Licenses | default([])) + [ item ] }}"
+      loop: "{{ License.VMware.vSAN.Licenses | default([]) }}"
+      no_log: true
+      when:
+        - Deploy.Software.vCenter.Version is match( item.Version )
+        - LicenseProducts == True
+        - item.KeyCode != "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+        - vSAN_License_Exists
+
+    - name: Assign a vSAN license to each deployed vSAN Cluster
+      ansible.builtin.set_fact:
+        ClustersToLicense: "{{ lookup('template', '{{ Target.TemplateFolder }}/vars_License_vSAN.j2') | from_yaml }}"
+      no_log: true
+      when:
+        - LicenseProducts == True
+        - vSAN_License_Exists
+
+    - name: DEBUG - Display vSAN Clusters and assigned Licenses (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================= Display ClustersToLicense Variable ================================
+
+              ClustersToLicense: {{ ClustersToLicense | to_nice_yaml(indent=2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - LicenseProducts == True
+        - vSAN_License_Exists
+
+    - name: License each vSAN Cluster
+      community.vmware.vcenter_license:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        cluster_name: "{{ item.Cluster }}"
+        license: "{{ item.License }}"
+        state: present
+      loop: "{{ ClustersToLicense }}"
+      ignore_errors: yes                                                             # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
+      no_log: true
+      when:
+        - LicenseProducts == True
+        - vSAN_License_Exists
+

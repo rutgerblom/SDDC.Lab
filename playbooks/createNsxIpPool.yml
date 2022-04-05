@@ -1,0 +1,108 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/createNsxIpPool.yml
+##
+---
+- hosts: localhost
+  name: createNsxIpPool.yml
+  vars:
+    LOCAL_IPPools_Template: "{{ Target.TemplateFolder }}/vars_NSXT_IPPools.j2"
+  tasks:
+    - name: createNsxIpPool_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                        Ansible Playbook: {{ ansible_play_name }}
+
+                                       Target.Deployment: {{ Target.Deployment }}
+
+                                             Target.FQDN: {{ Target.FQDN }}
+                                             Target.User: {{ Target.User }}
+                                         Target.Password: {{ Target.Password }}
+                                          Target.Cluster: {{ Target.Cluster }}
+                                       Target.DataCenter: {{ Target.DataCenter }}
+                                        Target.Datastore: {{ Target.Datastore }}
+                                         Target.VMFolder: {{ Target.VMFolder }}
+
+             Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
+
+                          Nested_NSXT.Networking.IPPools: {{ Nested_NSXT.Networking.IPPools }}
+                            Pool_Static_Subnets Template: {{ LOCAL_IPPools_Template }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+
+
+    - name: Get list of IP Pools
+      ansible.builtin.set_fact:
+        IPPoolsToCreate: "{{ lookup('template', LOCAL_IPPools_Template) | from_yaml }}"
+      when: Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display var_IPPools Variable ===================================
+
+              IPPoolsToCreate: {{ IPPoolsToCreate | to_nice_yaml(indent=2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - IPPoolsToCreate != ""
+
+    - name: Create NSX-T IP Pools using Polcy API
+      vmware.ansible_for_nsxt.nsxt_policy_ip_pool:
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        state: present
+        display_name: "{{ item.display_name }}"
+        description:  "{{ item.description }}"
+        pool_static_subnets: "{{ item.pool_static_subnets }}"
+        tags: "{{ item.tags }}"
+      with_items:
+        - "{{ IPPoolsToCreate }}"
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - IPPoolsToCreate != ""

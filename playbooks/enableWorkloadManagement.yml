@@ -1,0 +1,307 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/enableWorkloadManagement.yml
+##
+---
+- hosts: localhost
+  name: enableWorkloadManagement.yml
+  vars:
+      LOCAL_TanzuPayload: "{{ Target.TemplateFolder }}/Tanzu_Payload.j2"
+  tasks:
+    - name: enableWorkloadManagement_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+
+                                  Nested vCenter FQDN: {{ Nested_vCenter.FQDN | lower }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+##
+## Check if any Tanzu Supervisor Clusters will deployed
+##
+    - name: Store the nested cluster data structure
+      ansible.builtin.set_fact:
+        tanzu_supervisor: "{{ Nested_Cluster }}"
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when:
+        - item.value.Tanzu.SupervisorCluster.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+
+##
+## Get vCenter session ID
+##
+    - name: Authenticate to vCenter to obtain a Session ID
+      ansible.builtin.uri:
+        url: "https://{{ Nested_vCenter.FQDN }}/rest/com/vmware/cis/session"
+        headers: "{ 'vmware-use-header-authn':'test' }"
+        method: POST
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 10
+        force_basic_auth: yes
+        url_username: "{{ Nested_vCenter.User }}"
+        url_password: "{{ Nested_vCenter.Password }}"
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: vcenter_auth_result
+      when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Store vCenter Session ID for later use
+      ansible.builtin.set_fact:
+        vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
+      when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+
+##
+## Get vSphere Cluster ID
+##
+    - name: Get the vSphere Cluster's Object ID (MoREF)
+      ansible.builtin.uri:
+        url: "https://{{ Nested_vCenter.FQDN }}/rest/vcenter/cluster?filter.names={{ item.key }}"
+        headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
+        method: GET
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 10
+        force_basic_auth: yes
+        url_username: "{{ Nested_vCenter.User }}"
+        url_password: "{{ Nested_vCenter.Password }}"
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: cluster_info
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when:
+        - tanzu_supervisor is defined
+        - item.value.DeployHosts == true
+        - item.value.Tanzu.SupervisorCluster.Enable == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Store vSphere Cluster Object ID (MoREF) and name in a list for later use
+      ansible.builtin.set_fact:
+        cluster_id: "{{ cluster_info.results | community.general.json_query(query) }}"
+      vars:
+        query: "[*].json.value[*].{MoRef: cluster, Name: name}[]"
+      when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+#    - name: DEBUG -- Print variable set in previous task
+#      ansible.builtin.debug:
+#        msg: "{{ cluster_id }}"
+#      tags:
+#        - debug
+
+
+##
+## Get and store Distributed Switch ID
+##
+    - name: Get Distributed Switch Info
+      community.vmware.vmware_dvswitch_info:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
+      register: vds_info
+      when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Store Distributed Switch ID for later use
+      ansible.builtin.set_fact:
+        vds_id: "{{ vds_info | community.general.json_query(query) }}"
+      vars:
+        query: distributed_virtual_switches[*].uuid
+      when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+
+##
+## Get and store Management Port Group ID
+##
+    - name: Get Management Port Group Info
+      community.vmware.vmware_dvs_portgroup_info:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        datacenter: "{{ Nested_vCenter.DataCenter }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+      register: vdspg_info
+      when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Store Management Port Group ID for later use
+      ansible.builtin.set_fact:
+        vdspg_id: "{{ vdspg_info | community.general.json_query(query) }}"
+      vars:
+        query: dvs_portgroup_info."{{ Nested_vCenter.Networking.vSwitch.Name }}"[?portgroup_name=='{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}'].key
+      when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+
+##
+## Get and store Storage Policy ID
+##
+    - name: Get Storage Policy Info
+      community.vmware.vmware_vm_storage_policy_info:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+      register: sp_info
+      when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Store Storage Policy ID for later use
+      ansible.builtin.set_fact:
+        sp_id: "{{ sp_info | community.general.json_query(query) }}"
+      vars:
+        query: spbm_profiles[?name=='vSAN Default Storage Policy'].id
+      when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+
+##
+## Get and store NSX-T Edge Cluster ID
+##
+    - name: Get NSX-T Edge Cluster Info
+      vmware.ansible_for_nsxt.nsxt_edge_clusters_facts:
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+      register: ec_info
+      when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Store NSX-T Edge Cluster ID for later use
+      ansible.builtin.set_fact:
+        ec_id: "{{ ec_info | community.general.json_query(query) }}"
+      vars:
+        query: results[?display_name=='{{ SiteCode }}-T0-Edge-Cluster-01'].id
+      when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+
+##
+## Get and store vSphere Content Library ID
+##
+    - name: Get vSphere Content Library Info
+      community.vmware.vmware_content_library_info:
+        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+      register: cl_info
+      when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+    - name: Store vSphere Content Library ID for later use
+      ansible.builtin.set_fact:
+        cl_id: "{{ cl_info | community.general.json_query(query) }}"
+      vars:
+        query: content_libs
+      when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true
+
+
+##
+## Post payload to vCenter REST API
+##
+    - name: POST payload to vCenter REST API
+      ansible.builtin.uri:
+        url: "https://{{ Nested_vCenter.FQDN }}/api/vcenter/namespace-management/clusters/{{ item.MoRef }}?action=enable"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
+        method: POST
+        body: "{{ lookup('template', LOCAL_TanzuPayload) | to_json }}"
+        body_format: json
+        status_code: 204
+      loop: "{{ cluster_id }}"
+      when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy == true

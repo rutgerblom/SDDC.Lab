@@ -1,0 +1,91 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/createNsxTz.yml
+##
+---
+- hosts: localhost
+  name: createNsxTz.yml
+  tasks:
+    - name: createNsxTz_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                       Ansible Playbook: {{ ansible_play_name }}
+
+                                      Target.Deployment: {{ Target.Deployment }}
+
+                                            Target.FQDN: {{ Target.FQDN }}
+                                            Target.User: {{ Target.User }}
+                                        Target.Password: {{ Target.Password }}
+                                         Target.Cluster: {{ Target.Cluster }}
+                                      Target.DataCenter: {{ Target.DataCenter }}
+                                       Target.Datastore: {{ Target.Datastore }}
+                                        Target.VMFolder: {{ Target.VMFolder }}
+
+            Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
+
+                Nested_NSXT.System.Fabric.TransportZone: {{ Nested_NSXT.System.Fabric.TransportZone }}
+
+                Nested_NSXT.System.Fabric.TransportZone: {{ Nested_NSXT.System.Fabric.TransportZone | dict2items }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Create NSX-T transport zones
+      vmware.ansible_for_nsxt.nsxt_transport_zones:
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        resource_type: "TransportZone"
+        display_name: "{{ item.key }}"
+        is_default: "{{ item.value.SetAsDefault }}"
+        description: "{{ item.value.Description }}"
+        transport_type: "{{ item.value.Type }}"
+        uplink_teaming_policy_names: "{{ item.value.TeamingPolicies }}"
+        state: "present"
+      register: result
+      loop: "{{ Nested_NSXT.System.Fabric.TransportZone | dict2items }}"
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy == true

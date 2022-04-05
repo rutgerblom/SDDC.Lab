@@ -1,0 +1,186 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/configureVsan.yml
+##
+---
+- hosts: localhost
+  name: configureVsan.yml
+  tasks:
+    - name: configureVsan_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    sudo ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+                                    Target.TempFolder: {{ Target.TempFolder }}
+
+                                  Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN | lower }}
+                                Nested_vCenter.VMName: {{ Nested_vCenter.VMName }}
+                              Nested_vCenter.Password: {{ Nested_vCenter.Password }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Create temp directory
+      ansible.builtin.file:
+        path: "{{ Target.TempFolder }}"
+        state: directory
+
+    - name: Create Ruby script for silencing vSAN warnings
+      ansible.builtin.template: 
+        src: "../templates/vsan_silence.rb.j2"
+        dest: "{{ Target.TempFolder }}/{{ item.key }}"
+        mode: "666"
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when: 
+        - item.value.vSAN == true
+        - item.value.DeployHosts == true
+
+    - name: Copy Ruby script to the nested vCenter
+      community.vmware.vmware_guest_file_operation:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ Nested_vCenter.VMName }}"
+        vm_username: "root"
+        vm_password: "{{ Nested_vCenter.Password }}"
+        copy:
+            src: "{{ Target.TempFolder }}/{{ item.key }}"
+            dest: "/tmp/{{ item.key }}"
+            overwrite: true
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when:
+        - item.value.vSAN == true
+        - item.value.DeployHosts == true
+
+    - name: Run Ruby script on the nested vCenter
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ Nested_vCenter.VMName }}"
+        vm_username: "root"
+        vm_password: "{{ Nested_vCenter.Password }}"
+        vm_shell: /usr/bin/rvc
+        vm_shell_args: '{{ Nested_vCenter.User }}:VMware1\!@{{ Nested_vCenter.FQDN | lower }} -s /tmp/{{ item.key }}'
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when:
+        - item.value.vSAN == true
+        - item.value.DeployHosts == true
+
+    - name: Delete the Ruby script from the Ansible controller
+      ansible.builtin.file: 
+        path: "{{ Target.TempFolder }}/{{ item.key }}"
+        state: absent
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when: 
+        - item.value.vSAN == true
+        - item.value.DeployHosts == true
+        - DEBUG.KeepConfigFiles == true
+
+    - name: Modify all Cache drives in the clusters to be 'Flash' type devices
+      set_drive_type:
+        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        datacenter: "{{ Nested_vCenter.DataCenter }}"
+        cluster_name: "{{ item.key }}"
+        drive_capacity: "{{ (Nested_ESXi.HardwareSettings[item.key].vSAN.CacheSize |int) * 1024 }}"
+        set_drivetype_to_flash: true
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when:
+        - item.value.vSAN == true
+        - item.value.DeployHosts == true
+
+    - name: Modify all Capacity drives in the clusters to be 'HDD' type devices
+      set_drive_type:
+        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        datacenter: "{{ Nested_vCenter.DataCenter }}"
+        cluster_name: "{{ item.key }}"
+        drive_capacity: "{{ (Nested_ESXi.HardwareSettings[item.key].vSAN.CapacitySize |int) * 1024 }}"
+        set_drivetype_to_flash: false
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when:
+        - item.value.vSAN == true
+        - item.value.DeployHosts == true
+
+    - name: Enable vSAN
+      enable_vsan:
+        vcenter: "{{ Nested_vCenter.FQDN | lower }}"
+        user: "{{ Nested_vCenter.User }}"
+        passwd: "{{ Nested_vCenter.Password }}"
+        cluster: "{{ item.key }}"
+      ignore_errors: true
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when:
+        - item.value.vSAN == true
+        - item.value.DeployHosts == true
+
+    - name: Claim disks for vSAN
+      claim_vsan_disks:
+        vcenter: "{{ Nested_vCenter.FQDN | lower }}"
+        user: "{{ Nested_vCenter.User }}"
+        passwd: "{{ Nested_vCenter.Password }}"
+        cluster: "{{ item.key }}"
+        datastorename: "{{ item.value.vsanDatastore }}"
+      ignore_errors: true
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when:
+        - item.value.vSAN == true
+        - item.value.DeployHosts == true

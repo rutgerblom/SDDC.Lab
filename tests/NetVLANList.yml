@@ -1,0 +1,24 @@
+---
+- hosts: localhost
+  name: NetVLANList.yml
+  
+  tasks:
+    - name: Create VLAN List
+      ansible.builtin.set_fact:
+        VLAN_List: "{{ (VLAN_List | default([])) + [ item.value.VLAN ] }}"
+      loop: "{{ Net | dict2items }}"
+      when:
+        - item.value.VLAN.isnumeric()
+
+    - name: Display VLAN_List
+      debug:
+        msg: "{{ VLAN_List }}"
+
+    - name: Display Minimum
+      debug:
+        msg: "{{ VLAN_List | min }}"
+
+    - name: Display Maximum
+      debug:
+        msg: "{{ VLAN_List | max }}"
+

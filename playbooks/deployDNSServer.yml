@@ -1,0 +1,458 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/deployDNSServer.yml
+##
+---
+- hosts: localhost
+  name: deployDNSServer.yml
+  vars:
+    LOCAL_Ubuntu_Template: "{{ Target.TemplateFolder }}/{{ Deploy.Software.DNSServer.Template }}"
+    ISOMountPoint: "{{ Target.ISOMount }}/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}"
+  tasks:
+    - name: deployDNSServer_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                        ISOMountPoint: {{ ISOMountPoint }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+                                    Target.TempFolder: {{ Target.TempFolder }}
+
+                                       Ubuntu Version: {{ Deploy.Software.DNSServer.Version }}
+                                          Ubuntu FQDN: {{ Nested_DNSServer.FQDN }}
+                                        Ubuntu VMName: {{ Nested_DNSServer.VM.VMName }}
+                                          Ubuntu User: {{ Nested_DNSServer.OS.Credential.User }}
+                                      Ubuntu Password: {{ Nested_DNSServer.OS.Credential.Password }}
+
+                                        Ubuntu VM CPU: {{ Nested_DNSServer.VM.HardwareSettings.CPU }}
+                           Ubuntu VM Cores per Socket: {{ Nested_DNSServer.VM.HardwareSettings.CoresPerSocket }}
+                                     Ubuntu VM Memory: {{ Nested_DNSServer.VM.HardwareSettings.Memory }}
+                                  Ubuntu VM Disk Size: {{ Nested_DNSServer.VM.HardwareSettings.DiskSize }}
+                          Ubuntu VM Network PortGroup: {{ Nested_DNSServer.VM.HardwareSettings.PortGroup }}
+
+                                  Ubuntu IPv4 Address: {{ Nested_DNSServer.OS.Network.IPv4.Address }}
+                               Ubuntu Network Netmask: {{ (Nested_DNSServer.OS.Network.IPv4.Address + '/' + Nested_DNSServer.OS.Network.IPv4.Prefix) | ipaddr('netmask') }}
+                          Ubuntu Network IPv4 Gateway: {{ Nested_DNSServer.OS.Network.IPv4.Gateway }}
+
+                                    Ubuntu Media Path: {{ Deploy.Software.DNSServer.Directory }}
+                                    Ubuntu Media File: {{ Deploy.Software.DNSServer.File }}
+
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Check if the Ubuntu VM is already deployed
+      community.vmware.vmware_guest_info:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{% if Target.Deployment == 'vCenter' %}{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}{% else %}{{ Target.VMFolder }}{% endif %}"          # If vCenter, use Parent folder
+        name: "{{ Nested_DNSServer.VM.VMName }}"
+        schema: vsphere
+        properties: ["overallStatus"]
+      register: ubuntu_status
+      ignore_errors: true
+      no_log: true
+      when:
+        - Deploy.Product.DNSServer.Deploy == true
+
+    - name: Read the structure from template into a variable
+      ansible.builtin.set_fact:
+        var_UbuntuConfiguration: "{{ lookup('template', LOCAL_Ubuntu_Template) | from_yaml }}"
+      when:
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display var_UbuntuConfiguration Variable ===================================
+
+              var_UbuntuConfiguration: {{ var_UbuntuConfiguration | to_nice_yaml(indent=2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - var_UbuntuConfiguration != ""
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true
+
+    - name: Create temp directory
+      ansible.builtin.file:
+        path: "{{ Target.TempFolder }}"
+        state: directory
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true
+    
+    - name: Check if Ubuntu ISO file exists locally exists locally in the software repository
+      ansible.builtin.stat:
+        path: "{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}"
+      register: InstallerFileCheck 
+
+    - name: Update Ubuntu ISO file in the local software repository (overwrite if exists)
+      ansible.builtin.get_url:
+        url:  "{{ Deploy.Software.DNSServer.URL }}/{{ Deploy.Software.DNSServer.File }}"
+        dest: "{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}"
+        force: yes
+      when: 
+        - (InstallerFileCheck.stat.exists != true) or (Deploy.Software.Options.UseLocalInstaller != true)
+        - Deploy.Software.Options.KeepNewInstallers == true
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true 
+        
+#    - name: Mount Ubuntu ISO file
+#      action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}" opts=loop fstype=iso9660 state=mounted
+#      when: 
+#        - ubuntu_status is failed
+#        - Deploy.Product.DNSServer.Deploy == true  
+
+    - name: Mount Ubuntu ISO as read-only and do not automatically mount with 'mount -a'
+      ansible.posix.mount:
+        path:   "{{ ISOMountPoint }}"
+        src:    "{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}"
+        fstype: iso9660
+        opts:   ro,noauto
+        state:  mounted
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true  
+
+    - name: Copy txt.cfg from Ubuntu ISO
+      ansible.builtin.copy: 
+        src: "{{ ISOMountPoint }}/isolinux/txt.cfg"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/isolinux/"
+        mode: "666"
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true  
+
+    - name: Edit txt.cfg to enable autoinstaller 
+      ansible.builtin.replace:
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/isolinux/txt.cfg"
+        regexp: 'append   initrd=/casper/initrd quiet  ---'
+        replace: 'append   initrd=/casper/initrd quiet --- autoinstall ds=nocloud;s=/cdrom/{{ Common.DNS.Domain }}/'
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true  
+
+    - name: Create directory to store user-data and meta-data
+      ansible.builtin.file:
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/{{ Common.DNS.Domain }}"
+        state: directory
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true  
+
+    - name: Create autoinstaller files
+      ansible.builtin.template: 
+        src: "{{ item.Source }}"
+        dest: "{{ item.FinalDestination }}"
+        mode: "666"
+      loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AutoInstall }}"
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true  
+
+    - name: Create custom Ubuntu ISO
+      ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table  {{ ISOMountPoint }}/ {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
+      args:
+        chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true
+
+#    - name: Unmount Ubuntu ISO
+#      action: mount name="{{ Target.ISOMount }}" src="{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}" fstype=iso9660 state=absent
+#      when: 
+#        - ubuntu_status is failed
+#        - Deploy.Product.DNSServer.Deploy == true  
+
+    - name: Unmount Ubuntu ISO
+      ansible.posix.mount:
+        path:   "{{ ISOMountPoint }}"
+        state:  absent
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true  
+        - Deploy.Software.Options.UnmountISO
+
+    - name: Upload the custom Ubuntu ISO to the datastore
+      community.vmware.vsphere_copy: 
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datacenter: "{{ Target.DataCenter }}"
+        src: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }}" 
+        datastore: "{{ Target.Datastore }}"
+        path: "{{ Target.ISOFolder }}/{{ Deploy.Software.DNSServer.File }}"
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true  
+
+    - name: Deploy Ubuntu VM
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_DNSServer.VM.VMName }}"
+        state: poweredon
+        guest_id: ubuntu64Guest
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{% if Target.Deployment == 'vCenter' %}{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}{% else %}{{ Target.VMFolder }}{% endif %}"          # If vCenter, use Parent folder
+        disk:
+        - size_gb: "{{ Nested_DNSServer.VM.HardwareSettings.DiskSize }}"
+          type: "{{ Common.DiskProvisioning }}"
+          datastore: "{{ Target.Datastore }}"
+        hardware:
+          version: "{{ Nested_DNSServer.VM.HardwareSettings.Version }}"
+          memory_mb: "{{ Nested_DNSServer.VM.HardwareSettings.Memory }}"
+          num_cpus: "{{ Nested_DNSServer.VM.HardwareSettings.CPU }}"
+          num_cpu_cores_per_socket: "{{ Nested_DNSServer.VM.HardwareSettings.CoresPerSocket }}"
+        networks:
+          - name: "{{ Nested_DNSServer.VM.HardwareSettings.PortGroup }}"
+            device_type: vmxnet3
+        cdrom:
+          - controller_number: 0
+            unit_number: 0
+            type: iso
+            iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.DNSServer.File }}"
+            state: present
+        annotation: | 
+                    {{ Nested_DNSServer.VM.Annotation }}
+                    {{ Deploy.Software.DNSServer.Vendor }} {{ Deploy.Software.DNSServer.Product }} {{ Deploy.Software.DNSServer.Version }}
+                    Username: {{ Nested_DNSServer.OS.Credential.User }}
+                    Password: {{ Nested_DNSServer.OS.Credential.Password }}
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true
+
+    - name: Start checking if the Ubuntu VM is ready
+      community.vmware.vmware_guest_info:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datacenter: "{{ Target.DataCenter }}"
+        name: "{{ Nested_DNSServer.VM.VMName }}"
+        schema: vsphere
+      register: vm_facts
+      until: vm_facts.instance.guest.hostName is search(Nested_DNSServer.FQDN)
+      retries: 30
+      delay: 60
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true
+
+    - name: Set password for the Ubuntu user
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: VMware1!
+        vm_shell: /usr/bin/echo
+        vm_shell_args: "'{{ Nested_DNSServer.OS.Credential.User }}:{{ Nested_DNSServer.OS.Credential.Password }}' | sudo chpasswd"
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true
+
+    - name: Create configuration files
+      ansible.builtin.template: 
+        src: "{{ item.Source }}"
+        dest: "{{ item.LocalDestination }}"
+        mode: "666"
+      loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true
+        - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
+
+    - name: Copy configuration files to the Ubuntu VM
+      community.vmware.vmware_guest_file_operation:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
+        copy:
+          src: "{{ item.LocalDestination }}"
+          dest: "{{ item.StageDestination }}"
+      loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true
+        - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
+
+    - name: Move configuration files to their final location on the Ubuntu VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "mv {{ item.StageDestination }} {{ item.FinalDestination }}"
+      loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true
+        - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
+
+    - name: Create directories on Ubuntu VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "mkdir {{ item.Path }}"
+      loop: "{{ var_UbuntuConfiguration.Configuration.Directories }}"
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true
+        - var_UbuntuConfiguration.Configuration.Directories != ""
+
+    - name: Set owner on directories on Ubuntu VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "chown {{ item.Owner }} {{ item.Path }} "
+      loop: "{{ var_UbuntuConfiguration.Configuration.Directories }}"
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true
+        - var_UbuntuConfiguration.Configuration.Directories != ""
+
+    - name: Apply the network configuration on Ubuntu VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: netplan apply
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true
+
+    - name: Restart daemons on Ubuntu VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ Nested_DNSServer.VM.VMName }}"
+        vm_username: "{{ Nested_DNSServer.OS.Credential.User }}"
+        vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "systemctl restart {{ item.Daemon }}"
+      loop: "{{ var_UbuntuConfiguration.Configuration.Packages }}"
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true
+        - var_UbuntuConfiguration.Configuration.Packages != ""
+
+    - name: Delete local ISO content directory
+      ansible.builtin.file:
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}"
+        state: absent
+      when: 
+        - DEBUG.KeepInstallerFiles != true
+        - Deploy.Product.DNSServer.Deploy == true
+        - ubuntu_status is failed
+
+    - name: Delete the custom Ubuntu ISO file
+      ansible.builtin.file:
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }}" 
+        state: absent
+      when: 
+        - DEBUG.KeepInstallerFiles != true
+        - Deploy.Product.DNSServer.Deploy == true
+        - ubuntu_status is failed
+
+    - name: Delete configuration files
+      ansible.builtin.file:
+        path: "{{ item.LocalDestination }}"
+        state: absent
+      loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
+      when: 
+        - DEBUG.KeepConfigFiles != true
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true
+        - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""

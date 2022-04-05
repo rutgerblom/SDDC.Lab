@@ -1,0 +1,112 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/createNsxVLANSegments.yml
+##
+---
+- hosts: localhost
+  name: createNsxVLANSegments.yml
+  vars:
+      LOCAL_Segments_Template: "{{ Target.TemplateFolder }}/vars_NSXT_Segments.j2"
+  tasks:
+    - name: createNsxVLANSegments_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                       Ansible Playbook: {{ ansible_play_name }}
+
+                                      Target.Deployment: {{ Target.Deployment }}
+
+            Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
+
+                        Nested_NSXT.Networking.Segments: {{ Nested_NSXT.Networking.Segments }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Define DHCPProfilePath dictionary if it does not already exist
+      ansible.builtin.include_tasks:
+        file: include_var_DHCPProfilePath.yml
+
+    - name: Get list of Segments
+      ansible.builtin.set_fact:
+        SegmentsToCreate: "{{ lookup('template', LOCAL_Segments_Template) | from_yaml }}"
+      when: Deploy.Product.NSXT.LocalManager.Deploy == true
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display SegmentsToCreate Variable ===================================
+
+              SegmentsToCreate: {{ SegmentsToCreate | to_nice_yaml(indent=2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - SegmentsToCreate != ""
+
+    ## Create only VLAN-backed Segments in SegmentsToCreate  ##
+    - name: Create NSX-T Segments
+      vmware.ansible_for_nsxt.nsxt_policy_segment:
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        display_name: "{{ item.display_name }}"
+        description:  "{{ item.description }}"
+        admin_state:  "{{ item.admin_state }}"
+        domain_name: "{{ item.domain_name }}"
+        replication_mode: "{{ item.replication_mode }}"
+        transport_zone_display_name: "{{ item.transport_zone_display_name }}"
+        tags: "{{ item.tags }}"
+        vlan_ids: "{{ item.vlan_ids }}"
+        advanced_config:
+          # Only include if item.uplink_teaming_policy_name is not empty, else omit line to use 'Default' Teaming Policy
+          uplink_teaming_policy_name: "{% if item.uplink_teaming_policy_name %}{{ item.uplink_teaming_policy_name }}{% else %}{{ omit }}{% endif %}"
+        state: "present"
+      loop: "{{ SegmentsToCreate }}"
+      when: 
+      - Deploy.Product.NSXT.LocalManager.Deploy == true
+      - Nested_NSXT.System.Fabric.TransportZone[item.transport_zone_display_name].Type == "VLAN"

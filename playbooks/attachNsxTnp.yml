@@ -1,0 +1,104 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/attachNsxTnp.yml
+##
+---
+- hosts: localhost
+  name: attachNsxTnp.yml
+  tasks:
+    - name: attachNsxTnp_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+
+                                                      Ansible Playbook: {{ ansible_play_name }}
+
+                                                     Target.Deployment: {{ Target.Deployment }}
+
+                           Nested_NSXT.Component.LocalManager_VIP.FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
+
+          Nested_NSXT.System.Fabric.Profile.TransportNodeProfiles.Name: {{ Nested_NSXT.System.Fabric.Profile.TransportNodeProfiles }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+      
+    - name: Attach NSX-T transport node profile to vSphere cluster
+      vmware.ansible_for_nsxt.nsxt_transport_node_collections:
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        display_name: "TNC"
+        resource_type: "TransportNodeCollection"
+        description: "Transport Node Collections"
+        compute_manager_name: "{{ Nested_vCenter.VMName }}"
+        cluster_name: "{{ item.key }}"
+        transport_node_profile_name: "{{ item.value.NSXT_TransportNodeProfile }}"
+        state: present
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when: 
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - item.value.Prep_NSX == true
+        - item.value.DeployHosts == true
+        - item.value.NSXT_TransportNodeProfile != ""
+
+    - name: Wait until the NSX-T API reports that the Transport Zones are in "UP" state
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-zones/status
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 10
+        force_basic_auth: yes
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: (result.json.up_count | default(0)) > 0
+      retries: 20
+      delay: 60
+      when: 
+        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.Edge.Deploy != true

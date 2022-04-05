@@ -1,0 +1,972 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/updateDNS.yml
+##
+##   Comments:
+##     1) For Nested_NSXT, only add Global Manager DNS records if the deploying SiteCode equals the SiteCode where Global Manager is supposed to be deployed.
+##     2) Disabled IPv6 Dynamic DNS updates for everything but Nested_Router because v2 does not yet assign IPv6 addresses to those components.
+##
+---
+- hosts: localhost
+  name: updateDNS.yml
+  vars:
+    - LOCAL_RecordState: "present"           # LOCAL_RecordState values are either "present" (Records will be added) or "absent" (Records will be deleted)
+  tasks:
+    - name: updateDNS_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+##
+## Determine Zone to use for IPv6 Reverse Records.  If begins with 'FD', then must use /8.  If it does not begin with 'FD', then default to /56.
+##
+    - name: Determine IPv6 Zone for PTR Records (i.e. Reverse DNS) if BaseNetwork.IPv6 begins with 'fd'
+      ansible.builtin.set_fact:
+        IPv6_Reverse_Zone: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{60}(.*).$', '\\1') }}"
+      when: (Pod.BaseNetwork.IPv6[0:2] | lower) == 'fd'
+
+    - name: Determine IPv6 Zone for PTR Records (i.e. Reverse DNS) if BaseNetwork.IPv6 does NOT begin with 'fd'
+      ansible.builtin.set_fact:
+        IPv6_Reverse_Zone: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{36}(.*).$', '\\1') }}"
+      when: (Pod.BaseNetwork.IPv6[0:2] | lower) != 'fd'
+
+
+##
+## Define Zone to use for IPv4 Reverse Records.
+##
+    - name: Determine IPv4 Zone for PTR Records
+      ansible.builtin.set_fact:
+        IPv4_Reverse_Zone: "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
+
+
+##
+## Standard DEBUG Block (if enabled)
+##
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                  Deploy.Setting.IPv4: {{ Deploy.Setting.IPv4 }}
+                                  Deploy.Setting.IPv6: {{ Deploy.Setting.IPv6 }}
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+                                    Common.DNS.Domain: {{ Common.DNS.Domain }}
+                              Common.DNS.Server1.IPv4: {{ Common.DNS.Server1.IPv4 }}
+                              Common.DNS.Server1.IPv6: {{ Common.DNS.Server1.IPv6 }}
+
+                                 Pod.BaseNetwork.IPv4: {{ Pod.BaseNetwork.IPv4 }}
+                                 Pod.BaseNetwork.IPv6: {{ Pod.BaseNetwork.IPv6 }}
+
+                                IPv4 Reverse DNS Zone: {{ IPv4_Reverse_Zone }}
+                                IPv6 Reverse DNS Zone: {{ IPv6_Reverse_Zone }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+
+##
+## Process Nested_Router
+##
+    - name: DEBUG -- Display IPv4 'A' records for Nested_Router
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ========================== Display Nested_Router DNS "A" Records ================================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ Nested_Router.Name }}-{{ item.key }}
+                                                Value: {{ item.value.IPv4.Address }}
+
+          =================================================================================================
+      loop: "{{ Nested_Router.Interface | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+    - name: IPv4 'A' records for Nested_Router
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     A
+        protocol: udp
+        zone:     "{{ Common.DNS.Domain }}"
+        record:   "{{ Nested_Router.Name }}-{{ item.key }}"
+        value:    "{{ item.value.IPv4.Address }}"
+        state:    "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_Router.Interface | dict2items }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+    - name: IPv4 'CNAME' records for Nested_Router
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     CNAME
+        protocol: udp
+        zone:     "{{ Common.DNS.Domain }}"
+        record:   "{{ Nested_Router.Name }}"
+        value:    "{{ Nested_Router.Name }}-Uplink"
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+
+
+    - name: DEBUG -- Display IPv4 'PTR' records for Nested_Router
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ========================== Display Nested_Router DNS IPv4 "PTR" Records =========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ IPv4_Reverse_Zone }}
+                                               Record: {{ item.value.IPv4.Address | ipaddr('revdns') }}
+                                                Value: {{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}
+
+          =================================================================================================
+      loop: "{{ Nested_Router.Interface | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+    - name: IPv4 'PTR' records for Nested_Router
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ IPv4_Reverse_Zone }}"
+        record:   "{{ item.value.IPv4.Address | ipaddr('revdns') }}"
+        value:    "{{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}."
+        state:    "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_Router.Interface | dict2items }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+
+
+    - name: DEBUG -- Display IPv6 'AAAA' records for Nested_Router
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ========================== Display Nested_Router DNS IPv6 "AAAA" Records ========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ item.value.IPv6.Address }}
+                                                Value: {{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}
+
+          =================================================================================================
+      loop: "{{ Nested_Router.Interface | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+
+    - name: IPv6 'AAAA' records for Nested_Router
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv6 }}"
+        type:     AAAA
+        protocol: udp
+        zone:     "{{ Common.DNS.Domain }}"
+        record:   "{{ Nested_Router.Name }}-{{ item.key }}"
+        value:    "{{ item.value.IPv6.Address }}"
+        state:    "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_Router.Interface | dict2items }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+
+
+
+    - name: DEBUG -- Display IPv6 'PTR' records for Nested_Router
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ========================== Display Nested_Router DNS IPv6 "PTR" Records =========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ IPv6_Reverse_Zone }}
+                                               Record: {{ item.value.IPv6.Address | ipaddr('revdns') }}
+                                                Value: {{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}
+
+          =================================================================================================
+      loop: "{{ Nested_Router.Interface | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+
+    - name: IPv6 'PTR' records for Nested_Router
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv6 }}"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ IPv6_Reverse_Zone }}"
+        record:   "{{ item.value.IPv6.Address | ipaddr('revdns') }}"
+        value:    "{{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}."
+        state:    "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_Router.Interface | dict2items }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+
+
+
+##
+## Process Nested_vRLI
+##
+    - name: DEBUG -- Display IPv4 'A' record for Nested_vRLI
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================== Display Nested_vRLI DNS IPv4 "A" Record =============================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ Nested_vRLI.VMName }}
+                                                Value: {{ Nested_vRLI.Address.IPv4.Address }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+    - name: IPv4 'A' records for Nested_vRLI
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     A
+        protocol: udp
+        zone:     "{{ Common.DNS.Domain }}"
+        record:   "{{ Nested_vRLI.VMName }}"
+        value:    "{{ Nested_vRLI.Address.IPv4.Address }}"
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+
+
+    - name: DEBUG -- Display IPv4 'PTR' record for Nested_vRLI
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================== Display Nested_vRLI DNS IPv4 "PTR" Record ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ IPv4_Reverse_Zone }}
+                                               Record: {{ Nested_vRLI.Address.IPv4.Address | ipaddr('revdns') }}
+                                                Value: {{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+    - name: IPv4 'PTR' records for Nested_vRLI
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ IPv4_Reverse_Zone }}"
+        record:   "{{ Nested_vRLI.Address.IPv4.Address | ipaddr('revdns') }}"
+        value:    "{{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}."
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+
+
+    - name: DEBUG -- Display IPv6 'AAAA' record for Nested_vRLI
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================= Display Nested_vRLI DNS IPv6 "AAAA" Record ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ Nested_vRLI.VMName }}
+                                                Value: {{ Nested_vRLI.Address.IPv6.Address }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+        - False
+
+    - name: IPv6 'AAAA' records for Nested_vRLI
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv6 }}"
+        type:     AAAA
+        protocol: udp
+        zone:     "{{ Common.DNS.Domain }}"
+        record:   "{{ Nested_vRLI.VMName }}"
+        value:    "{{ Nested_vRLI.Address.IPv6.Address }}"
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+        - False
+
+
+
+    - name: DEBUG -- Display IPv6 'PTR' record for Nested_vRLI
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================== Display Nested_vRLI DNS IPv6 "PTR" Record ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ IPv6_Reverse_Zone }}
+                                               Record: {{ Nested_vRLI.Address.IPv6.Address | ipaddr('revdns') }}
+                                                Value: {{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+        - False
+
+    - name: IPv6 'PTR' records for Nested_vRLI
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv6 }}"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ IPv6_Reverse_Zone }}"
+        record:   "{{ Nested_vRLI.Address.IPv6.Address | ipaddr('revdns') }}"
+        value:    "{{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}."
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+        - False
+
+
+
+##
+## Process Nested_ESXi Hosts
+##
+    - name: DEBUG -- Display IPv4 'A' records for Nested_ESXi hosts
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          =========================== Display Nested_ESXi DNS "A" Records =================================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ item.value.VMName }}
+                                                Value: {{ item.value.vmk.vmk0.Address.IPv4.Address }}
+
+          =================================================================================================
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+    - name: IPv4 'A' records for Nested_ESXi hosts
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     A
+        protocol: udp
+        zone:     "{{ Common.DNS.Domain }}"
+        record:   "{{ item.value.VMName }}"
+        value:    "{{ item.value.vmk.vmk0.Address.IPv4.Address }}"
+        state:    "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when: 
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+
+
+    - name: DEBUG -- Display IPv4 'PTR' records for Nested_ESXi Hosts
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ========================== Display Nested_ESXi DNS IPv4 "PTR" Records ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ IPv4_Reverse_Zone }}
+                                               Record: {{ item.value.vmk.vmk0.Address.IPv4.Address | ipaddr('revdns') }}
+                                                Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+
+    - name: IPv4 'PTR' records for Nested_ESXi hosts
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ IPv4_Reverse_Zone }}"
+        record:   "{{ item.value.vmk.vmk0.Address.IPv4.Address | ipaddr('revdns') }}"
+        value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
+        state:    "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when: 
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+
+
+    - name: DEBUG -- Display IPv6 'AAAA' records for Nested_ESXi hosts
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          =========================== Display Nested_ESXi DNS "AAAA" Records ==============================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ item.value.VMName }}
+                                                Value: {{ item.value.vmk.vmk0.Address.IPv6.Address }}
+
+          =================================================================================================
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+        - False
+
+    - name: IPv6 'AAAA' records for Nested_ESXi hosts
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv6 }}"
+        type:     AAAA
+        protocol: udp
+        zone:     "{{ Common.DNS.Domain }}"
+        record:   "{{ item.value.VMName }}"
+        value:    "{{ item.value.vmk.vmk0.Address.IPv6.Address }}"
+        state:    "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when: 
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+        - False
+
+
+
+    - name: DEBUG -- Display IPv6 'PTR' records for Nested_ESXi Hosts
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ========================== Display Nested_ESXi DNS IPv6 "PTR" Records ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ IPv6_Reverse_Zone }}
+                                               Record: item.value.vmk.vmk0.Address.IPv6.Address | ipaddr('revdns') }}
+                                                Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}. 
+
+          =================================================================================================
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+        - False
+
+    - name: IPv6 'PTR' records for Nested_ESXi hosts
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv6 }}"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ IPv6_Reverse_Zone }}"
+        record:   "{{ item.value.vmk.vmk0.Address.IPv6.Address | ipaddr('revdns') }}"
+        value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
+        state:    "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when: 
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+        - False
+
+
+
+##
+## Process Nested_vCenter
+##
+    - name: DEBUG -- Display IPv4 'A' record for Nested_vCenter
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================== Display Nested_vCenter DNS IPv4 "A" Record =============================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ Nested_vCenter.VMName }}
+                                                Value: {{ Nested_vCenter.Address.IPv4.Address }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+    - name: IPv4 'A' records for Nested_vCenter
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     A
+        protocol: udp
+        zone:     "{{ Common.DNS.Domain }}"
+        record:   "{{ Nested_vCenter.VMName }}"
+        value:    "{{ Nested_vCenter.Address.IPv4.Address }}"
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+
+
+    - name: DEBUG -- Display IPv4 'PTR' record for Nested_vCenter
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================== Display Nested_vCenter DNS IPv4 "PTR" Record ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ IPv4_Reverse_Zone }}
+                                               Record: {{ Nested_vCenter.Address.IPv4.Address | ipaddr('revdns') }}
+                                                Value: {{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+    - name: IPv4 'PTR' records for Nested_vCenter
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ IPv4_Reverse_Zone }}"
+        record:   "{{ Nested_vCenter.Address.IPv4.Address | ipaddr('revdns') }}"
+        value:    "{{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}."
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+
+
+    - name: DEBUG -- Display IPv6 'AAAA' record for Nested_vCenter
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================= Display Nested_vCenter DNS IPv6 "AAAA" Record ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ Nested_vCenter.VMName }}
+                                                Value: {{ Nested_vCenter.Address.IPv6.Address }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+        - False
+
+    - name: IPv6 'AAAA' records for Nested_vCenter
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv6 }}"
+        type:     AAAA
+        protocol: udp
+        zone:     "{{ Common.DNS.Domain }}"
+        record:   "{{ Nested_vCenter.VMName }}"
+        value:    "{{ Nested_vCenter.Address.IPv6.Address }}"
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+        - False
+
+
+
+    - name: DEBUG -- Display IPv6 'PTR' record for Nested_vCenter
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================== Display Nested_vCenter DNS IPv6 "PTR" Record ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ IPv6_Reverse_Zone }}
+                                               Record: {{ Nested_vCenter.Address.IPv6.Address | ipaddr('revdns') }}
+                                                Value: {{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+        - False
+
+    - name: IPv6 'PTR' records for Nested_vCenter
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv6 }}"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ IPv6_Reverse_Zone }}"
+        record:   "{{ Nested_vCenter.Address.IPv6.Address | ipaddr('revdns') }}"
+        value:    "{{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}."
+        state:    "{{ LOCAL_RecordState }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+        - False
+
+
+
+##
+## Process Remaining Nested_NSXT Items
+##
+    - name: DEBUG -- Display IPv4 'A' records for Nested_NSXT Components
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ============================ Display Nested_NSXT DNS "A" Records ================================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ item.value.VMName }}
+                                                Value: {{ item.value.Address.IPv4.Address }}
+
+          =================================================================================================
+      loop: "{{ Nested_NSXT.Component | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+        - '"GlobalManager" not in item.key or ("GlobalManager" in item.key and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)'
+
+    - name: IPv4 'A' records for Nested_NSXT Components
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     A
+        protocol: udp
+        zone:     "{{ Common.DNS.Domain }}"
+        record:   "{{ item.value.VMName }}"
+        value:    "{{ item.value.Address.IPv4.Address }}"
+        state:    "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_NSXT.Component | dict2items }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+        - '"GlobalManager" not in item.key or ("GlobalManager" in item.key and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)'
+
+
+
+    - name: DEBUG -- Display IPv4 'PTR' records for Nested_NSXT Components
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ========================== Display Nested_NSXT DNS IPv4 "PTR" Records ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ IPv4_Reverse_Zone }}
+                                               Record: {{ item.value.Address.IPv4.Address | ipaddr('revdns') }}
+                                                Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      loop: "{{ Nested_NSXT.Component | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+        - '"GlobalManager" not in item.key or ("GlobalManager" in item.key and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)'
+
+    - name: IPv4 'PTR' records for Nested_NSXT Components
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ IPv4_Reverse_Zone }}"
+        record:   "{{ item.value.Address.IPv4.Address | ipaddr('revdns') }}"
+        value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
+        state:    "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_NSXT.Component | dict2items }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+        - '"GlobalManager" not in item.key or ("GlobalManager" in item.key and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)'
+
+
+
+    - name: DEBUG -- Display IPv4 'A' records for Nested_NSXT Edge Transport Nodes
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ================= Display Nested_NSXT Edge Transport Nodes DNS IPv4 "A" Records =================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ item.Name }}
+                                                Value: {{ item.Deployment.ManagementIPAddress }}
+
+          =================================================================================================
+      loop: "{{ Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes }}"
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+    - name: IPv4 'A' records for Nested_NSXT Edge Transport Nodes
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     A
+        protocol: udp
+        zone:     "{{ Common.DNS.Domain }}"
+        record:   "{{ item.Name }}"
+        value:    "{{ item.Deployment.ManagementIPAddress }}"
+        state:    "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+
+
+    - name: DEBUG -- Display IPv4 'PTR' records for Nested_NSXT Edge Transport Nodes
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ================ Display Nested_NSXT Edge Transport Nodes DNS IPv4 "PTR" Records ================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ IPv4_Reverse_Zone }}
+                                               Record: {{ item.Deployment.ManagementIPAddress | ipaddr('revdns') }}
+                                                Value: {{ item.Name }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      loop: "{{ Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes }}"
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+    - name: IPv4 'PTR' records for Nested_NSXT Edge Transport Nodes
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv4 }}"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ IPv4_Reverse_Zone }}"
+        record:   "{{ item.Deployment.ManagementIPAddress | ipaddr('revdns') }}"
+        value:    "{{ item.Name }}.{{ Common.DNS.Domain }}."
+        state:    "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv4 == true
+
+ 
+
+    - name: DEBUG -- Display IPv6 'AAAA' records for Nested_NSXT Components
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ========================== Display Nested_NSXT DNS "AAAA" Records ===============================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ item.value.VMName }}
+                                                Value: {{ item.value.Address.IPv6.Address }}
+
+          =================================================================================================
+      loop: "{{ Nested_NSXT.Component | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+        - False
+
+    - name: IPv6 'AAAA' records for Nested_NSXT Components
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv6 }}"
+        type:     AAAA
+        protocol: udp
+        zone:     "{{ Common.DNS.Domain }}"
+        record:   "{{ item.value.VMName }}"
+        value:    "{{ item.value.Address.IPv6.Address }}"
+        state:    "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_NSXT.Component | dict2items }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+        - False
+
+
+
+    - name: DEBUG -- Display IPv6 'PTR' records for Nested_NSXT Components
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ========================== Display Nested_NSXT DNS IPv6 "PTR" Records ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ IPv6_Reverse_Zone }}
+                                               Record: {{ item.value.Address.IPv6.Address | ipaddr('revdns') }}
+                                                Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      loop: "{{ Nested_NSXT.Component | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS == true
+        - DEBUG.DisplayVariables == true
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+        - False
+
+    - name: IPv6 'PTR' records for Nested_NSXT Components
+      community.general.nsupdate:
+        server:   "{{ Common.DNS.Server1.IPv6 }}"
+        type:     PTR
+        protocol: udp
+        zone:     "{{ IPv6_Reverse_Zone }}"
+        record:   "{{ item.value.Address.IPv6.Address | ipaddr('revdns') }}"
+        value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
+        state:    "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_NSXT.Component | dict2items }}"
+      when:
+        - Deploy.Setting.UseDNS == true
+        - Deploy.Setting.IPv6 == true
+        - False

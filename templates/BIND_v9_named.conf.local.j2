@@ -1,0 +1,31 @@
+//
+// File: /etc/bind/named.conf.local
+//
+
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+
+zone "{{ Common.DNS.Domain | lower }}" {
+  type master;
+  allow-update { any; };         // Needs to include the IP address of the Ansible control station
+  allow-transfer { any; };       // Needs to include the IP address of the Ansible control station for utils/showdns
+  file "/var/lib/bind/db.{{ Common.DNS.Domain | lower }}";
+};
+zone "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}" {
+  type master;
+  allow-update { any; };         // Needs to include the IP address of the Ansible control station
+  allow-transfer { any; };       // Needs to include the IP address of the Ansible control station for utils/showdns
+  file "/var/lib/bind/db.{{ Pod.BaseNetwork.IPv4 }}";
+};
+zone "d.f.ip6.arpa" {            // Over-ride Built-In Empty Reverse-Mapping Zones to permit fd::/8 name resolution
+  type master;
+  allow-update { any; };         // Needs to include the IP address of the Ansible control station
+  allow-transfer { any; };       // Needs to include the IP address of the Ansible control station for utils/showdns
+  file "/var/lib/bind/db.fd";
+  notify yes;
+};

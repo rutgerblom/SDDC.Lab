@@ -1,0 +1,18 @@
+//
+// File: /etc/bind/named.conf.options
+//
+
+options {
+  directory "/var/cache/bind";
+  recursion yes;
+  notify yes;
+  allow-query { any; };
+  allow-query-cache { any; };
+  allow-recursion { any; };
+  forwarders { {{ Nested_DNSServer.OS.Packages.BIND.Forwarder.IPv4 }}; {{ Nested_DNSServer.OS.Packages.BIND.Forwarder.IPv6 }}; };
+  dnssec-validation no;
+  auth-nxdomain no; # conform to RFC1035
+  listen-on { localhost; any; };
+  listen-on-v6 { localhost; any; };
+  allow-transfer { any; };
+};

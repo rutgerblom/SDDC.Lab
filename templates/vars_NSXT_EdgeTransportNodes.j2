@@ -1,0 +1,96 @@
+{#
+ #    Authors: Luis Chanu & Rutger Blom
+ #   Filename: templates/vars_NSXT_EdgeTransportNodes.j2
+ #    Used By: This file is used by the playbook createNsxEdgeTn.yml
+ #    Purpose: This Jinja2 template file is used to create the data structure that is provided to the nsxt_transport_nodes module.
+ #      NSX-T: Structure updated to support NSX-T v3.2.0
+ #
+ #}
+{% for EdgeTransportNode in Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes %}
+  - display_name: "{{ EdgeTransportNode.Name }}"
+    tags:
+{###### Make sure Tags is defined #####}
+{% if (EdgeTransportNode.Tags is defined) %}
+{###### If Tags is defined, add them to the list #}
+{% for SingleTag in EdgeTransportNode.Tags %}
+      - tag: "{{ SingleTag.Tag | default(None) }}"
+        scope: "{{ SingleTag.Scope | default(None) }}"
+{% endfor %}{# Tag #}
+{###### If not defined, add one set of "None" entries to ensure 'tags' header has a list member #####}
+{% else %}
+      - tag: ""
+        scope: ""
+{% endif %}{# EdgeTransportNode.Tags is defined #}
+    description: "{{ EdgeTransportNode.Description }}"
+    host_switches:
+{% for HostSwitch in EdgeTransportNode.HostSwitches %}
+    - host_switch_profiles:
+      - name: "{{ HostSwitch.UplinkProfile.Name }}"
+        type: UplinkHostSwitchProfile
+      host_switch_name: "{{ HostSwitch.Name }}"
+      host_switch_mode: "{{ HostSwitch.Mode }}"
+      pnics:
+{% for Uplink in HostSwitch.Uplinks %}
+      - device_name: "{{ Uplink.DeviceName }}"
+        uplink_name: "{{ Uplink.NSXUplinkName }}"
+{% endfor %}{# Uplink #}
+      ip_assignment_spec:
+        resource_type: "{{ HostSwitch.IPPool.Type }}"
+        ip_pool_name: "{{ HostSwitch.IPPool.Name }}"
+      transport_zone_endpoints:
+{% for TransportZone in HostSwitch.TransportZones %}
+      - transport_zone_name: "{{ TransportZone }}"
+{% endfor %}{# TransportZone #}
+{% endfor %}{# HostSwitch #}
+    node_deployment_info:
+      display_name: "{{ EdgeTransportNode.Deployment.VMName }}"
+      resource_type: "EdgeNode"
+      deployment_config:
+        form_factor: "{{ EdgeTransportNode.Deployment.FormFactor | upper }}"
+        node_user_settings:
+          cli_password: "{{ EdgeTransportNode.Deployment.CLIPassword }}"
+          root_password: "{{ EdgeTransportNode.Deployment.RootPassword }}"
+          audit_username: "{{ EdgeTransportNode.Deployment.AuditUsername }}"
+          audit_password: "{{ EdgeTransportNode.Deployment.AuditPassword }}"
+        vm_deployment_config:
+          placement_type: VsphereDeploymentConfig
+          vc_name: "{{ EdgeTransportNode.Deployment.vCenterName }}"
+          vc_username: "{{ EdgeTransportNode.Deployment.vCenterUser }}"
+          vc_password: "{{ EdgeTransportNode.Deployment.vCenterPassword }}"
+          data_networks:
+{% for DataPortGroup in EdgeTransportNode.Deployment.DataPortGroups %}
+          - "{{ DataPortGroup }}"
+{% endfor %}{# DataPortGroup #}
+          management_network: "{{ EdgeTransportNode.Deployment.ManagementPortGroup }}"
+          management_port_subnets:
+          - ip_addresses:
+            - "{{ EdgeTransportNode.Deployment.ManagementIPAddress }}"
+            prefix_length: "{{ EdgeTransportNode.Deployment.ManagementIPPrefix }}"
+          default_gateway_addresses: 
+          - "{{ EdgeTransportNode.Deployment.Gateway }}"
+          compute: "{{ Nested_NSXT.System.Fabric.Nodes.vSphereEdgeCluster }}"
+          storage: "{{ EdgeTransportNode.Deployment.Datastore }}"
+          reservation_info:
+            cpu_reservation:
+              reservation_in_mhz: "{{ EdgeTransportNode.Deployment.Reservations.CPU.Megahertz }}"
+              reservation_in_shares: "{{ EdgeTransportNode.Deployment.Reservations.CPU.Shares }}"
+            memory_reservation:
+              reservation_percentage: "{{ EdgeTransportNode.Deployment.Reservations.Memory.Percentage }}"
+      node_settings:
+          hostname: "{{ EdgeTransportNode.Deployment.Hostname }}"
+          allow_ssh_root_login: "{{ EdgeTransportNode.Deployment.AllowRootSSH }}"
+          enable_ssh: "{{ EdgeTransportNode.Deployment.EnableSSH }}"
+          search_domains:
+            - "{{ Common.DNS.Domain }}"
+          dns_servers:
+            - "{{ Common.DNS.Server1.IPv4 }}"
+{% if Common.DNS.Server2.IPv4 %}
+            - "{{ Common.DNS.Server2.IPv4 }}"
+{% endif %}{# DNS.Server2 #}
+          ntp_servers:
+            - "{{ Common.NTP.Server1.IPv4 }}"
+{% if Common.NTP.Server2.IPv4 %}
+            - "{{ Common.NTP.Server2.IPv4 }}"
+{% endif %}{# NTP.Server2 #}
+
+{% endfor %}{# EdgeTransportNode #}

@@ -1,0 +1,32 @@
+##
+## This file is the configuration file for the utils/util_ModifyDNS.yml playbook
+##
+##  Notes:
+##    1) If you include the "Zone", records will be modified on this zone
+##    2) This assumes that the Zone matches the Domain
+##    3) State can be either "present" or "absent" to create/update or delete DNS records, respectively.
+##    4) A deletion of a A or AAAA record will also delete it's respective reverse dns entry.
+##
+
+DNS:
+  Server:
+    IP: 10.203.0.5                   # Update the target DNS server
+    Protocol: udp
+  Option:
+    AutoCreatePTR: true              # If set to "true", A or AAAA records will automatically get PTR records created
+  Records:
+    - State: present
+      Zone: SDDC.Lab
+      Type: CNAME                    # Valid types include: A, PTR, CNAME, AAAA
+      Record: Pod-200-NSXT-LM
+      Value: Pod-200-NSXT-LM-1
+    - State: present
+      Zone: SDDC.Lab
+      Type: A                        # Valid types include: A, PTR, CNAME, AAAA
+      Record: FTP
+      Value: 192.168.1.100
+    - State: present
+      Zone: SDDC.Lab
+      Type: PTR                      # Valid types include: A, PTR, CNAME, AAAA
+      Record: 10.1.2.3
+      Value: NFS

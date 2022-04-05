@@ -1,0 +1,17 @@
+$TTL 604800
+{{ Common.DNS.Domain | lower }}.  IN SOA dns.{{ Common.DNS.Domain | lower }}. admin.{{ Common.DNS.Domain | lower }}. (
+          10   ; Serial
+      604800   ; Refresh
+       86400   ; Retry
+     2419200   ; Expire
+      604800 ) ; Negative Cache TTL
+
+; Name servers
+                NS   dns.{{ Common.DNS.Domain | lower }}.
+
+; Define Origin
+$ORIGIN  {{ Common.DNS.Domain | lower }}.
+
+; A records for name servers
+{{ Nested_DNSServer.FQDN | lower }}.           IN   A    {{ Nested_DNSServer.OS.Network.IPv4.Address }}
+{{ Nested_DNSServer.FQDN | lower }}.           IN   AAAA    {{ Nested_DNSServer.OS.Network.IPv6.Address }}

@@ -1,0 +1,490 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/preparePhysical.yml
+##    Purpose: This Ansbile script is to prepare the physical environment, which includes:
+##              a) Creating vSphere Switch (vDS or vSS)
+##              b) Creating vSphere Port-Groups (Mgmt and Trunk)
+##              c) VM Folder Structure (vCenter Deployment Only)
+##
+---
+- hosts: localhost
+  name: preparePhysical.yml
+  tasks:
+    - name: preparePhysical_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+
+                                       Target.vSwitch: {{ Target.vSwitch }}
+                          Target.PortGroup.Trunk.Name: {{ Target.PortGroup.Trunk.Name }}
+                          Target.PortGroup.Trunk.VLAN: {{ Target.PortGroup.Trunk.VLAN }}
+                     Target.PortGroup.Management.Name: {{ Target.PortGroup.Management.Name }}
+                     Target.PortGroup.Management.VLAN: {{ Target.PortGroup.Management.VLAN }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+
+##
+###############################################################################################################
+##                                  vSphere Distributed Switch Deployment                                    ##
+##                                      Target.Deployment == "vCenter"                                       ##
+###############################################################################################################
+##
+
+    - name: Attempt to create Pod vDS on physical vCenter
+      community.vmware.vmware_dvswitch:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datacenter_name: "{{ Target.DataCenter }}"
+        switch_name: "{{ Target.vSwitch }}"
+        switch_version: "{{ Target.vSwitchVersion }}"
+        uplink_quantity: 1
+        discovery_operation: both
+        discovery_protocol: lldp
+        mtu: 9000
+        state: present
+      register: vds_result
+      when: Target.Deployment == "vCenter"
+
+## if vDS was created, vds_result.result == "DVS created"
+
+    - name: DEBUG -- Display vds_result
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: vds_result
+          ====================
+          {{ vds_result | to_nice_yaml }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Target.Deployment == "vCenter"
+        - vds_result is defined
+
+    - name: Authenticate to vCenter to obtain a Session ID
+      ansible.builtin.uri:
+        url: "https://{{ Target.FQDN }}/rest/com/vmware/cis/session"
+        headers: "{ 'vmware-use-header-authn':'test' }"
+        method: POST
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 10
+        force_basic_auth: yes
+        url_username: "{{ Target.User }}"
+        url_password: "{{ Target.Password }}"
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: vcenter_auth_result
+      when:
+        - Target.Deployment == "vCenter"
+        - vds_result.result == "DVS created"
+
+    - name: DEBUG -- Display vcenter_auth_result
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: vcenter_auth_result
+          =============================
+          {{ vcenter_auth_result | to_nice_yaml }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Target.Deployment == "vCenter"
+        - vcenter_auth_result is defined
+
+    - name: Store vCenter Session ID for later use
+      ansible.builtin.set_fact:
+        vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
+      when:
+        - Target.Deployment == "vCenter"
+        - vds_result.result == "DVS created"
+
+    - name: DEBUG -- Display vCenter_SessionID
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: vCenter_SessionID
+          ===========================
+          {{ vCenter_SessionID | to_nice_yaml }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Target.Deployment == "vCenter"
+        - vds_result.result == "DVS created"
+        - vCenter_SessionID is defined
+
+##
+## Add vSphere Cluster's Member Servers to the vDS
+##
+
+    - name: Get the vSphere Cluster's Object ID (MoREF)
+      ansible.builtin.uri:
+        url: "https://{{ Target.FQDN }}/rest/vcenter/cluster?filter.names={{ Target.Cluster }}"
+        headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
+        method: GET
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 10
+        force_basic_auth: yes
+        url_username: "{{ Target.User }}"
+        url_password: "{{ Target.Password }}"
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: cluster_info
+      when:
+        - Target.Deployment == "vCenter"
+        - vds_result.result == "DVS created"
+
+    - name: DEBUG -- Display cluster_info
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: cluster_info
+          ======================
+          {{ cluster_info | to_nice_yaml }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Target.Deployment == "vCenter"
+        - vds_result.result == "DVS created"
+        - cluster_info is defined
+
+    - name: Store vSphere Cluster Object ID (MoREF) for later use
+      ansible.builtin.set_fact:
+        Cluster_ID: "{{ cluster_info.json.value[0].cluster | default(None) }}"
+      when:
+        - Target.Deployment == "vCenter"
+        - vds_result.result == "DVS created"
+
+    - name: DEBUG -- Display Cluster_ID
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: Cluster_ID
+          ====================
+          {{ Cluster_ID }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Target.Deployment == "vCenter"
+        - vds_result.result == "DVS created"
+        - Cluster_ID is defined
+
+    - name: Get ESXi hosts in vSphere Cluster
+      ansible.builtin.uri:
+        url: "https://{{ Target.FQDN }}/rest/vcenter/host?filter.clusters={{ Cluster_ID }}"
+        headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
+        method: GET
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 10
+        force_basic_auth: yes
+        url_username: "{{ Target.User }}"
+        url_password: "{{ Target.Password }}"
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: cluster_hosts
+      when:
+        - Target.Deployment == "vCenter"
+        - vds_result.result == "DVS created"
+
+    - name: DEBUG -- Display cluster_hosts
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: cluster_hosts
+          =======================
+          {{ cluster_hosts | to_nice_yaml }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Target.Deployment == "vCenter"
+        - vds_result.result == "DVS created"
+        - cluster_hosts is defined
+
+    - name: Add vSphere Cluster member hosts to vDS
+      community.vmware.vmware_dvs_host:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        switch_name: "{{ Target.vSwitch }}"
+        esxi_hostname: "{{ item.name }}"
+        state: present
+        vmnics: []
+      loop: "{{ cluster_hosts.json.value }}"
+      when:
+        - Target.Deployment == "vCenter"
+        - vds_result.result == "DVS created"
+        - cluster_hosts is defined
+
+##
+## If vDS was created, notify user of additional actions required
+##
+
+    - name: If vDS created, display Action Notice
+      ansible.builtin.pause:
+        minutes: 60
+        prompt: |
+          =================================================================================================
+          =======================================  ACTION REQUIRED  =======================================
+          =================================================================================================
+
+            The following vSphere Distributed Switch (vDS) was just automatically created for you:
+
+                                                   {{ Target.vSwitch }}
+
+            The script will now wait so that you can associate a vmnic interface to the vDS's uplink.  Once
+            you have assocated a vmnic to the uplink of the vDS, please press CTRL-C, then C, to continue.
+
+          =================================================================================================
+      when:
+        - Target.Deployment == "vCenter"
+        - vds_result.result == "DVS created"
+
+
+##
+## At this point, the vDS exists, so we can now create our PortGroups on it
+##
+
+    - name: Create a Management Distributed Port-Group in vCenter
+      community.vmware.vmware_dvs_portgroup:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        switch_name: "{{ Target.vSwitch }}"
+        portgroup_name: "{{ Target.PortGroup.Management.Name }}"
+        port_binding: static
+        vlan_id: "{{ Target.PortGroup.Management.VLAN }}"
+        vlan_trunk: false
+        num_ports: 48
+        state: present
+        network_policy:
+          promiscuous: true                                                                            # Must be true in order for NSX-T Edge Transport Node deployment to succeed
+          forged_transmits: true                                                                       # Must be true in order for NSX-T Edge Transport Node deployment to succeed
+          mac_changes: false
+      when: Target.Deployment == "vCenter"
+
+    - name: Create a Trunk Distributed Port-Group in vCenter
+      community.vmware.vmware_dvs_portgroup:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        switch_name: "{{ Target.vSwitch }}"
+        portgroup_name: "{{ Target.PortGroup.Trunk.Name }}"
+        port_binding: static
+        vlan_id: "{{ Target.PortGroup.Trunk.VLAN }}"
+        vlan_trunk: true
+        num_ports: 48
+        state: present
+        network_policy:
+          promiscuous: true                                                                            # Must be true in order for vmk migration to succeed
+          forged_transmits: true                                                                       # Must be true in order for vmk migration to succeed
+          mac_changes: false
+      when: Target.Deployment == "vCenter"
+
+
+
+##
+###############################################################################################################
+##                                  Create VM Folder Structure in vCenter Server                             ##
+##                                         Target.Deployment == "vCenter"                                    ##
+###############################################################################################################
+##
+
+
+    - name: Create Parent VM Folder
+      community.vmware.vcenter_folder:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder_type: vm
+        parent_folder: ""
+        folder_name: "{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}"                     # Extract parent folder from VMFolder full path
+        state: present
+      register: vm_parent_folder_creation_result
+      when: Target.Deployment == "vCenter"
+
+    - name: DEBUG -- Display vm_parent_folder_creation_result
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: vm_parent_folder_creation_result
+          ==========================================
+          {{ vm_parent_folder_creation_result | to_nice_yaml }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Target.Deployment == "vCenter"
+        - vm_parent_folder_creation_result is defined
+
+    - name: Create Child VM Folder
+      community.vmware.vcenter_folder:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder_type: vm
+        parent_folder: "{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}"                     # Extract parent folder from VMFolder full path
+        folder_name:   "{{ Target.VMFolder | regex_replace('^.*/(.*)$', '\\1') }}"                     # Extract remaining folder name
+        state: present
+      register: vm_child_folder_creation_result
+      when: 
+        - Target.Deployment == "vCenter"
+        - vm_parent_folder_creation_result is defined
+        - vm_parent_folder_creation_result.failed != true
+
+    - name: DEBUG -- Display vm_child_folder_creation_result
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================================================================================
+
+          Variable: vm_child_folder_creation_result
+          ==========================================
+          {{ vm_child_folder_creation_result | to_nice_yaml }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - Target.Deployment == "vCenter"
+        - vm_child_folder_creation_result is defined
+
+
+
+##
+###############################################################################################################
+##                                    vSphere Standard Switch Deployment                                     ##
+##                                        Target.Deployment == "Host"                                        ##
+###############################################################################################################
+##
+
+
+    - name: Create a VMware vSphere Standard Switch (vSS) on the ESXi host
+      community.vmware.vmware_vswitch:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        esxi_hostname: "{{ Target.FQDN }}"
+        switch_name: "{{ Target.vSwitch }}"
+        mtu: 9000
+      when: Target.Deployment == "Host"
+
+    - name: Create a management port group for the lab environment
+      community.vmware.vmware_portgroup:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"        
+        esxi_hostname: "{{ Target.FQDN }}"
+        switch_name: "{{ Target.vSwitch }}"
+        portgroup_name: "{{ Target.PortGroup.Management.Name }}"
+        vlan_id: "{{ Target.PortGroup.Management.VLAN }}"
+        security:
+          promiscuous_mode: True
+      when: Target.Deployment == "Host"
+
+    - name: Create trunk port group for the lab environment
+      community.vmware.vmware_portgroup:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        esxi_hostname: "{{ Target.FQDN }}"
+        switch_name: "{{ Target.vSwitch }}"
+        portgroup_name: "{{ Target.PortGroup.Trunk.Name }}"
+        vlan_id: "{{ Target.PortGroup.Trunk.VLAN }}"
+        security:
+          promiscuous_mode: True
+          forged_transmits: True
+          mac_changes: True
+      when: Target.Deployment == "Host"
+
+
+##
+## Permit things to stablize
+##
+
+    - name: Wait 5 seconds for the Port Groups to become available
+      ansible.builtin.pause: seconds=5
