@@ -123,8 +123,6 @@ Consider the following when upgrading SDDC.Lab to a newer version.
 
 * v3 to v4
   * The "SDDC Labs" folder has been renamed to "SDDC Pods" within the ```config_sample.yml``` configuration file.  It's suggestd that you renamed your folder and update this as part of updating your configuration files for v4.
-  * TBD - More to come...
-
 
 ## Networking
 The network configuration is where many users experience issues with the setup of the SDDC.Lab solution.  For that reason, the focus of this section is to give a deep dive into how the SDDC.Lab solution "connects" to the physical network, and what networking components it requires.  We will also give overviews of how the network connectivity is different if you're running:
