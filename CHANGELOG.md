@@ -1025,3 +1025,16 @@
 ### Added by Luis Chanu
   - Added vCenter Server and ESXi versions 7.0U3D to software repository
   - Updated ```software_sample.yml``` and ```templates_sample.yml``` files.
+
+
+<br>
+
+***
+<h1 style="text-align:center">SDDC.Lab Version 4.0 Released</h1>
+<br>
+
+
+## Dev-v5.0.0 6-APRIL-2022
+
+### Added by Luis Chanu
+  - Begin developing version 5.0 in branch ```dev-v5```
