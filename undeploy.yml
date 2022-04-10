@@ -199,12 +199,16 @@
         password: "{{ Target.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         switch_name: "{{ Target.vSwitch }}"
-        portgroup_type: earlyBinding
         portgroup_name: "{{ Target.PortGroup.Management.Name }}"
+        port_binding: static
         vlan_id: "{{ Target.PortGroup.Management.VLAN }}"
-        num_ports: 32
+        vlan_trunk: false
+        num_ports: 48
         state: absent
-      ignore_errors: true
+        network_policy:
+          promiscuous: true
+          forged_transmits: true
+          mac_changes: false
       when: Target.Deployment == "vCenter"
 
     - name: Remove a Trunk Distributed Port-Group in vCenter
@@ -214,12 +218,16 @@
         password: "{{ Target.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         switch_name: "{{ Target.vSwitch }}"
-        portgroup_type: earlyBinding
         portgroup_name: "{{ Target.PortGroup.Trunk.Name }}"
+        port_binding: static
         vlan_id: "{{ Target.PortGroup.Trunk.VLAN }}"
-        num_ports: 32
+        vlan_trunk: true
+        num_ports: 48
         state: absent
-      ignore_errors: true
+        network_policy:
+          promiscuous: true
+          forged_transmits: true
+          mac_changes: false
       when: Target.Deployment == "vCenter"
 
 ##

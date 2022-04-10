@@ -1038,3 +1038,8 @@
 
 ### Added by Luis Chanu
   - Begin developing version 5.0 in branch ```dev-v5```
+
+## Dev-v5.0.0 10-APRIL-2022
+
+### Added by Rutger Blom
+  - Fixed an issue with the port groups not being removed when running "undeploy.yml".
