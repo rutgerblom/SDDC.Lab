@@ -1044,13 +1044,14 @@
 ### Added by Rutger Blom
   - Fixed an issue with the port groups not being removed when running "undeploy.yml".
 
+## Dev-v5.0.0 10-APRIL-2022
+
+### Added by Luis Chanu
+  - Added ```log_path``` parameter to ansible.cfg file to save Ansible playbook deployment output to a file, which is useful for debugging.  As we deploy using sudo, we must use this approach instead of the ```ANSIBLE_LOG_PATH``` environment variable.  Once we remove the use of sudo, we should be able to use the environment variable.  This option is commented out, and needs to be enabled on an as-needed basis.
+
 ## Dev-v5.0.0 11-APRIL-2022
 
 ### Added by Rutger Blom
   - Added the following software entries in ```software_sample.yml``` and ```templates_sample.yml```:
     - Ubuntu Server v20.04.4
   - Please be sure to update your ```software.yml``` and ```templates.yml``` files
-## Dev-v5.0.0 10-APRIL-2022
-
-### Added by Luis Chanu
-  - Added ```log_path``` parameter to ansible.cfg file to save Ansible playbook deployment output to a file, which is useful for debugging.  As we deploy using sudo, we must use this approach instead of the ```ANSIBLE_LOG_PATH``` environment variable.  Once we remove the use of sudo, we should be able to use the environment variable.  This option is commented out, and needs to be enabled on an as-needed basis.
