@@ -1043,3 +1043,10 @@
 
 ### Added by Rutger Blom
   - Fixed an issue with the port groups not being removed when running "undeploy.yml".
+
+## Dev-v5.0.0 11-APRIL-2022
+
+### Added by Rutger Blom
+  - Added the following software entries in ```software_sample.yml``` and ```templates_sample.yml```:
+    - Ubuntu Server v20.04.4
+  - Please be sure to update your ```software.yml``` and ```templates.yml``` files
