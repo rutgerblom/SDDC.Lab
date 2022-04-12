@@ -1064,5 +1064,5 @@
   - Changed the following in ```config_sample.yml```:
     - vCenter version 7.00U3D
     - ESXi version 7.00U3D
-  - Please be sure to update your ```config_sample.yml``` file
+  - Please be sure to update your ```config.yml``` file
 
