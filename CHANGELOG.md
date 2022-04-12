@@ -1059,7 +1059,10 @@
 ## Dev-v5.0.0 12-APRIL-2022
 
 ### Added by Rutger Blom
+  - Added the active uplinks teaming policy parameter to vmware_dvs_portgroups tasks in ```createVds.yml```. Active uplink configuration is stored in the Nested_vCenter dictionary in ```config_sample.yml```.
+  - Modified the active uplinks of port groups NSXEdgeUplink1 and NSXEdgeUplink2 in ```config_sample.yml``` so that these use only Uplink 1 and Uplink 2 respectively. This to support pinning to ToR-A and ToR-B.
   - Changed the following in ```config_sample.yml```:
     - vCenter version 7.00U3D
     - ESXi version 7.00U3D
   - Please be sure to update your ```config_sample.yml``` file
+
