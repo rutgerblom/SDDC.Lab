@@ -1055,3 +1055,11 @@
   - Added the following software entries in ```software_sample.yml``` and ```templates_sample.yml```:
     - Ubuntu Server v20.04.4
   - Please be sure to update your ```software.yml``` and ```templates.yml``` files
+
+## Dev-v5.0.0 12-APRIL-2022
+
+### Added by Rutger Blom
+  - Changed the following in ```config_sample.yml```:
+    - vCenter version 7.00U3D
+    - ESXi version 7.00U3D
+  - Please be sure to update your ```config_sample.yml``` file
