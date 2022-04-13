@@ -1066,3 +1066,10 @@
     - ESXi version 7.00U3D
   - Please be sure to update your ```config.yml``` file
 
+## Dev-v5.0.0 13-APRIL-2022
+
+### Added by Rutger Blom
+  - Changed the following in ```config_sample.yml```:
+    - vRLI version 8.6.2
+  - Please be sure to update your ```config.yml``` file
+
