@@ -1073,3 +1073,10 @@
     - vRLI version 8.6.2
   - Please be sure to update your ```config.yml``` file
 
+## Dev-v5.0.0 13-APRIL-2022
+
+### Added by Luis Chanu
+  - Changed /Software directory permissions from 0777 to 0775 in ```util_CreateSoftwareDir.yml```
+  - Changed NSX-T version to v3.1.3.6 in ```config_sample.yml```
+  - Cleaning up minor spacing issues in ```config_sample.yml```
+  - Please be sure to update your ```config.yml``` file
