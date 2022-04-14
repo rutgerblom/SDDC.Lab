@@ -37,7 +37,7 @@
 
           *****************************************************************************************************
       when:
-        - Valid_Pod_Config_File is not defined
+        - Valid_Pod_Config_File is not number
 
 
     - name: DEBUG -- Display Target Variables (Pause)
@@ -94,7 +94,7 @@
         port_binding: static
         teaming_policy:
           active_uplinks: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Teaming.ActiveUplinks }}"
-          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.Management.Teaming.StandbyUplinks is not defined %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Teaming.StandbyUplinks }}{% endif %}"
+          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.Management.Teaming.StandbyUplinks is not number %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Teaming.StandbyUplinks }}{% endif %}"
         state: present
 
     - name: Create vMotion port group
@@ -110,7 +110,7 @@
         port_binding: static
         teaming_policy:
           active_uplinks: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Teaming.ActiveUplinks }}"
-          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Teaming.StandbyUplinks is not defined %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Teaming.StandbyUplinks }}{% endif %}"
+          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Teaming.StandbyUplinks is not number %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Teaming.StandbyUplinks }}{% endif %}"
         state: present
 
     - name: Create vSAN port group
@@ -126,7 +126,7 @@
         port_binding: static
         teaming_policy:
           active_uplinks: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Teaming.ActiveUplinks }}"
-          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Teaming.StandbyUplinks is not defined %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Teaming.StandbyUplinks }}{% endif %}"
+          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Teaming.StandbyUplinks is not number %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Teaming.StandbyUplinks }}{% endif %}"
         state: present
 
     - name: Create IP Storage port group
@@ -142,7 +142,7 @@
         port_binding: static
         teaming_policy:
           active_uplinks: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Teaming.ActiveUplinks }}"
-          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Teaming.StandbyUplinks is not defined %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Teaming.StandbyUplinks }}{% endif %}"
+          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Teaming.StandbyUplinks is not number %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Teaming.StandbyUplinks }}{% endif %}"
         state: present
 
     - name: Create SVM-Management port group
@@ -158,7 +158,7 @@
         port_binding: static
         teaming_policy:
           active_uplinks: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.Teaming.ActiveUplinks }}"
-          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.Teaming.StandbyUplinks is not defined %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.Teaming.StandbyUplinks }}{% endif %}"
+          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.Teaming.StandbyUplinks is not number %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.Teaming.StandbyUplinks }}{% endif %}"
         state: present
 
     - name: Create list of VLAN IDs used by the Pod
@@ -182,7 +182,7 @@
         port_binding: static
         teaming_policy:
           active_uplinks: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Teaming.ActiveUplinks }}"
-          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Teaming.StandbyUplinks is not defined %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Teaming.StandbyUplinks }}{% endif %}"
+          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Teaming.StandbyUplinks is not number %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Teaming.StandbyUplinks }}{% endif %}"
         state: present
 
     - name: Create Uplink2 port group
@@ -199,7 +199,7 @@
         port_binding: static
         teaming_policy:
           active_uplinks: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Teaming.ActiveUplinks }}"
-          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Teaming.StandbyUplinks is not defined %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Teaming.StandbyUplinks }}{% endif %}"
+          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Teaming.StandbyUplinks is not number %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Teaming.StandbyUplinks }}{% endif %}"
         state: present
 
     - name: Create VMNetwork port group
@@ -215,7 +215,7 @@
         port_binding: static
         teaming_policy:
           active_uplinks: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.Teaming.ActiveUplinks }}"
-          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.Teaming.StandbyUplinks is not defined %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.Teaming.StandbyUplinks }}{% endif %}"
+          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.Teaming.StandbyUplinks is not number %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.Teaming.StandbyUplinks }}{% endif %}"
         state: present
 
     - name: Migrate uplinks to the VDS
