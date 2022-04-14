@@ -37,7 +37,7 @@
 
           *****************************************************************************************************
       when:
-        - Valid_Pod_Config_File is not defined
+        - Valid_Pod_Config_File is not number
 
 
     - name: DEBUG -- Display Target Variables (Pause)
@@ -81,142 +81,27 @@
         discovery_operation: "{{ Nested_vCenter.Networking.vSwitch.Config.LinkDiscoveryProtocol.Operation }}"
         state: present
 
-    - name: Create Management port group
+    - name: Create Port Groups
       community.vmware.vmware_dvs_portgroup:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+        portgroup_name: "{{ item.value.Name }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
-        vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.VLAN.ID }}"
-        num_ports: 8
-        port_binding: static
+        vlan_trunk: "{{ item.value.VLAN.Trunk }}"
+        vlan_id: "{{ item.value.VLAN.ID }}"
+        num_ports: "{{ item.value.NumPorts}}"
+        port_binding: "{{ item.value.PortBinding}}"
         teaming_policy:
-          active_uplinks: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Teaming.ActiveUplinks }}"
-          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.Management.Teaming.StandbyUplinks is none %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Teaming.StandbyUplinks }}{% endif %}"
-        state: present
-
-    - name: Create vMotion port group
-      community.vmware.vmware_dvs_portgroup:
-        hostname: "{{ Nested_vCenter.FQDN }}"
-        username: "{{ Nested_vCenter.User }}"
-        password: "{{ Nested_vCenter.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
-        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
-        vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.VLAN.ID }}"
-        num_ports: 8
-        port_binding: static
-        teaming_policy:
-          active_uplinks: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Teaming.ActiveUplinks }}"
-          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Teaming.StandbyUplinks is none %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Teaming.StandbyUplinks }}{% endif %}"
-        state: present
-
-    - name: Create vSAN port group
-      community.vmware.vmware_dvs_portgroup:
-        hostname: "{{ Nested_vCenter.FQDN }}"
-        username: "{{ Nested_vCenter.User }}"
-        password: "{{ Nested_vCenter.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
-        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
-        vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.VLAN.ID }}"
-        num_ports: 8
-        port_binding: static
-        teaming_policy:
-          active_uplinks: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Teaming.ActiveUplinks }}"
-          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Teaming.StandbyUplinks is none %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Teaming.StandbyUplinks }}{% endif %}"
-        state: present
-
-    - name: Create IP Storage port group
-      community.vmware.vmware_dvs_portgroup:
-        hostname: "{{ Nested_vCenter.FQDN }}"
-        username: "{{ Nested_vCenter.User }}"
-        password: "{{ Nested_vCenter.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
-        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
-        vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.VLAN.ID }}"
-        num_ports: 8
-        port_binding: static
-        teaming_policy:
-          active_uplinks: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Teaming.ActiveUplinks }}"
-          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Teaming.StandbyUplinks is none %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Teaming.StandbyUplinks }}{% endif %}"
-        state: present
-
-    - name: Create SVM-Management port group
-      community.vmware.vmware_dvs_portgroup:
-        hostname: "{{ Nested_vCenter.FQDN }}"
-        username: "{{ Nested_vCenter.User }}"
-        password: "{{ Nested_vCenter.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.Name }}"
-        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
-        vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.VLAN.ID }}"
-        num_ports: 8
-        port_binding: static
-        teaming_policy:
-          active_uplinks: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.Teaming.ActiveUplinks }}"
-          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.Teaming.StandbyUplinks is none %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.Teaming.StandbyUplinks }}{% endif %}"
-        state: present
-
-    - name: Create list of VLAN IDs used by the Pod
-      ansible.builtin.set_fact:
-        VLAN_List: "{{ (VLAN_List | default([])) + [ item.value.VLAN ] }}"
-      loop: "{{ Net | dict2items }}"
-      when:
-        - item.value.VLAN.isnumeric()
-
-    - name: Create Uplink1 port group
-      community.vmware.vmware_dvs_portgroup:
-        hostname: "{{ Nested_vCenter.FQDN }}"
-        username: "{{ Nested_vCenter.User }}"
-        password: "{{ Nested_vCenter.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Name }}"
-        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
-        vlan_trunk: true
-        vlan_id: "{{ VLAN_List | min }}-{{ VLAN_List | max }}"
-        num_ports: 8
-        port_binding: static
-        teaming_policy:
-          active_uplinks: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Teaming.ActiveUplinks }}"
-          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Teaming.StandbyUplinks is none %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink1.Teaming.StandbyUplinks }}{% endif %}"
-        state: present
-
-    - name: Create Uplink2 port group
-      community.vmware.vmware_dvs_portgroup:
-        hostname: "{{ Nested_vCenter.FQDN }}"
-        username: "{{ Nested_vCenter.User }}"
-        password: "{{ Nested_vCenter.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Name }}"
-        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
-        vlan_trunk: true
-        vlan_id: "{{ VLAN_List | min }}-{{ VLAN_List | max }}"
-        num_ports: 8
-        port_binding: static
-        teaming_policy:
-          active_uplinks: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Teaming.ActiveUplinks }}"
-          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Teaming.StandbyUplinks is none %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.NSXEdgeUplink2.Teaming.StandbyUplinks }}{% endif %}"
-        state: present
-
-    - name: Create VMNetwork port group
-      community.vmware.vmware_dvs_portgroup:
-        hostname: "{{ Nested_vCenter.FQDN }}"
-        username: "{{ Nested_vCenter.User }}"
-        password: "{{ Nested_vCenter.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        portgroup_name: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.Name }}"
-        switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
-        vlan_id: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.VLAN.ID }}"
-        num_ports: 8
-        port_binding: static
-        teaming_policy:
-          active_uplinks: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.Teaming.ActiveUplinks }}"
-          standby_uplinks: "{% if Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.Teaming.StandbyUplinks is none %}{{ omit }}{% else %}{{ Nested_vCenter.Networking.vSwitch.PortGroup.VMNetwork.Teaming.StandbyUplinks }}{% endif %}"
-        state: present
+          active_uplinks: "{{ item.value.Teaming.ActiveUplinks }}"
+          standby_uplinks: "{% if item.value.Teaming.StandbyUplinks is none %}{{ omit }}{% else %}{{ item.value.Teaming.StandbyUplinks }}{% endif %}"
+        network_policy:
+          forged_transmits: "{{ item.value.Security.ForgedTransmits }}"
+          mac_changes: "{{ item.value.Security.MACAddressChanges }}"
+          promiscuous: "{{ item.value.Security.PromiscuousMode }}"
+        state: "{{ item.value.State }}"
+      loop: "{{ Nested_vCenter.Networking.vSwitch.PortGroup | dict2items }}"
 
     - name: Migrate uplinks to the VDS
       community.vmware.vmware_dvs_host:

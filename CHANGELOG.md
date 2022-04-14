@@ -1073,7 +1073,6 @@
     - vRLI version 8.6.2
   - Please be sure to update your ```config.yml``` file
 
-
 ## Dev-v5.0.0 13-APRIL-2022
 
 ### Added by Luis Chanu
@@ -1082,3 +1081,12 @@
   - Cleaning up minor spacing issues in ```config_sample.yml```
   - Please be sure to update your ```config.yml``` file
 
+## Dev-v5.0.0 14-APRIL-2022
+
+### Added by Rutger Blom
+  - Added the standby uplinks teaming policy parameter to vmware_dvs_portgroups task in ```createVds.yml```. Standby uplink configuration is stored in the Nested_vCenter dictionary in ```config_sample.yml```.
+  - Modified the standby uplinks of port groups NSXEdgeUplink1 and NSXEdgeUplink2 in ```config_sample.yml``` so that these use only Uplink 2 and Uplink 1 respectively. This to facilitate failover of Geneve traffic in case of a ToR failure. Although this failure scenario is not likely in a nested lab, we want to mirror configuration of a production environment whereever we can. 
+  - Updated ```createVds.yml``` to loop over the port groups rather than having one task for each port group object.
+  - Added network policy parameters (forged_transmits, mac_changes, promiscuous) to the vmware_dvs_portgroups task in ```createVds.yml```. Network policy configuration is stored in the Nested_vCenter dictionary in ```config_sample.yml```.
+  - The parameters num_ports and port_binding used by the vmware_dvs_portgroups task in ```createVds.yml``` now fetch their values from the Nested_vCenter dictionary in ```config_sample.yml``` (instead of having them hard-coded in the Playbook).
+  - Please be sure to update your ```config.yml``` file

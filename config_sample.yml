@@ -1734,9 +1734,11 @@ Nested_vCenter:
       PortGroup:
         Management:
           Name: Management
-          Create: true
+          State: present
+          NumPorts: 8
+          PortBinding: static
           VLAN:
-            Type: VLAN
+            Trunk: false
             ID: "{{ Net.Management.VLAN }}"
           Security:
             MACAddressChanges: false
@@ -1749,9 +1751,11 @@ Nested_vCenter:
             StandbyUplinks:
         vMotion:
           Name: vMotion
-          Create: true
+          State: present
+          NumPorts: 8
+          PortBinding: static
           VLAN:
-            Type: VLAN
+            Trunk: false
             ID: "{{ Net.vMotion.VLAN }}"
           Security:
             MACAddressChanges: false
@@ -1760,13 +1764,15 @@ Nested_vCenter:
           Teaming:
             ActiveUplinks:
               - Uplink 1
-              - Uplink 2
+              - Uplink 2 
             StandbyUplinks:
         vSAN:
           Name: vSAN
-          Create: true
+          State: present
+          NumPorts: 8
+          PortBinding: static
           VLAN:
-            Type: VLAN
+            Trunk: false
             ID: "{{ Net.vSAN.VLAN }}"
           Security:
             MACAddressChanges: false
@@ -1779,9 +1785,11 @@ Nested_vCenter:
             StandbyUplinks:
         IPStorage:
           Name: IPStorage
-          Create: true
+          State: present
+          NumPorts: 8
+          PortBinding: static
           VLAN:
-            Type: VLAN
+            Trunk: false
             ID: "{{ Net.IPStorage.VLAN }}"
           Security:
             MACAddressChanges: false
@@ -1792,26 +1800,13 @@ Nested_vCenter:
               - Uplink 1
               - Uplink 2
             StandbyUplinks: 
-        Transport:
-          Name: Transport
-          Create: true
-          VLAN:
-            Type: VLAN
-            ID: "{{ Net.Transport.VLAN }}"
-          Security:
-            MACAddressChanges: false
-            ForgedTransmits: false
-            PromiscuousMode: false
-          Teaming:
-            ActiveUplinks:
-              - Uplink 1
-              - Uplink 2
-            StandbyUplinks:
         ServiceVMs:
           Name: ServiceVMs
-          Create: true
+          State: present
+          NumPorts: 8
+          PortBinding: static
           VLAN:
-            Type: VLAN
+            Trunk: false
             ID: "{{ Net.ServiceVM.VLAN }}"
           Security:
             MACAddressChanges: false
@@ -1824,10 +1819,12 @@ Nested_vCenter:
             StandbyUplinks:
         NSXEdgeUplink1:
           Name: NSXEdgeUplink1
-          Create: true
+          State: present
+          NumPorts: 8
+          PortBinding: static
           VLAN:
-            Type: VLAN
-            ID: "{{ Net.NSXEdgeUplink1.VLAN }}"
+            Trunk: true
+            ID: "{{ Net.NSXEdgeUplink1.VLAN }}, {{ Net.Transport.VLAN }}, {{ Net.RTEP.VLAN }}"
           Security:
             MACAddressChanges: false
             ForgedTransmits: false
@@ -1839,10 +1836,12 @@ Nested_vCenter:
               - Uplink 2
         NSXEdgeUplink2:
           Name: NSXEdgeUplink2
-          Create: true
+          State: present
+          NumPorts: 8
+          PortBinding: static
           VLAN:
-            Type: VLAN
-            ID: "{{ Net.NSXEdgeUplink2.VLAN }}"
+            Trunk: true
+            ID: "{{ Net.NSXEdgeUplink2.VLAN }}, {{ Net.Transport.VLAN }}, {{ Net.RTEP.VLAN }}"
           Security:
             MACAddressChanges: false
             ForgedTransmits: false
@@ -1854,9 +1853,11 @@ Nested_vCenter:
               - Uplink 1
         VMNetwork:
           Name: VMNetwork
-          Create: true
+          State: present
+          NumPorts: 8
+          PortBinding: static
           VLAN:
-            Type: VLAN
+            Trunk: false
             ID: "{{ Net.VMNetwork.VLAN }}"
           Security:
             MACAddressChanges: false
