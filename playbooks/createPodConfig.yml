@@ -1,7 +1,9 @@
 ##
-##    Project: SDDC.Lab
-##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/createPodConfig.yml
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: playbooks/createPodConfig.yml
+##
+##  Description: This playbook takes a configuration file based on config_sample.yml, and generates a static Pod Configuration file in the user's home directory, which can then be used for Pod deployment.
 ##
 ---
 - hosts: localhost
@@ -17,7 +19,6 @@
     - PodConfigFile: "{{ SiteCode }}-Config_VCSAv{{ Deploy.Software.vCenter.Version }}_ESXIv{{ Deploy.Software.ESXi.Version }}_NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}_Fed-{% if Deploy.Product.NSXT.Federation.Enable == true %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}{% else %}N{% endif %}{% endif %}.yml"
 
   vars_prompt:
-
     - name: SourceConfigPath
       prompt: "In which directory is the Pod-Config file you want to have prepared located?"
       unsafe: yes

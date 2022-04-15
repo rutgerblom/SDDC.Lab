@@ -1,0 +1,44 @@
+##
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: tests/TestVarsPrompt.yml
+##
+---
+- hosts: localhost
+  name: createPodConfig.yml
+  gather_facts: no
+  vars_files:
+    - ../software.yml
+    - ../templates.yml
+
+  vars:
+    - PodTemplate: "Pod_Config.j2"
+    - PodTempConfigFile: "{{ SiteCode }}-Config_Temp.yml"
+    - PodConfigFile: "{{ SiteCode }}-Config_VCSAv{{ Deploy.Software.vCenter.Version }}_ESXIv{{ Deploy.Software.ESXi.Version }}_NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}_Fed-{% if Deploy.Product.NSXT.Federation.Enable == true %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}{% else %}N{% endif %}{% endif %}.yml"
+
+  vars_prompt:
+    - name: SourceConfigPath
+      prompt: "In which directory is the Pod-Config file you want to have prepared located?"
+      unsafe: yes
+      private: no
+      default: "{{ lookup('env','PWD') }}"
+
+    - name: SourceConfigFile
+      prompt: "What is the name of the configuration file that you would like to have prepared?"
+      unsafe: yes
+      private: no
+      default: "config.yml"
+
+  tasks:
+    - name: Display variables
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+
+            SourceConfigPath: {{ SourceConfigPath }}
+            SourceConfigFile: {{ SourceConfigFile }}
+
+          *****************************************************************************************************
+
+
