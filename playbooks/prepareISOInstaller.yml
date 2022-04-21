@@ -7,7 +7,6 @@
 - hosts: localhost
   name: prepareISOInstaller.yml
   vars:
-    #ISOMountPoint: "{{ Target.ISOMount }}/{{ Deploy.Software.ESXi.Vendor }}_{{ Deploy.Software.ESXi.Product }}_{{ Deploy.Software.ESXi.Version }}"
     ISOExtractPoint: "{{ Target.ISOExtract }}/{{ Deploy.Software.ESXi.Vendor }}_{{ Deploy.Software.ESXi.Product }}_{{ Deploy.Software.ESXi.Version }}"
   tasks:
     - name: prepareISOInstaller_Playbook
@@ -78,18 +77,8 @@
         path: "{{ Target.TempFolder }}"
         state: directory
 
-#    - name: Mount ESXi ISO as read-only and do not automatically mount with 'mount -a'
-#      ansible.posix.mount:
-#        path:   "{{ ISOMountPoint }}"
-#        src:    "{{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }}"
-#        fstype: iso9660
-#        opts:   ro,noauto
-#        state:  mounted
-#      tags: esxi-install-media
-
     - name: Extract ESXi ISO
       ansible.builtin.command: "7z x {{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }} -o{{ ISOExtractPoint }} -y"
-
 
     - name: Copy boot.cfg from the ESXi ISOExtractPoint
       ansible.builtin.copy: 
