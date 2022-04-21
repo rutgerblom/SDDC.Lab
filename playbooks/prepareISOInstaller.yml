@@ -119,13 +119,6 @@
       when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
       tags: esxi-install-media
 
-    #- name: Unmount ESXi ISO
-    #  ansible.posix.mount:
-    #    path:  "{{ ISOMountPoint }}"
-    #    state: absent
-    #  when: Deploy.Software.Options.UnmountISO
-    #  tags: esxi-install-media
-
     - name: Upload the ESXi ISO to the datastore
       community.vmware.vsphere_copy: 
         hostname: "{{ Target.FQDN }}"
