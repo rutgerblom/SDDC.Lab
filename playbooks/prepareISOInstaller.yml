@@ -7,7 +7,7 @@
 - hosts: localhost
   name: prepareISOInstaller.yml
   vars:
-    ISOExtractPoint: "{{ Target.ISOExtract }}/{{ Deploy.Software.ESXi.Vendor }}_{{ Deploy.Software.ESXi.Product }}_{{ Deploy.Software.ESXi.Version }}"
+    ISOExtractPoint: "{{ Target.WorkingFolder }}/isos/{{ Deploy.Software.ESXi.Vendor }}_{{ Deploy.Software.ESXi.Product }}_{{ Deploy.Software.ESXi.Version }}"
   tasks:
     - name: prepareISOInstaller_Playbook
       ansible.builtin.debug:
@@ -72,22 +72,22 @@
       when:
         - DEBUG.DisplayVariables == true
 
-    - name: Create temp directory
+    - name: Create working directory
       ansible.builtin.file:
-        path: "{{ Target.TempFolder }}"
+        path: "{{ Target.WorkingFolder }}"
         state: directory
 
     - name: Extract ESXi ISO
       ansible.builtin.command: "7z x {{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }} -o{{ ISOExtractPoint }} -y"
 
-    - name: Copy boot.cfg from the ESXi ISOExtractPoint
+    - name: Copy BOOT.CFG from the ESXi ISOExtractPoint
       ansible.builtin.copy: 
         src: "{{ ISOExtractPoint }}/BOOT.CFG"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
         mode: "666"
       tags: esxi-install-media
 
-    - name: Edit boot.cfg
+    - name: Edit BOOT.CFG
       ansible.builtin.replace:
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/BOOT.CFG"
         regexp: 'kernelopt=.*'
