@@ -88,19 +88,19 @@
 #      tags: esxi-install-media
 
     - name: Extract ESXi ISO
-      ansible.builtin.command: "7z x {{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }} -o{{ ISOExtractPoint }}"
+      ansible.builtin.command: "7z x {{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }} -o{{ ISOExtractPoint }} -y"
 
 
     - name: Copy boot.cfg from the ESXi ISOExtractPoint
       ansible.builtin.copy: 
-        src: "{{ ISOExtractPoint }}/boot.cfg"
+        src: "{{ ISOExtractPoint }}/BOOT.CFG"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
         mode: "666"
       tags: esxi-install-media
 
     - name: Edit boot.cfg
       ansible.builtin.replace:
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/boot.cfg"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/BOOT.CFG"
         regexp: 'kernelopt=.*'
         replace: 'kernelopt=ks=cdrom:/{{ Deploy.Software.ESXi.Config }}'
       tags: esxi-install-media
@@ -123,7 +123,7 @@
       tags: esxi-install-media
 
     - name: Create custom ESXi ISO for each nested ESXi host
-      ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }} -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ ISOExtractPoint }}/ {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/ {{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
+      ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }} -b ISOLINUX.BIN -c BOOT.CAT -no-emul-boot -boot-load-size 4 -boot-info-table {{ ISOExtractPoint }}/ {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/ {{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
       args:
         chdir: "{{ Target.TempFolder }}/{{ item.value.VMName }}/"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
