@@ -1090,3 +1090,10 @@
   - Added network policy parameters (forged_transmits, mac_changes, promiscuous) to the vmware_dvs_portgroups task in ```createVds.yml```. Network policy configuration is stored in the Nested_vCenter dictionary in ```config_sample.yml```.
   - The parameters num_ports and port_binding used by the vmware_dvs_portgroups task in ```createVds.yml``` now fetch their values from the Nested_vCenter dictionary in ```config_sample.yml``` (instead of having them hard-coded in the Playbook).
   - Please be sure to update your ```config.yml``` file
+
+## Dev-v5.0.0 21-APRIL-2022
+
+### Added by Rutger Blom
+  - Replaced the ```ansible.posix.mount``` task in the ```playbooks/prepareISOInstaller.yml```playbook with a ```ansible.builtin.command```task running ```7z``` to extract the contents of the ESXi ISO file. The ```ansible.posix.mount``` task requires root or CAP_SYS_ADMIN privileges which is something we want to eliminate in the upcoming version.
+  - Added a new variable to the ```TargetConfig``` dictionary in ```config_sample.yml``` called ```ISOExtract```which is used by the ```playbooks/prepareISOInstaller.yml```playbook
+  - Please be sure to update your ```config.yml``` file
