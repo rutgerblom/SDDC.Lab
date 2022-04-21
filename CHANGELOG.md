@@ -1096,4 +1096,5 @@
 ### Added by Rutger Blom
   - Replaced the ```ansible.posix.mount``` task in the ```playbooks/prepareISOInstaller.yml```playbook with a ```ansible.builtin.command```task running ```7z``` to extract the contents of the ESXi ISO file. The ```ansible.posix.mount``` task requires root or CAP_SYS_ADMIN privileges which is something we want to eliminate in the upcoming version.
   - Added a new variable to the ```TargetConfig``` dictionary in ```config_sample.yml``` called ```ISOExtract```which is used by the ```playbooks/prepareISOInstaller.yml```playbook
+  - The 7Zip software package is now required so updated the ```README.md```with this requirement. 
   - Please be sure to update your ```config.yml``` file
