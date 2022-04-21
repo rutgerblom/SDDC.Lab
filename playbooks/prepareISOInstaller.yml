@@ -7,7 +7,8 @@
 - hosts: localhost
   name: prepareISOInstaller.yml
   vars:
-    ISOMountPoint: "{{ Target.ISOMount }}/{{ Deploy.Software.ESXi.Vendor }}_{{ Deploy.Software.ESXi.Product }}_{{ Deploy.Software.ESXi.Version }}"
+    #ISOMountPoint: "{{ Target.ISOMount }}/{{ Deploy.Software.ESXi.Vendor }}_{{ Deploy.Software.ESXi.Product }}_{{ Deploy.Software.ESXi.Version }}"
+    ISOExtractPoint: "{{ Target.ISOExtract }}/{{ Deploy.Software.ESXi.Vendor }}_{{ Deploy.Software.ESXi.Product }}_{{ Deploy.Software.ESXi.Version }}"
   tasks:
     - name: prepareISOInstaller_Playbook
       ansible.builtin.debug:
@@ -63,7 +64,7 @@
                                      Target.ISOFolder: {{ Target.ISOFolder }}
                                     Target.TempFolder: {{ Target.TempFolder }}
 
-                                        ISOMountPoint: {{ ISOMountPoint }}
+                                        ISOExtractPoint: {{ ISOExtractPoint }}
 
                          Deploy.Software.ESXi.Version: {{ Deploy.Software.ESXi.Version }}
                        Deploy.Software.ESXi.Installer: {{ Deploy.Software.ESXi.Installer }}
@@ -77,18 +78,22 @@
         path: "{{ Target.TempFolder }}"
         state: directory
 
-    - name: Mount ESXi ISO as read-only and do not automatically mount with 'mount -a'
-      ansible.posix.mount:
-        path:   "{{ ISOMountPoint }}"
-        src:    "{{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }}"
-        fstype: iso9660
-        opts:   ro,noauto
-        state:  mounted
-      tags: esxi-install-media
+#    - name: Mount ESXi ISO as read-only and do not automatically mount with 'mount -a'
+#      ansible.posix.mount:
+#        path:   "{{ ISOMountPoint }}"
+#        src:    "{{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }}"
+#        fstype: iso9660
+#        opts:   ro,noauto
+#        state:  mounted
+#      tags: esxi-install-media
 
-    - name: Copy boot.cfg from the ESXi ISO
+    - name: Extract ESXi ISO
+      ansible.builtin.command: "7z x {{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }} -o{{ ISOExtractPoint }}"
+
+
+    - name: Copy boot.cfg from the ESXi ISOExtractPoint
       ansible.builtin.copy: 
-        src: "{{ ISOMountPoint }}/boot.cfg"
+        src: "{{ ISOExtractPoint }}/boot.cfg"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
         mode: "666"
       tags: esxi-install-media
@@ -118,19 +123,19 @@
       tags: esxi-install-media
 
     - name: Create custom ESXi ISO for each nested ESXi host
-      ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }} -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ ISOMountPoint }}/ {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/ {{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
+      ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }} -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table {{ ISOExtractPoint }}/ {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/ {{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
       args:
         chdir: "{{ Target.TempFolder }}/{{ item.value.VMName }}/"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
       tags: esxi-install-media
 
-    - name: Unmount ESXi ISO
-      ansible.posix.mount:
-        path:  "{{ ISOMountPoint }}"
-        state: absent
-      when: Deploy.Software.Options.UnmountISO
-      tags: esxi-install-media
+    #- name: Unmount ESXi ISO
+    #  ansible.posix.mount:
+    #    path:  "{{ ISOMountPoint }}"
+    #    state: absent
+    #  when: Deploy.Software.Options.UnmountISO
+    #  tags: esxi-install-media
 
     - name: Upload the ESXi ISO to the datastore
       community.vmware.vsphere_copy: 
