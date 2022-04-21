@@ -236,7 +236,7 @@ TargetConfig:
     VMFolder: ha-datacenter/vm
     ISOFolder: /SDDCLab-ISO-Folder
     ISOMount:   "/media"                                                      # ISOMount - Base mount point directory for ISO images
-    ISOExtract: "{{ lookup('env','HOME') }}"                                  # ISOExtract - Base extraction point directory for ISO images
+    WorkingFolder: "~/SDDC.Lab/{{ SiteCode }}"
     TempFolder: "/tmp/{{ SiteCode }}"
     TemplateFolder: ../templates
     PortGroup:
@@ -259,7 +259,7 @@ TargetConfig:
     VMFolder: "SDDC Pods/{{ SiteCode }}"                                      # VMFolder - Deployed lab Pod VMs are placed within this VMFolder
     ISOFolder: /SDDCLab-ISO-Folder                                            # ISOFolder - Directory created within Datastore where custom created ISOs are placed as part of the nested lab deployment
     ISOMount:   "/media"                                                      # ISOMount - Base mount point directory for ISO images
-    ISOExtract: "{{ lookup('env','HOME') }}"                                  # ISOExtract - Base extraction point directory for ISO images
+    WorkingFolder: "~/SDDC.Lab/{{ SiteCode }}"                                # WorkingFolder - Location of the folder that is used for temporary files created during the deployment process
     TempFolder: "/tmp/{{ SiteCode }}"                                         # TempFolder - Temporary folder location used for temporary files created during the deployment process
     TemplateFolder: ../templates                                              # TemplateFolder - The location of the "templates" folder, relative to teh "playbooks" directory
     PortGroup:                                                                # Various PortGroups used during deployment
@@ -298,7 +298,7 @@ Target:
   VMFolder:       "{{ TargetConfig[TargetConfig.Deployment].VMFolder }}"
   ISOFolder:      "{{ TargetConfig[TargetConfig.Deployment].ISOFolder }}"
   ISOMount:       "{{ TargetConfig[TargetConfig.Deployment].ISOMount }}"
-  ISOExtract:     "{{ TargetConfig[TargetConfig.Deployment].ISOExtract }}"
+  WorkingFolder:  "{{ TargetConfig[TargetConfig.Deployment].WorkingFolder }}"
   TempFolder:     "{{ TargetConfig[TargetConfig.Deployment].TempFolder }}"
   TemplateFolder: "{{ TargetConfig[TargetConfig.Deployment].TemplateFolder }}"
   PortGroup:
