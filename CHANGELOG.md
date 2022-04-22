@@ -1094,7 +1094,14 @@
 ## Dev-v5.0.0 21-APRIL-2022
 
 ### Added by Rutger Blom
-  - Replaced the ```ansible.posix.mount``` task in the ```playbooks/prepareISOInstaller.yml```playbook with a ```ansible.builtin.command```task running ```7z``` to extract the contents of the ESXi ISO file. The ```ansible.posix.mount``` task requires root or CAP_SYS_ADMIN privileges which is something we want to eliminate in the upcoming version.
-  - Added a new variable to the ```TargetConfig``` dictionary in ```config_sample.yml``` called ```ISOExtract```which is used by the ```playbooks/prepareISOInstaller.yml```playbook
-  - The 7Zip software package is now required so updated the ```README.md```with this requirement. 
+  - Replaced the ```ansible.posix.mount``` task in the ```playbooks/prepareISOInstaller.yml``` playbook with a ```ansible.builtin.command```task running ```7z``` to extract the contents of the ESXi ISO file. The ```ansible.posix.mount``` task requires root or CAP_SYS_ADMIN privileges which is something we want to eliminate in the upcoming version.
+  - Added a new variable to the ```TargetConfig``` dictionary in ```config_sample.yml``` called ```ISOExtract``` which is used by the ```playbooks/prepareISOInstaller.yml``` playbook
+  - The 7Zip software package is now required so updated the ```README.md``` with this requirement. 
+  - Please be sure to update your ```config.yml``` file
+
+## Dev-v5.0.0 22-APRIL-2022
+
+### Added by Rutger Blom
+  - Added variable ```WorkingFolder``` to the ```TargetConfig``` dictionary in ```config_sample.yml```. The location of ```WorkingFolder``` is used for temporary files created during the Pod deployment process. The variable's default value is ```"{{ lookup('env','HOME') }}/SDDC.Lab/{{ SiteCode }}"```. Eventually ```WorkingFolder``` will replace or be renamed to variable ```TempFolder```. This will be done once all playbooks have been updated to make use of the new location.
+  - Updated playbook ```playbooks/prepareISOInstaller.yml``` to use the new ```WorkingFolder``` variable.
   - Please be sure to update your ```config.yml``` file
