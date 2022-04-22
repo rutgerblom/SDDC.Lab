@@ -1109,4 +1109,7 @@
 ## Dev-v5.0.0 23-APRIL-2022
 
 ### Added by Rutger Blom
+  - Replaced the ```ansible.posix.mount``` task in the ```playbooks/deployDNSServer.yml``` playbook with a ```ansible.builtin.command```task running ```7z``` to extract the contents of the Ubuntu ISO file. The ```ansible.posix.mount``` task requires root or CAP_SYS_ADMIN privileges which is something we want to eliminate in the upcoming version.
+  - Updated playbook ```playbooks/deployDNSServer.yml``` and the associated template files to use the new ```WorkingFolder``` variable.
+  - Added a task to ```playbooks/deployDNSServer.yml``` that conditionaly (```DEBUG.KeepInstallerFiles != true```) deletes the local ISOExtractPoint directory
   - Added a task to ```playbooks/prepareISOInstaller.yml``` that conditionaly (```DEBUG.KeepInstallerFiles != true```) deletes the local ISOExtractPoint directory
