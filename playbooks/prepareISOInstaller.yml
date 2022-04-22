@@ -132,6 +132,13 @@
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
       tags: esxi-install-media
+
+    - name: Delete local ISOExtractPoint directory
+      ansible.builtin.file:
+        path: "{{ ISOExtractPoint }}"
+        state: absent
+      when: DEBUG.KeepInstallerFiles != true
+      tags: esxi-install-media
       
     - name: Delete local ISO content directory
       ansible.builtin.file:

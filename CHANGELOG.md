@@ -1105,3 +1105,8 @@
   - Added variable ```WorkingFolder``` to the ```TargetConfig``` dictionary in ```config_sample.yml```. The location of ```WorkingFolder``` is used for temporary files created during the Pod deployment process. The variable's default value is ```"{{ lookup('env','HOME') }}/SDDC.Lab/{{ SiteCode }}"```. Eventually ```WorkingFolder``` will replace or be renamed to variable ```TempFolder```. This will be done once all playbooks have been updated to make use of the new location.
   - Updated playbook ```playbooks/prepareISOInstaller.yml``` to use the new ```WorkingFolder``` variable.
   - Please be sure to update your ```config.yml``` file
+
+## Dev-v5.0.0 23-APRIL-2022
+
+### Added by Rutger Blom
+  - Added a task to ```playbooks/prepareISOInstaller.yml``` that conditionaly (```DEBUG.KeepInstallerFiles != true```) deletes the local ISOExtractPoint directory
