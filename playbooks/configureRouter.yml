@@ -16,7 +16,7 @@
   name: configureRouter.yml
   connection: ansible.netcommon.network_cli
   vars:
-    - LOCAL_HomeDirectory: "/home/{{ lookup('env','SUDO_USER') }}"
+    - LOCAL_HomeDirectory: "{{ lookup('env','HOME') }}"
     - LOCAL_UserConfigTempFile: "{{ Nested_Router.UserConfig.Template | regex_replace('^(.*).j2$', '\\1', ignorecase=True) }}.conf"
 
   tasks:

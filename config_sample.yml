@@ -235,9 +235,7 @@ TargetConfig:
     Datastore: Local_VMs                                                      # Datastore - The datastore connected to your physicsal ESXi host
     VMFolder: ha-datacenter/vm
     ISOFolder: /SDDCLab-ISO-Folder
-    ISOMount:   "/media"                                                      # ISOMount - Base mount point directory for ISO images
-    WorkingFolder: "{{ lookup('env','HOME') }}/SDDC.Lab/{{ SiteCode }}"       # WorkingFolder - Location of the folder that is used for temporary files created during the deployment process
-    TempFolder: "/tmp/{{ SiteCode }}"
+    TempFolder: "{{ lookup('env','HOME') }}/SDDC.Lab/{{ SiteCode }}"          # TempFolder - Temporary folder location used for temporary files created during the deployment process
     TemplateFolder: ../templates
     PortGroup:
       Uplink: Lab-Routers                                                     # Uplink - The portgroup for your Router Uplink segment 
@@ -258,9 +256,7 @@ TargetConfig:
     Datastore: Shared_VMs                                                     # Datastore - Defines Which datastore should the nested lab Pod VMs be placed
     VMFolder: "SDDC Pods/{{ SiteCode }}"                                      # VMFolder - Deployed lab Pod VMs are placed within this VMFolder
     ISOFolder: /SDDCLab-ISO-Folder                                            # ISOFolder - Directory created within Datastore where custom created ISOs are placed as part of the nested lab deployment
-    ISOMount:   "/media"                                                      # ISOMount - Base mount point directory for ISO images
-    WorkingFolder: "{{ lookup('env','HOME') }}/SDDC.Lab/{{ SiteCode }}"       # WorkingFolder - Location of the folder that is used for temporary files created during the deployment process
-    TempFolder: "/tmp/{{ SiteCode }}"                                         # TempFolder - Temporary folder location used for temporary files created during the deployment process
+    TempFolder: "{{ lookup('env','HOME') }}/SDDC.Lab/{{ SiteCode }}"          # TempFolder - Temporary folder location used for temporary files created during the deployment process
     TemplateFolder: ../templates                                              # TemplateFolder - The location of the "templates" folder, relative to teh "playbooks" directory
     PortGroup:                                                                # Various PortGroups used during deployment
       Uplink: Lab-Routers                                                     # Uplink - PortGroup which the VyOS lab Pod router attaches it's northbound/outside interface to.
@@ -297,8 +293,6 @@ Target:
   Datastore:      "{{ TargetConfig[TargetConfig.Deployment].Datastore }}"
   VMFolder:       "{{ TargetConfig[TargetConfig.Deployment].VMFolder }}"
   ISOFolder:      "{{ TargetConfig[TargetConfig.Deployment].ISOFolder }}"
-  ISOMount:       "{{ TargetConfig[TargetConfig.Deployment].ISOMount }}"
-  WorkingFolder:  "{{ TargetConfig[TargetConfig.Deployment].WorkingFolder }}"
   TempFolder:     "{{ TargetConfig[TargetConfig.Deployment].TempFolder }}"
   TemplateFolder: "{{ TargetConfig[TargetConfig.Deployment].TemplateFolder }}"
   PortGroup:

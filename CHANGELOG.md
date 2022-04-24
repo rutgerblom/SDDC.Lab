@@ -1122,4 +1122,11 @@
   - Updated playbook ```playbooks/deployVc.yml``` to use the new ```WorkingFolder``` variable.
   - Added a task to ```playbooks/deployVc.yml``` that conditionaly (```DEBUG.KeepInstallerFiles != true```) deletes the local ISOExtractPoint directory.
 
+## Dev-v5.0.0 24-APRIL-2022
 
+### Added by Rutger Blom
+  - Updated variable ```TempFolder``` with new value in ```config_sample.yml``` as it replaces variable ```WorkingFolder```.
+  - Removed variable ```ISOMount``` from ```config_sample.yml``` as it is not used anymore.
+  - Removed variable ```WorkingFolder``` as it is not used anymore.
+  - Updated documentation as well as comments in playbooks as Pod deployments can now be performed without using ```sudo``` e.g. ```ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml```.
+  - Please be sure to update your ```config.yml``` file

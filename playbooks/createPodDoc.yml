@@ -9,7 +9,7 @@
   vars:
     - LOCAL_PodDocHTML: "{{ SiteCode }}-Doc.html"
     - LOCAL_PodDocTemplate: "Pod_Doc.j2"
-    - LOCAL_PodDocDestination: "/home/{{ lookup('env','SUDO_USER') }}"
+    - LOCAL_PodDocDestination: "{{ lookup('env','HOME') }}"
   tasks:
     - name: createPodDoc_Playbook
       ansible.builtin.debug:

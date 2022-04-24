@@ -7,7 +7,7 @@
 - hosts: localhost
   name: prepareISOInstaller.yml
   vars:
-    ISOExtractPoint: "{{ Target.WorkingFolder }}/isos/{{ Deploy.Software.ESXi.Vendor }}_{{ Deploy.Software.ESXi.Product }}_{{ Deploy.Software.ESXi.Version }}"
+    ISOExtractPoint: "{{ Target.TempFolder }}/isos/{{ Deploy.Software.ESXi.Vendor }}_{{ Deploy.Software.ESXi.Product }}_{{ Deploy.Software.ESXi.Version }}"
   tasks:
     - name: prepareISOInstaller_Playbook
       ansible.builtin.debug:
@@ -28,7 +28,7 @@
               1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
                  command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
                  located in your home directory:
-                                    sudo ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml
 
               2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
                  All Pod configuration files used to deploy labs MUST be generated using that script.
@@ -61,7 +61,7 @@
                                       Target.Password: {{ Target.Password }}
                                      Target.Datastore: {{ Target.Datastore }}
                                      Target.ISOFolder: {{ Target.ISOFolder }}
-                                    Target.WorkingFolder: {{ Target.WorkingFolder }}
+                                    Target.TempFolder: {{ Target.TempFolder }}
 
                                         ISOExtractPoint: {{ ISOExtractPoint }}
 
@@ -72,9 +72,9 @@
       when:
         - DEBUG.DisplayVariables == true
 
-    - name: Create working directory
+    - name: Create temp directory
       ansible.builtin.file:
-        path: "{{ Target.WorkingFolder }}"
+        path: "{{ Target.TempFolder }}"
         state: directory
 
     - name: Extract ESXi ISO
@@ -83,20 +83,20 @@
     - name: Copy BOOT.CFG from the ESXi ISOExtractPoint
       ansible.builtin.copy: 
         src: "{{ ISOExtractPoint }}/BOOT.CFG"
-        dest: "{{ Target.WorkingFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
         mode: "666"
       tags: esxi-install-media
 
     - name: Edit BOOT.CFG
       ansible.builtin.replace:
-        dest: "{{ Target.WorkingFolder }}/{{ Deploy.Software.ESXi.Installer }}/BOOT.CFG"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/BOOT.CFG"
         regexp: 'kernelopt=.*'
         replace: 'kernelopt=ks=cdrom:/{{ Deploy.Software.ESXi.Config }}'
       tags: esxi-install-media
 
     - name: Create a directory for each nested ESXi host
       ansible.builtin.file:
-        path: "{{ Target.WorkingFolder }}/{{ item.value.VMName }}"
+        path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
         state: directory
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
@@ -105,16 +105,16 @@
     - name: Create kickstart file for each nested ESXi host
       ansible.builtin.template: 
         src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.ESXi.Template }}"
-        dest: "{{ Target.WorkingFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
+        dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
         mode: "666"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
       tags: esxi-install-media
 
     - name: Create custom ESXi ISO for each nested ESXi host
-      ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.WorkingFolder }}/{{ Pod.Number }}{{ item.key }} -b ISOLINUX.BIN -c BOOT.CAT -no-emul-boot -boot-load-size 4 -boot-info-table {{ ISOExtractPoint }}/ {{ Target.WorkingFolder }}/{{ Deploy.Software.ESXi.Installer }}/ {{ Target.WorkingFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
+      ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }} -b ISOLINUX.BIN -c BOOT.CAT -no-emul-boot -boot-load-size 4 -boot-info-table {{ ISOExtractPoint }}/ {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/ {{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
       args:
-        chdir: "{{ Target.WorkingFolder }}/{{ item.value.VMName }}/"
+        chdir: "{{ Target.TempFolder }}/{{ item.value.VMName }}/"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
       tags: esxi-install-media
@@ -126,7 +126,7 @@
         password: "{{ Target.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter: "{{ Target.DataCenter }}"
-        src: "{{ Target.WorkingFolder }}/{{ Pod.Number }}{{ item.key }}" 
+        src: "{{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }}" 
         datastore: "{{ Target.Datastore }}" 
         path: "{{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
@@ -142,14 +142,14 @@
       
     - name: Delete local ISO content directory
       ansible.builtin.file:
-        path: "{{ Target.WorkingFolder }}/{{ Deploy.Software.ESXi.Installer }}"
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}"
         state: absent
       when: DEBUG.KeepInstallerFiles != true
       tags: esxi-install-media
 
     - name: Delete nested ESXi host directories
       ansible.builtin.file:
-        path: "{{ Target.WorkingFolder }}/{{ item.value.VMName }}"
+        path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
         state: absent
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 
@@ -159,7 +159,7 @@
 
     - name: Delete the ESXi ISO files
       ansible.builtin.file:
-        path: "{{ Target.WorkingFolder }}/{{ Pod.Number }}{{ item.key }}" 
+        path: "{{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }}" 
         state: absent
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when: 

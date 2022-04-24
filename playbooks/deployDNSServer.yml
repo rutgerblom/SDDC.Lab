@@ -8,7 +8,7 @@
   name: deployDNSServer.yml
   vars:
     LOCAL_Ubuntu_Template: "{{ Target.TemplateFolder }}/{{ Deploy.Software.DNSServer.Template }}"
-    ISOExtractPoint: "{{ Target.WorkingFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}"
+    ISOExtractPoint: "{{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}"
   tasks:
     - name: deployDNSServer_Playbook
       ansible.builtin.debug:
@@ -66,7 +66,7 @@
                                     Target.DataCenter: {{ Target.DataCenter }}
                                      Target.Datastore: {{ Target.Datastore }}
                                       Target.VMFolder: {{ Target.VMFolder }}
-                                    Target.WorkingFolder: {{ Target.WorkingFolder }}
+                                    Target.TempFolder: {{ Target.TempFolder }}
 
                                        Ubuntu Version: {{ Deploy.Software.DNSServer.Version }}
                                           Ubuntu FQDN: {{ Nested_DNSServer.FQDN }}
@@ -131,9 +131,9 @@
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy == true
 
-    - name: Create working directory
+    - name: Create temp directory
       ansible.builtin.file:
-        path: "{{ Target.WorkingFolder }}"
+        path: "{{ Target.TempFolder }}"
         state: directory
       when: 
         - ubuntu_status is failed
@@ -164,7 +164,7 @@
     - name: Copy txt.cfg from Ubuntu ISO
       ansible.builtin.copy: 
         src: "{{ ISOExtractPoint }}/isolinux/txt.cfg"
-        dest: "{{ Target.WorkingFolder }}/{{ Deploy.Software.DNSServer.Installer }}/isolinux/"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/isolinux/"
         mode: "666"
       when: 
         - ubuntu_status is failed
@@ -172,7 +172,7 @@
 
     - name: Edit txt.cfg to enable autoinstaller 
       ansible.builtin.replace:
-        path: "{{ Target.WorkingFolder }}/{{ Deploy.Software.DNSServer.Installer }}/isolinux/txt.cfg"
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/isolinux/txt.cfg"
         regexp: 'append   initrd=/casper/initrd quiet  ---'
         replace: 'append   initrd=/casper/initrd quiet --- autoinstall ds=nocloud;s=/cdrom/{{ Common.DNS.Domain }}/'
       when: 
@@ -181,7 +181,7 @@
 
     - name: Create directory to store user-data and meta-data
       ansible.builtin.file:
-        path: "{{ Target.WorkingFolder }}/{{ Deploy.Software.DNSServer.Installer }}/{{ Common.DNS.Domain }}"
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/{{ Common.DNS.Domain }}"
         state: directory
       when: 
         - ubuntu_status is failed
@@ -198,9 +198,9 @@
         - Deploy.Product.DNSServer.Deploy == true  
 
     - name: Create custom Ubuntu ISO
-      ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.WorkingFolder }}/{{ Deploy.Software.DNSServer.File }} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table  {{ ISOExtractPoint }}/ {{ Target.WorkingFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
+      ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table  {{ ISOExtractPoint }}/ {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
       args:
-        chdir: "{{ Target.WorkingFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
+        chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
       when: 
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy == true
@@ -212,7 +212,7 @@
         password: "{{ Target.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter: "{{ Target.DataCenter }}"
-        src: "{{ Target.WorkingFolder }}/{{ Deploy.Software.DNSServer.File }}" 
+        src: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }}" 
         datastore: "{{ Target.Datastore }}"
         path: "{{ Target.ISOFolder }}/{{ Deploy.Software.DNSServer.File }}"
       when: 
@@ -411,7 +411,7 @@
 
     - name: Delete local ISO content directory
       ansible.builtin.file:
-        path: "{{ Target.WorkingFolder }}/{{ Deploy.Software.DNSServer.Installer }}"
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}"
         state: absent
       when: 
         - DEBUG.KeepInstallerFiles != true
@@ -420,7 +420,7 @@
 
     - name: Delete the custom Ubuntu ISO file
       ansible.builtin.file:
-        path: "{{ Target.WorkingFolder }}/{{ Deploy.Software.DNSServer.File }}" 
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }}" 
         state: absent
       when: 
         - DEBUG.KeepInstallerFiles != true

@@ -691,7 +691,7 @@
 ########################################################################################################################
 ##
 
-    - name: Prepare for deployment by deleting /tmp/{{ SiteCode }} directory
+    - name: Prepare for deployment by deleting {{ lookup('env','HOME') }}/SDDC.Lab/{{ SiteCode }} directory
       ansible.builtin.file:
-        path: "/tmp/{{ SiteCode }}"
+        path: "{{ lookup('env','HOME') }}/SDDC.Lab/{{ SiteCode }}"
         state: absent
