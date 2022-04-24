@@ -7,7 +7,7 @@
 - hosts: localhost
   name: deployVc.yml
   vars:
-    ISOMountPoint: "{{ Target.ISOMount }}/{{ Deploy.Software.vCenter.Vendor }}_{{ Deploy.Software.vCenter.Product }}_{{ Deploy.Software.vCenter.Version }}"
+    ISOExtractPoint: "{{ Target.WorkingFolder }}/isos/{{ Deploy.Software.vCenter.Vendor }}_{{ Deploy.Software.vCenter.Product }}_{{ Deploy.Software.vCenter.Version }}"
   tasks:
     - name: deployVc_Playbook
       ansible.builtin.debug:
@@ -64,7 +64,7 @@
                                      Target.Datastore: {{ Target.Datastore }}
                                       Target.VMFolder: {{ Target.VMFolder }}
 
-                                        ISOMountPoint: {{ ISOMountPoint }}
+                                        ISOExtractPoint: {{ ISOExtractPoint }}
 
                                                Vendor: {{ Deploy.Software.vCenter.Vendor }}
                                               Product: {{ Deploy.Software.vCenter.Product }}
@@ -76,7 +76,7 @@
                                      vCenter Template: {{ Deploy.Software.vCenter.Template.vCenter }}
                           Host Template (Replication): {{ Deploy.Software.vCenter.Template.Repl_ESXi }}
                        vCenter Template (Replication): {{ Deploy.Software.vCenter.Template.Repl_vCenter }}
-           Installation Configuration (From Template): {{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}
+           Installation Configuration (From Template): {{ Target.WorkingFolder }}/{{ Deploy.Software.vCenter.Config }}
 
                           vCenter Replication Partner: {{ Nested_vCenter.SSO.ReplicationPartner }}
 
@@ -84,9 +84,9 @@
       when:
         - DEBUG.DisplayVariables == true
 
-    - name: Create temp directory
+    - name: Create working directory
       ansible.builtin.file:
-        path: "{{ Target.TempFolder }}"
+        path: "{{ Target.WorkingFolder }}"
         state: directory
 
     - name: Check if vCenter is already installed
@@ -102,7 +102,7 @@
     - name: Create vCenter with embedded PSC installation template (Target=Host) - No Replication Partner
       ansible.builtin.template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.ESXi }}"
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
+        dest: "{{ Target.WorkingFolder }}/{{ Deploy.Software.vCenter.Config }}"
         mode: "666"
       when:
         - vcenter_check.status != 200
@@ -112,7 +112,7 @@
     - name: Create vCenter with embedded PSC installation template (Target=vCenter) - No Replication Partner
       ansible.builtin.template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.vCenter }}"
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
+        dest: "{{ Target.WorkingFolder }}/{{ Deploy.Software.vCenter.Config }}"
         mode: "666"
       when:
         - vcenter_check.status != 200
@@ -122,7 +122,7 @@
     - name: Create vCenter with embedded PSC installation template (Target=Host) - With Replication Partner
       ansible.builtin.template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.Repl_ESXi }}"
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
+        dest: "{{ Target.WorkingFolder }}/{{ Deploy.Software.vCenter.Config }}"
         mode: "666"
       when:
         - vcenter_check.status != 200
@@ -132,20 +132,24 @@
     - name: Create vCenter with embedded PSC installation template (Target=vCenter) - With Replication Partner
       ansible.builtin.template: 
         src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.vCenter.Template.Repl_vCenter }}"
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
+        dest: "{{ Target.WorkingFolder }}/{{ Deploy.Software.vCenter.Config }}"
         mode: "666"
       when:
         - vcenter_check.status != 200
         - Target.Deployment == "vCenter"
         - Nested_vCenter.SSO.ReplicationPartner != ""
 
-    - name: Mount vCenter ISO as read-only and do not automatically mount with 'mount -a'
-      ansible.posix.mount:
-        path:   "{{ ISOMountPoint }}"
-        src:    "{{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }}"
-        fstype: iso9660
-        opts:   ro,noauto
-        state:  mounted
+    - name: Extract vCenter ISO
+      ansible.builtin.command: "7z x {{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }} -o{{ ISOExtractPoint }} -scsUTF-8 -y"
+      when: vcenter_check.status != 200
+      ignore_errors: true
+
+    - name: Add execute permission to extracted files
+      ansible.builtin.file:
+        path: "{{ ISOExtractPoint }}"
+        state: directory
+        recurse: true
+        mode: "775"
       when: vcenter_check.status != 200
 
     - name: Notify user of vCenter install time
@@ -154,22 +158,22 @@
       when: vcenter_check.status != 200
       
     - name: Perform vCenter CLI-based installation
-      ansible.builtin.command: "./vcsa-deploy install --accept-eula --no-ssl-certificate-verification --acknowledge-ceip {{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
+      ansible.builtin.command: "./vcsa-deploy install --accept-eula --no-ssl-certificate-verification --acknowledge-ceip {{ Target.WorkingFolder }}/{{ Deploy.Software.vCenter.Config }}"
       args:
-        chdir: "{{ ISOMountPoint }}/vcsa-cli-installer/lin64/"
+        chdir: "{{ ISOExtractPoint }}/vcsa-cli-installer/lin64/"
       register: vcdeploy
       when: vcenter_check.status != 200
 
-    - name: Unmount vCenter ISO
-      ansible.posix.mount:
-        path:   "{{ ISOMountPoint }}"
-        state:  absent
-      when:
+    - name: Delete local ISOExtractPoint directory
+      ansible.builtin.file:
+        path: "{{ ISOExtractPoint }}"
+        state: absent
+      when: 
+        - DEBUG.KeepInstallerFiles != true
         - vcenter_check.status != 200
-        - Deploy.Software.Options.UnmountISO
 
     - name: Delete the temporary vCenter with embedded PSC installation template
-      ansible.builtin.file: "path={{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }} state=absent"
+      ansible.builtin.file: "path={{ Target.WorkingFolder }}/{{ Deploy.Software.vCenter.Config }} state=absent"
       when: 
         - vcenter_check.status != 200
         - DEBUG.KeepConfigFiles != true

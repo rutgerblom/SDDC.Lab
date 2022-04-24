@@ -1113,3 +1113,13 @@
   - Updated playbook ```playbooks/deployDNSServer.yml``` and the associated template files to use the new ```WorkingFolder``` variable.
   - Added a task to ```playbooks/deployDNSServer.yml``` that conditionaly (```DEBUG.KeepInstallerFiles != true```) deletes the local ISOExtractPoint directory
   - Added a task to ```playbooks/prepareISOInstaller.yml``` that conditionaly (```DEBUG.KeepInstallerFiles != true```) deletes the local ISOExtractPoint directory
+
+## Dev-v5.0.0 24-APRIL-2022
+
+### Added by Rutger Blom
+  - Replaced the ```ansible.posix.mount``` task in the ```playbooks/deployVc.yml``` playbook with a ```ansible.builtin.command```task running ```7z``` to extract the contents of the vCenter ISO file. The ```ansible.posix.mount``` task requires root or CAP_SYS_ADMIN privileges which is something we want to eliminate in the upcoming version.
+  - A non-critical error occurs when 7z extracts vCenter ISO files so added the ```ìgnore_errors: true```parameter to the task.
+  - Updated playbook ```playbooks/deployVc.yml``` to use the new ```WorkingFolder``` variable.
+  - Added a task to ```playbooks/deployVc.yml``` that conditionaly (```DEBUG.KeepInstallerFiles != true```) deletes the local ISOExtractPoint directory.
+
+
