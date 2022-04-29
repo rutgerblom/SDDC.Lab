@@ -1,3 +1,9 @@
+<style>
+  red { color: red }
+  green { color: green; font-weight: bold }
+  yellow { color: yellow }
+</style>
+
 ```
      _________________  _____       _           _             _____ 
     /  ___|  _  \  _  \/  __ \     | |         | |           |  ___|                 Developed By
@@ -185,6 +191,100 @@ When exactly two physical ESXi servers are being used to run Pod workloads, you 
 When three or more physical ESXi servers are being used to run Pod workloads, you have two options:
 1. Use a single "NetLab-L3-Switch" and connect all servers to it (Suggested)
 2. If the number of available ports on the "NetLab-L3-Switch" is limited, you can use two switches as is shown in the Pod Logical Networking Overview above.  In this configuration, a layer-2 only switch is used for the SDDCLab_vDS vswitch, and a layer-3 switch is used to connect to the "Lab-Routers" segment.
+
+
+## IP Address Assignments (<yellow>Under Development</yellow>)
+When a Pod is deployed, various components are deployed as part of that Pod.  Each of those components are connected to the Pod's Management subnet.  Here is a listing of those components along with their respective host IP address:
+
+| IPv4 Address | Component | Description | DNS Name | Part of Default Deployment |
+|-------------------|-----------|-------------|---|-------------------------|
+| 1 | Gateway | VyOS Router | Pod-240-Router | <green> Yes </green> |
+| 2 | Reserved | Reserved for Future Use | | |
+| 3 | Reserved | Reserved for Future Use | | |
+| 4 | Reserved | Reserved for Future Use | | |
+| 5 | vCenter Server | vCenter Server Appliance | Pod-240-vCenter | <green> Yes </green> |
+| 6 | vRLI | vRealize Log Insight Appliance | Pod-240-vRLI | <green> Yes </green> |
+| 7 | GM VIP | NSX-T Global Manager VIP | Pod-240-NSXT-GM | <yellow> Only if deploying NSX-T Federation <yellow> |
+| 8 | GM-1 | NSX-T Global Manager Node 1 | Pod-240-NSXT-GM-1 | <yellow> Only if deploying NSX-T Federation <yellow> |
+| 9 | GM-2 | NSX-T Global Manager Node 2 | Pod-240-NSXT-GM-2 | <red> No </red> |
+| 10 | GM-3 | NSX-T Global Manager Node 3 | Pod-240-NSXT-GM-3 | <red> No </red> |
+| 11 | LM VIP | NSX-T Local Manager VIP | Pod-240-NSXT-LM | <green> Yes </green> |
+| 12 | LM-1 | NSX-T Local Manager Node 1 | Pod-240-NSXT-LM-1 | <green> Yes </green> |
+| 13 | LM-2 | NSX-T Local Manager Node 2 | Pod-240-NSXT-LM-2 | <red> No </red> |
+| 14 | LM-3 | NSX-T Local Manager Node 3 | Pod-240-NSXT-LM-3 | <red> No </red> |
+| 15 | AVI VIP | NSX-T Advanced Load Balancer (AVI) Controller VIP | Pod-240-AVI-Controller-VIP | <red> No </red> |
+| 16 | AVI Controller-1 | NSX-T Advanced Load Balancer (AVI) Controller 1 | Pod-240-AVI-Controller-1 | <red> No </red> |
+| 17 | AVI Controller-2 | NSX-T Advanced Load Balancer (AVI) Controller 2 | Pod-240-AVI-Controller-1 | <red> No </red> |
+| 18 | AVI Controller-3 | NSX-T Advanced Load Balancer (AVI) Controller 3 | Pod-240-AVI-Controller-1 | <red> No </red> |
+| 19 | vRNI Platform | vRealize Network Insight Platform Appliance | Pod-240-vRNI | <red> No </red> |
+| 20 | vRNI Collector | vRealize Network Insight Collector Node | Pod-240-vRNI-Collector | <red> No </red> |
+| 21 | vIDM VIP | VMware Identity Manager Load-Balancer VIP | Pod-240-vIDM-VIP | <red> No </red> |
+| 22 | vIDM-1 | VMware Identity Manager Node 1 | Pod-240-vIDM-1 | <red> No </red> |
+| 23 | vIDM-2 | VMware Identity Manager Node 2 | Pod-240-vIDM-2 | <red> No </red> |
+| 24 | vIDM-3 | VMware Identity Manager Node 3 | Pod-240-vIDM-3 | <red> No </red> |
+| Thru 100 | Reserved | Reserved for Future Management VMs/Services | | |
+| 101 | Mgmt-1 | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-1 | <red> No </red> |
+| 102 | Mgmt-2 | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-2 | <red> No </red> |
+| 103 | Mgmt-3 | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-3 | <red> No </red> |
+| 104-109 | Mgmt-*X* | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-*X* | <red> No </red> |
+| 111 | ComputeA-1 | Nested ESXi Host in vSphere ComputeA Cluster | Pod-240-ComputeA-1 | <green> Yes </green> |
+| 112 | ComputeA-2 | Nested ESXi Host in vSphere ComputeA Cluster | Pod-240-ComputeA-2 | <green> Yes </green> |
+| 113 | ComputeA-3 | Nested ESXi Host in vSphere ComputeA Cluster | Pod-240-ComputeA-3 | <green> Yes </green> |
+| 114-119 | ComputeA-*X* | Nested ESXi Host in vSphere ComputeA Cluster | Pod-240-ComputeA-*X* | <red> No </red> |
+| 121 | ComputeB-1 | Nested ESXi Host in vSphere ComputeB Cluster | Pod-240-ComputeB-1 | <red> No </red> |
+| 122 | ComputeB-2 | Nested ESXi Host in vSphere ComputeB Cluster | Pod-240-ComputeB-2 | <red> No </red> |
+| 123 | ComputeB-3 | Nested ESXi Host in vSphere ComputeB Cluster | Pod-240-ComputeB-3 | <red> No </red> |
+| 124-129 | ComputeB-*X* | Nested ESXi Host in vSphere ComputeB Cluster | Pod-240-ComputeB-*X* | <red> No </red> |
+| 131-189 | Future Use  | Future vSphere Clusters (As needed by users) | Pod-240-Compute*Z*-*X* | <red> No </red> |
+| 191 | Edge-1 | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-1 | <green> Yes </green> |
+| 192 | Edge-2 | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-1 | <green> Yes </green> |
+| 193 | Edge-3 | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-1 | <green> Yes </green> |
+| 194-199 | Edge-*X* | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-*X* | <red> No </red> |
+| 201 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | | <red> No </red> |
+| 202 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | | <red> No </red> |
+| 203 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | | <red> No </red> |
+| 204 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | | <red> No </red> |
+| 205 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | | <red> No </red> |
+| 206 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | | <red> No </red> |
+| 207 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | | <red> No </red> |
+| 208 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | | <red> No </red> |
+| 209 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | | <red> No </red> |
+| 210 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) |  | <red> No </red> |
+| 211 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB)|  | <red> No </red> |
+| 212 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | | <red> No </red> |
+| 213 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | | <red> No </red> |
+| 214 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | | <red> No </red> |
+| 215 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | | <red> No </red> |
+| 216-220 | Reserved | Tanzu Supervisor Cluster Control Plane (Compute*X*) | | <red> No </red> |
+| 221-225 | Reserved | Tanzu Supervisor Cluster Control Plane (Compute*Y*) | | <red> No </red> |
+| 226 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | | <red> No </red> |
+| 227 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | | <red> No </red> |
+| 228 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | | <red> No </red> |
+| 229 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | | <red> No </red> |
+| 230 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | | <red> No </red> |
+| 231 | Reserved  | AVI Service Engine | | <red> No </red> |
+| 232 | Reserved  | AVI Service Engine | | <red> No </red> |
+| 233 | Reserved  | AVI Service Engine | | <red> No </red> |
+| 234 | Reserved  | AVI Service Engine | | <red> No </red> |
+| 235 | Reserved  | AVI Service Engine | | <red> No </red> |
+| 236 | Reserved  | AVI Service Engine | | <red> No </red> |
+| 237 | Reserved  | AVI Service Engine | | <red> No </red> |
+| 238 | Reserved  | AVI Service Engine | | <red> No </red> |
+| 239 | Reserved  | AVI Service Engine | | <red> No </red> |
+| 241 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
+| 242 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
+| 243 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
+| 244 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
+| 245 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
+| 246 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
+| 247 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
+| 248 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
+| 249 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
+| 250 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
+| 251 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
+| 252 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
+| 253 | EdgeVM-02 | NSX-T Edge Transport Node 2 | Pod-240-T0-EdgeVM-01 | <green> Yes </green> |
+| 254 | EdgeVM-01 | NSX-T Edge Transport Node 1 | Pod-240-T0-EdgeVM-01 | <green> Yes </green> |
 
 
 ## IP Address Assignments
