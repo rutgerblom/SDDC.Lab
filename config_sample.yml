@@ -71,8 +71,6 @@ Deploy:
         PodNumber: "{{ Pod.Number }}"                     # If not deploying Global Manager to this site as part of this deployment, change to indicate the Pod Number (i.e. 30) of the Pod in which the Global Manager is being deployed to.  When Federation is deployed, this is used to determine the proper eBGP Peering ASN to use on the Pod Router.
       Edge:
         Deploy: true                                      # Edge - Deploy NSX-T Edge Transport Nodes as part of the Pod deployment.
-      CloudServicesManager:
-        Deploy: false                                     # CloudServicesManager - PLANNED FOR FUTURE - NOT YET IMPLEMENTED
   WorkloadVMs:
     Deploy: false                                         # Controls whether Guest Workload VMs are deployed from the Content Library after the Pod deployment is completed
     Cluster: ComputeA                                     # Default vSphere Cluster to place the Workload VMs in
@@ -121,8 +119,8 @@ Deploy:
       Product: vRLI                                       # Indicates software product you want to deploy from the software repository (software.yml)
       Version: '8.6.2'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
-      Config:  "{{ SiteCode }}-vRLI.conf"
-      Installer: "{{ SiteCode }}-Installer-vRLI"
+      Config:  "{{ SiteCode }}-vRLI-1.conf"
+      Installer: "{{ SiteCode }}-Installer-vRLI-1"
     DNSServer:                                            # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  Ubuntu                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: Server                                     # Indicates software product you want to deploy from the software repository (software.yml)
@@ -171,8 +169,8 @@ Common:
   Syslog:
     Protocol: udp
     Port: 514
-    IPv4: "{{ Net.Management.IPv4.Network }}.6"                               # Replace with your IP address if Deploy.Product.vRLI.Deploy == false
-    IPv6: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(6) }}"         # Replace with your IP address if Deploy.Product.vRLI.Deploy == false
+    IPv4: "{{ Net.Management.IPv4.Network }}.19"                              # Replace with your IP address if Deploy.Product.vRLI.Deploy == false
+    IPv6: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(19) }}"        # Replace with your IP address if Deploy.Product.vRLI.Deploy == false
   NFS:                                                                        # NFS - The NFS settings below refer to a NFS share that can be used by the NESTED ESXi hosts for storage, and has nothing to do with physical ESXi server(s).  If possible, we suggest using vSAN storage on the nested ESXi hosts, which are backed by local physical storage.
     Server:
       IPv4: 192.168.0.12
@@ -613,8 +611,8 @@ Nested_Router:
 ##
 
 Nested_vRLI:
-  VMName: "{{ SiteCode }}-vRLI"
-  FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-vRLI.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.6{% endif %}"
+  VMName: "{{ SiteCode }}-vRLI-1"
+  FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-vRLI-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.19{% endif %}"
   Credential:
     root:
       Name: root
@@ -627,11 +625,11 @@ Nested_vRLI:
     AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
   Address:
     IPv4:
-      Address: "{{ Net.Management.IPv4.Network }}.6"
+      Address: "{{ Net.Management.IPv4.Network }}.19"
       Prefix:  "{{ Net.Management.IPv4.Prefix }}"
       Gateway: "{{ Net.Management.IPv4.Network }}.1"
     IPv6:
-      Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(6) }}"
+      Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(19) }}"
       Prefix:  "{{ Net.Management.IPv6.Prefix }}"
 
 
@@ -713,7 +711,7 @@ Nested_Cluster:
         ControlPlaneSize: TINY                                                          # Size - The size of the control plane virtual machines
         Network:
           Management:
-            StartingIP: "{{ Net.Management.IPv4.Network }}.101"                         # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
+            StartingIP: "{{ Net.Management.IPv4.Network }}.201"                         # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
             DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
@@ -748,7 +746,7 @@ Nested_Cluster:
         ControlPlaneSize: TINY                                                          # Size - The size of the control plane virtual machines
         Network:
           Management:
-            StartingIP: "{{ Net.Management.IPv4.Network }}.106"                         # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
+            StartingIP: "{{ Net.Management.IPv4.Network }}.206"                         # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
             DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
@@ -783,7 +781,7 @@ Nested_Cluster:
         ControlPlaneSize: TINY                                                          # Size - The size of the control plane virtual machines
         Network:
           Management:
-            StartingIP: "{{ Net.Management.IPv4.Network }}.111"                         # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
+            StartingIP: "{{ Net.Management.IPv4.Network }}.211"                         # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
             DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
@@ -818,7 +816,7 @@ Nested_Cluster:
         ControlPlaneSize: TINY                                                          # Size - The size of the control plane virtual machines
         Network:
           Management:
-            StartingIP: "{{ Net.Management.IPv4.Network }}.116"                         # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
+            StartingIP: "{{ Net.Management.IPv4.Network }}.236"                         # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
               Network: 10.244.48.0
@@ -888,7 +886,7 @@ Nested_ESXi:
   Host:
     Mgmt1:
       Cluster: Management
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Mgmt-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.21{% endif %}"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Mgmt-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.101{% endif %}"
       VMName: "{{ SiteCode }}-Mgmt-1"
       User: root
       Password: "{{ Common.Password.Nested }}"
@@ -902,11 +900,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.Management.IPv4.Network }}.21"
+              Address: "{{ Net.Management.IPv4.Network }}.101"
               Prefix:  "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(21) }}"
+              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(101) }}"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
@@ -916,11 +914,11 @@ Nested_ESXi:
           Stack: vmotion
           Address:
             IPv4:
-              Address: "{{ Net.vMotion.IPv4.Network }}.21"
+              Address: "{{ Net.vMotion.IPv4.Network }}.101"
               Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
               Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(21) }}"
+              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(101) }}"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
@@ -930,11 +928,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.vSAN.IPv4.Network }}.21"
+              Address: "{{ Net.vSAN.IPv4.Network }}.101"
               Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
               Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(21) }}"
+              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(101) }}"
               Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
         vmk3:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
@@ -944,16 +942,16 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.IPStorage.IPv4.Network }}.21"
+              Address: "{{ Net.IPStorage.IPv4.Network }}.101"
               Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
               Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(21) }}"
+              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(101) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
     Mgmt2:
       Cluster: Management
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Mgmt-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.22{% endif %}"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Mgmt-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.102{% endif %}"
       VMName: "{{ SiteCode }}-Mgmt-2"
       User: root
       Password: "{{ Common.Password.Nested }}"
@@ -967,11 +965,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.Management.IPv4.Network }}.22"
+              Address: "{{ Net.Management.IPv4.Network }}.102"
               Prefix:  "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(22) }}"
+              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(102) }}"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
@@ -981,11 +979,11 @@ Nested_ESXi:
           Stack: vmotion
           Address:
             IPv4:
-              Address: "{{ Net.vMotion.IPv4.Network }}.22"
+              Address: "{{ Net.vMotion.IPv4.Network }}.102"
               Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
               Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(22) }}"
+              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(102) }}"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
@@ -995,11 +993,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.vSAN.IPv4.Network }}.22"
+              Address: "{{ Net.vSAN.IPv4.Network }}.102"
               Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
               Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(22) }}"
+              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(102) }}"
               Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
         vmk3:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
@@ -1009,16 +1007,16 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.IPStorage.IPv4.Network }}.22"
+              Address: "{{ Net.IPStorage.IPv4.Network }}.102"
               Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
               Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(22) }}"
+              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(102) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
     Mgmt3:
       Cluster: Management
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Mgmt-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.23{% endif %}"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Mgmt-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.103{% endif %}"
       VMName: "{{ SiteCode }}-Mgmt-3"
       User: root
       Password: "{{ Common.Password.Nested }}"
@@ -1032,11 +1030,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.Management.IPv4.Network }}.23"
+              Address: "{{ Net.Management.IPv4.Network }}.103"
               Prefix:  "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(23) }}"
+              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(103) }}"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
@@ -1046,11 +1044,11 @@ Nested_ESXi:
           Stack: vmotion
           Address:
             IPv4:
-              Address: "{{ Net.vMotion.IPv4.Network }}.23"
+              Address: "{{ Net.vMotion.IPv4.Network }}.103"
               Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
               Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(23) }}"
+              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(103) }}"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
@@ -1060,11 +1058,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.vSAN.IPv4.Network }}.23"
+              Address: "{{ Net.vSAN.IPv4.Network }}.103"
               Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
               Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(23) }}"
+              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(103) }}"
               Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
         vmk3:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
@@ -1074,16 +1072,16 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.IPStorage.IPv4.Network }}.23"
+              Address: "{{ Net.IPStorage.IPv4.Network }}.103"
               Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
               Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(23) }}"
+              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(103) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
     ComputeA1:
       Cluster: ComputeA
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeA-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.31{% endif %}"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeA-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.111{% endif %}"
       VMName: "{{ SiteCode }}-ComputeA-1"
       User: root
       Password: "{{ Common.Password.Nested }}"
@@ -1097,11 +1095,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.Management.IPv4.Network }}.31"
+              Address: "{{ Net.Management.IPv4.Network }}.111"
               Prefix:  "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(31) }}"
+              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(111) }}"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
@@ -1111,11 +1109,11 @@ Nested_ESXi:
           Stack: vmotion
           Address:
             IPv4:
-              Address: "{{ Net.vMotion.IPv4.Network }}.31"
+              Address: "{{ Net.vMotion.IPv4.Network }}.111"
               Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
               Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(31) }}"
+              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(111) }}"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
@@ -1125,11 +1123,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.vSAN.IPv4.Network }}.31"
+              Address: "{{ Net.vSAN.IPv4.Network }}.111"
               Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
               Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(31) }}"
+              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(111) }}"
               Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
         vmk3:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
@@ -1139,16 +1137,16 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.IPStorage.IPv4.Network }}.31"
+              Address: "{{ Net.IPStorage.IPv4.Network }}.111"
               Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
               Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(31) }}"
+              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(111) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
     ComputeA2:
       Cluster: ComputeA
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeA-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.32{% endif %}"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeA-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.112{% endif %}"
       VMName: "{{ SiteCode }}-ComputeA-2"
       User: root
       Password: "{{ Common.Password.Nested }}"
@@ -1162,11 +1160,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.Management.IPv4.Network }}.32"
+              Address: "{{ Net.Management.IPv4.Network }}.112"
               Prefix:  "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(32) }}"
+              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(112) }}"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
@@ -1176,11 +1174,11 @@ Nested_ESXi:
           Stack: vmotion
           Address:
             IPv4:
-              Address: "{{ Net.vMotion.IPv4.Network }}.32"
+              Address: "{{ Net.vMotion.IPv4.Network }}.112"
               Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
               Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(32) }}"
+              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(112) }}"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
@@ -1190,11 +1188,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.vSAN.IPv4.Network }}.32"
+              Address: "{{ Net.vSAN.IPv4.Network }}.112"
               Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
               Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(32) }}"
+              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(112) }}"
               Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
         vmk3:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
@@ -1204,16 +1202,16 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.IPStorage.IPv4.Network }}.32"
+              Address: "{{ Net.IPStorage.IPv4.Network }}.112"
               Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
               Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(32) }}"
+              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(112) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
     ComputeA3:
       Cluster: ComputeA
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeA-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.33{% endif %}"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeA-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.113{% endif %}"
       VMName: "{{ SiteCode }}-ComputeA-3"
       User: root
       Password: "{{ Common.Password.Nested }}"
@@ -1227,11 +1225,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.Management.IPv4.Network }}.33"
+              Address: "{{ Net.Management.IPv4.Network }}.113"
               Prefix:  "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(33) }}"
+              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(113) }}"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
@@ -1241,11 +1239,11 @@ Nested_ESXi:
           Stack: vmotion
           Address:
             IPv4:
-              Address: "{{ Net.vMotion.IPv4.Network }}.33"
+              Address: "{{ Net.vMotion.IPv4.Network }}.113"
               Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
               Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(33) }}"
+              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(113) }}"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
@@ -1255,11 +1253,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.vSAN.IPv4.Network }}.33"
+              Address: "{{ Net.vSAN.IPv4.Network }}.113"
               Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
               Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(33) }}"
+              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(113) }}"
               Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
         vmk3:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
@@ -1269,16 +1267,16 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.IPStorage.IPv4.Network }}.33"
+              Address: "{{ Net.IPStorage.IPv4.Network }}.113"
               Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
               Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(33) }}"
+              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(113) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
     ComputeB1:
       Cluster: ComputeB
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeB-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.41{% endif %}"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeB-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.121{% endif %}"
       VMName: "{{ SiteCode }}-ComputeB-1"
       User: root
       Password: "{{ Common.Password.Nested }}"
@@ -1292,11 +1290,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.Management.IPv4.Network }}.41"
+              Address: "{{ Net.Management.IPv4.Network }}.121"
               Prefix:  "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(41) }}"
+              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(121) }}"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
@@ -1306,11 +1304,11 @@ Nested_ESXi:
           Stack: vmotion
           Address:
             IPv4:
-              Address: "{{ Net.vMotion.IPv4.Network }}.41"
+              Address: "{{ Net.vMotion.IPv4.Network }}.121"
               Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
               Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(41) }}"
+              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(121) }}"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
@@ -1320,11 +1318,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.vSAN.IPv4.Network }}.41"
+              Address: "{{ Net.vSAN.IPv4.Network }}.121"
               Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
               Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(41) }}"
+              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(121) }}"
               Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
         vmk3:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
@@ -1334,16 +1332,16 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.IPStorage.IPv4.Network }}.41"
+              Address: "{{ Net.IPStorage.IPv4.Network }}.121"
               Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
               Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(41) }}"
+              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(121) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
     ComputeB2:
       Cluster: ComputeB
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeB-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.42{% endif %}"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeB-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.122{% endif %}"
       VMName: "{{ SiteCode }}-ComputeB-2"
       User: root
       Password: "{{ Common.Password.Nested }}"
@@ -1357,11 +1355,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.Management.IPv4.Network }}.42"
+              Address: "{{ Net.Management.IPv4.Network }}.122"
               Prefix:  "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(42) }}"
+              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(122) }}"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
@@ -1371,11 +1369,11 @@ Nested_ESXi:
           Stack: vmotion
           Address:
             IPv4:
-              Address: "{{ Net.vMotion.IPv4.Network }}.42"
+              Address: "{{ Net.vMotion.IPv4.Network }}.122"
               Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
               Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(42) }}"
+              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(122) }}"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
@@ -1385,11 +1383,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.vSAN.IPv4.Network }}.42"
+              Address: "{{ Net.vSAN.IPv4.Network }}.122"
               Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
               Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(42) }}"
+              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(122) }}"
               Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
         vmk3:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
@@ -1399,16 +1397,16 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.IPStorage.IPv4.Network }}.42"
+              Address: "{{ Net.IPStorage.IPv4.Network }}.122"
               Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
               Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(42) }}"
+              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(122) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
     ComputeB3:
       Cluster: ComputeB
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeB-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.43{% endif %}"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeB-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.123{% endif %}"
       VMName: "{{ SiteCode }}-ComputeB-3"
       User: root
       Password: "{{ Common.Password.Nested }}"
@@ -1422,11 +1420,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.Management.IPv4.Network }}.43"
+              Address: "{{ Net.Management.IPv4.Network }}.123"
               Prefix:  "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(43) }}"
+              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(123) }}"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
@@ -1436,11 +1434,11 @@ Nested_ESXi:
           Stack: vmotion
           Address:
             IPv4:
-              Address: "{{ Net.vMotion.IPv4.Network }}.43"
+              Address: "{{ Net.vMotion.IPv4.Network }}.123"
               Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
               Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(43) }}"
+              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(123) }}"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
@@ -1450,11 +1448,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.vSAN.IPv4.Network }}.43"
+              Address: "{{ Net.vSAN.IPv4.Network }}.123"
               Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
               Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(43) }}"
+              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(123) }}"
               Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
         vmk3:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
@@ -1464,16 +1462,16 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.IPStorage.IPv4.Network }}.43"
+              Address: "{{ Net.IPStorage.IPv4.Network }}.123"
               Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
               Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(43) }}"
+              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(123) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
     Edge1:
       Cluster: Edge
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Edge-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.91{% endif %}"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Edge-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.191{% endif %}"
       VMName: "{{ SiteCode }}-Edge-1"
       User: root
       Password: "{{ Common.Password.Nested }}"
@@ -1487,11 +1485,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.Management.IPv4.Network }}.91"
+              Address: "{{ Net.Management.IPv4.Network }}.191"
               Prefix:  "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(91) }}"
+              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(191) }}"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
@@ -1501,11 +1499,11 @@ Nested_ESXi:
           Stack: vmotion
           Address:
             IPv4:
-              Address: "{{ Net.vMotion.IPv4.Network }}.91"
+              Address: "{{ Net.vMotion.IPv4.Network }}.191"
               Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
               Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(91) }}"
+              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(191) }}"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
@@ -1515,11 +1513,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.vSAN.IPv4.Network }}.91"
+              Address: "{{ Net.vSAN.IPv4.Network }}.191"
               Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
               Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(91) }}"
+              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(191) }}"
               Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
         vmk3:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
@@ -1529,16 +1527,16 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.IPStorage.IPv4.Network }}.91"
+              Address: "{{ Net.IPStorage.IPv4.Network }}.191"
               Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
               Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(91) }}"
+              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(191) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
     Edge2:
       Cluster: Edge
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Edge-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.92{% endif %}"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Edge-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.192{% endif %}"
       VMName: "{{ SiteCode }}-Edge-2"
       User: root
       Password: "{{ Common.Password.Nested }}"
@@ -1552,11 +1550,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.Management.IPv4.Network }}.92"
+              Address: "{{ Net.Management.IPv4.Network }}.192"
               Prefix:  "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(92) }}"
+              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(192) }}"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
@@ -1566,11 +1564,11 @@ Nested_ESXi:
           Stack: vmotion
           Address:
             IPv4:
-              Address: "{{ Net.vMotion.IPv4.Network }}.92"
+              Address: "{{ Net.vMotion.IPv4.Network }}.192"
               Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
               Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(92) }}"
+              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(192) }}"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
@@ -1580,11 +1578,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.vSAN.IPv4.Network }}.92"
+              Address: "{{ Net.vSAN.IPv4.Network }}.192"
               Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
               Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(92) }}"
+              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(192) }}"
               Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
         vmk3:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
@@ -1594,16 +1592,16 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.IPStorage.IPv4.Network }}.92"
+              Address: "{{ Net.IPStorage.IPv4.Network }}.192"
               Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
               Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(92) }}"
+              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(192) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
     Edge3:
       Cluster: Edge
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Edge-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.93{% endif %}"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Edge-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.193{% endif %}"
       VMName: "{{ SiteCode }}-Edge-3"
       User: root
       Password: "{{ Common.Password.Nested }}"
@@ -1617,11 +1615,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.Management.IPv4.Network }}.93"
+              Address: "{{ Net.Management.IPv4.Network }}.193"
               Prefix:  "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(93) }}"
+              Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(193) }}"
               Prefix:  "{{ Net.Management.IPv6.Prefix }}"
         vmk1:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vMotion.Name }}"
@@ -1631,11 +1629,11 @@ Nested_ESXi:
           Stack: vmotion
           Address:
             IPv4:
-              Address: "{{ Net.vMotion.IPv4.Network }}.93"
+              Address: "{{ Net.vMotion.IPv4.Network }}.193"
               Prefix:  "{{ Net.vMotion.IPv4.Prefix }}"
               Gateway: "{{ Net.vMotion.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(93) }}"
+              Address: "{{ Net.vMotion.IPv6.Network }}::{{ '%04x'|format(193) }}"
               Prefix:  "{{ Net.vMotion.IPv6.Prefix }}"
         vmk2:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.vSAN.Name }}"
@@ -1645,11 +1643,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.vSAN.IPv4.Network }}.93"
+              Address: "{{ Net.vSAN.IPv4.Network }}.193"
               Prefix:  "{{ Net.vSAN.IPv4.Prefix }}"
               Gateway: "{{ Net.vSAN.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(93) }}"
+              Address: "{{ Net.vSAN.IPv6.Network }}::{{ '%04x'|format(193) }}"
               Prefix:  "{{ Net.vSAN.IPv6.Prefix }}"
         vmk3:
           PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.IPStorage.Name }}"
@@ -1659,11 +1657,11 @@ Nested_ESXi:
           Stack: default
           Address:
             IPv4:
-              Address: "{{ Net.IPStorage.IPv4.Network }}.93"
+              Address: "{{ Net.IPStorage.IPv4.Network }}.193"
               Prefix:  "{{ Net.IPStorage.IPv4.Prefix }}"
               Gateway: "{{ Net.IPStorage.IPv4.Network }}.1"
             IPv6:
-              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(93) }}"
+              Address: "{{ Net.IPStorage.IPv6.Network }}::{{ '%04x'|format(193) }}"
               Prefix:  "{{ Net.IPStorage.IPv6.Prefix }}"
 
 
@@ -1958,22 +1956,6 @@ Nested_NSXT:
           Gateway: "{{ Net.Management.IPv4.Network }}.1"
         IPv6:
           Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(12) }}"
-          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-    CloudServicesManager:
-      VMName: "{{ SiteCode }}-NSXT-CSM"
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-NSXT-CSM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.15{% endif %}"
-      Deployment:
-        Size: small
-        role: nsx-cloud-service-manager
-        EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
-        AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
-      Address:
-        IPv4:
-          Address: "{{ Net.Management.IPv4.Network }}.15"
-          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
-          Gateway: "{{ Net.Management.IPv4.Network }}.1"
-        IPv6:
-          Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(15) }}"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
 
   Networking:
