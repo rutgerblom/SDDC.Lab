@@ -203,7 +203,7 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 3 | Reserved | Reserved for Future Use | | |
 | 4 | Reserved | Reserved for Future Use | | |
 | 5 | vCenter Server | vCenter Server Appliance | Pod-240-vCenter | <green> Yes </green> |
-| 6 | vRLI | vRealize Log Insight Appliance | Pod-240-vRLI | <green> Yes </green> |
+| 6 | Reserved | Reserved for Future Use  | | |
 | 7 | GM VIP | NSX-T Global Manager VIP | Pod-240-NSXT-GM | <yellow> Only if deploying NSX-T Federation <yellow> |
 | 8 | GM-1 | NSX-T Global Manager Node 1 | Pod-240-NSXT-GM-1 | <yellow> Only if deploying NSX-T Federation <yellow> |
 | 9 | GM-2 | NSX-T Global Manager Node 2 | Pod-240-NSXT-GM-2 | <red> No </red> |
@@ -216,12 +216,11 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 16 | AVI Controller-1 | NSX-T Advanced Load Balancer (AVI) Controller 1 | Pod-240-AVI-Controller-1 | <red> No </red> |
 | 17 | AVI Controller-2 | NSX-T Advanced Load Balancer (AVI) Controller 2 | Pod-240-AVI-Controller-1 | <red> No </red> |
 | 18 | AVI Controller-3 | NSX-T Advanced Load Balancer (AVI) Controller 3 | Pod-240-AVI-Controller-1 | <red> No </red> |
-| 19 | vRNI Platform | vRealize Network Insight Platform Appliance | Pod-240-vRNI | <red> No </red> |
-| 20 | vRNI Collector | vRealize Network Insight Collector Node | Pod-240-vRNI-Collector | <red> No </red> |
-| 21 | vIDM VIP | VMware Identity Manager Load-Balancer VIP | Pod-240-vIDM-VIP | <red> No </red> |
-| 22 | vIDM-1 | VMware Identity Manager Node 1 | Pod-240-vIDM-1 | <red> No </red> |
-| 23 | vIDM-2 | VMware Identity Manager Node 2 | Pod-240-vIDM-2 | <red> No </red> |
-| 24 | vIDM-3 | VMware Identity Manager Node 3 | Pod-240-vIDM-3 | <red> No </red> |
+| 19 | vRLI-1 | vRealize Log Insight Appliance Node 1 | Pod-240-vRLI-1 | <green> Yes </green> |
+| 20 | vRLI-2 | vRealize Log Insight Appliance Node 2 | Pod-240-vRLI-2 | <red> No </red> |
+| 21 | vRLI-3 | vRealize Log Insight Appliance Node 3 | Pod-240-vRLI-3 | <red> No </red> |
+| 22 | vRNI Platform | vRealize Network Insight Platform Appliance | Pod-240-vRNI | <red> No </red> |
+| 23 | vRNI Collector | vRealize Network Insight Collector Node | Pod-240-vRNI-Collector | <red> No </red> |
 | Thru 100 | Reserved | Reserved for Future Management VMs/Services | | |
 | 101 | Mgmt-1 | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-1 | <red> No </red> |
 | 102 | Mgmt-2 | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-2 | <red> No </red> |
@@ -235,42 +234,24 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 122 | ComputeB-2 | Nested ESXi Host in vSphere ComputeB Cluster | Pod-240-ComputeB-2 | <red> No </red> |
 | 123 | ComputeB-3 | Nested ESXi Host in vSphere ComputeB Cluster | Pod-240-ComputeB-3 | <red> No </red> |
 | 124-129 | ComputeB-*X* | Nested ESXi Host in vSphere ComputeB Cluster | Pod-240-ComputeB-*X* | <red> No </red> |
-| 131-189 | Future Use  | Future vSphere Clusters (As needed by users) | Pod-240-Compute*Z*-*X* | <red> No </red> |
+| 131-139 | Reserved  | Future vSphere Cluster | | |
+| 141-149 | Reserved  | Future vSphere Cluster | | |
+| 151-159 | Reserved  | Future vSphere Cluster | | |
+| 161-169 | Reserved  | Future vSphere Cluster | | |
+| 171-179 | Reserved  | Future vSphere Cluster | | |
+| 181-189 | Reserved  | Future vSphere Cluster | | |
 | 191 | Edge-1 | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-1 | <green> Yes </green> |
 | 192 | Edge-2 | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-1 | <green> Yes </green> |
 | 193 | Edge-3 | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-1 | <green> Yes </green> |
 | 194-199 | Edge-*X* | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-*X* | <red> No </red> |
-| 201 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | | <red> No </red> |
-| 202 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | | <red> No </red> |
-| 203 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | | <red> No </red> |
-| 204 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | | <red> No </red> |
-| 205 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | | <red> No </red> |
-| 206 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | | <red> No </red> |
-| 207 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | | <red> No </red> |
-| 208 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | | <red> No </red> |
-| 209 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | | <red> No </red> |
-| 210 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) |  | <red> No </red> |
-| 211 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB)|  | <red> No </red> |
-| 212 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | | <red> No </red> |
-| 213 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | | <red> No </red> |
-| 214 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | | <red> No </red> |
-| 215 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | | <red> No </red> |
-| 216-220 | Reserved | Tanzu Supervisor Cluster Control Plane (Compute*X*) | | <red> No </red> |
-| 221-225 | Reserved | Tanzu Supervisor Cluster Control Plane (Compute*Y*) | | <red> No </red> |
-| 226 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | | <red> No </red> |
-| 227 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | | <red> No </red> |
-| 228 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | | <red> No </red> |
-| 229 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | | <red> No </red> |
-| 230 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | | <red> No </red> |
-| 231 | Reserved  | AVI Service Engine | | <red> No </red> |
-| 232 | Reserved  | AVI Service Engine | | <red> No </red> |
-| 233 | Reserved  | AVI Service Engine | | <red> No </red> |
-| 234 | Reserved  | AVI Service Engine | | <red> No </red> |
-| 235 | Reserved  | AVI Service Engine | | <red> No </red> |
-| 236 | Reserved  | AVI Service Engine | | <red> No </red> |
-| 237 | Reserved  | AVI Service Engine | | <red> No </red> |
-| 238 | Reserved  | AVI Service Engine | | <red> No </red> |
-| 239 | Reserved  | AVI Service Engine | | <red> No </red> |
+| 201-205 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | | <red> No </red> |
+| 206-210 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | | <red> No </red> |
+| 211-215 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB)|  | <red> No </red> |
+| 216-220 | Reserved | Tanzu Supervisor Cluster Control Plane (Compute*W*) | | <red> No </red> |
+| 221-225 | Reserved | Tanzu Supervisor Cluster Control Plane (Compute*X*) | | <red> No </red> |
+| 226-230 | Reserved | Tanzu Supervisor Cluster Control Plane (Compute*Y*) | | <red> No </red> |
+| 231-235 | Reserved | Tanzu Supervisor Cluster Control Plane (Compute*Z*) | | <red> No </red> |
+| 236-240 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | | <red> No </red> |
 | 241 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
 | 242 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
 | 243 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
@@ -283,8 +264,8 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 250 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
 | 251 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
 | 252 | Reserved  | NSX-T Edge Transport Node  | | <red> No </red> |
-| 253 | EdgeVM-02 | NSX-T Edge Transport Node 2 | Pod-240-T0-EdgeVM-01 | <green> Yes </green> |
-| 254 | EdgeVM-01 | NSX-T Edge Transport Node 1 | Pod-240-T0-EdgeVM-01 | <green> Yes </green> |
+| 253 | EdgeVM-02 | NSX-T Tier-0 Edge Transport Node 2 | Pod-240-T0-EdgeVM-02 | <green> Yes </green> |
+| 254 | EdgeVM-01 | NSX-T Tier-0 Edge Transport Node 1 | Pod-240-T0-EdgeVM-01 | <green> Yes </green> |
 
 
 ## IP Address Assignments

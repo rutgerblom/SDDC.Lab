@@ -1130,3 +1130,21 @@
   - Removed variable ```WorkingFolder``` as it is not used anymore.
   - Updated documentation as well as comments in playbooks as Pod deployments can now be performed without using ```sudo``` e.g. ```ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml```.
   - Please be sure to update your ```config.yml``` file
+
+## Dev-v5.0.0 29-APRIL-2022
+
+### Added by Luis Chanu
+  - The following changes are still **UNTESTED**
+  - Updated IP Address Assignment table in ```README.md``` file.
+    - Moved all vSphere clusters to be between .101 and .199
+    - Move vRLI from .6 to .19
+    - Renamed vRLI to vRLI-1
+    - Moved vRNI entries to .22 and .23
+    - Added IP space for vRLI cluster deployment
+    - Moved Tanzu IP's to start at .201
+    - Added IP space Tanzu Supervisor Control Plane on numerous clusters
+    - Added IP space for additional NSX-T EdgeVMs
+    - Added IP space for AVI Load Balancer
+  - Removed CloudServicesManager from ```config_sample.yml``` and ```templates/Pod_Config.j2```.
+  - Updated IP addresses in ```config_sample.yml``` file.
+  - Please be sure to update your ```config.yml``` file(s).
