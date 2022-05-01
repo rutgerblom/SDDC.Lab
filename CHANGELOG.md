@@ -1148,3 +1148,9 @@
   - Removed CloudServicesManager from ```config_sample.yml``` and ```templates/Pod_Config.j2```.
   - Updated IP addresses in ```config_sample.yml``` file.
   - Please be sure to update your ```config.yml``` file(s).
+
+## Dev-v5.0.0 1-MAY-2022
+
+### Added by Rutger Blom
+  - Added NSX-T 3.1.3.7 to ```software_sample.yml```.
+  - Please be sure to update your ```software.yml``` file.
