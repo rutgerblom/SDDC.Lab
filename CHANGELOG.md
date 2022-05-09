@@ -1158,5 +1158,7 @@
 ## Dev-v5.0.0 8-MAY-2022
 
 ### Added by Luis Chanu
-  - Added vRLI 8.8.0 to ```software_sample.yml```. (UNTESTED)
+  - Added vRLI 8.8.0 to ```software_sample.yml```.
   - Please be sure to update your ```software.yml``` file.
+  - Updated vRLI deployment to use v8.8.0 in ```config_sample.yml``` file.
+  - Please be sure to update your ```config.yml``` file(s).
