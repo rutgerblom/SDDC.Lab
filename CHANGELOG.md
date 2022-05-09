@@ -1154,3 +1154,9 @@
 ### Added by Rutger Blom
   - Added NSX-T 3.1.3.7 to ```software_sample.yml```.
   - Please be sure to update your ```software.yml``` file.
+
+## Dev-v5.0.0 8-MAY-2022
+
+### Added by Luis Chanu
+  - Added vRLI 8.8.0 to ```software_sample.yml```. (UNTESTED)
+  - Please be sure to update your ```software.yml``` file.
