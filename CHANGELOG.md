@@ -1162,3 +1162,9 @@
   - Please be sure to update your ```software.yml``` file.
   - Updated vRLI deployment to use v8.8.0 in ```config_sample.yml``` file.
   - Please be sure to update your ```config.yml``` file(s).
+
+## Dev-v5.0.0 9-MAY-2022
+
+### Added by Luis Chanu
+  - Updated NSX-T deployment to use v3.1.3.7 in ```config_sample.yml``` file. (TESTED)
+  - Please be sure to update your ```config.yml``` file(s).
