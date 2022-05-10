@@ -193,7 +193,7 @@ When three or more physical ESXi servers are being used to run Pod workloads, yo
 2. If the number of available ports on the "NetLab-L3-Switch" is limited, you can use two switches as is shown in the Pod Logical Networking Overview above.  In this configuration, a layer-2 only switch is used for the SDDCLab_vDS vswitch, and a layer-3 switch is used to connect to the "Lab-Routers" segment.
 
 
-## IP Address Assignments (<yellow>Under Development</yellow>)
+## IP Address Assignments
 When a Pod is deployed, various components are deployed as part of that Pod.  Each of those components are connected to the Pod's Management subnet.  Here is a listing of those components along with their respective host IP address:
 
 | IPv4 Address | Component | Description | DNS Name | Part of Default Deployment |
@@ -268,7 +268,7 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 254 | EdgeVM-01 | NSX-T Tier-0 Edge Transport Node 1 | Pod-240-T0-EdgeVM-01 | <green> Yes </green> |
 
 
-## IP Address Assignments
+## IP Address Assignments (<yellow>SDDC.Lab v4</yellow>)
 When a Pod is deployed, various components are deployed as part of that Pod.  Each of those components are connected to the Pod's Management subnet.  Here is a listing of those components along with their respective host IP address:
 
 | IPv4 Address | Component | Description | Part of Default Deployment |
