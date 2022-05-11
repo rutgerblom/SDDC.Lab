@@ -1168,3 +1168,12 @@
 ### Added by Luis Chanu
   - Updated NSX-T deployment to use v3.1.3.7 in ```config_sample.yml``` file. (TESTED)
   - Please be sure to update your ```config.yml``` file(s).
+
+## Dev-v5.0.0 10-MAY-2022
+
+### Added by Luis Chanu
+  - Added "Ignore Fatal Error Message" to "Extract vCenter ISO" task in ```playbooks/deployVc.yml``` playbook.
+  - Added vRLI VIP entry in the "IP Address Assignments" table
+  - Modified (a) vRLI IP for vRLI-1 and (b) syslog server entry in ```config_sample.yml```
+  - Please be sure to update your ```config.yml``` file(s).
+  - Changed default permissions for /Software directory structure from 0775 to 0777 to address issue when downloading software directly on ansible host.

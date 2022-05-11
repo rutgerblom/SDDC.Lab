@@ -169,8 +169,8 @@ Common:
   Syslog:
     Protocol: udp
     Port: 514
-    IPv4: "{{ Net.Management.IPv4.Network }}.19"                              # Replace with your IP address if Deploy.Product.vRLI.Deploy == false
-    IPv6: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(19) }}"        # Replace with your IP address if Deploy.Product.vRLI.Deploy == false
+    IPv4: "{{ Net.Management.IPv4.Network }}.20"                              # Replace with your IP address if Deploy.Product.vRLI.Deploy == false
+    IPv6: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(20) }}"        # Replace with your IP address if Deploy.Product.vRLI.Deploy == false
   NFS:                                                                        # NFS - The NFS settings below refer to a NFS share that can be used by the NESTED ESXi hosts for storage, and has nothing to do with physical ESXi server(s).  If possible, we suggest using vSAN storage on the nested ESXi hosts, which are backed by local physical storage.
     Server:
       IPv4: 192.168.0.12
@@ -612,7 +612,7 @@ Nested_Router:
 
 Nested_vRLI:
   VMName: "{{ SiteCode }}-vRLI-1"
-  FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-vRLI-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.19{% endif %}"
+  FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-vRLI-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.20{% endif %}"
   Credential:
     root:
       Name: root
@@ -625,11 +625,11 @@ Nested_vRLI:
     AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
   Address:
     IPv4:
-      Address: "{{ Net.Management.IPv4.Network }}.19"
+      Address: "{{ Net.Management.IPv4.Network }}.20"
       Prefix:  "{{ Net.Management.IPv4.Prefix }}"
       Gateway: "{{ Net.Management.IPv4.Network }}.1"
     IPv6:
-      Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(19) }}"
+      Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(20) }}"
       Prefix:  "{{ Net.Management.IPv6.Prefix }}"
 
 

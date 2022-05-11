@@ -216,11 +216,12 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 16 | AVI Controller-1 | NSX-T Advanced Load Balancer (AVI) Controller 1 | Pod-240-AVI-Controller-1 | <red> No </red> |
 | 17 | AVI Controller-2 | NSX-T Advanced Load Balancer (AVI) Controller 2 | Pod-240-AVI-Controller-1 | <red> No </red> |
 | 18 | AVI Controller-3 | NSX-T Advanced Load Balancer (AVI) Controller 3 | Pod-240-AVI-Controller-1 | <red> No </red> |
-| 19 | vRLI-1 | vRealize Log Insight Appliance Node 1 | Pod-240-vRLI-1 | <green> Yes </green> |
-| 20 | vRLI-2 | vRealize Log Insight Appliance Node 2 | Pod-240-vRLI-2 | <red> No </red> |
-| 21 | vRLI-3 | vRealize Log Insight Appliance Node 3 | Pod-240-vRLI-3 | <red> No </red> |
-| 22 | vRNI Platform | vRealize Network Insight Platform Appliance | Pod-240-vRNI | <red> No </red> |
-| 23 | vRNI Collector | vRealize Network Insight Collector Node | Pod-240-vRNI-Collector | <red> No </red> |
+| 19 | vRLI VIP | vRealize Log Insight Cluster VIP | Pod-240-vRLI-VIP | <red> No </red> |
+| 20 | vRLI-1 | vRealize Log Insight Appliance Node 1 | Pod-240-vRLI-1 | <green> Yes </green> |
+| 21 | vRLI-2 | vRealize Log Insight Appliance Node 2 | Pod-240-vRLI-2 | <red> No </red> |
+| 22 | vRLI-3 | vRealize Log Insight Appliance Node 3 | Pod-240-vRLI-3 | <red> No </red> |
+| 23 | vRNI Platform | vRealize Network Insight Platform Appliance | Pod-240-vRNI | <red> No </red> |
+| 24 | vRNI Collector | vRealize Network Insight Collector Node | Pod-240-vRNI-Collector | <red> No </red> |
 | Thru 100 | Reserved | Reserved for Future Management VMs/Services | | |
 | 101 | Mgmt-1 | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-1 | <red> No </red> |
 | 102 | Mgmt-2 | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-2 | <red> No </red> |
