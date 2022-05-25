@@ -1182,3 +1182,7 @@
 
 ### Added by Luis Chanu
   - Updated FirstPod.md banner from v4 to v5
+  - Added vCenter Server v7.0.0 Update 3E ```software_sample.yml``` and ```templates_sample.yml``` files.
+  - Added NSX-T v3.2.1 to ```software_sample.yml``` file.
+  - Above mentioned software versions are UNTESTED.
+  - Please be sure to update your ```software.yml``` and ```templates.yml``` files.
