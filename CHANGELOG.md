@@ -1177,3 +1177,8 @@
   - Modified (a) vRLI IP for vRLI-1 and (b) syslog server entry in ```config_sample.yml```
   - Please be sure to update your ```config.yml``` file(s).
   - Changed default permissions for /Software directory structure from 0775 to 0777 to address issue when downloading software directly on ansible host.
+
+## Dev-v5.0.0 24-MAY-2022
+
+### Added by Luis Chanu
+  - Updated FirstPod.md banner from v4 to v5
