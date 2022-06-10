@@ -47,7 +47,7 @@ The Ansible controller is the machine from which you will run the Ansible script
 
 ### Software
 After you've installed the Ubuntu OS and applied the latest updates, some additional software is required to turn this machine into an Ansible controller for your SDDC.Lab Pods. You can simply copy and paste the commands below. Installation of the additional software will only take some minutes.  This project requires Ansible
-version 2.10.x.
+version 2.12.x.
 
 1. Python, pip, and xorriso:\
 **sudo apt install python3 python3-pip xorriso git**
@@ -61,10 +61,7 @@ version 2.10.x.
 4. The required [VMware for NSX-T Ansible modules](https://github.com/vmware/ansible-for-nsxt) (regular user install)\
 **ansible-galaxy collection install git+https://github.com/vmware/ansible-for-nsxt.git,v3.2.0**
 
-5. The required [VMware for NSX-T Ansible modules](https://github.com/vmware/ansible-for-nsxt) (sudo user install)\
-**sudo ansible-galaxy collection install git+https://github.com/vmware/ansible-for-nsxt.git,v3.2.0**
-
-6. The SDDC.Lab repository cloned to an appropriate location on your Ubuntu machine (e.g. $HOME) with:\
+5. The SDDC.Lab repository cloned to an appropriate location on your Ubuntu machine (e.g. $HOME) with:\
 **git clone https://github.com/rutgerblom/SDDC.Lab.git**
 
 ## Prepare your Pod configuration files
