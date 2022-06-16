@@ -1186,3 +1186,8 @@
   - Added NSX-T v3.2.1 to ```software_sample.yml``` file.
   - Above mentioned software versions are UNTESTED.
   - Please be sure to update your ```software.yml``` and ```templates.yml``` files.
+
+## Dev-v5.0.0 16-JUNE-2022
+
+### Added by Rutger Blom
+  - Removed the "num_ports" parameter from "community.vmware.vmware_dvs_portgroup" tasks in ```playbooks/preparePhysical.yml```. This to prevent an error when re-running a failed/broken off deployment and "num_ports" on the distributed port group has increased beyond specified by "num_ports" (we cannot decrease num_ports if ports are in use).  
