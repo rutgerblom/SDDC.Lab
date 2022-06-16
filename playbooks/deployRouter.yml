@@ -720,49 +720,14 @@
 ## Bootstrap configuration complete -- Proceed with saving everything
 ##
 
-    - name: Commit configuration to active it (Send 'COMMIT' command)
+    - name: Commit configuration and save VyOS configuration to config.boot file (Send 'COMMIT && SAVE' commands)
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         name: "{{ Nested_Router.Name }}"
-        string_send: "commit"
-      when: 
-        - Deploy.Product.Router.Deploy == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Latest"
-
-    - name: Wait 5 seconds
-      ansible.builtin.pause:
-        seconds: 5
-      when: 
-        - Deploy.Product.Router.Deploy == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Latest"
-
-    - name: Commit configuration to active it (Send 'ENTER' after COMMIT command)
-      community.vmware.vmware_guest_sendkey:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        name: "{{ Nested_Router.Name }}"
-        keys_send:
-          - ENTER
-      when: 
-        - Deploy.Product.Router.Deploy == true
-        - status is failed
-        - Deploy.Software.Router.Version == "Latest"
-
-    - name: Save VyOS configuration to config.boot file (Send 'SAVE' command)
-      community.vmware.vmware_guest_sendkey:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        name: "{{ Nested_Router.Name }}"
-        string_send: "save"
+        string_send: "commit && save"
       when: 
         - Deploy.Product.Router.Deploy == true
         - status is failed
