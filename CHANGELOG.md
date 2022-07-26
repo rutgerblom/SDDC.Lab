@@ -1190,4 +1190,12 @@
 ## Dev-v5.0.0 16-JUNE-2022
 
 ### Added by Rutger Blom
-  - Removed the "num_ports" parameter from "community.vmware.vmware_dvs_portgroup" tasks in ```playbooks/preparePhysical.yml```. This to prevent an error when re-running a failed/broken off deployment and "num_ports" on the distributed port group has increased beyond specified by "num_ports" (we cannot decrease num_ports if ports are in use).  
+  - Removed the "num_ports" parameter from "community.vmware.vmware_dvs_portgroup" tasks in ```playbooks/preparePhysical.yml```. This to prevent an error when re-running a failed/broken off deployment and "num_ports" on the distributed port group has increased beyond specified by "num_ports" (we cannot decrease num_ports if ports are in use).
+
+## Dev-v5.0.0 26-JULY-2022
+
+### Added by Luis Chanu
+  - All newly added software versions listed below is UNTESTED
+  - Added vCenter Server v7.0.0 Update 3F & 3G to ```software_sample.yml``` and ```templates_sample.yml``` files.
+  - Added ESXi v7.0.0 Update 3F to ```software_sample.yml``` and ```templates_sample.yml``` files.
+  - Added NSX-T v3.2.1.1 to ```software_sample.yml``` file.
