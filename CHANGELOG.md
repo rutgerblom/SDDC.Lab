@@ -1199,3 +1199,11 @@
   - Added vCenter Server v7.0.0 Update 3F & 3G to ```software_sample.yml``` and ```templates_sample.yml``` files.
   - Added ESXi v7.0.0 Update 3F to ```software_sample.yml``` and ```templates_sample.yml``` files.
   - Added NSX-T v3.2.1.1 to ```software_sample.yml``` file.
+
+## Dev-v5.0.0 29-JULY-2022
+
+### Added by Luis Chanu
+  - In Ansible module ```enableWorkloadManagement.yml```, noticed that the data structure used to enable Workload Managmenet (a.k.a. Tanzu) had extra escapes in it.  After investigating, appeared to be cause by extra JSON conversion in module.
+  - Removed extra "| to_json" in last play in the ```enableWorkloadManagement.yml``` module.
+  - Added additional DEBUG play to display data structure when debugging is enabled.
+  - Removed extra space from ContentLibrary section of ```config_sample.yml``` file.
