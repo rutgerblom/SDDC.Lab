@@ -289,15 +289,32 @@
 
 
 ##
+## Show body data structure from subsequent POST API call if debug is enabled
+##
+    - name: DEBUG -- Display templated JSON data structure used to enable Workload Management (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ========================= Display Data Structure For Cluster {{ item.Name }} ========================
+
+          {{ lookup('template', LOCAL_TanzuPayload) }}
+
+          =================================================================================================
+      loop: "{{ cluster_id }}"
+      when:
+        - DEBUG.DisplayVariables == true
+
+
+##
 ## Post payload to vCenter REST API
 ##
-    - name: POST payload to vCenter REST API
+    - name: POST payload to vCenter REST API to enable Workload Management
       ansible.builtin.uri:
         url: "https://{{ Nested_vCenter.FQDN }}/api/vcenter/namespace-management/clusters/{{ item.MoRef }}?action=enable"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
         method: POST
-        body: "{{ lookup('template', LOCAL_TanzuPayload) | to_json }}"
+        body: "{{ lookup('template', LOCAL_TanzuPayload) }}"
         body_format: json
         status_code: 204
       loop: "{{ cluster_id }}"
