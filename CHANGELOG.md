@@ -1207,3 +1207,8 @@
   - Removed extra "| to_json" in last play in the ```enableWorkloadManagement.yml``` module.
   - Added additional DEBUG play to display data structure when debugging is enabled.
   - Removed extra space from ContentLibrary section of ```config_sample.yml``` file.
+
+## Dev-v5.0.0 31-JULY-2022
+
+### Added by Luis Chanu
+  - Removed extra spaces from Nested_Cluster section of ```config_sample.yml``` file.
