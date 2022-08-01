@@ -1207,3 +1207,9 @@
   - Removed extra "| to_json" in last play in the ```enableWorkloadManagement.yml``` module.
   - Added additional DEBUG play to display data structure when debugging is enabled.
   - Removed extra space from ContentLibrary section of ```config_sample.yml``` file.
+
+## Dev-v5.0.0 31-JULY-2022
+
+### Added by Luis Chanu
+  - Removed extra spaces from Nested_Cluster section of ```config_sample.yml``` file.
+  - Noticed an issue where if more than 1 vSphere Cluster was configured to be prepared by NSX, only one vSphere cluster would end up being prepared.  Corrected the issue by making the transport node collection display name be unique for each cluster by including the cluster name in the TNC display name field within ```attchNsxTnp.yml```.
