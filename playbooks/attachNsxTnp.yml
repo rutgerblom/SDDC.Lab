@@ -69,7 +69,7 @@
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        display_name: "TNC"
+        display_name: "TNC_{{ item.key }}"
         resource_type: "TransportNodeCollection"
         description: "Transport Node Collections"
         compute_manager_name: "{{ Nested_vCenter.VMName }}"
