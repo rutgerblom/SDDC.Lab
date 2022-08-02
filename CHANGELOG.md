@@ -1214,3 +1214,8 @@
   - Removed extra spaces from Nested_Cluster section of ```config_sample.yml``` file.
   - Noticed an issue where if more than 1 vSphere Cluster was configured to be prepared by NSX, only one vSphere cluster would end up being prepared.  Corrected the issue by making the transport node collection display name be unique for each cluster by including the cluster name in the TNC display name field within ```attchNsxTnp.yml```.
   - Added "ignore_errors: true" to Port-Group removal plays in ```undeploy.yml``` file.
+
+## Dev-v5.0.0 02-AUGUST-2022
+
+### Added by Rutger Blom
+  - Added NSX-T v4.0.0.1 to ```software_sample.yml``` file.
