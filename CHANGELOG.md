@@ -1219,3 +1219,10 @@
 
 ### Added by Rutger Blom
   - Added NSX-T v4.0.0.1 to ```software_sample.yml``` file.
+
+## Dev-v5.0.0 03-AUGUST-2022
+
+### Added by Rutger Blom
+  - Changed default version of vCenter to 7.00U3G in ```config_sample.yml``` file.
+  - Changed default version of ESXi to 7.00U3F in ```config_sample.yml``` file.
+  - Please be sure to update your ```config.yml``` file(s).
