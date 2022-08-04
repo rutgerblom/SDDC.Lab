@@ -371,7 +371,9 @@ When deploying NSX-T Federation, keep the following in mind:
 
 9. The ```config_sample.yml``` default configuration assumes the Lab-Routers transit segment, and thus communication between NSX-T Federation Locations, is configured with an MTU of 1500 bytes.  If your environment supports Jumbo Frames, you can obtain better performance by changing the MTU values in the Net section.  Keep in mind that the OSPF (by default) requires matching MTU sizes, so you may lose peering with your ToR router.  If you decide to change the MTU values, you need to take this all into account, and are on your own.  For a lab, the default 1500 byte MTU configurations should suffice.
 
-10. SDDC.Lab does not support Federation with NSX-T v3.2.0.  If you want to deploy Federation in your lab, deploy Federation using NSX-T v3.1.3.5, then manually upgrade the Pods to NSX-T v3.2.0.
+10. SDDC.Lab does not support Federation with NSX-T v3.2.0.  If you want to deploy Federation in your lab, deploy Federation using NSX-T v3.1.3.5, then manually upgrade the Pods to NSX-T v3.2.0.  Or, simply deploy NSX v4.0.0.1, as it's working in that release.
+
+11. Automatic [Deployment of Test Workloads](#deploy-test-workloads) is not supported with Federation.
 
 ### vSphere Content Libraries
 SDDC.Lab now supports both local and subscribed vSphere Content Libraries, which can be very helpful in a lab environment by centralizing workload ISOs and VMs (i.e. On the physical vCenter Server or a stand-alone Content Library target), then accessing them via the deployed Pods.  There are a few things to keep in mind with Content Libraries:
