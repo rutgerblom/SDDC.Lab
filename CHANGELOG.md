@@ -1233,3 +1233,8 @@
   - Modified NSXT version in ```licenses_sample.yml``` to include version 4 by changing RegEx from '[23]' to '[234]'
   - Please be sure to update your ```licenses.yml``` file.
   - NSX v4.0.0.1 successfully deployed.
+
+## Dev-v5.0.0 04-AUGUST-2022
+
+### Added by Rutger Blom
+  - Updated the "community.vmware.vmware_guest" task in the ```playbooks/deployNestedEsxi.yml``` playbook. It now adds the advanced setting "featMask.vm.cpuid.pdpe1gb:Val1" to the nested ESXi virtual machines. This setting enables hosting VMs that require 1 GB page support (PDPE1GB). NSX-T Edge VMs require 1 GB page support since NSX-T version 3.2.
