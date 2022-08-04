@@ -1232,3 +1232,4 @@
 ### Added by Luis Chanu
   - Modified NSXT version in ```licenses_sample.yml``` to include version 4 by changing RegEx from '[23]' to '[234]'
   - Please be sure to update your ```licenses.yml``` file.
+  - NSX v4.0.0.1 successfully deployed.
