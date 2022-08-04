@@ -1226,3 +1226,9 @@
   - Changed default version of vCenter to 7.00U3G in ```config_sample.yml``` file.
   - Changed default version of ESXi to 7.00U3F in ```config_sample.yml``` file.
   - Please be sure to update your ```config.yml``` file(s).
+
+## Dev-v5.0.0 03-AUGUST-2022
+
+### Added by Luis Chanu
+  - Modified NSXT version in ```licenses_sample.yml``` to include version 4 by changing RegEx from '[23]' to '[234]'
+  - Please be sure to update your ```licenses.yml``` file.
