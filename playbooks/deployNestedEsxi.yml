@@ -112,6 +112,9 @@
             type: iso
             iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
             state: present
+        advanced_settings:
+          - key: "featMask.vm.cpuid.pdpe1gb"
+            value: "Val:1"
         annotation: | 
                     {{ Common.Annotation }}
                     {{ Deploy.Software.ESXi.Vendor }} {{ Deploy.Software.ESXi.Product }} {{ Deploy.Software.ESXi.Version }}
