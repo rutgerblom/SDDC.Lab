@@ -113,7 +113,7 @@
             iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
             state: present
         advanced_settings:
-          - key: "featMask.vm.cpuid.pdpe1gb"
+          - key: "featMask.vm.cpuid.pdpe1gb"        # Enables 1GB page support on the nested ESXi hosts. With certain older physical CPUs this setting is required in order to run NSX-T version ≥3.2 Edge VMs on the nested ESXi hosts.
             value: "Val:1"
         annotation: | 
                     {{ Common.Annotation }}
