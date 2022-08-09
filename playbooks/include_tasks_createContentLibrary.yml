@@ -1,0 +1,305 @@
+##
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: playbooks/include_tasks_createContentLibrary.yml
+##
+##    IMPORTANT: This is NOT a stand-alone runable playbook.
+##
+##  Description: This playbook contains a "block" of Ansible code to deploy a single local or subcribed content library.
+##               This "block" of code is called by createContentLibrary.yml for each Content Library that needs to be
+##               created.
+##
+---
+    - name: include_tasks_createContentLibrary_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: include_tasks_createContentLibrary"
+
+    - name: DEBUG -- Display 'item' (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display 'item' Being Processed =================================
+
+          item:
+            {{ item | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - item is defined
+
+
+##
+## Determine vSAN datastore to use for the local vSphere Content Library
+##
+    - name: Initialize datastore_list to minimize use of '|default([])' throughout conditionals
+      ansible.builtin.set_fact:
+        datastore_list: "{{ datastore_list | default([]) }}"
+
+    - name: Get list of vSAN datastores from all deployed vSphere clusters
+      ansible.builtin.set_fact:
+        datastore_list: "{{ (Nested_Cluster | dict2items | community.general.json_query( query )) }}"
+      vars:
+        query: "[?value.DeployHosts].value.vsanDatastore"
+      when:
+        - item.value.Enable == true
+        - item.value.Datastore == None
+
+    - name: If more than 1 datastore is available, remove 'Edge' vSAN datastore from the list
+      ansible.builtin.set_fact:
+        datastore_options: "{{ datastore_list | difference([ Nested_Cluster['Edge'].vsanDatastore ]) }}"
+      when:
+        - (datastore_list | length) > 1
+        - item.value.Enable == true
+        - item.value.Datastore == None
+
+    - name: If only 1 datastore is avaialble, then use it
+      ansible.builtin.set_fact:
+        datastore_options: "{{ datastore_list }}"
+      when:
+        - (datastore_list | length) == 1
+        - item.value.Enable == true
+        - item.value.Datastore == None
+
+    - name: Select the first datastore from the available datastore options
+      ansible.builtin.set_fact:
+        library_datastore: "{{ datastore_options[0] }}"
+      when:
+        - item.value.Enable == true
+        - item.value.Datastore == None
+
+    - name: If Content Library Datastore is specified in config file, use it
+      ansible.builtin.set_fact:
+        library_datastore: "{{ item.value.Datastore }}"
+      when:
+        - item.value.Enable == true
+        - item.value.Datastore != None
+
+
+##
+## Create 'Local' Content Library
+##
+    - name: Create 'local' vSphere Content Library
+      community.vmware.vmware_content_library_manager:
+        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        library_name: "{{ item.value.Name }}"
+        library_description: "{{ item.value.Description }}"
+        library_type: "{{ item.value.Type }}"
+        datastore_name: "{{ library_datastore }}"
+      when:
+        - item.value.Enable == true
+        - item.value.Type == "local"
+
+
+##
+## Gather 'Subscribed' vSphere Content Library Information
+##
+    - name: Get list of all vSphere Content Library IDs
+      community.vmware.vmware_content_library_info:
+        hostname: "{{ item.value.Subscribed.vCenter.FQDN | lower }}"
+        username: "{{ item.value.Subscribed.vCenter.User }}"
+        password: "{{ item.value.Subscribed.vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+      register: result
+      when:
+        - item.value.Enable == true
+        - item.value.Type == "subscribed"
+        - item.value.Subscribed.Type == "vCenter"
+
+    - name: DEBUG -- Display vSphere Content Library 'result' Variable (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================= Display 'result' Variable ==============================
+
+          result:
+            {{ result | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          ======================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - item.value.Enable == true
+        - item.value.Type == "subscribed"
+        - item.value.Subscribed.Type == "vCenter"
+
+    - name: Get details on each of the vSphere Content Libraries
+      community.vmware.vmware_content_library_info:
+        hostname: "{{ item.value.Subscribed.vCenter.FQDN | lower }}"
+        username: "{{ item.value.Subscribed.vCenter.User }}"
+        password: "{{ item.value.Subscribed.vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        library_id: "{{ loop_var }}"
+      register: content_libraries
+      loop: "{{ result.content_libs }}"
+      loop_control:
+        loop_var: loop_var
+      when:
+        - item.value.Enable == true
+        - item.value.Type == "subscribed"
+        - item.value.Subscribed.Type == "vCenter"
+
+    - name: DEBUG -- Display vSphere 'content_libraries' Variable (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================= Display 'content_libraries' Variable ==============================
+
+          content_libraries:
+            {{ content_libraries | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - item.value.Enable == true
+        - item.value.Type == "subscribed"
+        - item.value.Subscribed.Type == "vCenter"
+
+    - name: Query Content Library list for the Published vSphere Content Library we want to use
+      ansible.builtin.set_fact:
+        content_library: "{{ content_libraries | community.general.json_query( query ) }}"
+      vars:
+        query: "results[*].content_lib_details[?library_name=='{{ item.value.Subscribed.vCenter.PublishedLibraryName }}']|[0]|[0]"
+      when:
+        - item.value.Enable == true
+        - item.value.Type == "subscribed"
+        - item.value.Subscribed.Type == "vCenter"
+
+    - name: DEBUG -- Display 'content_library' Variable (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================== Display 'content_library' Variable ===============================
+
+          content_library (JSON):
+            {{ content_library | to_nice_json(indent=2) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - item.value.Enable == true
+        - item.value.Type == "subscribed"
+        - item.value.Subscribed.Type == "vCenter"
+
+
+##
+## Obtain SSL Thumbprint from Content Library server
+##
+
+    - name: If subscribing to a vCenter Content Library, set 'library_publish' details to obtain SSL Certificate info below
+      ansible.builtin.set_fact:
+        library_publish_url:  "{{ content_library.library_publish_info.publish_url | urlsplit('hostname') }}"
+        library_publish_port: "{{ content_library.library_publish_info.publish_url | urlsplit('port') }}"
+      when:
+        - item.value.Enable == true
+        - item.value.Type == "subscribed"
+        - item.value.Subscribed.Type == "vCenter"
+
+    - name: If subscribing to a URL, set 'library_publish' details to obtain SSL Certificate info below
+      ansible.builtin.set_fact:
+        library_publish_url:  "{{ item.value.Subscribed.URL.Path | urlsplit('hostname') }}"
+        library_publish_port: "{{ item.value.Subscribed.URL.Port }}"
+      when:
+        - item.value.Enable == true
+        - item.value.Type == "subscribed"
+        - item.value.Subscribed.Type == "URL"
+
+    - name: DEBUG -- Display Published library_publish_url and library_publish_port (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display 'library_publish' Info =================================
+
+          Library Published URL:  {{ library_publish_url | default(None) }}
+          Library Published Port: {{ library_publish_port | default(None) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - item.value.Enable == true
+        - item.value.Type == "subscribed"
+
+    - name: Obtain SSL Certificate from Content Library server
+      community.crypto.get_certificate:
+        host: "{{ library_publish_url }}"
+        port: "{{ library_publish_port }}"
+      register: ssl_cert
+      when:
+        - item.value.Enable == true
+        - item.value.Type == "subscribed"
+
+    - name: Obtain Information about the SSL Certificate
+      community.crypto.x509_certificate_info:
+        content: "{{ ssl_cert.cert }}"
+      register: ssl_cert_info
+      when:
+        - item.value.Enable == true
+        - item.value.Type == "subscribed"
+
+    - name: Store SSL Certificate SHA1 Thumbprint (WITH colons) for easier use
+      ansible.builtin.set_fact:
+        ssl_thumbprint: "{{ ssl_cert_info.fingerprints['sha1'] }}"
+      when:
+        - item.value.Enable == true
+        - item.value.Type == "subscribed"
+
+    - name: DEBUG -- Display SSL Certificate Thumbprint (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================== Display 'ssl_thumbprint' ====================================
+
+          SSL Certificate Thumbprint: {{ ssl_thumbprint | default(None) }}
+
+          SSL Certificate Info:
+            {{ ssl_cert_info | to_nice_json(indent=2) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+        - item.value.Enable == true
+        - item.value.Type == "subscribed"
+
+
+##
+## Determine Subscription URL to use
+##
+    - name: If subscribing to a vCenter Content Library, set 'library_subscription_url' to vCenter library publish url
+      ansible.builtin.set_fact:
+        library_subscription_url: "{{ content_library.library_publish_info.publish_url }}"
+      when:
+        - item.value.Enable == true
+        - item.value.Type == "subscribed"
+        - item.value.Subscribed.Type == "vCenter"
+
+    - name: If subscribing to a URL, set 'library_subscription_url' to URL specified in the configuration file
+      ansible.builtin.set_fact:
+        library_subscription_url: "{{ item.value.Subscribed.URL.Path }}"
+      when:
+        - item.value.Enable == true
+        - item.value.Type == "subscribed"
+        - item.value.Subscribed.Type == "URL"
+
+
+
+##
+## Create 'subscribed' vSphere Content Library
+##
+    - name: Create 'subscribed' vSphere Content Library
+      community.vmware.vmware_content_library_manager:
+        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        library_name: "{{ item.value.Name }}"
+        library_description: "{{ item.value.Description }}"
+        library_type: "{{ item.value.Type }}"
+        datastore_name: "{{ library_datastore }}"
+        subscription_url: "{{ library_subscription_url }}"
+        ssl_thumbprint: "{{ ssl_thumbprint }}"
+        update_on_demand: "{{ item.value.Subscribed.UpdateOnDemand }}"
+      when:
+        - item.value.Enable == true
+        - item.value.Type == "subscribed"

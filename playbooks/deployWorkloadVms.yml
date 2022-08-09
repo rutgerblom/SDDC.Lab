@@ -59,8 +59,8 @@
 
                                             Target.Deployment: {{ Target.Deployment }}
 
-                         Nested_vCenter.ContentLibrary.Enable: {{ Nested_vCenter.ContentLibrary.Enable }}
-                           Nested_vCenter.ContentLibrary.Name: {{ Nested_vCenter.ContentLibrary.Name }}
+           Nested_vCenter.ContentLibraries.WorkloadVMs.Enable: {{ Nested_vCenter.ContentLibraries.WorkloadVMs.Enable }}
+             Nested_vCenter.ContentLibraries.WorkloadVMs.Name: {{ Nested_vCenter.ContentLibraries.WorkloadVMs.Name }}
 
                        Number of Guest Workload VMs to deploy: {{ WorkloadVMs | length }}
 
@@ -80,4 +80,4 @@
         - WorkloadVMs is defined
         - WorkloadVMs | length > 0
         - Deploy.WorkloadVMs.Deploy == true
-        - Nested_vCenter.ContentLibrary.Enable == true
+        - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable == true

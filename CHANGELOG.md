@@ -1238,3 +1238,17 @@
 
 ### Added by Rutger Blom
   - Updated the "community.vmware.vmware_guest" task in the ```playbooks/deployNestedEsxi.yml``` playbook. It now adds the advanced setting "featMask.vm.cpuid.pdpe1gb:Val1" to the nested ESXi virtual machines. This setting enables hosting VMs that require 1 GB page support (PDPE1GB). NSX-T Edge VMs require 1 GB page support since NSX-T version 3.2.
+
+## Dev-v5.0.0 08-AUGUST-2022
+
+### Added by Luis Chanu
+  - Added the ability to create multiple Content Libraries as part of a Pod deployment. (Initial tests are successful, but more testing is needed)
+  - To aid with pre-populating TKG Content Library, added support to subscribe to Content Libraries via URLs.
+  - Added additional libraries, including the the default TKG Content Library.  Because of it's size, this library is configured as an "On-Demand" library, which of course can be changed in the config.
+  - New content libraries can be found in the ```config_sample.yml``` file, in the ```Nested_vCenter.ContentLibraries``` section.
+  - New ansible playbook added to project: ```include_tasks_createContentLibrary.yml```
+  - Moved individual content library creation to ```include_tasks_createContentLibrary.yml```.  The existing ```createContentLibrary.yml``` playbook now dispatches the creation of each content library to the ```include_tasks_createContentLibrary.yml``` playbook, one-by-one.
+  - WorkloadVMs playbooks modified to support new content library structure.
+  - Changes made to ```config_sample.yml``` does increase the time it takes for ```playbooks/createPodConfig.yml``` to generate the static Pod configuration, so please be patient.  You may want to consider running the ```utils/utils_CreateAllPodConfigs.sh``` script, which will generate the static Pod Configuration files for ALL of your configurations.  Please see description in the documentation included in the header of the script file for more details about the utility.
+  - There were changes in ```config_sample.yml``` file.
+  - Please be sure to update your ```config.yml``` file(s).

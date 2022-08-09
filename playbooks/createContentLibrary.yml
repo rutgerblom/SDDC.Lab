@@ -3,11 +3,14 @@
 ##      Authors: Luis Chanu & Rutger Blom
 ##     Filename: playbooks/createContentLibrary.yml
 ##
-##  Description: This playbook supports both the creation of a local Content Library, or subscribing to a Content Library.
-##               What type of Content Library it creates is all determined by the Pod config file.  If not Datastore is
-##               specified in the Pod config file, an Datastore is selected for you.  Given it is assumed that NSX-T
-##               will deploy it's EdgeVMs in the Edge vSphere cluster, if multiple datastores are avaialble, the Edge
-##               datastore is not chosen.
+##  Description: This playbook supports the creating both local and subscribing (vCenter and URL) content libraries.
+##               If a Datastore is not specified in the Pod config file, an Datastore is selected for you.  Given it
+##               is assumed that NSX-T will deploy it's EdgeVMs in the Edge vSphere cluster, if multiple datastores 
+##               are avaialble, the Edge datastore is not chosen.
+##
+##               This playbook loops through the Content Libraries that need to be created, and creates them one-by-one, 
+##               by "sending" the object to the "include_tasks_createContentLibrary.yml" playbook.  That file includes 
+##               ALL of the tasks needed to provision the given content library, either 'local' or 'subscribed'.
 ##
 ---
 - hosts: localhost
@@ -70,13 +73,7 @@
                                       Nested vCenter FQDN: {{ Nested_vCenter.FQDN | lower }}
                                 Nested vCenter DataCenter: {{ Nested_vCenter.DataCenter }}
 
-                      Nested vCenter Content Library Name: {{ Nested_vCenter.ContentLibrary.Name }}
-               Nested vCenter Content Library Description: {{ Nested_vCenter.ContentLibrary.Description }}
-                      Nested vCenter Content Library Type: {{ Nested_vCenter.ContentLibrary.Type }}
-                 Nested vCenter Content Library Datastore: {{ Nested_vCenter.ContentLibrary.Datastore }}
-
-                        Subscribed Published Library Name: {{ Nested_vCenter.ContentLibrary.Subscribed.PublishedLibraryName }}
-            Subscribed Published Library Update-on-Demand: {{ Nested_vCenter.ContentLibrary.Subscribed.UpdateOnDemand }}
+               Number of Nested vCenter Content Libraries: {{ Nested_vCenter.ContentLibraries | dict2items | length }}
 
           =================================================================================================
       when:
@@ -84,213 +81,9 @@
 
 
 ##
-## Determine vSAN datastore to use for the local vSphere Content Library
+## Provision Create Content Libraries
 ##
-    - name: Initialize datastore_list to minimize use of '|default([])' throughout conditionals
-      ansible.builtin.set_fact:
-        datastore_list: "{{ datastore_list | default([]) }}"
-
-    - name: Get list of vSAN datastores from all deployed vSphere clusters
-      ansible.builtin.set_fact:
-        datastore_list: "{{ (Nested_Cluster | dict2items | community.general.json_query( query )) }}"
-      vars:
-        query: "[?value.DeployHosts].value.vsanDatastore"
-      when:
-        - Nested_vCenter.ContentLibrary.Enable == true
-        - Nested_vCenter.ContentLibrary.Datastore == ""
-
-    - name: If more than 1 datastore is available, remove 'Edge' vSAN datastore from the list
-      ansible.builtin.set_fact:
-        datastore_options: "{{ datastore_list | difference([ Nested_Cluster['Edge'].vsanDatastore ]) }}"
-      when:
-        - (datastore_list | length) > 1
-        - Nested_vCenter.ContentLibrary.Enable == true
-        - Nested_vCenter.ContentLibrary.Datastore == ""
-
-    - name: If only 1 datastore is avaialble, then use it
-      ansible.builtin.set_fact:
-        datastore_options: "{{ datastore_list }}"
-      when:
-        - (datastore_list | length) == 1
-        - Nested_vCenter.ContentLibrary.Enable == true
-        - Nested_vCenter.ContentLibrary.Datastore == ""
-
-    - name: Select the first datastore from the available datastore options
-      ansible.builtin.set_fact:
-        library_datastore: "{{ datastore_options[0] }}"
-      when:
-        - Nested_vCenter.ContentLibrary.Enable == true
-        - Nested_vCenter.ContentLibrary.Datastore == ""
-
-    - name: If Content Library Datastore is specified in config file, use it
-      ansible.builtin.set_fact:
-        library_datastore: "{{ Nested_vCenter.ContentLibrary.Datastore }}"
-      when:
-        - Nested_vCenter.ContentLibrary.Enable == true
-        - Nested_vCenter.ContentLibrary.Datastore != ""
-
-
-##
-## Create 'Local' Content Library
-##
-    - name: Create 'local' vSphere Content Library
-      community.vmware.vmware_content_library_manager:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
-        username: "{{ Nested_vCenter.User }}"
-        password: "{{ Nested_vCenter.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        library_name: "{{ Nested_vCenter.ContentLibrary.Name }}"
-        library_description: "{{ Nested_vCenter.ContentLibrary.Description }}"
-        library_type: "{{ Nested_vCenter.ContentLibrary.Type }}"
-        datastore_name: "{{ library_datastore }}"
-      when:
-        - Nested_vCenter.ContentLibrary.Enable == true
-        - Nested_vCenter.ContentLibrary.Type == "local"
-
-
-##
-## Gather 'Subscribed' Content Library Information
-##
-    - name: Get list of all vSphere Content Library IDs
-      community.vmware.vmware_content_library_info:
-        hostname: "{{ Nested_vCenter.ContentLibrary.Subscribed.vCenter | lower }}"
-        username: "{{ Nested_vCenter.ContentLibrary.Subscribed.User }}"
-        password: "{{ Nested_vCenter.ContentLibrary.Subscribed.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-      register: result
-      when:
-        - Nested_vCenter.ContentLibrary.Enable == true
-        - Nested_vCenter.ContentLibrary.Type == "subscribed"
-
-    - name: DEBUG -- Display Content Library 'result' Variable (Pause)
-      ansible.builtin.pause:
-        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
-        prompt: |
-          ============================= Display 'result' Variable ==============================
-
-          result:
-            {{ result | to_nice_yaml(indent=2, width=99999) | indent(2) }}
-
-          ======================================================================================
-      when:
-        - DEBUG.DisplayVariables == true
-        - Nested_vCenter.ContentLibrary.Enable == true
-        - Nested_vCenter.ContentLibrary.Type == "subscribed"
-
-    - name: Get details on each of the vSphere Content Libraries
-      community.vmware.vmware_content_library_info:
-        hostname: "{{ Nested_vCenter.ContentLibrary.Subscribed.vCenter | lower }}"
-        username: "{{ Nested_vCenter.ContentLibrary.Subscribed.User }}"
-        password: "{{ Nested_vCenter.ContentLibrary.Subscribed.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        library_id: "{{ item }}"
-      register: content_libraries
-      loop: "{{ result.content_libs }}"
-      when:
-        - Nested_vCenter.ContentLibrary.Enable == true
-        - Nested_vCenter.ContentLibrary.Type == "subscribed"
-
-    - name: DEBUG -- Display 'content_libraries' Variable (Pause)
-      ansible.builtin.pause:
-        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
-        prompt: |
-          ============================= Display 'content_libraries' Variable ==============================
-
-          content_libraries:
-            {{ content_libraries | to_nice_yaml(indent=2, width=99999) | indent(2) }}
-
-          =================================================================================================
-      when:
-        - DEBUG.DisplayVariables == true
-        - Nested_vCenter.ContentLibrary.Enable == true
-        - Nested_vCenter.ContentLibrary.Type == "subscribed"
-
-    - name: Query Content Library list for the Published Content Library we want to use
-      ansible.builtin.set_fact:
-        content_library: "{{ content_libraries | community.general.json_query( query ) }}"
-      vars:
-        query: "results[*].content_lib_details[?library_name=='{{ Nested_vCenter.ContentLibrary.Subscribed.PublishedLibraryName }}']|[0]|[0]"
-      when:
-        - Nested_vCenter.ContentLibrary.Enable == true
-        - Nested_vCenter.ContentLibrary.Type == "subscribed"
-
-    - name: DEBUG -- Display 'content_library' Variable (Pause)
-      ansible.builtin.pause:
-        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
-        prompt: |
-          ============================== Display 'content_library' Variable ===============================
-
-          content_library (JSON):
-            {{ content_library | to_nice_json(indent=2) | indent(2) }}
-
-          =================================================================================================
-      when:
-        - DEBUG.DisplayVariables == true
-        - Nested_vCenter.ContentLibrary.Enable == true
-        - Nested_vCenter.ContentLibrary.Type == "subscribed"
-
-
-##
-## Obtain SSL Thumbprint from Content Library server
-##
-    - name: Obtain SSL Certificate from Content Library server
-      community.crypto.get_certificate:
-        host: "{{ content_library.library_publish_info.publish_url | urlsplit('hostname') }}"
-        port: "{{ content_library.library_publish_info.publish_url | urlsplit('port') }}"
-      register: ssl_cert
-      when:
-        - Nested_vCenter.ContentLibrary.Enable == true
-        - Nested_vCenter.ContentLibrary.Type == "subscribed"
-
-    - name: Obtain Information about the SSL Certificate
-      community.crypto.x509_certificate_info:
-        content: "{{ ssl_cert.cert }}"
-      register: ssl_cert_info
-      when:
-        - Nested_vCenter.ContentLibrary.Enable == true
-        - Nested_vCenter.ContentLibrary.Type == "subscribed"
-
-    - name: Store SSL Certificate SHA1 Thumbprint (WITH colons) for easier use
-      ansible.builtin.set_fact:
-        ssl_thumbprint: "{{ ssl_cert_info.fingerprints['sha1'] }}"
-      when:
-        - Nested_vCenter.ContentLibrary.Enable == true
-        - Nested_vCenter.ContentLibrary.Type == "subscribed"
-
-    - name: DEBUG -- Display SSL Certificate Thumbprint (Pause)
-      ansible.builtin.pause:
-        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
-        prompt: |
-          =================================== Display 'ssl_thumbprint' ====================================
-
-          SSL Certificate Thumbprint: {{ ssl_thumbprint | default(None) }}
-
-          SSL Certificate Info:
-            {{ ssl_cert_info | to_nice_json(indent=2) | indent(2) }}
-
-          =================================================================================================
-      when:
-        - DEBUG.DisplayVariables == true
-        - Nested_vCenter.ContentLibrary.Enable == true
-        - Nested_vCenter.ContentLibrary.Type == "subscribed"
-
-
-##
-## Create 'subscribed' vSphere Content Library
-##
-    - name: Create 'subscribed' vSphere Content Library
-      community.vmware.vmware_content_library_manager:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
-        username: "{{ Nested_vCenter.User }}"
-        password: "{{ Nested_vCenter.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        library_name: "{{ Nested_vCenter.ContentLibrary.Name }}"
-        library_description: "{{ Nested_vCenter.ContentLibrary.Description }}"
-        library_type: "{{ Nested_vCenter.ContentLibrary.Type }}"
-        datastore_name: "{{ library_datastore }}"
-        subscription_url: "{{ content_library.library_publish_info.publish_url | lower }}"
-        ssl_thumbprint: "{{ ssl_thumbprint }}"
-        update_on_demand: "{{ Nested_vCenter.ContentLibrary.Subscribed.UpdateOnDemand }}"
-      when:
-        - Nested_vCenter.ContentLibrary.Enable == true
-        - Nested_vCenter.ContentLibrary.Type == "subscribed"
+    - name: Create Content Libraries one at a time
+      ansible.builtin.include_tasks:
+        file: include_tasks_createContentLibrary.yml
+      loop: "{{ Nested_vCenter.ContentLibraries | dict2items }}"

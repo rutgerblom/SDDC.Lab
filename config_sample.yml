@@ -1701,18 +1701,59 @@ Nested_vCenter:
     Site: "{{ SiteCode }}-Site"
     ReplicationPartner: ""                                                              # If replication partner FQDN is provided, the Replication template will be used to configure vCenter.  Else, field should be left as an empty string ("").
   DataCenter: "{{ SiteCode }}-DataCenter"
-  ContentLibrary:
-    Enable: true                                                                        # Set to 'true' to enable the Content Library functionality, and 'false' to disable.
-    Name: "{{ SiteCode }} Content Library"
-    Description: "{{ SiteCode }} Content Library"
-    Type: local                                                                         # Must be either 'local' or 'subscribed'
-    Datastore: ""                                                                       # Specifying a Datastore will over-ride the default functionality of automatically selecting the datastore to use
-    Subscribed:
-      vCenter: "{{ Target.FQDN }}"                                                      # vCenter Server where Published Content Library is located.  By default, we assume the Content Library is on the physical vCenter Server
-      User: "{{ Target.User }}"
-      Password: "{{ Target.Password }}"
-      PublishedLibraryName: "SDDC.Lab Content Library"                                  # Name must EXACTLY match the name of the published library to which you are subscribing
-      UpdateOnDemand: false                                                             # Setting to 'true' will download files as they are needed, while 'false' will download the entire content library ahead of time
+  ContentLibraries:
+    Local:
+      Enable: true                                                                      # Set to 'true' to create this Content Library
+      Type: local                                                                       # Must be either 'local' or 'subscribed'
+      Name: "{{ SiteCode }} Local Content Library"
+      Description: "{{ SiteCode }} Local Content Library"
+      Datastore:                                                                        # Specifying a Datastore will over-ride the default functionality of automatically selecting the datastore to use
+      Subscribed:
+        UpdateOnDemand: false                                                           # Setting to 'true' will download files as they are needed, while 'false' will download the entire content library ahead of time
+        Type: vCenter                                                                   # Must be either 'vCenter' or 'URL', which indicates what source of Content Library subscription
+        vCenter:
+          FQDN: "{{ Target.FQDN }}"                                                     # vCenter Server where Published Content Library is located.  By default, we assume the Content Library is on the physical vCenter Server
+          User: "{{ Target.User }}"
+          Password: "{{ Target.Password }}"
+          PublishedLibraryName: SDDC.Lab Content Library                                # Name must EXACTLY match the name of the published library to which you are subscribing
+        URL:
+          Path:                                                                         # URL path where Published Content Library is located.
+          Port:                                                                         # Port used by URL.  For HTTP use 80, and for HTTPS, use 443.
+    WorkloadVMs:
+      Enable: true                                                                      # Set to 'true' to create this Content Library
+      Type: subscribed                                                                  # Must be either 'local' or 'subscribed'
+      Name: "{{ SiteCode }} WorkloadVMs Content Library"
+      Description: "{{ SiteCode }} WorkloadVMs Content Library"
+      Datastore:                                                                        # Specifying a Datastore will over-ride the default functionality of automatically selecting the datastore to use
+      Subscribed:
+        UpdateOnDemand: false                                                           # Setting to 'true' will download files as they are needed, while 'false' will download the entire content library ahead of time
+        Type: vCenter                                                                   # Must be either 'vCenter' or 'URL', which indicates what source of Content Library subscription
+        vCenter:
+          FQDN: "{{ Target.FQDN }}"                                                     # vCenter Server where Published Content Library is located.  By default, we assume the Content Library is on the physical vCenter Server
+          User: "{{ Target.User }}"
+          Password: "{{ Target.Password }}"
+          PublishedLibraryName: SDDC.Lab Content Library                                # Name must EXACTLY match the name of the published library to which you are subscribing
+        URL:
+          Path:                                                                         # URL path where Published Content Library is located.
+          Port:                                                                         # Port used by URL.  For HTTP use 80, and for HTTPS, use 443.
+    TKG:
+      Enable: true                                                                      # Set to 'true' to create this Content Library
+      Type: subscribed                                                                  # Must be either 'local' or 'subscribed'
+      Name: "{{ SiteCode }} TKG Content Library"
+      Description: "{{ SiteCode }} TKG Content Library"
+      Datastore:                                                                        # Specifying a Datastore will over-ride the default functionality of automatically selecting the datastore to use
+      Subscribed:
+        UpdateOnDemand: true                                                            # Setting to 'true' will download files as they are needed, while 'false' will download the entire content library ahead of time
+        Type: URL                                                                       # Must be either 'vCenter' or 'URL', which indicates what source of Content Library subscription
+        vCenter:
+          FQDN: "{{ Target.FQDN }}"                                                     # vCenter Server where Published Content Library is located.  By default, we assume the Content Library is on the physical vCenter Server
+          User: "{{ Target.User }}"
+          Password: "{{ Target.Password }}"
+          PublishedLibraryName:                                                         # Name must EXACTLY match the name of the published library to which you are subscribing
+        URL:
+          Path: https://wp-content.vmware.com/v2/latest/lib.json                        # URL path where Published Content Library is located.
+          Port: 443                                                                     # Port used by URL.  For HTTP use 80, and for HTTPS, use 443.
+
   Networking:
     vSwitch:
       Name: "{{ SiteCode }}-VDS"
@@ -2565,7 +2606,7 @@ Nested_NSXT:
 ##
 WorkloadVMs:
   - VMName: TinyVM-1_SEG-Web                                                            # VM Name of the GuestVM being created
-    ContentLibrary: "{{ Nested_vCenter.ContentLibrary.Name }}"                          # Content Library Name where template is located
+    ContentLibrary: "{{ Nested_vCenter.ContentLibraries.WorkloadVMs.Name }}"            # Content Library Name where template is located
     Template:
       Type: OVF_TEMPLATE                                                                # Valid options: OVF_TEMPLATE or VM_TEMPLATE
       Name: TinyVM                                                                      # Name of template to create the VM from
@@ -2591,7 +2632,7 @@ WorkloadVMs:
           - Tag: TinyVM
             Scope: Demo
   - VMName: TinyVM-2_SEG-Web                                                            # VM Name of the GuestVM being created
-    ContentLibrary: "{{ Nested_vCenter.ContentLibrary.Name }}"                          # Content Library Name where template is located
+    ContentLibrary: "{{ Nested_vCenter.ContentLibraries.WorkloadVMs.Name }}"            # Content Library Name where template is located
     Template:
       Type: OVF_TEMPLATE                                                                # Valid options: OVF_TEMPLATE or VM_TEMPLATE
       Name: TinyVM                                                                      # Name of template to create the VM from
@@ -2617,7 +2658,7 @@ WorkloadVMs:
           - Tag: TinyVM
             Scope: Demo
   - VMName: TinyVM-3_SEG-Web                                                            # VM Name of the GuestVM being created
-    ContentLibrary: "{{ Nested_vCenter.ContentLibrary.Name }}"                          # Content Library Name where template is located
+    ContentLibrary: "{{ Nested_vCenter.ContentLibraries.WorkloadVMs.Name }}"            # Content Library Name where template is located
     Template:
       Type: OVF_TEMPLATE                                                                # Valid options: OVF_TEMPLATE or VM_TEMPLATE
       Name: TinyVM                                                                      # Name of template to create the VM from
