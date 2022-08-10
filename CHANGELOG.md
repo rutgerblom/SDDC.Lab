@@ -1252,3 +1252,10 @@
   - Changes made to ```config_sample.yml``` does increase the time it takes for ```playbooks/createPodConfig.yml``` to generate the static Pod configuration, so please be patient.  You may want to consider running the ```utils/utils_CreateAllPodConfigs.sh``` script, which will generate the static Pod Configuration files for ALL of your configurations.  Please see description in the documentation included in the header of the script file for more details about the utility.
   - There were changes in ```config_sample.yml``` file.
   - Please be sure to update your ```config.yml``` file(s).
+
+## Dev-v5.0.0 09-AUGUST-2022
+
+### Added by Luis Chanu
+  - Renamed ```Nested_vCenter.ContentLibraries``` structure to ```Nested_vCenter.ContentLibrary``` in all project files, to follow existing project naming conventions.
+  - There were changes in ```config_sample.yml``` file.
+  - Please be sure to update your ```config.yml``` file(s).

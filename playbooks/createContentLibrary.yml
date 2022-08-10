@@ -73,7 +73,7 @@
                                       Nested vCenter FQDN: {{ Nested_vCenter.FQDN | lower }}
                                 Nested vCenter DataCenter: {{ Nested_vCenter.DataCenter }}
 
-               Number of Nested vCenter Content Libraries: {{ Nested_vCenter.ContentLibraries | dict2items | length }}
+               Number of Nested vCenter Content Libraries: {{ Nested_vCenter.ContentLibrary | dict2items | length }}
 
           =================================================================================================
       when:
@@ -86,4 +86,4 @@
     - name: Create Content Libraries one at a time
       ansible.builtin.include_tasks:
         file: include_tasks_createContentLibrary.yml
-      loop: "{{ Nested_vCenter.ContentLibraries | dict2items }}"
+      loop: "{{ Nested_vCenter.ContentLibrary | dict2items }}"
