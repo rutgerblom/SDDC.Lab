@@ -1701,7 +1701,7 @@ Nested_vCenter:
     Site: "{{ SiteCode }}-Site"
     ReplicationPartner: ""                                                              # If replication partner FQDN is provided, the Replication template will be used to configure vCenter.  Else, field should be left as an empty string ("").
   DataCenter: "{{ SiteCode }}-DataCenter"
-  ContentLibraries:
+  ContentLibrary:
     Local:
       Enable: true                                                                      # Set to 'true' to create this Content Library
       Type: local                                                                       # Must be either 'local' or 'subscribed'
@@ -2606,7 +2606,7 @@ Nested_NSXT:
 ##
 WorkloadVMs:
   - VMName: TinyVM-1_SEG-Web                                                            # VM Name of the GuestVM being created
-    ContentLibrary: "{{ Nested_vCenter.ContentLibraries.WorkloadVMs.Name }}"            # Content Library Name where template is located
+    ContentLibrary: "{{ Nested_vCenter.ContentLibrary.WorkloadVMs.Name }}"              # Content Library Name where template is located
     Template:
       Type: OVF_TEMPLATE                                                                # Valid options: OVF_TEMPLATE or VM_TEMPLATE
       Name: TinyVM                                                                      # Name of template to create the VM from
@@ -2632,7 +2632,7 @@ WorkloadVMs:
           - Tag: TinyVM
             Scope: Demo
   - VMName: TinyVM-2_SEG-Web                                                            # VM Name of the GuestVM being created
-    ContentLibrary: "{{ Nested_vCenter.ContentLibraries.WorkloadVMs.Name }}"            # Content Library Name where template is located
+    ContentLibrary: "{{ Nested_vCenter.ContentLibrary.WorkloadVMs.Name }}"              # Content Library Name where template is located
     Template:
       Type: OVF_TEMPLATE                                                                # Valid options: OVF_TEMPLATE or VM_TEMPLATE
       Name: TinyVM                                                                      # Name of template to create the VM from
@@ -2658,7 +2658,7 @@ WorkloadVMs:
           - Tag: TinyVM
             Scope: Demo
   - VMName: TinyVM-3_SEG-Web                                                            # VM Name of the GuestVM being created
-    ContentLibrary: "{{ Nested_vCenter.ContentLibraries.WorkloadVMs.Name }}"            # Content Library Name where template is located
+    ContentLibrary: "{{ Nested_vCenter.ContentLibrary.WorkloadVMs.Name }}"              # Content Library Name where template is located
     Template:
       Type: OVF_TEMPLATE                                                                # Valid options: OVF_TEMPLATE or VM_TEMPLATE
       Name: TinyVM                                                                      # Name of template to create the VM from

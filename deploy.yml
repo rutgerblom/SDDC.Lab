@@ -181,6 +181,6 @@
 - ansible.builtin.import_playbook: playbooks/deployWorkloadVms.yml
   when: 
     - Deploy.WorkloadVMs.Deploy == true
-    - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable == true
+    - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable == true
     - Deploy.Product.NSXT.Federation.Enable == false or (Deploy.Product.NSXT.Federation.Enable == true and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
     - Deploy.Product.NSXT.LocalManager.Deploy == true

@@ -48,7 +48,7 @@
       when:
         - item is defined
         - Deploy.WorkloadVMs.Deploy == true
-        - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable == true
+        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable == true
 
     - name: DEBUG -- Display 'result' from VM Folder creation for Workload VM '{{ item.VMName }}'
       ansible.builtin.pause:
@@ -66,7 +66,7 @@
         - DEBUG.DisplayVariables == true
         - item is defined
         - Deploy.WorkloadVMs.Deploy == true
-        - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable == true
+        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable == true
 
 
 ##
@@ -92,7 +92,7 @@
         - item is defined
         - item.Template.Type == "VM_TEMPLATE"
         - Deploy.WorkloadVMs.Deploy == true
-        - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable == true
+        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable == true
 
     - name: DEBUG -- Display 'result' for VM Template deploy for Workload VM '{{ item.VMName }}'
       ansible.builtin.pause:
@@ -111,7 +111,7 @@
         - DEBUG.DisplayVariables == true
         - item is defined
         - Deploy.WorkloadVMs.Deploy == true
-        - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable == true
+        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable == true
 
     - name: Deploy OVF Template from Content Library for Workload VM '{{ item.VMName }}'
       community.vmware.vmware_content_deploy_ovf_template:
@@ -133,7 +133,7 @@
         - item is defined
         - item.Template.Type == "OVF_TEMPLATE"
         - Deploy.WorkloadVMs.Deploy == true
-        - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable == true
+        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable == true
 
     - name: DEBUG -- Display 'result' for OVF Template deploy for Workload VM '{{ item.VMName }}'
       ansible.builtin.pause:
@@ -152,7 +152,7 @@
         - DEBUG.DisplayVariables == true
         - item is defined
         - Deploy.WorkloadVMs.Deploy == true
-        - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable == true
+        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable == true
 
 
 
@@ -172,7 +172,7 @@
       when:
         - item is defined
         - Deploy.WorkloadVMs.Deploy == true
-        - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable == true
+        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable == true
 
     - name: DEBUG -- Display 'VMNetInfo' for '{{ item.VMName }}'
       ansible.builtin.pause:
@@ -188,7 +188,7 @@
         - DEBUG.DisplayVariables == true
         - VMNetInfo is defined
         - Deploy.WorkloadVMs.Deploy == true
-        - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable == true
+        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable == true
 
 
 ##
@@ -214,7 +214,7 @@
         - item is defined
         - VMNetInfo.network_info is defined
         - Deploy.WorkloadVMs.Deploy == true
-        - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable == true
+        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable == true
 
     - name: DEBUG -- Display 'result' from NIC Configuration for '{{ item.VMName }}'
       ansible.builtin.pause:
@@ -231,7 +231,7 @@
         - item is defined
         - result is defined
         - Deploy.WorkloadVMs.Deploy == true
-        - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable == true
+        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable == true
 
 
 ##
@@ -255,7 +255,7 @@
         - item is defined
         - SingleTag is defined
         - Deploy.WorkloadVMs.Deploy == true
-        - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable == true
+        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable == true
 
     - name: DEBUG -- Display 'result' from NSX-T VM Tags for '{{ item.VMName }}'
       ansible.builtin.pause:
@@ -272,7 +272,7 @@
         - item is defined
         - result is defined
         - Deploy.WorkloadVMs.Deploy == true
-        - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable == true
+        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable == true
 
 
 ##
@@ -292,7 +292,7 @@
         - item is defined
         - item.PowerOn == true
         - Deploy.WorkloadVMs.Deploy == true
-        - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable == true
+        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable == true
 
     - name: DEBUG -- Display 'result' from Power-On of Workload VM '{{ item.VMName }}'
       ansible.builtin.pause:
@@ -311,4 +311,4 @@
         - item is defined
         - result is defined
         - Deploy.WorkloadVMs.Deploy == true
-        - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable == true
+        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable == true

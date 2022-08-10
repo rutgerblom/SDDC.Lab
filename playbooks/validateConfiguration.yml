@@ -186,20 +186,20 @@
                         Issue: Deploying WorkloadVMs requires vSphere Content Library to be enabled and subscribed (i.e. not local)
 
             Configured Values: Deploy.WorkloadVMs.Deploy == {{ Deploy.WorkloadVMs.Deploy }}
-                               Nested_vCenter.ContentLibraries.WorkloadVMs.Enable == {{ Nested_vCenter.ContentLibraries.WorkloadVMs.Enable }}
-                               Nested_vCenter.ContentLibraries.WorkloadVMs.Type == {{ Nested_vCenter.ContentLibraries.WorkloadVMs.Type }}
+                               Nested_vCenter.ContentLibrary.WorkloadVMs.Enable == {{ Nested_vCenter.ContentLibrary.WorkloadVMs.Enable }}
+                               Nested_vCenter.ContentLibrary.WorkloadVMs.Type == {{ Nested_vCenter.ContentLibrary.WorkloadVMs.Type }}
 
           =================================================================================================
       when:
         - Deploy.WorkloadVMs.Deploy == True
-        - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable != True or Nested_vCenter.ContentLibraries.WorkloadVMs.Type != "subscribed"
+        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable != True or Nested_vCenter.ContentLibrary.WorkloadVMs.Type != "subscribed"
 
     - name: Set flag if issue found with Workload VM Settings and dependencies
       ansible.builtin.set_fact:
         IssueFound: true
       when:
         - Deploy.WorkloadVMs.Deploy == True
-        - Nested_vCenter.ContentLibraries.WorkloadVMs.Enable != True or Nested_vCenter.ContentLibraries.WorkloadVMs.Type != "subscribed"
+        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable != True or Nested_vCenter.ContentLibrary.WorkloadVMs.Type != "subscribed"
 
 
 ##
