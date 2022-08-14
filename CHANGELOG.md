@@ -1259,3 +1259,8 @@
   - Renamed ```Nested_vCenter.ContentLibraries``` structure to ```Nested_vCenter.ContentLibrary``` in all project files, to follow existing project naming conventions.
   - There were changes in ```config_sample.yml``` file.
   - Please be sure to update your ```config.yml``` file(s).
+
+## Dev-v5.0.0 14-AUGUST-2022
+
+### Added by Luis Chanu
+  - Updated ```README.md``` file with information about the NSX v4.0.0.1 Federation onboarding bug.
