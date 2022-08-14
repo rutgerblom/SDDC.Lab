@@ -1264,3 +1264,5 @@
 
 ### Added by Luis Chanu
   - Updated ```README.md``` file with information about the NSX v4.0.0.1 Federation onboarding bug.
+  - Added vRLI v8.8.2 to ```software_sample.yml``` file (UNTESTED).
+  - Please be sure to update your ```software.yml``` file.
