@@ -428,7 +428,7 @@ As we use SDDC.Lab in our labs, every now-and-then we notice some issues/problem
 | 5-JAN-2022 |          |         |  3.2.0  | NSX-T Federation deployment not supported. | Luis Chanu |
 | 31-JAN-2022 |         |         |  3.2.0.1  | NSX-T Federation deployment not supported. | Luis Chanu |
 | 20-FEB-2022 |         |         |  3.2.0.1  | NSX-T Global MTU Settings are not properly set. | Luis Chanu |
-| 10-AUG-2022 |         |         |  4.0.0.1  | NSX Federation deployment issue: Unable to connect a VM's vNIC to a stretched NSX Segment. | Luis Chanu |
+| 12-AUG-2022 |         |         |  4.0.0.1  | There is a bug with NSX Federation onboarding such that imported local objects are not properly migrated to global objects.  Because of this bug, you are unable to connect a VM's vNIC to imported stretched NSX Segments. | Luis Chanu |
 
 
 ## More Information
