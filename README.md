@@ -333,7 +333,7 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 
 To deploy a Pod:
 1. Generate a Pod configuration with:  
-```ansible-playbook cp ~/git/SDDC.Lab/playbooks/createPodConfig.yml```
+```ansible-playbook ~/git/SDDC.Lab/playbooks/createPodConfig.yml```
 
 2. Start a Pod deployment per the instructions. For example:  
 ```ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" ~/git/SDDC.Lab/deploy.yml```
