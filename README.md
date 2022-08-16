@@ -99,20 +99,20 @@ The following are recommendations based on our experience with deploying Pods:
   * ```sudo apt install python3 python3-pip xorriso git p7zip-full```
   * ```pip3 install --upgrade ansible pyvim pyvmomi netaddr jmespath dnspython paramiko setuptools testresources cryptography git+https://github.com/vmware/vsphere-automation-sdk-python.git```
   * ```git clone https://github.com/rutgerblom/SDDC.Lab.git ~/git/SDDC.Lab``` 
-  * ```ansible-galaxy collection install -r SDDC.Lab/requirements.yml```
+  * ```ansible-galaxy collection install -r ~/git/SDDC.Lab/requirements.yml```
 
 The remaining commands in this section are performed from with the SDDC.Lab parent directory.
 
 * Copy/rename the sample files:
-  * ```cp config_sample.yml config.yml```
-  * ```cp licenses_sample.yml licenses.yml```
-  * ```cp software_sample.yml software.yml```
-  * ```cp templates_sample.yml templates.yml```
+  * ```cp ~/git/SDDC.Lab/config_sample.yml ~/git/SDDC.Lab/config.yml```
+  * ```cp ~/git/SDDC.Lab/licenses_sample.yml ~/git/SDDC.Lab/licenses.yml```
+  * ```cp ~/git/SDDC.Lab/software_sample.yml ~/git/SDDC.Lab/software.yml```
+  * ```cp ~/git/SDDC.Lab/templates_sample.yml ~/git/SDDC.Lab/templates.yml```
 
 * Modify ```config.yml``` and ```licenses.yml``` files according to your needs and your environment
 
 * Create the Software Library directory structure using:
-  * ```sudo ansible-playbook utils/util_CreateSoftwareDir.yml```
+  * ```sudo ansible-playbook ~/git/SDDC.Lab/utils/util_CreateSoftwareDir.yml```
 
 * Add installation media to the corresponding directories in the Software Library (/Software)
 
@@ -121,7 +121,7 @@ The remaining commands in this section are performed from with the SDDC.Lab pare
 Consider the following when upgrading SDDC.Lab to a newer version.
 
 * v2 to v3
-  * Clone the v3 branch to its own directory. For example: ```git clone https://github.com/rutgerblom/SDDC.Lab.git SDDC.Lab_v3```
+  * Clone the v3 branch to its own directory. For example: ```git clone https://github.com/rutgerblom/SDDC.Lab.git ~/git/SDDC.Lab_v3```
   * As additional PIP and Ansible modules are required by v3, please follow the instructions in the "Preparations" section to ensure all of the required software is installed on the Ansible controller.
   * Use copies of the v3 sample files and update these with your settings. Don't copy any v2 files into the v3 directory.
   * Remove the VyOS ISO file from your software library and let the router deployment script download the latest version of the rolling release.
@@ -333,15 +333,15 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 
 To deploy a Pod:
 1. Generate a Pod configuration with:  
-```ansible-playbook playbooks/createPodConfig.yml```
+```ansible-playbook cp ~/git/SDDC.Lab/playbooks/createPodConfig.yml```
 
 2. Start a Pod deployment per the instructions. For example:  
-```ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" deploy.yml```
+```ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" ~/git/SDDC.Lab/deploy.yml```
 
 Deploying an SDDC Pod will take somewhere between 1 and 1.5 hours depending on your environment and Pod configuration.
 
 Similary you remove a Pod with:  
-```ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" undeploy.yml```
+```ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" ~/git/SDDC.Lab/undeploy.yml```
 
 
 ## Project Features
@@ -362,7 +362,7 @@ When deploying NSX-T Federation, keep the following in mind:
   b) ```Deploy.Product.NSXT.LocalManager.Deploy = true```\
   c) ```Deploy.Product.NSXT.Edge.Deploy = true```
 
-6. NSX-T Federation requires an NSX-T Enterprise Plus license, so be sure the proper license is included in your ```License.yml``` file.
+6. NSX-T Federation requires an NSX-T Enterprise Plus license, so be sure the proper license is included in your ```licenses.yml``` file.
 
 7. SDDC.Lab only supports one (1) Tier-0 Gateway when NSX-T Federation is configured.  This Tier-0 Gateway will become the Stretched Tier-0 Gateway.
 
