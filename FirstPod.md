@@ -55,8 +55,8 @@ version 2.12.x.
 2. Ansible and the required Python modules:\
 **pip3 install --upgrade ansible pyvim pyvmomi netaddr jmespath dnspython paramiko setuptools testresources cryptography git+https://github.com/vmware/vsphere-automation-sdk-python.git**
 
-3. The SDDC.Lab repository cloned to an appropriate location on your Ubuntu machine (e.g. $HOME) with:\
-**git clone https://github.com/rutgerblom/SDDC.Lab.git**
+3. The SDDC.Lab repository cloned to an appropriate location on your Ubuntu machine (e.g. $HOME/git) with:\
+**mkdir git && cd git && git clone https://github.com/rutgerblom/SDDC.Lab.git**
 
 4. The required Ansible modules:\
 **ansible-galaxy collection install -r SDDC.Lab/requirements.yml**
