@@ -59,7 +59,7 @@ version 2.12.x.
 **git clone https://github.com/rutgerblom/SDDC.Lab.git ~/git/SDDC.Lab**
 
 4. The required Ansible modules:\
-**ansible-galaxy collection install -r SDDC.Lab/requirements.yml**
+**ansible-galaxy collection install -r ~/git/SDDC.Lab/requirements.yml**
 
 ## Prepare your Pod configuration files
 After cloning the repository you will end up with a directory called "SDDC.Lab" with the following contents:
@@ -83,17 +83,17 @@ After cloning the repository you will end up with a directory called "SDDC.Lab" 
     templates_sample.yml
     undeploy.yml
 
-Four files in the root of the SDDC.Lab directory require your attention:
+Four files in the root of the ~/git/SDDC.Lab directory require your attention:
 * config_sample.yml
 * licenses_sample.yml
 * software_sample.yml
 * templates_sample.yml
 
 Start by creating your own copies of the sample configuration files:
-* cp config_sample.yml config.yml
-* cp licenses_sample.yml licenses.yml
-* cp software_sample.yml software.yml
-* cp templates_sample.yml templates.yml
+* cp ~/git/SDDC.Lab/config_sample.yml ~/git/SDDC.Lab/config.yml
+* cp ~/git/SDDC.Lab/licenses_sample.yml ~/git/SDDC.Lab/licenses.yml
+* cp ~/git/SDDC.Lab/software_sample.yml ~/git/SDDC.Lab/software.yml
+* cp ~/git/SDDC.Lab/templates_sample.yml ~/git/SDDC.Lab/templates.yml
 
 ### config.yml
 This file contains all of the configuration and settings for the Pod you're about to deploy. Its contents are organized in several different sections and data structures.
@@ -192,7 +192,7 @@ You would normally not make any changes to this file and even more so when you'r
 ## Create your software library
 Now that your configuration files have been prepared, you can continue with creating the software library. The first thing you need to do is create the software library's directory structure. We've created an Ansible script that does this for you. Simply run:
 
-* **sudo ansible-playbook utils/util_CreateSoftwareDir.yml**
+* **sudo ansible-playbook ~/git/SDDC.Lab/utils/util_CreateSoftwareDir.yml**
 
 This script creates an empty directory structure at **/Software** on your Ansible controller that will look something like this:
 
@@ -264,11 +264,11 @@ A populated software library could look something like this:
 ## Generate your Pod configuration
 You can now continue with generating your Pod configuration. This is the process where all of your settings are combined into a static configuration file. To generate this configuration file you run:
 
-* **ansible-playbook playbooks/createPodConfig.yml**
+* **ansible-playbook ~/git/SDDC.Lab/playbooks/createPodConfig.yml**
 
 The script needs to know where your configuration file is located:
 
-    In which directory is the Pod-Config file you want to have prepared located? [/home/ubuntu/SDDC.Lab/]: 
+    In which directory is the Pod-Config file you want to have prepared located? [/home/ubuntu/git/SDDC.Lab/]: 
 
 The default path is the current working directory. If this is correct you simply press **\<Enter>**.
 
