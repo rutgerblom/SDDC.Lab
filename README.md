@@ -98,7 +98,7 @@ The following are recommendations based on our experience with deploying Pods:
 * Install the required software on your Ansible controller:
   * ```sudo apt install python3 python3-pip xorriso git p7zip-full```
   * ```pip3 install --upgrade ansible pyvim pyvmomi netaddr jmespath dnspython paramiko setuptools testresources cryptography git+https://github.com/vmware/vsphere-automation-sdk-python.git```
-  * ```mkdir git && cd git && git clone https://github.com/rutgerblom/SDDC.Lab.git``` 
+  * ```git clone https://github.com/rutgerblom/SDDC.Lab.git ~/git/SDDC.Lab``` 
   * ```ansible-galaxy collection install -r SDDC.Lab/requirements.yml```
 
 The remaining commands in this section are performed from with the SDDC.Lab parent directory.
