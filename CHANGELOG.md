@@ -1272,3 +1272,9 @@
 ### Added by Luis Chanu
   - As part of the ongoing effort to stop running playbooks using "sudo ansible-playbook", ```utils/util_CreateSoftwareDir.yml``` was modified to use the ```become``` directive to elevate permissions within the playbook.
   - The ```README.md``` file has been updated to reflect the changes made to the ```utils/util_CreateSoftwareDir.yml``` playbook.
+
+## Dev-v5.0.0 18-AUGUST-2022
+
+### Added by Luis Chanu
+  - Updated ```utils/util_CreateSwitchConfig.yml``` playbook to use the live VyOS Router Jinja2 template that is used during the deployment.  A more detailed desription was also added inside of the script.
+  - As the actual template is now used, the temporary template within utils was deleted.
