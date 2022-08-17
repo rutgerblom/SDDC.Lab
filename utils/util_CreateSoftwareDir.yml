@@ -1,7 +1,19 @@
 ##
-##    Project: SDDC.Lab
-##    Authors: Luis Chanu & Rutger Blom
-##   Filename: utils/util_CreateSoftwareDir.yml
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: utils/util_CreateSoftwareDir.yml
+##
+##  Description: This utility performs the following functions:
+##                 1) It creates the /Software folder structure
+##                 2) It sets the folder permissions to 'rwxrwxrwx' on all directories
+##
+##               This utility utilizes Ansible's 'become' feature to escalate priviledges to 'root' user.
+##               For that reason, it should NOT be run with 'sudo', and it should be executed as follows
+##               from the root of the SDDC.Lab folder:
+##
+##                         ansible-playbook --ask-become-pass utils/util_CreateSoftwareDir.yml
+##
+##               When you run the util as shown above, it will prompt you for the 'root' password.
 ##
 ---
 - hosts: localhost
@@ -17,6 +29,7 @@
         path: "{{ RootDirectory }}"
         state: directory
         mode: "0777"
+      become: yes
 
 
 ##
@@ -27,6 +40,7 @@
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
+      become: yes
       loop: "{{ Software.VMware.vCenter.Installers | dict2items }}"
       when: Software.VMware.vCenter.Installers is defined
 
@@ -35,6 +49,7 @@
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
+      become: yes
       loop: "{{ Software.VMware.ESXi.Installers | dict2items }}"
       when: Software.VMware.ESXi.Installers is defined
 
@@ -43,6 +58,7 @@
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
+      become: yes
       loop: "{{ Software.VMware.NSXT.Installers | dict2items }}"
       when: Software.VMware.NSXT.Installers is defined
 
@@ -51,6 +67,7 @@
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
+      become: yes
       loop: "{{ Software.VMware.vRLI.Installers | dict2items }}"
       when: Software.VMware.vRLI.Installers is defined
 
@@ -59,6 +76,7 @@
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
+      become: yes
       loop: "{{ Software.Ubuntu.Server.Installers | dict2items }}"
       when: Software.Ubuntu.Server.Installers is defined
 
@@ -71,5 +89,6 @@
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
+      become: yes
       loop: "{{ Software.VyOS.Router.Installers | dict2items }}"
       when: Software.VyOS.Router.Installers is defined

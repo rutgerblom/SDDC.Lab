@@ -111,8 +111,10 @@ The remaining commands in this section are performed from with the SDDC.Lab pare
 
 * Modify ```config.yml``` and ```licenses.yml``` files according to your needs and your environment
 
-* Create the Software Library directory structure using:
-  * ```sudo ansible-playbook ~/git/SDDC.Lab/utils/util_CreateSoftwareDir.yml```
+* Create the Software Library directory structure and set folder permissions using:
+  * ```ansible-playbook --ask-become-pass ~/git/SDDC.Lab/utils/util_CreateSoftwareDir.yml```
+
+    NOTE: The above command will prompt you for the 'root' password.  This is needed as the playbook needs to obtain elevated permissions to create the directory tree and change file system permissions within the Software directory.
 
 * Add installation media to the corresponding directories in the Software Library (/Software)
 

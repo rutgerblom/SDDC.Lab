@@ -1266,3 +1266,9 @@
   - Updated ```README.md``` file with information about the NSX v4.0.0.1 Federation onboarding bug.
   - Added vRLI v8.8.2 to ```software_sample.yml``` file (UNTESTED).
   - Please be sure to update your ```software.yml``` file.
+
+## Dev-v5.0.0 17-AUGUST-2022
+
+### Added by Luis Chanu
+  - As part of the ongoing effort to stop running playbooks using "sudo ansible-playbook", ```utils/util_CreateSoftwareDir.yml``` was modified to use the ```become``` directive to elevate permissions within the playbook.
+  - The ```README.md``` file has been updated to reflect the changes made to the ```utils/util_CreateSoftwareDir.yml``` playbook.
