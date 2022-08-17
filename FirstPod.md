@@ -53,7 +53,7 @@ version 2.12.x.
 **sudo apt install python3 python3-pip xorriso git p7zip-full**
 
 2. Ansible and the required Python modules:\
-**pip3 install --upgrade ansible pyvim pyvmomi netaddr jmespath dnspython paramiko setuptools testresources cryptography git+https://github.com/vmware/vsphere-automation-sdk-python.git**
+**pip3 install --upgrade -r ~/git/SDDC.Lab/pip3_requirements.txt**
 
 3. The SDDC.Lab repository cloned to an appropriate location on your Ubuntu machine (e.g. $HOME/git/SDDC.Lab) with:\
 **git clone https://github.com/rutgerblom/SDDC.Lab.git ~/git/SDDC.Lab**
