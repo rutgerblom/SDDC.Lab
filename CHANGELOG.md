@@ -1277,7 +1277,7 @@
 
 ### Added by Rutger Blom
   - The required Python modules are now listed in the ```pip3_requirements.txt``` file. This file can be used when running pip (Package Installer for Python).
-  - Updated the "pip3" preparation step in ```README.md``` and ```FirstPod.md``` so that making use of the new ```pip3_requirements.txt``` files is suggested.
+  - Updated the "pip3" preparation step in ```README.md``` and ```FirstPod.md``` so that making use of the new ```pip3_requirements.txt``` file is suggested.
 
 ## Dev-v5.0.0 18-AUGUST-2022
 
