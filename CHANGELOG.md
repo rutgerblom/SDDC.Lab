@@ -1273,6 +1273,12 @@
   - As part of the ongoing effort to stop running playbooks using "sudo ansible-playbook", ```utils/util_CreateSoftwareDir.yml``` was modified to use the ```become``` directive to elevate permissions within the playbook.
   - The ```README.md``` file has been updated to reflect the changes made to the ```utils/util_CreateSoftwareDir.yml``` playbook.
 
+## Dev-v5.0.0 17-AUGUST-2022
+
+### Added by Rutger Blom
+  - The required Python modules are now listed in the ```pip3_requirements.txt``` file. This file can be used when running pip (Package Installer for Python).
+  - Updated the "pip3" preparation step in ```README.md``` and ```FirstPod.md``` so that making use of the new ```pip3_requirements.txt``` files is suggested.
+
 ## Dev-v5.0.0 18-AUGUST-2022
 
 ### Added by Luis Chanu
