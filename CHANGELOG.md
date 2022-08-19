@@ -1284,3 +1284,14 @@
 ### Added by Luis Chanu
   - Updated ```utils/util_CreateSwitchConfig.yml``` playbook to use the live VyOS Router Jinja2 template that is used during the deployment.  A more detailed desription was also added inside of the script.
   - As the actual template is now used, the temporary template within utils was deleted.
+
+## Dev-v5.0.0 19-AUGUST-2022
+
+### Added by Luis Chanu
+  - Command syntax change found with VyOS "nightly" release.  When configuring bgp, 'local-as' has been changed to 'system-as'.
+  - Corrected bgp command in ```templates/vyos_router.j2``` file to support current "nightly" VyOS release ISO.
+  - You must delete (yes, delete) your VyOS ISO file, located here: ```/Software/VyOS/Router/Latest/vyos-rolling-latest.iso```.  By default, SDDC.Lab will download the latest VyOS ISO nightly build ISO if the file is not found in ```/Software/VyOS/Router/Latest```.
+  - Removed ```Deploy.Software.Router.Version == "Latest"``` conditions from ```playbooks/deployRouter.yml``` playbook.
+  - Added vRLI version 8.8.2 to ```software_sample.yml```.
+  - Added VyOS version "Test" to ```software_sample.yml```, which is used for internal testing.  You should continue to use "Latest" in your builds.
+  - Update your ```software.yml``` file.
