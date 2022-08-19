@@ -81,7 +81,7 @@ set protocols static route 0.0.0.0/0 next-hop {{ Nested_Router.Interface.Uplink.
 ## BGP (IPv4 & IPv6)
 ##
 {% if Nested_Router.Protocol == "BGP" or Nested_Router.Protocol == "BOTH" -%}
-set protocols bgp local-as {{ Nested_Router.BGP.ASN }}
+set protocols bgp system-as {{ Nested_Router.BGP.ASN }}
 set protocols bgp parameters router-id {{ Nested_Router.BGP.RouterID }}
 
 #
