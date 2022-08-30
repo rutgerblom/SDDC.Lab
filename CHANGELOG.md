@@ -1295,3 +1295,9 @@
   - Added vRLI version 8.8.2 to ```software_sample.yml```.
   - Added VyOS version "Test" to ```software_sample.yml```, which is used for internal testing.  You should continue to use "Latest" in your builds.
   - Update your ```software.yml``` file.
+
+## Dev-v5.0.0 30-AUGUST-2022
+
+### Added by Rutger Blom
+  - Updated the Ubuntu Server download URL for some older versions in ```software_sample.yml```.
+  - Please be sure to update your ```software.yml``` file.
