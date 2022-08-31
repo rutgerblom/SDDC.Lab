@@ -1301,3 +1301,9 @@
 ### Added by Rutger Blom
   - Updated the Ubuntu Server download URL for some older versions in ```software_sample.yml```.
   - Please be sure to update your ```software.yml``` file.
+
+## Dev-v5.0.0 31-AUGUST-2022
+
+### Added by Rutger Blom
+  - Added a Ubuntu Server 22.04.1 entry to ```software_sample.yml``` as well as Ubuntu Server 22.04.1 template files to the ```./templates``` directory. Please note that support for Ubuntu Server version 22.04.1 is not yet implemented. Do not specify version 22.04.1 in your configuration at this time! 
+  - Please be sure to update your ```software.yml``` file.
