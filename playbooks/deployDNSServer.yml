@@ -161,6 +161,16 @@
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy == true  
 
+    - name: Add write permission to extracted files
+      ansible.builtin.file:
+        path: "{{ ISOExtractPoint }}"
+        state: directory
+        recurse: true
+        mode: u+w
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true  
+
     - name: Copy txt.cfg from Ubuntu ISO
       ansible.builtin.copy: 
         src: "{{ ISOExtractPoint }}/isolinux/txt.cfg"

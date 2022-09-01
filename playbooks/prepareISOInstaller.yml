@@ -80,6 +80,13 @@
     - name: Extract ESXi ISO
       ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }} -extract / {{ ISOExtractPoint }}"
 
+    - name: Add write permission to extracted files
+      ansible.builtin.file:
+        path: "{{ ISOExtractPoint }}"
+        state: directory
+        recurse: true
+        mode: u+w
+
     - name: Copy BOOT.CFG from the ESXi ISOExtractPoint
       ansible.builtin.copy: 
         src: "{{ ISOExtractPoint }}/BOOT.CFG"
