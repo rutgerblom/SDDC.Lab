@@ -156,7 +156,7 @@
         - Deploy.Product.DNSServer.Deploy == true 
 
     - name: Extract Ubuntu ISO
-      ansible.builtin.command: "7z x {{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }} -o{{ ISOExtractPoint }} -y"
+      ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }} -extract / {{ ISOExtractPoint }}"
       when: 
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy == true  

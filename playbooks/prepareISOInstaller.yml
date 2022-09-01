@@ -78,7 +78,7 @@
         state: directory
 
     - name: Extract ESXi ISO
-      ansible.builtin.command: "7z x {{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }} -o{{ ISOExtractPoint }} -y"
+      ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }} -extract / {{ ISOExtractPoint }}"
 
     - name: Copy BOOT.CFG from the ESXi ISOExtractPoint
       ansible.builtin.copy: 

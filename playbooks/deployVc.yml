@@ -140,7 +140,7 @@
         - Nested_vCenter.SSO.ReplicationPartner != ""
 
     - name: Extract vCenter ISO -- Ignore Fatal Error Message
-      ansible.builtin.command: "7z x {{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }} -o{{ ISOExtractPoint }} -scsUTF-8 -y"
+      ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }} -extract / {{ ISOExtractPoint }}"
       when: vcenter_check.status != 200
       ignore_errors: true
 
