@@ -1307,3 +1307,8 @@
 ### Added by Rutger Blom
   - Added a Ubuntu Server 22.04.1 entry to ```software_sample.yml``` as well as Ubuntu Server 22.04.1 template files to the ```./templates``` directory. Please note that support for Ubuntu Server version 22.04.1 is not yet implemented. Do not specify version 22.04.1 in your configuration at this time! 
   - Please be sure to update your ```software.yml``` file.
+
+## Dev-v5.0.0 01-SEPTEMBER-2022
+
+### Added by Rutger Blom
+  - Updated the "ISO extraction" tasks found in several Playbooks so that these use xorriso instead of 7z. 7z is no longer required.
