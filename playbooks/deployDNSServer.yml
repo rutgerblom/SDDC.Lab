@@ -161,12 +161,14 @@
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy == true  
 
-    - name: Add write permission to extracted files
-      ansible.builtin.file:
-        path: "{{ ISOExtractPoint }}"
-        state: directory
-        recurse: true
-        mode: u+w
+    - name: Add write permission to extracted files -- Using chmod as Ansible (Python) can't handle the recursion depth of the Ubuntu ISO
+      ansible.builtin.command: "chmod -R +w {{ ISOExtractPoint }}"
+      when: 
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy == true   
+
+    - name: Extract the Packages.gz file on Ubuntu ISO -- Workaround issue with subiquity
+      ansible.builtin.command: "gunzip {{ ISOExtractPoint }}/dists/focal/main/binary-amd64/Packages.gz --keep"
       when: 
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy == true  
