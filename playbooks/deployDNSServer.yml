@@ -161,17 +161,24 @@
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy == true  
 
-    - name: Add write permission to extracted files -- Using chmod as Ansible (Python) can't handle the recursion depth of the Ubuntu ISO
-      ansible.builtin.command: "chmod -R +w {{ ISOExtractPoint }}"
+    - name: Add write permission to extracted files 
+      ansible.builtin.command: "chmod -R +w {{ ISOExtractPoint }}"        # Using chmod as Ansible (Python) can't handle the recursion depth on the Ubuntu ISO
       when: 
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy == true   
 
-    - name: Extract the Packages.gz file on Ubuntu ISO -- Workaround issue with subiquity
+
+## Start workaround issue with Ubuntu autoinstall
+## Details of the issue and the workaround: https://askubuntu.com/questions/1394441/ubuntu-20-04-3-autoinstall-with-embedded-user-data-crashing-i-got-workaround
+
+    - name: Extract the Packages.gz file on Ubuntu ISO
       ansible.builtin.command: "gunzip {{ ISOExtractPoint }}/dists/focal/main/binary-amd64/Packages.gz --keep"
       when: 
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy == true  
+
+## End workaround issue with Ubuntu autoinstall
+
 
     - name: Copy txt.cfg from Ubuntu ISO
       ansible.builtin.copy: 
@@ -180,7 +187,7 @@
         mode: "666"
       when: 
         - ubuntu_status is failed
-        - Deploy.Product.DNSServer.Deploy == true  
+        - Deploy.Product.DNSServer.Deploy == true
 
     - name: Edit txt.cfg to enable autoinstaller 
       ansible.builtin.replace:
