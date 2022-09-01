@@ -1312,3 +1312,4 @@
 
 ### Added by Rutger Blom
   - Updated the "ISO extraction" tasks found in several Playbooks so that these use xorriso instead of 7z. 7z is no longer required.
+  - Implemented a workaround for an Ubuntu 20.04.x autoinstall issue in ```playbooks/deployDNSServer.yml```. More details on the issue and the workaround we implemented can be found here: https://askubuntu.com/questions/1394441/ubuntu-20-04-3-autoinstall-with-embedded-user-data-crashing-i-got-workaround
