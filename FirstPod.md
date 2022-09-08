@@ -59,7 +59,7 @@ version 2.12.x.
 **pip3 install --upgrade -r ~/git/SDDC.Lab/pip3_requirements.txt**
 
 4. The required Ansible modules:\
-**ansible-galaxy collection install -r ~/git/SDDC.Lab/requirements.yml**
+**ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml**
 
 ## Prepare your Pod configuration files
 After cloning the repository you will end up with a directory called "SDDC.Lab" with the following contents:
