@@ -1320,3 +1320,8 @@
   - Added ESXi v7.0 Update 3G to ```software_sample.yml``` file. (UNTESTED)
   - Added ESXi v7.0 Update 3G to ```templates_sample.yml``` file.
   - Please be sure to update your ```software.yml``` and ```templates.yml``` files.
+
+## Dev-v5.0.0 08-SEPTEMBER-2022
+
+### Added by Rutger Blom
+  - Updated the "ansible-galaxy" preparation step in the documentation so that the "--upgrade" parameter is included in the command. 
