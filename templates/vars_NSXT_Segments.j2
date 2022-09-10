@@ -33,7 +33,6 @@
 {# Define Global Variables using Jinja Namespace #}
 {% set ns = namespace() %}
 {% set ns.segment_count = 0 %}
-{#{% set segment_count = [0] %} { # Use list to track number of segments.  A list element is added for each Segment, so the list length will be the number of segments #}
 {% for Segment in Nested_NSXT.Networking.Segments %}
   - display_name: {{ Segment.Name }}
     description:  {{ Segment.Description }}
@@ -117,7 +116,6 @@
             - {{ Common.DNS.Domain }}
 {%           endif %}{# Deploy.Product.NSXT.Federation.Enable == false #}
 {%         endif %}{# Deploy.Setting.IPv6 #}
-{#{%         if segment_count.append(segment_count.pop() + 1) %}{% endif %}{ # Add an element, which increments it by 1 #}
 {%         set ns.segment_count = ns.segment_count + 1 %}
 {%       else %}{# Else Segment.Subnets != None, then Subnets exist, so use them to allocate IP addresses #}
 {###### Assign IP Addresses From Config File ######}
