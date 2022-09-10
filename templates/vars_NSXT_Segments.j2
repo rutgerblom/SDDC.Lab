@@ -84,7 +84,9 @@
 {###### IPv4 Settings ######}
 {%         if Deploy.Setting.IPv4 %}
 {#           Determine first Pod Subnet in /24 (i.e. 10.204.60.0/24) [for Pod 60], then obtain network starting from that point taking into account previously allocated subnets to other Segments #}
-{%           set ipv4_subnet = Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number) | ansible.utils.ipsubnet(Pod.BaseOverlay.IPv4.Prefix, segment_count[0]) %}{# Needs to be counter #}
+{%           set ipv4_address = Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number) | ansible.utils.ipmath(segment_count[0] * (2**(32-Pod.BaseOverlay.IPv4.Prefix))) %}
+{%           set ipv4_subnet = [ipv4_address, "/", Pod.BaseOverlay.IPv4.Prefix]|join %}
+
       - gateway_address: {{ ipv4_subnet | ansible.utils.ipaddr('1') }}
 {%           if Deploy.Product.NSXT.Federation.Enable == false %}
         dhcp_ranges:
@@ -115,12 +117,9 @@
             - {{ Common.DNS.Domain }}
 {%           endif %}{# Deploy.Product.NSXT.Federation.Enable == false #}
 {%         endif %}{# Deploy.Setting.IPv6 #}
-          aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_BEFORE: {{ segment_count|length }} => {{ segment_count }} ==> {{ segment_count[0] }}
 {%         if segment_count.append(segment_count.pop() + 1) %}{% endif %}{# Add an element, which increments it by 1 #}
 {#{%         set ns.segment_count = ns.segment_count + 1 %}#}
-          aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa__AFTER: {{ segment_count|length }} => {{ segment_count }} ==> {{ segment_count[0] }}
 {%       else %}{# Else Segment.Subnets != None, then Subnets exist, so use them to allocate IP addresses #}
-
 {###### Assign IP Addresses From Config File ######}
 {%         for Subnet in Segment.Subnets %}
 {%           if ((Deploy.Setting.IPv4 and Subnet | ipv4) or (Deploy.Setting.IPv6 and Subnet | ipv6)) %}
