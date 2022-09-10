@@ -41,6 +41,15 @@ Pod:
   BaseNetwork:
     IPv4: '10.203'                                        # IPv4 BaseNetwork must be the first two octets of the IPv4 address space used by the nested environment.
     IPv6: fd00:0000:0000:00                               # IPv6 BaseNetwork must be a fully expanded /56 prefix.  All nested IPv6 networks build off of this IPv6 base network.
+  BaseOverlay:                                            # This section controls the automatic addressing of IP Segments on NSX-T Overlay Segments
+    IPv4:
+      Network: 10.204.0.0/16                              # IPv4 supernet from which Pod IPv4 subnets are created.  Must be a /16 network.  For each Pod, automatic addressing will start, by default, at a base network of 10.204.<Pod.Number>.0/24
+      Prefix: 24                                          # IPv4 network prefix used for automatically created Segment IPv4 subnet.  Prefix of 24 is recommended.  Prefix must be >= 24.
+      RangePrefix: 28                                     # This CIDR defines the DHCP Scope Range size for the IPv4 subnet.  Address range is allocated from the HIGHEST RangePrefix size within the subnet.  RangePrefix CIDR number must be greater than Prefix CIDR number.
+    IPv6:
+      Network: fc00::/56                                  # IPv6 supernet from which Pod IPv6 subnets are created.  Must be a /56 network.  For each Pod, automatic addressing will start, by default, at a base network of fc00:0000:0000:00<Pod.Number In Hex>/64
+      Prefix: 64                                          # IPv6 network prefix used for automatically created Segment IPv4 subnet.  Prefix of 64 is recommended.  Prefix must be >= 64.
+      RangePrefix: 112                                    # This CIDR defines the DHCP Scope Range size for the IPv6 subnet.  Address range is allocated from the HIGHEST RangePrefix size within the subnet.  RangePrefix CIDR number must be greater than Prefix CIDR number.
 
 
 
@@ -96,7 +105,7 @@ Deploy:
     ESXi:                                                 # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: ESXi                                       # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '7.00U3F'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '7.00U3G'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "KS.CFG"
       Installer: "{{ SiteCode }}-Installer-ESXi"
@@ -117,7 +126,7 @@ Deploy:
     vRLI:                                                 # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: vRLI                                       # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '8.8.0'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '8.8.2'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-vRLI-1.conf"
       Installer: "{{ SiteCode }}-Installer-vRLI-1"
@@ -2266,6 +2275,12 @@ Nested_NSXT:
 ##
 ## If Overlay segments are configured with a subnet, they will be connected to the Gateway specified.  If not, the Segments
 ## are only created within NSX-T, but not connected to any Tier-0 or Tier-1 Gateway.  Subnets are only added to Overlay segments.
+## When configuring NSX-T Segments, keep the following in mind (See Readme for additional information):
+##   1) Segments that do NOT have a "Subnets:" entry are considered to be Layer-2 only segments.
+##   2) Segments that include a "Subnets:" entry without any subnets listed below it will have their IPv4 and IPv6 subnet
+##      addresses auto-allocated.
+##   3) Segments that include a "Subnets" entry with subnets explicitly listed below it will be provisioned using those
+##      subnet addresses.
 ##
     Segments:
       - Name: "SEG-T0-Edge-Uplink1_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink1.VLAN|int) }}"
@@ -2299,9 +2314,7 @@ Nested_NSXT:
         ConnectedTo:
           Tier: 1
           GatewayName: T1-Gateway-01
-        Subnets:
-          - GatewayCIDR: 192.168.1.1/24
-          - GatewayCIDR: fd00:a:a::1/64
+        Subnets:                                                                                # If no subnets are listed below the "Subnets:" entry, then they will be automatically assigned.  Include subnets over-ride automatic assignment.
         VLANS:
         Tags:
           - Tag: Auto-Created
@@ -2315,9 +2328,7 @@ Nested_NSXT:
         ConnectedTo:
           Tier: 1
           GatewayName: T1-Gateway-01
-        Subnets:
-          - GatewayCIDR: 192.168.2.1/24
-          - GatewayCIDR: fd00:a:b::1/64
+        Subnets:                                                                                # If no subnets are listed below the "Subnets:" entry, then they will be automatically assigned.  Include subnets over-ride automatic assignment.
         VLANS:
         Tags:
           - Tag:
@@ -2331,25 +2342,23 @@ Nested_NSXT:
         ConnectedTo:
           Tier: 1
           GatewayName: T1-Gateway-01
-        Subnets:
-          - GatewayCIDR: 192.168.3.1/24
-          - GatewayCIDR: fd00:a:c::1/64
+        Subnets:                                                                                # If no subnets are listed below the "Subnets:" entry, then they will be automatically assigned.  Include subnets over-ride automatic assignment.
         VLANS:
         Tags:
           - Tag: Auto-Created
             Scope: SDDC.Lab
       - Name: SEG-Example-Tier0-Overlay-Segment
         AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
-        Description: Example of a Tier-0 Overlay Segment
+        Description: Example of a Tier-0 Overlay Segment with statically assigned subnets
         TransportZone: TZ-Overlay
         ReplicationMode: MTEP                                                                   # ReplicationMode can be "MTEP" or "SOURCE"
         UplinkTeamingPolicy: ""
         ConnectedTo:
           Tier: 0
           GatewayName: T0-Gateway-01
-        Subnets:
-          - GatewayCIDR: 192.168.4.1/24
-          - GatewayCIDR: fd00:a:d::1/64
+        Subnets:                                                                                # If no subnets are listed below the "Subnets:" entry, then they will be automatically assigned.  Include subnets over-ride automatic assignment.
+          - 192.168.1.1/24
+          - fc00:0:0:0::1/64
         VLANS:
         Tags:
           - Tag: Auto-Created

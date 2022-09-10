@@ -8,13 +8,15 @@
  #                to the playbook using this template to filter only the type of Segments it wants to process.
  #
  # IP Allocation: Here is a summary of how IPv4 and IPv6 addresses are allocated by this script:
- #                1) If an NSX-T Segment does not have a "Segments" key, then it's assumed to be Layer-2 only, 
+ #                1) If an NSX-T Segment does not have a "Subnets:" entry, then it's assumed to be Layer-2 only, 
  #                   and no IP address is included in the data structure that is created.
- #                2) If an NSX-T Segment does have a "Segments" key, and that key has a list of subnets beneath
- #                   it, then those explicitly mentioned subnets are allocated/assigned the Segment.
- #                3) If an NSX-T Segment does have a "Segments" key, but that key DOES NOT have a list of subnets,
- #                   then SDDC.Lab will dynamically assign subnets based on the settings within Pod.BaseOverlay.
- #                   Whether IPv4 and IPv6 subnets are assigned is driven by the IPv4 and IPv6 Deploy.Setting values:
+ #                2) If an NSX-T Segment does have a "Subnets:" entry, and that entry has a list of subnets beneath
+ #                   it, then those explicitly mentioned subnets are allocated/assigned to the Segment.
+ #                   This is how you go about creating user-defined IP subnets for a given NSX-T Segment.
+ #                3) If an NSX-T Segment does have a "Subnets:" key, but that key does NOT have a list of subnets
+ #                   beneath it, then SDDC.Lab will dynamically assign subnets based on the settings within
+ #                   the Pod.BaseOverlay data structure.  Whether IPv4 and IPv6 subnets are assigned is driven 
+ #                   by the IPv4 and IPv6 Deploy.Setting values:
  #                     a) If Deploy.Setting.IPv4 == TRUE, then an IPv4 subnet will be allocated.
  #                     b) If Deploy.Setting.IPv6 == TRUE, then an IPv6 subnet will be allocated.
  #
@@ -82,10 +84,11 @@
 {%       if Segment.Subnets == None %}{# If None, that means there are no Subnets listed, which is what triggers SDDC.Lab to automatically allocate IP addressses #}
 {###### IPv4 Settings ######}
 {%         if Deploy.Setting.IPv4 %}
-{#           Determine first Pod Subnet in /24 (i.e. 10.204.60.0/24) [for Pod 60], then obtain network starting from that point taking into account previously allocated subnets to other Segments #}
+{#           Determine first Pod Subnet in /24 (i.e. 10.204.60.0/24) [for Pod 60], and start with that one.  Track number of segments auto-allocated IPs, and increment by number of host IPs for the given Prefix. #}
 {%           set ipv4_address = Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number) | ansible.utils.ipmath(ns.segment_count * (2**(32-Pod.BaseOverlay.IPv4.Prefix))) %}
 {%           set ipv4_subnet = [ipv4_address, "/", Pod.BaseOverlay.IPv4.Prefix]|join %}
 
+{# DO NOT REMOVE THE EMPTY LINE ABOVE THIS COMMENT #}
       - gateway_address: {{ ipv4_subnet | ansible.utils.ipaddr('1') }}
 {%           if Deploy.Product.NSXT.Federation.Enable == false %}
         dhcp_ranges:
@@ -100,11 +103,11 @@
 {%         endif %}{# Deploy.Setting.IPv4 #}
 {###### IPv6 Settings ######}
 {%         if (Deploy.Setting.IPv6) %}
-{%           set ipv6_subnet = Pod.BaseOverlay.IPv6.Network | ansible.utils.ipsubnet(Pod.BaseOverlay.IPv6.Prefix, Pod.Number + ns.segment_count) %}{# Needs to be counter #}
+{%           set ipv6_subnet = Pod.BaseOverlay.IPv6.Network | ansible.utils.ipsubnet(Pod.BaseOverlay.IPv6.Prefix, Pod.Number + ns.segment_count) %}
       - gateway_address: {{ ipv6_subnet | ansible.utils.ipaddr('1') }}
 {%           if Deploy.Product.NSXT.Federation.Enable == false %}
         dhcp_ranges:
-{# Unclear why the line below needs to be indented so far, but Jinja2 throws a unicode error if it's moved to the lieft.  The '-' needs to align up with the "_"  above it #}
+{# Unclear why the line below needs to be indented so far, but Jinja2 throws a unicode error if it's moved to the left.  The '-' needs to align up with the "_"  above it #}
             - {{ ipv6_subnet | ansible.utils.ipaddr('-1') | ansible.utils.previous_nth_usable(2**(128-Pod.BaseOverlay.IPv6.RangePrefix)-1) }}-{{ ipv6_subnet | ansible.utils.ipaddr('last_usable') }}
         dhcp_config:
           resource_type: SegmentDhcpV6Config

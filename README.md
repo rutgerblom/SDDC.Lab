@@ -27,6 +27,7 @@
   * [NSX-T Federation](#nsx-t-federation)
   * [vSphere Content Libraries](#vsphere-content-libraries)
   * [Deploy Test Workloads](#deploy-test-workloads)
+  * [NSX-T Segment IP Subnet Auto-Allocation](#nsx-t-segment-ip-subnet-auto-allocation)
 * [Known Items](#known-items)
 * [Issues With Various Software Versions](#issues-with-various-software-versions)
 * [More Information](#more-information)
@@ -194,7 +195,7 @@ When three or more physical ESXi servers are being used to run Pod workloads, yo
 2. If the number of available ports on the "NetLab-L3-Switch" is limited, you can use two switches as is shown in the Pod Logical Networking Overview above.  In this configuration, a layer-2 only switch is used for the SDDCLab_vDS vswitch, and a layer-3 switch is used to connect to the "Lab-Routers" segment.
 
 
-## IP Address Assignments
+## IP Address Assignments (<yellow>SDDC.Lab v5 and later</yellow>)
 When a Pod is deployed, various components are deployed as part of that Pod.  Each of those components are connected to the Pod's Management subnet.  Here is a listing of those components along with their respective host IP address:
 
 | IPv4 Address | Component | Description | DNS Name | Part of Default Deployment |
@@ -372,7 +373,7 @@ When deploying NSX-T Federation, keep the following in mind:
 
 9. The ```config_sample.yml``` default configuration assumes the Lab-Routers transit segment, and thus communication between NSX-T Federation Locations, is configured with an MTU of 1500 bytes.  If your environment supports Jumbo Frames, you can obtain better performance by changing the MTU values in the Net section.  Keep in mind that the OSPF (by default) requires matching MTU sizes, so you may lose peering with your ToR router.  If you decide to change the MTU values, you need to take this all into account, and are on your own.  For a lab, the default 1500 byte MTU configurations should suffice.
 
-10. SDDC.Lab does not support Federation with NSX-T v3.2.0.  If you want to deploy Federation in your lab, deploy Federation using NSX-T v3.1.3.7, then manually upgrade the Pods to NSX-T v3.2.0.
+10. SDDC.Lab does not support Federation with NSX-T v3.2.x.  If you want to deploy Federation in your lab, deploy Federation using NSX-T v3.1.3.7, then manually upgrade the Pods to NSX-T v3.2.x.
 
 11. Automatic [Deployment of Test Workloads](#deploy-test-workloads) is not supported with Federation.
 
@@ -381,11 +382,9 @@ SDDC.Lab now supports both local and subscribed vSphere Content Libraries, which
 
 1. Make sure to provision sufficient Pod storage to store whatever content items are used.
 
-2. If a specific datatstore is not specified in the config_sample.yml file (default), then the datastore used is dynamically selected from the available vSphere clusters.  If multiple vSphere clusters are deployed, the 'Edge' datastore is not used as it's assumed it's storage will be needed for NSX-T EdgeVMs.
+2. If a specific datatstore is not specified in the ```config_sample.yml``` file (default), then the datastore used is dynamically selected from the available vSphere clusters.  If multiple vSphere clusters are deployed, the 'Edge' datastore is not used as it's assumed it's storage will be needed for NSX-T EdgeVMs.
 
-3. By default, config_sample.yml assumes the published content library exists on the physical vCenter Server servicing the SDDC.Lab environment.  The default name of this content library is ```SDDC.Lab Content Library```.
-
-4. Only one (1) Content Library can be automatically configured via SDDC.Lab.  If additional Content Libraries are required, those will need to be manually added after the Pod deployment has completed.
+3. By default, ```config_sample.yml``` assumes the published content library exists on the physical vCenter Server servicing the SDDC.Lab environment.  The default name of this content library is ```SDDC.Lab Content Library```.  Although this entry is included in the ```config_sample.yml``` file, it is not enabled by default.  In order to replicate the content library from the physical vCenter Server, you must enable this content library.
 
 ### Deploy Test Workloads
 SDDC.Lab has a feature where it can automatically deploy test workload VMs from the Pod's content library at the end of the Pod deployment process.  The test workload VMs to deploy are defined in the ```WorkloadVMs``` section of the ```config_sample.yml``` file.  The default test workload VM included in ```config_sample.yml``` is called [TinyVM](https://github.com/luischanu/TinyVM), and it can be downloaded from the [TinyVM](https://github.com/luischanu/TinyVM) project site.  If you decide to leverage this feature, here are the items that need to be configured to enable the deployment of test workload VMs:
@@ -400,6 +399,25 @@ SDDC.Lab has a feature where it can automatically deploy test workload VMs from 
 
 5. Enable the WorkloadVMs functionality by setting ```Deploy.WorkloadVMs.Deploy``` to ```true``` in the ```config_sample.yml``` file.  By default, this setting is set to ```false```, thereby preventing the test workload VMs from being deployed.
 
+### NSX-T Segment IP Subnet Auto-Allocation
+SDDC.Lab has a feature where it can automatically assign both IPv4 and IPv6 IP subnet addresses to NSX-T Segments included in your ```config.yml``` file.  The benefit of using this feature is that it permits you to easily deploy Pods without having to manually configure non-overlapping IP subnets for each NSX-T Segment.  Of course, if you have a need to manually specify the IP subnet used by a given NSX-T Segment, then you still have that flexibility, too, just as you continue to have the ability to create layer-2 only segments as well.
+
+Here are the important settings to understand in order to properly utilize this feature:
+
+1. The ```Pod.BaseOverlay``` data structure in your ```config.yml``` file will control:\
+  a) What base network is used for both IPv4 and IPv6 auto-allocated IP subnets.\
+  b) What network prefix is used for the auto-allocated IP subnets.  (See comments in ```config_sample.yml``` for additional information)\
+  c) What IP address range is configured on the DHCP server. (See ```RangePrefix``` below)
+
+2. If an NSX-T Segment does not have a ```Subnets:``` entry, then it's assumed to be Layer-2 only, and no IP address is included in the data structure that is created.
+
+3. If an NSX-T Segment does have a ```Subnets:``` entry, and that entry has a list of IP subnets beneath it, then those explicitly mentioned subnets are allocated/assigned to the Segment.  This is how you go about creating user-defined IP subnets for a given NSX-T Segment.
+
+4. If an NSX-T Segment does have a ```Subnets:``` entry, but that key does NOT have a list of IP subnets beneath it, then SDDC.Lab will dynamically assign subnets based on the settings within the ```Pod.BaseOverlay``` data structure.  Whether IPv4 and IPv6 subnets are assigned is driven by the IPv4 and IPv6 Deploy.Setting values:\
+  a) If ```Deploy.Setting.IPv4: True```, then an IPv4 subnet will be allocated.\
+  b) If ```Deploy.Setting.IPv6: True```, then an IPv6 subnet will be allocated.
+
+5. The ```Pod.BaseOverlay.<IPVersion>.RangePrefix``` setting specifies the CIDR setting used by the DHCP Scope to create it's range of addresses from.  The IP addresses comprised within this CIDR range is always the highest network within the provisioned IP subnet.  For example, if the IP subnet that is provisioned is ```10.204.60.0/24```, and if the ```Pod.BaseOverlay.IPv4.RangePrefix``` setting is set to ```28```, the IPv4 range configured on the DHCP Scope will be ```10.204.60.241-10.204.60.254```.  DHCP ranges are created for both IPv4 and IPv6 subnets.
 
 ## Known Items
 Here are some known items to be aware of:
