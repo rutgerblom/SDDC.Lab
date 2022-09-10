@@ -31,9 +31,9 @@
  #                                   jinja2_extensions = jinja2.ext.do,jinja2.ext.i18n
  #}
 {# Define Global Variables using Jinja Namespace #}
-{# {% set ns = namespace() %} #}
-{# {% set ns.segment_count = 0 %} #}
-{% set segment_count = [0] %}{# Use list to track number of segments.  A list element is added for each Segment, so the list length will be the number of segments #}
+{% set ns = namespace() %}
+{% set ns.segment_count = 0 %}
+{#{% set segment_count = [0] %} { # Use list to track number of segments.  A list element is added for each Segment, so the list length will be the number of segments #}
 {% for Segment in Nested_NSXT.Networking.Segments %}
   - display_name: {{ Segment.Name }}
     description:  {{ Segment.Description }}
@@ -84,7 +84,7 @@
 {###### IPv4 Settings ######}
 {%         if Deploy.Setting.IPv4 %}
 {#           Determine first Pod Subnet in /24 (i.e. 10.204.60.0/24) [for Pod 60], then obtain network starting from that point taking into account previously allocated subnets to other Segments #}
-{%           set ipv4_address = Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number) | ansible.utils.ipmath(segment_count[0] * (2**(32-Pod.BaseOverlay.IPv4.Prefix))) %}
+{%           set ipv4_address = Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number) | ansible.utils.ipmath(ns.segment_count * (2**(32-Pod.BaseOverlay.IPv4.Prefix))) %}
 {%           set ipv4_subnet = [ipv4_address, "/", Pod.BaseOverlay.IPv4.Prefix]|join %}
 
       - gateway_address: {{ ipv4_subnet | ansible.utils.ipaddr('1') }}
@@ -101,7 +101,7 @@
 {%         endif %}{# Deploy.Setting.IPv4 #}
 {###### IPv6 Settings ######}
 {%         if (Deploy.Setting.IPv6) %}
-{%           set ipv6_subnet = Pod.BaseOverlay.IPv6.Network | ansible.utils.ipsubnet(Pod.BaseOverlay.IPv6.Prefix, Pod.Number + segment_count[0]) %}{# Needs to be counter #}
+{%           set ipv6_subnet = Pod.BaseOverlay.IPv6.Network | ansible.utils.ipsubnet(Pod.BaseOverlay.IPv6.Prefix, Pod.Number + ns.segment_count) %}{# Needs to be counter #}
       - gateway_address: {{ ipv6_subnet | ansible.utils.ipaddr('1') }}
 {%           if Deploy.Product.NSXT.Federation.Enable == false %}
         dhcp_ranges:
@@ -117,8 +117,8 @@
             - {{ Common.DNS.Domain }}
 {%           endif %}{# Deploy.Product.NSXT.Federation.Enable == false #}
 {%         endif %}{# Deploy.Setting.IPv6 #}
-{%         if segment_count.append(segment_count.pop() + 1) %}{% endif %}{# Add an element, which increments it by 1 #}
-{#{%         set ns.segment_count = ns.segment_count + 1 %}#}
+{#{%         if segment_count.append(segment_count.pop() + 1) %}{% endif %}{ # Add an element, which increments it by 1 #}
+{%         set ns.segment_count = ns.segment_count + 1 %}
 {%       else %}{# Else Segment.Subnets != None, then Subnets exist, so use them to allocate IP addresses #}
 {###### Assign IP Addresses From Config File ######}
 {%         for Subnet in Segment.Subnets %}
