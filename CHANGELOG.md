@@ -1324,4 +1324,17 @@
 ## Dev-v5.0.0 08-SEPTEMBER-2022
 
 ### Added by Rutger Blom
-  - Updated the "ansible-galaxy" preparation step in the documentation so that the "--upgrade" parameter is included in the command. 
+  - Updated the "ansible-galaxy" preparation step in the documentation so that the "--upgrade" parameter is included in the command.
+
+## Dev-v5.0.0 10-SEPTEMBER-2022
+
+### Added by Luis Chanu
+  - Updated SDDCLab.Version from 4 to 5 in ```templates/Pod_Config.j2``` file.
+  - Modified SDDCLab version check in ```playbooks/validateConfiguration.yml``` file to support either 4 or 5.
+  - Added automatic IP subnet addressing for NSX-T Segments.  See expanded explanation within the ```config_sample.yml``` file in the NSX-T Segments and ```Pod.BaseOverlay``` sections.
+  - Added additional information on how NSX-T Segment Auto-Allocation works in the ```README.md``` file.
+  - Modified ```templates/vars_NSXT_Segments.j2``` to support new automatic IP subnet addressing feature.
+  - Structural changes made to ```config_sample.yml``` file:
+    - Added new ```Pod.BaseOverlay``` structure.
+    - Modified NSX-T Segment data structure.
+  - Please be sure to update your ```config.yml``` file(s).

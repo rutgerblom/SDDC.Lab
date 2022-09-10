@@ -1,0 +1,52 @@
+##
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: tests/DisplaySegmentDataStructure.yml
+##
+##  Description: This test playbook reads in the Segments from the config.yml file, processes each segment,
+##               then displays the data structure that is used by the "nsxt_policy_segment" module.
+##               Be sure to update the "Jinja_Template" file, as needed.
+##
+##        Usage: ansible-playbook -e "@/home/user/static-config.yml" tests/DisplaySegmentDataStructure.yml
+##
+---
+- hosts: localhost
+  name: DisplaySegmentDataStructure.yml
+  vars:
+      Jinja_Template: "{{ Target.TemplateFolder }}/vars_NSXT_Segments.j2"
+  tasks:
+    - name: Display Testing Info (Pause)
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                        Jinja2 Template: {{ Jinja_Template }}
+                               Number of NSX-T Segments: {{ Nested_NSXT.Networking.Segments | length }}
+
+                           Pod.BaseOverlay.IPv4.Network: {{ Pod.BaseOverlay.IPv4.Network }}
+                           Pod.BaseOverlay.IPv6.Network: {{ Pod.BaseOverlay.IPv6.Network }}
+
+          Segments:
+            {{ Nested_NSXT.Networking.Segments | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+
+    - name: Define DHCPProfilePath dictionary if it does not already exist
+      ansible.builtin.include_tasks:
+        file: "../playbooks/include_var_DHCPProfilePath.yml"
+
+    - name: Get list of Segments
+      ansible.builtin.set_fact:
+        SegmentsToCreate: "{{ lookup('template', Jinja_Template) | from_yaml }}"
+
+    - name: Display Segments Data Structure
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ============================== Display SegmentsToCreate Variable ================================
+
+          SegmentsToCreate:
+            {{ SegmentsToCreate | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================

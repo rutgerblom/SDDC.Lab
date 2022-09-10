@@ -26,13 +26,13 @@
 ##
 ## Verify SDDCLab.Version
 ##
-    - name: Verifying SDDCLab.Version is 4
+    - name: Verifying SDDCLab.Version is 4 or 5
       ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ===================================
 
-                        Issue: The Pod configuration file being used is not for SDDC.Lab version 4.
+                        Issue: The Pod configuration file being used is not for SDDC.Lab version 4 or 5.
                                Please update the configuration file to version 3 and run it through 
                                the createPodConfig.yml playbook.
 
@@ -41,12 +41,14 @@
           =================================================================================================
       when:
         - SDDCLab.Version != 4
+        - SDDCLab.Version != 5
 
     - name: Set flag if issue found with SDDCLab.Version
       ansible.builtin.set_fact:
         IssueFound: true
       when:
         - SDDCLab.Version != 4
+        - SDDCLab.Version != 5
 
 
 ##
@@ -226,6 +228,108 @@
       when:
         - Deploy.Setting.IPv6 == true
         - ( Pod.BaseNetwork.IPv6 | length ) != 17 or ( (Pod.BaseNetwork.IPv6 + '::/56') | ipv6 ) == False
+
+
+##
+## Verify Pod.BaseOverlay.IPv4.Network is a /16 network
+##
+    - name: Verify Pod.BaseOverlay.IPv4.Network is a /16 network
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Pod.BaseOverlay.IPv4.Network does not appear to be a /16 network.
+
+            Response Received: {{ Pod.BaseOverlay.IPv4.Network }}
+
+          =================================================================================================
+      when:
+        - Pod.BaseOverlay.IPv4.Network | ansible.utils.ipaddr('prefix') != 16
+
+    - name: Set flag if issue found with Pod.BaseOverlay.IPv4.Network
+      ansible.builtin.set_fact:
+        IssueFound: true
+      when:
+        - Pod.BaseOverlay.IPv4.Network | ansible.utils.ipaddr('prefix') != 16
+
+
+##
+## Verify Pod.BaseOverlay.IPv4.Prefix < Pod.BaseOverlay.IPv4.RangePrefix
+##
+    - name: Verify Pod.BaseOverlay.IPv4.Prefix and Pod.BaseOverlay.IPv4.RangePrefix values
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Pod.BaseOverlay.IPv4.Prefix does not appear to be less than Pod.BaseOverlay.IPv4.RangePrefix
+
+            Response Received:      Pod.BaseOverlay.IPv4.Prefix = {{ Pod.BaseOverlay.IPv4.Prefix }}
+                               Pod.BaseOverlay.IPv4.RangePrefix = {{ Pod.BaseOverlay.IPv4.RangePrefix }}
+
+          =================================================================================================
+      when:
+        - Pod.BaseOverlay.IPv4.Prefix >= Pod.BaseOverlay.IPv4.RangePrefix
+
+    - name: Set flag if issue found with Pod.BaseOverlay.IPv4.Prefix and Pod.BaseOverlay.IPv4.RangePrefix values
+      ansible.builtin.set_fact:
+        IssueFound: true
+      when:
+        - Pod.BaseOverlay.IPv4.Prefix >= Pod.BaseOverlay.IPv4.RangePrefix
+
+
+##
+## Verify Pod.BaseOverlay.IPv6.Network is a /56 network
+##
+    - name: Verify Pod.BaseOverlay.IPv6.Network is a /56 network
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Pod.BaseOverlay.IPv6.Network does not appear to be a /56 network.
+
+            Response Received: {{ Pod.BaseOverlay.IPv6.Network }}
+
+          =================================================================================================
+      when:
+        - Deploy.Setting.IPv6 == true
+        - Pod.BaseOverlay.IPv6.Network | ansible.utils.ipaddr('prefix') != 56
+
+    - name: Set flag if issue found with Pod.BaseOverlay.IPv6.Network
+      ansible.builtin.set_fact:
+        IssueFound: true
+      when:
+        - Deploy.Setting.IPv6 == true
+        - Pod.BaseOverlay.IPv6.Network | ansible.utils.ipaddr('prefix') != 56
+
+
+##
+## Verify Pod.BaseOverlay.IPv6.Prefix < Pod.BaseOverlay.IPv6.RangePrefix
+##
+    - name: Verify Pod.BaseOverlay.IPv6.Prefix and Pod.BaseOverlay.IPv6.RangePrefix values
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Pod.BaseOverlay.IPv6.Prefix does not appear to be less than Pod.BaseOverlay.IPv6.RangePrefix
+
+            Response Received:      Pod.BaseOverlay.IPv6.Prefix = {{ Pod.BaseOverlay.IPv6.Prefix }}
+                               Pod.BaseOverlay.IPv6.RangePrefix = {{ Pod.BaseOverlay.IPv6.RangePrefix }}
+
+          =================================================================================================
+      when:
+        - Deploy.Setting.IPv6 == true
+        - Pod.BaseOverlay.IPv6.Prefix >= Pod.BaseOverlay.IPv6.RangePrefix
+
+    - name: Set flag if issue found with Pod.BaseOverlay.IPv6.Prefix and Pod.BaseOverlay.IPv6.RangePrefix values
+      ansible.builtin.set_fact:
+        IssueFound: true
+      when:
+        - Deploy.Setting.IPv6 == true
+        - Pod.BaseOverlay.IPv6.Prefix >= Pod.BaseOverlay.IPv6.RangePrefix
 
 
 ##
