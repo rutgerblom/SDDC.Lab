@@ -1338,3 +1338,10 @@
     - Added new ```Pod.BaseOverlay``` structure.
     - Modified NSX-T Segment data structure.
   - Please be sure to update your ```config.yml``` file(s).
+
+## Dev-v5.0.0 13-SEPTEMBER-2022
+
+### Added by Rutger Blom
+  - Added vCenter v7.0 Update 3H to ```software_sample.yml``` file. (UNTESTED)
+  - Added vCenter v7.0 Update 3H to ```templates_sample.yml``` file.
+  - Please be sure to update your ```software.yml``` and ```templates.yml``` files.
