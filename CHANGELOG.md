@@ -1345,3 +1345,12 @@
   - Added vCenter v7.0 Update 3H to ```software_sample.yml``` file. (UNTESTED)
   - Added vCenter v7.0 Update 3H to ```templates_sample.yml``` file.
   - Please be sure to update your ```software.yml``` and ```templates.yml``` files.
+
+## Dev-v5.0.0 13-SEPTEMBER-2022
+
+### Added by Luis Chanu
+  - Modified comment placement for ```log_path``` entry in ```ansible.cfg``` file.
+  - Updated all IP address filters (ie. ```ipaddr```, ```ipsubnet```, ```ipv4```, and ```ipv6```) with their new FQCN ```ansible.utils.xxxx``` path.  This resolved many "Deprecated" messages that were appearing during Pod deployments.
+  - Many playbooks and templates were updated, including the ```config_sample.yml``` file.
+  - Successfully tested all changes through multiple Pod deployments.
+  - Please be sure to update your ```config.yml``` file(s).

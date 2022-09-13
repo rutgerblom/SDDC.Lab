@@ -6,21 +6,21 @@
 
     - name: Display IPv4 Reverse DNS for 10.203
       ansible.builtin.debug:
-        msg: "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') }}"
+        msg: "{{ Pod.BaseNetwork.IPv4 | ansible.utils.ipaddr('revdns') }}"
 
 ##
 ## IMPORTANT: Notice this DNS path is relative (No final '.', which means relative)
 ##
     - name: Display IPv4 Reverse DNS for 10.203 (Without DNS root '.')
       ansible.builtin.debug:
-        msg: "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
+        msg: "{{ Pod.BaseNetwork.IPv4 | ansible.utils.ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
 
 ##
 ## IMPORTANT: Notice this DNS path is absolute (Includes final '.', indicating absolute)
 ##
     - name: Display IPv4 Reverse DNS for 10.203 (Absolute path with DNS root '.')
       ansible.builtin.debug:
-        msg: "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*)$', '\\1') }}"
+        msg: "{{ Pod.BaseNetwork.IPv4 | ansible.utils.ipaddr('revdns') | regex_replace('^.{4}(.*)$', '\\1') }}"
 
 
 ###########################################  Start IPv6   ############################################
@@ -30,42 +30,42 @@
 ##
     - name: Display IPv6 Reverse DNS for fd00:0000:0000:00...
       ansible.builtin.debug:
-        msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') }}"
+        msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ansible.utils.ipaddr('revdns') }}"
 
 ##
 ## IMPORTANT: Notice this DNS path is relative (No final '.', which means relative)
 ##
     - name: Display IPv6 Reverse DNS for fd00:0000:0000:00::/56 (Without DNS root '.')
       ansible.builtin.debug:
-        msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{36}(.*).$', '\\1') }}"
+        msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ansible.utils.ipaddr('revdns') | regex_replace('^.{36}(.*).$', '\\1') }}"
 
 ##
 ## IMPORTANT: Notice this DNS path is absolute (Includes final '.', indicating absolute)
 ##
     - name: Display IPv6 Reverse DNS for fd00:0000:0000:00::/56 (Absolute path with DNS root '.')
       ansible.builtin.debug:
-        msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{60}(.*)$', '\\1') }}"
+        msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ansible.utils.ipaddr('revdns') | regex_replace('^.{60}(.*)$', '\\1') }}"
 
 ##
 ## IMPORTANT: Notice this DNS path is relative (No final '.', which means relative)
 ##
     - name: Display IPv6 Reverse DNS for fd00:0000:0000:00::/8 (Without DNS root '.')
       ansible.builtin.debug:
-        msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{60}(.*).$', '\\1') }}"
+        msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ansible.utils.ipaddr('revdns') | regex_replace('^.{60}(.*).$', '\\1') }}"
 
 ##
 ## IMPORTANT: Notice this DNS path is absolute (Includes final '.', indicating absolute)
 ##
     - name: Display IPv6 Reverse DNS for fd00:0000:0000:00::/8 (Absolute path with DNS root '.')
       ansible.builtin.debug:
-        msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{36}(.*)$', '\\1') }}"
+        msg: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ansible.utils.ipaddr('revdns') | regex_replace('^.{36}(.*)$', '\\1') }}"
 
 ##
 ## Obtain last two octets in proper order for Reverse DNS entry for Nested_DNSServer host
 ##
     - name: Display PTR IP of Ubuntu  host
       ansible.builtin.debug:
-        msg: "{{ Nested_DNSServer.OS.Network.IPv4.Address | ipaddr('revdns') | regex_replace('(^[0-9]+.[0-9]+)..+$', '\\1') }}"
+        msg: "{{ Nested_DNSServer.OS.Network.IPv4.Address | ansible.utils.ipaddr('revdns') | regex_replace('(^[0-9]+.[0-9]+)..+$', '\\1') }}"
 
 
 ###########################################  Start IPv6 FORWARD  ############################################
@@ -79,7 +79,7 @@
 
     - name: Display IPv6 - ipaddr
       ansible.builtin.debug:
-        msg: "ipaddr: {{ Common.DNS.Server1.IPv6 | ipaddr }}"
+        msg: "ipaddr: {{ Common.DNS.Server1.IPv6 | ansible.utils.ipaddr }}"
 
     - name: Display IPv6 - ipv6
       ansible.builtin.debug:
@@ -87,6 +87,6 @@
 
     - name: Display IPv6 - host
       ansible.builtin.debug:
-        msg: "ipaddr('host'): {{ Common.DNS.Server1.IPv6 | ipaddr('host') }}"
+        msg: "ipaddr('host'): {{ Common.DNS.Server1.IPv6 | ansible.utils.ipaddr('host') }}"
 
 

@@ -149,7 +149,7 @@
         network:
           type: 'static'
           ip_address: "{{ item.value.vmk.vmk1.Address.IPv4.Address }}"
-          subnet_mask: "{{ (item.value.vmk.vmk1.Address.IPv4.Address + '/' + item.value.vmk.vmk1.Address.IPv4.Prefix) | ipaddr('netmask') }}"
+          subnet_mask: "{{ (item.value.vmk.vmk1.Address.IPv4.Address + '/' + item.value.vmk.vmk1.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}"
           tcpip_stack: "{{ item.value.vmk.vmk1.Stack }}"
         state: present
       loop: "{{ Nested_ESXi.Host | dict2items }}"
@@ -188,7 +188,7 @@
         network:
           type: 'static'
           ip_address: "{{ item.value.vmk.vmk2.Address.IPv4.Address }}"
-          subnet_mask: "{{ (item.value.vmk.vmk2.Address.IPv4.Address + '/' + item.value.vmk.vmk2.Address.IPv4.Prefix) | ipaddr('netmask') }}"
+          subnet_mask: "{{ (item.value.vmk.vmk2.Address.IPv4.Address + '/' + item.value.vmk.vmk2.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}"
           tcpip_stack: "{{ item.value.vmk.vmk2.Stack }}"
         state: present
       loop: "{{ Nested_ESXi.Host | dict2items }}"
@@ -208,7 +208,7 @@
         network:
           type: 'static'
           ip_address: "{{ item.value.vmk.vmk3.Address.IPv4.Address }}"
-          subnet_mask: "{{ (item.value.vmk.vmk3.Address.IPv4.Address + '/' + item.value.vmk.vmk3.Address.IPv4.Prefix) | ipaddr('netmask') }}"
+          subnet_mask: "{{ (item.value.vmk.vmk3.Address.IPv4.Address + '/' + item.value.vmk.vmk3.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}"
           tcpip_stack: "{{ item.value.vmk.vmk3.Stack }}"
         state: present
       loop: "{{ Nested_ESXi.Host | dict2items }}"

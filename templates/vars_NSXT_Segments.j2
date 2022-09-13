@@ -123,27 +123,27 @@
 {%       else %}{# Else Segment.Subnets != None, then Subnets exist, so use them to allocate IP addresses #}
 {###### Assign IP Addresses From Config File ######}
 {%         for Subnet in Segment.Subnets %}
-{%           if ((Deploy.Setting.IPv4 and Subnet | ipv4) or (Deploy.Setting.IPv6 and Subnet | ipv6)) %}
+{%           if ((Deploy.Setting.IPv4 and Subnet | ansible.utils.ipv4) or (Deploy.Setting.IPv6 and Subnet | ansible.utils.ipv6)) %}
       - gateway_address: {{ Subnet }}
 {%             if Deploy.Product.NSXT.Federation.Enable == false %}
         dhcp_ranges:
-          - {% if (Subnet | ipv4) %}{{ Subnet | ansible.utils.ipsubnet(Pod.BaseOverlay.IPv4.RangePrefix, -1) | ansible.utils.ipaddr('range_usable') }}{% else %}{{ Subnet | ansible.utils.ipaddr('-1') | ansible.utils.previous_nth_usable(2**(128-Pod.BaseOverlay.IPv6.RangePrefix)-1) }}-{{ Subnet | ansible.utils.ipaddr('last_usable') }}{% endif %}
+          - {% if (Subnet | ansible.utils.ipv4) %}{{ Subnet | ansible.utils.ipsubnet(Pod.BaseOverlay.IPv4.RangePrefix, -1) | ansible.utils.ipaddr('range_usable') }}{% else %}{{ Subnet | ansible.utils.ipaddr('-1') | ansible.utils.previous_nth_usable(2**(128-Pod.BaseOverlay.IPv6.RangePrefix)-1) }}-{{ Subnet | ansible.utils.ipaddr('last_usable') }}{% endif %}
 
 {# DO NOT REMOVE THE EMPTY LINE ABOVE THIS COMMENT #}
         dhcp_config:
-          resource_type: {% if (Subnet | ipv4) %}"SegmentDhcpV4Config"{% else %}"SegmentDhcpV6Config"{% endif %}
+          resource_type: {% if (Subnet | ansible.utils.ipv4) %}"SegmentDhcpV4Config"{% else %}"SegmentDhcpV6Config"{% endif %}
 
 {# DO NOT REMOVE THE EMPTY LINE ABOVE THIS COMMENT #}
           server_address: {{ Subnet | ansible.utils.ipaddr('2') }}
           lease_time: {{ Common.DHCP.LeaseTime }}
           dns_servers:
-            - {% if (Subnet | ipv4) %}{{ Common.DNS.Server1.IPv4 }}{% else %}{{ Common.DNS.Server1.IPv6 }}{% endif %}
+            - {% if (Subnet | ansible.utils.ipv4) %}{{ Common.DNS.Server1.IPv4 }}{% else %}{{ Common.DNS.Server1.IPv6 }}{% endif %}
 
 {# DO NOT REMOVE THE EMPTY LINE ABOVE THIS COMMENT #}
-{%               if Subnet | ipv6 %}
+{%               if Subnet | ansible.utils.ipv6 %}
           domain_names:
             - {{ Common.DNS.Domain }}
-{%               endif %}{# Subnet | ipv6 #}
+{%               endif %}{# Subnet | ansible.utils.ipv6 #}
 {%             endif %}{# Deploy.Product.NSXT.Federation.Enable == false #}
 {%           endif %}{# Deploy.Setting.IPv4 or Deploy.Setting.IPv6 #}
 {%         endfor %}{# Subnet #}

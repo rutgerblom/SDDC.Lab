@@ -1,5 +1,5 @@
 $TTL 604800
-{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*)$', '\\1') }}  IN SOA dns.{{ Common.DNS.Domain | lower }}. admin.{{ Common.DNS.Domain | lower }}. (
+{{ Pod.BaseNetwork.IPv4 | ansible.utils.ipaddr('revdns') | regex_replace('^.{4}(.*)$', '\\1') }}  IN SOA dns.{{ Common.DNS.Domain | lower }}. admin.{{ Common.DNS.Domain | lower }}. (
            1   ; Serial
       604800   ; Refresh
        86400   ; Retry
@@ -14,7 +14,7 @@ $TTL 604800
 dns            IN   A    {{ Nested_DNSServer.OS.Network.IPv4.Address }}
 
 ;Define origin
-$ORIGIN {{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*)$', '\\1') }}
+$ORIGIN {{ Pod.BaseNetwork.IPv4 | ansible.utils.ipaddr('revdns') | regex_replace('^.{4}(.*)$', '\\1') }}
 
 ; PTR records
-{{ Nested_DNSServer.OS.Network.IPv4.Address | ipaddr('revdns') | regex_replace('(^[0-9]+.[0-9]+)..+$', '\\1') }}    IN   PTR  dns.{{ Common.DNS.Domain | lower }}.
+{{ Nested_DNSServer.OS.Network.IPv4.Address | ansible.utils.ipaddr('revdns') | regex_replace('(^[0-9]+.[0-9]+)..+$', '\\1') }}    IN   PTR  dns.{{ Common.DNS.Domain | lower }}.

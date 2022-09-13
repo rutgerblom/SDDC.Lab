@@ -25,14 +25,14 @@
 {% endif %}{# Pool.Tags is defined #}
     pool_static_subnets:
 {% for Allocation in Pool.Allocations %}
-      - display_name: "{{ "{}/{}".format(Allocation.IPRanges[0].Start, Allocation.Prefix) | ipaddr('network/prefix') | ipaddr('network') }}"
+      - display_name: "{{ "{}/{}".format(Allocation.IPRanges[0].Start, Allocation.Prefix) | ansible.utils.ipaddr('network/prefix') | ansible.utils.ipaddr('network') }}"
         description: "{{ Allocation.Description }}"
         state: "present"
         allocation_ranges:
 {% for IPRange in Allocation.IPRanges %}
           - start: "{{ IPRange.Start }}"
             end:   "{{ IPRange.End }}"
-{% set ns.CIDR = ("{}/{}".format(IPRange.Start, Allocation.Prefix) | ipaddr('network/prefix')) %}
+{% set ns.CIDR = ("{}/{}".format(IPRange.Start, Allocation.Prefix) | ansible.utils.ipaddr('network/prefix')) %}
 {% endfor %}{# IPRange #}
         cidr: "{{ ns.CIDR }}"
 {% if Allocation.Gateway %}
