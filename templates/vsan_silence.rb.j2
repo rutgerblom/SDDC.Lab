@@ -1,6 +1,10 @@
-# Rutger Blom
-# www.rutgerblom.com
-# RVC script for silencing vSAN warnings
+ #      Authors: Luis Chanu & Rutger Blom
+ #     Filename: templates/vsan_silence.rb.j2
+ #      Used By: This file is used by the playbook configureVsan.yml
+ #      Purpose: This Ruby script is j2 templated and executed on the nested vCenter Server during Pod deployment.
+ #               It silences specific vSAN health checks and prevents unnecessary warnings on the nested.
+ #               
+ #               
 
 vcenter_name = "{{ Nested_vCenter.FQDN | lower }}"
 datacenter_name = "{{ Nested_vCenter.DataCenter }}"
@@ -16,3 +20,10 @@ rvc_exec("vsan.health.silent_health_check_configure -a controlleronhcl #{vcenter
 rvc_exec("vsan.health.silent_health_check_configure -a perfsvcstatus #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
 rvc_exec("vsan.health.silent_health_check_configure -a smalldiskstest #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
 rvc_exec("vsan.health.silent_health_check_configure -a vsanenablesupportinsight #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
+
+# The below vSAN health checks require that the nested vCenter Server has Internet access. We assume this to be the case and leave them enabled (silence commands commented out)
+
+# rvc_exec("vsan.health.silent_health_check_configure -a autohclupdate #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
+# rvc_exec("vsan.health.silent_health_check_configure -a hcldbuptodate #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
+# rvc_exec("vsan.health.silent_health_check_configure -a releasecataloguptodate #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
+# rvc_exec("vsan.health.silent_health_check_configure -a vumconfig #{vcenter_name}/#{datacenter_name}/computers/#{cluster_name}")
