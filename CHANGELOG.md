@@ -1354,3 +1354,8 @@
   - Many playbooks and templates were updated, including the ```config_sample.yml``` file.
   - Successfully tested all changes through multiple Pod deployments.
   - Please be sure to update your ```config.yml``` file(s).
+
+## Dev-v5.0.0 14-SEPTEMBER-2022
+
+### Added by Rutger Blom
+  - Updated ```templates/vsan_silence.rb.j2``` so that less vSAN health alerts are silenced in vCenter.
