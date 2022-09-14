@@ -45,7 +45,7 @@ set interfaces ethernet eth0 address {{ NetworkSettings.IPv4.Address }}/{{ Netwo
 {% endif -%}{# IPv4 #}
 {% if Deploy.Setting.IPv6 -%}
 set interfaces ethernet eth0 address {{ NetworkSettings.IPv6.Address }}/{{ NetworkSettings.IPv6.Prefix }}
-set service router-advert interface eth0 prefix {{ "{}/{}".format(NetworkSettings.IPv6.Address, NetworkSettings.IPv6.Prefix) | ipaddr('network/prefix') }}
+set service router-advert interface eth0 prefix {{ "{}/{}".format(NetworkSettings.IPv6.Address, NetworkSettings.IPv6.Prefix) | ansible.utils.ipaddr('network/prefix') }}
 {% endif -%}{# IPv6 #}
 
 {% else -%}{# InterfaceName - If not 'Uplink', then it's a sub-interface on eth1 #}
@@ -56,7 +56,7 @@ set interfaces ethernet eth1 vif {{ NetworkSettings.VLAN }} address {{ NetworkSe
 {% endif -%}{# IPv4 #}
 {% if Deploy.Setting.IPv6 -%}
 set interfaces ethernet eth1 vif {{ NetworkSettings.VLAN }} address {{ NetworkSettings.IPv6.Address }}/{{ NetworkSettings.IPv6.Prefix }}
-set service router-advert interface eth1.{{ NetworkSettings.VLAN }} prefix {{ "{}/{}".format(NetworkSettings.IPv6.Address, NetworkSettings.IPv6.Prefix) | ipaddr('network/prefix') }}
+set service router-advert interface eth1.{{ NetworkSettings.VLAN }} prefix {{ "{}/{}".format(NetworkSettings.IPv6.Address, NetworkSettings.IPv6.Prefix) | ansible.utils.ipaddr('network/prefix') }}
 {% endif -%}{# IPv6 #}
 
 {% endif -%}{# InterfaceName Else #}
@@ -134,11 +134,11 @@ set protocols ospf log-adjacency-changes
 set protocols ospf redistribute bgp
 set protocols ospf redistribute connected metric-type 2
 {# Uplink To Lab-Routers #}
-set protocols ospf area {{ Nested_Router.OSPF.Uplink.Area }} network {{ "{}/{}".format(Nested_Router.Interface.Uplink.IPv4.Address, Nested_Router.Interface.Uplink.IPv4.Prefix) | ipaddr('network/prefix') }}
+set protocols ospf area {{ Nested_Router.OSPF.Uplink.Area }} network {{ "{}/{}".format(Nested_Router.Interface.Uplink.IPv4.Address, Nested_Router.Interface.Uplink.IPv4.Prefix) | ansible.utils.ipaddr('network/prefix') }}
 {# NSX Edges #}
 set protocols ospf area {{ Nested_Router.OSPF.NSXEdge.Area }} area-type {{ Nested_Router.OSPF.NSXEdge.AreaType }}
-set protocols ospf area {{ Nested_Router.OSPF.NSXEdge.Area }} network {{ "{}/{}".format(Nested_Router.Interface.NSXEdgeUplink1.IPv4.Address, Nested_Router.Interface.NSXEdgeUplink1.IPv4.Prefix) | ipaddr('network/prefix') }}
-set protocols ospf area {{ Nested_Router.OSPF.NSXEdge.Area }} network {{ "{}/{}".format(Nested_Router.Interface.NSXEdgeUplink2.IPv4.Address, Nested_Router.Interface.NSXEdgeUplink2.IPv4.Prefix) | ipaddr('network/prefix') }}
+set protocols ospf area {{ Nested_Router.OSPF.NSXEdge.Area }} network {{ "{}/{}".format(Nested_Router.Interface.NSXEdgeUplink1.IPv4.Address, Nested_Router.Interface.NSXEdgeUplink1.IPv4.Prefix) | ansible.utils.ipaddr('network/prefix') }}
+set protocols ospf area {{ Nested_Router.OSPF.NSXEdge.Area }} network {{ "{}/{}".format(Nested_Router.Interface.NSXEdgeUplink2.IPv4.Address, Nested_Router.Interface.NSXEdgeUplink2.IPv4.Prefix) | ansible.utils.ipaddr('network/prefix') }}
 {% endif -%}{# Deploy.Setting.IPv4 #}
 {% endif -%}{# Nested_Router.Protocol == OSPF or BOTH #}
 
@@ -182,11 +182,11 @@ set service ssh port 22
 ##
 {% if Deploy.Setting.IPv4 -%}
 set service dhcp-server shared-network-name vmnetwork authoritative
-set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} default-router {{ Nested_Router.Interface.VMNetwork.IPv4.Address }}
-set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} name-server {{ Common.DNS.Server1.IPv4 }}
-set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} lease 300
-set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} range VMNetworkRange start {{ Net.VMNetwork.IPv4.Network }}.20
-set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} range VMNetworkRange stop  {{ Net.VMNetwork.IPv4.Network }}.50
+set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} default-router {{ Nested_Router.Interface.VMNetwork.IPv4.Address }}
+set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} name-server {{ Common.DNS.Server1.IPv4 }}
+set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} lease 300
+set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} range VMNetworkRange start {{ Net.VMNetwork.IPv4.Network }}.20
+set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} range VMNetworkRange stop  {{ Net.VMNetwork.IPv4.Network }}.50
 {% endif -%}{# Deploy.Setting.IPv4 #}
 
 

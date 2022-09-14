@@ -77,7 +77,7 @@
                                     Network PortGroup: {{ Target.PortGroup.Management.Name }}
 
                                  Network IPv4 Address: {{ Nested_vRLI.Address.IPv4.Address }}
-                                      Network Netmask: {{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) | ipaddr('netmask') }}
+                                      Network Netmask: {{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
                                       Network Gateway: {{ Nested_vRLI.Address.IPv4.Gateway }}
 
                                    Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
@@ -132,7 +132,7 @@
           vami.domain.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
           vami.gateway.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Address.IPv4.Gateway }}"
           vami.ip0.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Address.IPv4.Address }}"
-          vami.netmask0.VMware_vCenter_Log_Insight: "{{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) | ipaddr('netmask') }}"
+          vami.netmask0.VMware_vCenter_Log_Insight: "{{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}"
           vami.searchpath.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
       when:
         - Deploy.Product.vRLI.Deploy == true

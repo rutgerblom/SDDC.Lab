@@ -89,7 +89,7 @@
                                          CLI Password: {{ Nested_NSXT.Credential.admin.Password }}
 
                                  Network IPv4 Address: {{ Nested_NSXT.Component.GlobalManager.Address.IPv4.Address }}
-                                      Network Netmask: {{ (Nested_NSXT.Component.GlobalManager.Address.IPv4.Address + '/' + Nested_NSXT.Component.GlobalManager.Address.IPv4.Prefix) | ipaddr('netmask') }}
+                                      Network Netmask: {{ (Nested_NSXT.Component.GlobalManager.Address.IPv4.Address + '/' + Nested_NSXT.Component.GlobalManager.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
                                       Network Gateway: {{ Nested_NSXT.Component.GlobalManager.Address.IPv4.Gateway }}
 
                                    Network NTP Server: {{ Common.NTP.Server1.IPv4 }}
@@ -151,7 +151,7 @@
           nsx_gateway_0: "{{ Nested_NSXT.Component.GlobalManager.Address.IPv4.Gateway }}"
           nsx_hostname:  "{{ Nested_NSXT.Component.GlobalManager.FQDN }}"
           nsx_ip_0:      "{{ Nested_NSXT.Component.GlobalManager.Address.IPv4.Address }}"
-          nsx_netmask_0: "{{ (Nested_NSXT.Component.GlobalManager.Address.IPv4.Address + '/' + Nested_NSXT.Component.GlobalManager.Address.IPv4.Prefix) | ipaddr('netmask') }}"
+          nsx_netmask_0: "{{ (Nested_NSXT.Component.GlobalManager.Address.IPv4.Address + '/' + Nested_NSXT.Component.GlobalManager.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}"
           nsx_ntp_0:     "{{ Common.NTP.Server1.IPv4 }}"
           nsx_passwd_0:  "{{ Nested_NSXT.Credential.admin.Password }}"
           nsx_role:      "{{ Nested_NSXT.Component.GlobalManager.Deployment.Role }}"

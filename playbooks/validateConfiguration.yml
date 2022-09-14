@@ -220,14 +220,14 @@
           =================================================================================================
       when:
         - Deploy.Setting.IPv6 == true
-        - ( Pod.BaseNetwork.IPv6 | length ) != 17 or ( (Pod.BaseNetwork.IPv6 + '::/56') | ipv6 ) == False
+        - ( Pod.BaseNetwork.IPv6 | length ) != 17 or ( (Pod.BaseNetwork.IPv6 + '::/56') | ansible.utils.ipv6 ) == False
 
     - name: Set flag if issue found with Pod.BaseNetwork.IPv6
       ansible.builtin.set_fact:
         IssueFound: true
       when:
         - Deploy.Setting.IPv6 == true
-        - ( Pod.BaseNetwork.IPv6 | length ) != 17 or ( (Pod.BaseNetwork.IPv6 + '::/56') | ipv6 ) == False
+        - ( Pod.BaseNetwork.IPv6 | length ) != 17 or ( (Pod.BaseNetwork.IPv6 + '::/56') | ansible.utils.ipv6 ) == False
 
 
 ##
@@ -464,7 +464,7 @@
 ##
     - name: Perform DNS lookup for github.com
       ansible.builtin.set_fact:
-        dns_succeeded: "{{ lookup('dig', 'github.com./A') | ipaddr }}"                                     # This will result in 'False' if an IP is not returned from query
+        dns_succeeded: "{{ lookup('dig', 'github.com./A') | ansible.utils.ipaddr }}"                                     # This will result in 'False' if an IP is not returned from query
       when:
         - Deploy.Setting.UseDNS == true
 

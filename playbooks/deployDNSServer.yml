@@ -81,7 +81,7 @@
                           Ubuntu VM Network PortGroup: {{ Nested_DNSServer.VM.HardwareSettings.PortGroup }}
 
                                   Ubuntu IPv4 Address: {{ Nested_DNSServer.OS.Network.IPv4.Address }}
-                               Ubuntu Network Netmask: {{ (Nested_DNSServer.OS.Network.IPv4.Address + '/' + Nested_DNSServer.OS.Network.IPv4.Prefix) | ipaddr('netmask') }}
+                               Ubuntu Network Netmask: {{ (Nested_DNSServer.OS.Network.IPv4.Address + '/' + Nested_DNSServer.OS.Network.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
                           Ubuntu Network IPv4 Gateway: {{ Nested_DNSServer.OS.Network.IPv4.Gateway }}
 
                                     Ubuntu Media Path: {{ Deploy.Software.DNSServer.Directory }}

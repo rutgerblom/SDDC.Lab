@@ -57,7 +57,7 @@
     "master_management_network": {
         "mode": "STATICRANGE",
         "address_range": {
-            "subnet_mask": "{{ (Nested_Router.Interface.Management.IPv4.Address + '/' + Nested_Router.Interface.Management.IPv4.Prefix) | ipaddr('netmask') }}",
+            "subnet_mask": "{{ (Nested_Router.Interface.Management.IPv4.Address + '/' + Nested_Router.Interface.Management.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}",
             "starting_address": "{{ Nested_Cluster[item.Name].Tanzu.SupervisorCluster.Network.Management.StartingIP }}",
             "gateway": "{{ Net.Management.IPv4.Network }}.1",
             "address_count": 5

@@ -55,12 +55,12 @@
 ##
     - name: Determine IPv6 Zone for PTR Records (i.e. Reverse DNS) if BaseNetwork.IPv6 begins with 'fd'
       ansible.builtin.set_fact:
-        IPv6_Reverse_Zone: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{60}(.*).$', '\\1') }}"
+        IPv6_Reverse_Zone: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ansible.utils.ipaddr('revdns') | regex_replace('^.{60}(.*).$', '\\1') }}"
       when: (Pod.BaseNetwork.IPv6[0:2] | lower) == 'fd'
 
     - name: Determine IPv6 Zone for PTR Records (i.e. Reverse DNS) if BaseNetwork.IPv6 does NOT begin with 'fd'
       ansible.builtin.set_fact:
-        IPv6_Reverse_Zone: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ipaddr('revdns') | regex_replace('^.{36}(.*).$', '\\1') }}"
+        IPv6_Reverse_Zone: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ansible.utils.ipaddr('revdns') | regex_replace('^.{36}(.*).$', '\\1') }}"
       when: (Pod.BaseNetwork.IPv6[0:2] | lower) != 'fd'
 
 
@@ -69,7 +69,7 @@
 ##
     - name: Determine IPv4 Zone for PTR Records
       ansible.builtin.set_fact:
-        IPv4_Reverse_Zone: "{{ Pod.BaseNetwork.IPv4 | ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
+        IPv4_Reverse_Zone: "{{ Pod.BaseNetwork.IPv4 | ansible.utils.ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
 
 
 ##
@@ -169,7 +169,7 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                                  Zone: {{ IPv4_Reverse_Zone }}
-                                               Record: {{ item.value.IPv4.Address | ipaddr('revdns') }}
+                                               Record: {{ item.value.IPv4.Address | ansible.utils.ipaddr('revdns') }}
                                                 Value: {{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}
 
           =================================================================================================
@@ -186,7 +186,7 @@
         type:     PTR
         protocol: udp
         zone:     "{{ IPv4_Reverse_Zone }}"
-        record:   "{{ item.value.IPv4.Address | ipaddr('revdns') }}"
+        record:   "{{ item.value.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
         value:    "{{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_Router.Interface | dict2items }}"
@@ -245,7 +245,7 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
                                                  Zone: {{ IPv6_Reverse_Zone }}
-                                               Record: {{ item.value.IPv6.Address | ipaddr('revdns') }}
+                                               Record: {{ item.value.IPv6.Address | ansible.utils.ipaddr('revdns') }}
                                                 Value: {{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}
 
           =================================================================================================
@@ -262,7 +262,7 @@
         type:     PTR
         protocol: udp
         zone:     "{{ IPv6_Reverse_Zone }}"
-        record:   "{{ item.value.IPv6.Address | ipaddr('revdns') }}"
+        record:   "{{ item.value.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
         value:    "{{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_Router.Interface | dict2items }}"
@@ -322,7 +322,7 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                                  Zone: {{ IPv4_Reverse_Zone }}
-                                               Record: {{ Nested_vRLI.Address.IPv4.Address | ipaddr('revdns') }}
+                                               Record: {{ Nested_vRLI.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}
                                                 Value: {{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
@@ -338,7 +338,7 @@
         type:     PTR
         protocol: udp
         zone:     "{{ IPv4_Reverse_Zone }}"
-        record:   "{{ Nested_vRLI.Address.IPv4.Address | ipaddr('revdns') }}"
+        record:   "{{ Nested_vRLI.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
         value:    "{{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
       when:
@@ -396,7 +396,7 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
                                                  Zone: {{ IPv6_Reverse_Zone }}
-                                               Record: {{ Nested_vRLI.Address.IPv6.Address | ipaddr('revdns') }}
+                                               Record: {{ Nested_vRLI.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}
                                                 Value: {{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
@@ -413,7 +413,7 @@
         type:     PTR
         protocol: udp
         zone:     "{{ IPv6_Reverse_Zone }}"
-        record:   "{{ Nested_vRLI.Address.IPv6.Address | ipaddr('revdns') }}"
+        record:   "{{ Nested_vRLI.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
         value:    "{{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
       when:
@@ -475,7 +475,7 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                                  Zone: {{ IPv4_Reverse_Zone }}
-                                               Record: {{ item.value.vmk.vmk0.Address.IPv4.Address | ipaddr('revdns') }}
+                                               Record: {{ item.value.vmk.vmk0.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}
                                                 Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
@@ -493,7 +493,7 @@
         type:     PTR
         protocol: udp
         zone:     "{{ IPv4_Reverse_Zone }}"
-        record:   "{{ item.value.vmk.vmk0.Address.IPv4.Address | ipaddr('revdns') }}"
+        record:   "{{ item.value.vmk.vmk0.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
         value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
@@ -554,7 +554,7 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
                                                  Zone: {{ IPv6_Reverse_Zone }}
-                                               Record: item.value.vmk.vmk0.Address.IPv6.Address | ipaddr('revdns') }}
+                                               Record: item.value.vmk.vmk0.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}
                                                 Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}. 
 
           =================================================================================================
@@ -572,7 +572,7 @@
         type:     PTR
         protocol: udp
         zone:     "{{ IPv6_Reverse_Zone }}"
-        record:   "{{ item.value.vmk.vmk0.Address.IPv6.Address | ipaddr('revdns') }}"
+        record:   "{{ item.value.vmk.vmk0.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
         value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
@@ -633,7 +633,7 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                                  Zone: {{ IPv4_Reverse_Zone }}
-                                               Record: {{ Nested_vCenter.Address.IPv4.Address | ipaddr('revdns') }}
+                                               Record: {{ Nested_vCenter.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}
                                                 Value: {{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
@@ -649,7 +649,7 @@
         type:     PTR
         protocol: udp
         zone:     "{{ IPv4_Reverse_Zone }}"
-        record:   "{{ Nested_vCenter.Address.IPv4.Address | ipaddr('revdns') }}"
+        record:   "{{ Nested_vCenter.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
         value:    "{{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
       when:
@@ -707,7 +707,7 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
                                                  Zone: {{ IPv6_Reverse_Zone }}
-                                               Record: {{ Nested_vCenter.Address.IPv6.Address | ipaddr('revdns') }}
+                                               Record: {{ Nested_vCenter.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}
                                                 Value: {{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
@@ -724,7 +724,7 @@
         type:     PTR
         protocol: udp
         zone:     "{{ IPv6_Reverse_Zone }}"
-        record:   "{{ Nested_vCenter.Address.IPv6.Address | ipaddr('revdns') }}"
+        record:   "{{ Nested_vCenter.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
         value:    "{{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
       when:
@@ -788,7 +788,7 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                                  Zone: {{ IPv4_Reverse_Zone }}
-                                               Record: {{ item.value.Address.IPv4.Address | ipaddr('revdns') }}
+                                               Record: {{ item.value.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}
                                                 Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
@@ -806,7 +806,7 @@
         type:     PTR
         protocol: udp
         zone:     "{{ IPv4_Reverse_Zone }}"
-        record:   "{{ item.value.Address.IPv4.Address | ipaddr('revdns') }}"
+        record:   "{{ item.value.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
         value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_NSXT.Component | dict2items }}"
@@ -866,7 +866,7 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                                  Zone: {{ IPv4_Reverse_Zone }}
-                                               Record: {{ item.Deployment.ManagementIPAddress | ipaddr('revdns') }}
+                                               Record: {{ item.Deployment.ManagementIPAddress | ansible.utils.ipaddr('revdns') }}
                                                 Value: {{ item.Name }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
@@ -883,7 +883,7 @@
         type:     PTR
         protocol: udp
         zone:     "{{ IPv4_Reverse_Zone }}"
-        record:   "{{ item.Deployment.ManagementIPAddress | ipaddr('revdns') }}"
+        record:   "{{ item.Deployment.ManagementIPAddress | ansible.utils.ipaddr('revdns') }}"
         value:    "{{ item.Name }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_NSXT.System.Fabric.Nodes.EdgeTransportNodes }}"
@@ -944,7 +944,7 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
                                                  Zone: {{ IPv6_Reverse_Zone }}
-                                               Record: {{ item.value.Address.IPv6.Address | ipaddr('revdns') }}
+                                               Record: {{ item.value.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}
                                                 Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
@@ -962,7 +962,7 @@
         type:     PTR
         protocol: udp
         zone:     "{{ IPv6_Reverse_Zone }}"
-        record:   "{{ item.value.Address.IPv6.Address | ipaddr('revdns') }}"
+        record:   "{{ item.value.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
         value:    "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
       loop: "{{ Nested_NSXT.Component | dict2items }}"

@@ -2048,7 +2048,7 @@ Nested_NSXT:
             Mode: HELPER_ONLY                                                                   # Options are DISABLE, GR_AND_HELPER, HELPER_ONLY, and GRACEFUL_RESTART
           Neighbors:
             - Name:      "{{ Nested_Router.Name }}-Uplink-1-IPv4"
-              Address:   "{{ Nested_Router.Interface.NSXEdgeUplink1.IPv4.Address | ipaddr }}"
+              Address:   "{{ Nested_Router.Interface.NSXEdgeUplink1.IPv4.Address | ansible.utils.ipaddr }}"
               RemoteASN: "{{ Nested_Router.BGP.ASN }}"
               AllowASIn: false
               SourceAddresses:
@@ -2063,7 +2063,7 @@ Nested_NSXT:
                 MaxHopLimit: 1
                 Password: ""
             - Name:      "{{ Nested_Router.Name }}-Uplink-2-IPv4"
-              Address:   "{{ Nested_Router.Interface.NSXEdgeUplink2.IPv4.Address | ipaddr }}"
+              Address:   "{{ Nested_Router.Interface.NSXEdgeUplink2.IPv4.Address | ansible.utils.ipaddr }}"
               RemoteASN: "{{ Nested_Router.BGP.ASN }}"
               AllowASIn: false
               SourceAddresses:
@@ -2078,7 +2078,7 @@ Nested_NSXT:
                 MaxHopLimit: 1
                 Password: ""
             - Name:      "{{ Nested_Router.Name }}-Uplink-1-IPv6"
-              Address:   "{{ Nested_Router.Interface.NSXEdgeUplink1.IPv6.Address | ipaddr }}"
+              Address:   "{{ Nested_Router.Interface.NSXEdgeUplink1.IPv6.Address | ansible.utils.ipaddr }}"
               RemoteASN: "{{ Nested_Router.BGP.ASN }}"
               AllowASIn: false
               SourceAddresses:
@@ -2093,7 +2093,7 @@ Nested_NSXT:
                 MaxHopLimit: 1
                 Password: ""
             - Name:      "{{ Nested_Router.Name }}-Uplink-2-IPv6"
-              Address:   "{{ Nested_Router.Interface.NSXEdgeUplink2.IPv6.Address | ipaddr }}"
+              Address:   "{{ Nested_Router.Interface.NSXEdgeUplink2.IPv6.Address | ansible.utils.ipaddr }}"
               RemoteASN: "{{ Nested_Router.BGP.ASN }}"
               AllowASIn: false
               SourceAddresses:
