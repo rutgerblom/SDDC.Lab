@@ -16,6 +16,7 @@
   vars:
     - PodTemplate: "Pod_Config.j2"
     - PodTempConfigFile: "{{ SiteCode }}-Config_Temp.yml"
+    - IntermediatePodConfigFile: "Intermediate-{{ SiteCode }}-Config_VCSAv{{ Deploy.Software.vCenter.Version }}_ESXIv{{ Deploy.Software.ESXi.Version }}_NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}_Fed-{% if Deploy.Product.NSXT.Federation.Enable == true %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}{% else %}N{% endif %}{% endif %}.json"
     - PodConfigFile: "{{ SiteCode }}-Config_VCSAv{{ Deploy.Software.vCenter.Version }}_ESXIv{{ Deploy.Software.ESXi.Version }}_NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}_Fed-{% if Deploy.Product.NSXT.Federation.Enable == true %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}{% else %}N{% endif %}{% endif %}.yml"
 
   vars_prompt:
@@ -63,10 +64,29 @@
       when:
         - ConfigFileCheck.stat.exists != true
 
-
     - name: Include Pod-Config variables into playbook
       ansible.builtin.include_vars:
         file: "{{ SourceConfigPath }}/{{ SourceConfigFile }}"
+
+
+## Start workaround issue with slow static Pod Config creation
+## Details of the underlying issue and suggested workaround: https://github.com/ansible/ansible/issues/68763
+
+
+    - name: Read SourceConfigFile into a variable
+      ansible.builtin.set_fact:
+        SourceConfigVariable: "{{ lookup('template', SourceConfigPath + '/' + SourceConfigFile) | from_yaml }}"
+
+    - name: Create an intermediate Pod-Config file with realized variables
+      ansible.builtin.copy:
+        content: "{{ SourceConfigVariable }}"
+        dest: "{{ lookup('env','HOME') }}/{{ IntermediatePodConfigFile }}"
+
+    - name: Include intermediate Pod-Config variables into playbook
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env','HOME') }}/{{ IntermediatePodConfigFile }}"
+
+## End workaround issue with slow static Pod Config creation 
 
 
     - name: DEBUG -- Display Target Variables (Pause)
