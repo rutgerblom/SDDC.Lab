@@ -68,6 +68,49 @@
       ansible.builtin.include_vars:
         file: "{{ SourceConfigPath }}/{{ SourceConfigFile }}"
 
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                           Pod.Number: {{ Pod.Number }}
+
+                       Pod-Config File Being Prepared: {{ SourceConfigPath }}/{{ SourceConfigFile }}
+                               Configuration Template: {{ Target.TemplateFolder }}/{{ PodTemplate }}
+                         Intermediate Pod-Config File: {{ IntermediatePodConfigFile }}
+                       Target Temp Configuration File: {{ PodTempConfigFile }}
+                            Target Configuration File: {{ PodConfigFile }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables == true
+
+    - name: Notify user that this will take some time
+      ansible.builtin.pause:
+        seconds: 2
+        prompt: |
+          ====================================================================================================
+          =============================================  NOTICE  =============================================
+          ====================================================================================================
+
+          Generating static configuration file for Pod {{ Pod.Number }}.   Please be patient, as this can take
+          some time.  On average, it takes between 3 to 7 minutes to complete, but this time may vary depending
+          on the size of your lab, and the speed of your Ansible Control Station (a.k.a. Ansible Controller).
+
+              The following source file is being prepared: {{ SourceConfigPath }}/{{ SourceConfigFile }}
+             Once prepared, it will be saved to this file: {{ lookup('env','HOME') }}/{{ PodConfigFile }}
+
+          Once prepared, you can deploy the Pod using the following command:
+              ansible-playbook -e "@{{ lookup('env','HOME') }}/{{ PodConfigFile }}" deploy.yml
+
+          ====================================================================================================
+
+
 
 ## Start workaround issue with slow static Pod Config creation
 ## Details of the underlying issue and suggested workaround: https://github.com/ansible/ansible/issues/68763
@@ -86,50 +129,15 @@
       ansible.builtin.include_vars:
         file: "{{ lookup('env','HOME') }}/{{ IntermediatePodConfigFile }}"
 
-## End workaround issue with slow static Pod Config creation 
-
-
-    - name: DEBUG -- Display Target Variables (Pause)
-      ansible.builtin.pause:
-        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
-        prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
-
-                                     Ansible Playbook: {{ ansible_play_name }}
-
-                                    Target.Deployment: {{ Target.Deployment }}
-
-                                           Pod.Number: {{ Pod.Number }}
-
-                       Pod-Config File Being Prepared: {{ SourceConfigPath }}/{{ SourceConfigFile }}
-                               Configuration Template: {{ Target.TemplateFolder }}/{{ PodTemplate }}
-                       Target Temp Configuration File: {{ PodTempConfigFile }}
-                            Target Configuration File: {{ PodConfigFile }}
-
-          =================================================================================================
+    - name: Delete intermediate Pod-Config file with realized variables
+      ansible.builtin.file:
+        path: "{{ lookup('env','HOME') }}/{{ IntermediatePodConfigFile }}"
+        state: absent
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.KeepConfigFiles == false
 
 
-    - name: Notify user that this will take some time
-      ansible.builtin.pause:
-        seconds: 2
-        prompt: |
-          ====================================================================================================
-          =============================================  NOTICE  =============================================
-          ====================================================================================================
-
-          Generating static configuration file for Pod {{ Pod.Number }}.   Please be patient, as this can take
-          some time.  On average, it takes between 1.5 to 2.5 hours to complete, but this time may vary depending
-          on the size of your lab, and the speed of your Ansible Control Station (a.k.a. Ansible Controller).
-
-              The following source file is being prepared: {{ SourceConfigPath }}/{{ SourceConfigFile }}
-             Once prepared, it will be saved to this file: {{ lookup('env','HOME') }}/{{ PodConfigFile }}
-
-          Once prepared, you can deploy the Pod using the following command:
-              ansible-playbook -e "@{{ lookup('env','HOME') }}/{{ PodConfigFile }}" deploy.yml
-
-          ====================================================================================================
+## End workaround issue with slow static Pod Config creation 
 
 
     - name: Delete existing temp configuration file if it exists
