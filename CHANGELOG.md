@@ -1364,3 +1364,12 @@
 
 ### Added by Rutger Blom
   - Added a workaround for the issue with long creation time for static Pod configuration files (took between 1.5 to 2.5 hours to complete). Variables in the user Pod-Config file are now finalized before templating in ```playbooks/createPodConfig.yml```. This brings down static Pod configuration creation time to 5-10 minutes.
+
+## Dev-v5.0.0 18-SEPTEMBER-2022
+
+### Added by Luis Chanu
+  - Made the following changes to ```playbooks/createPodConfig.yml``` file:
+    - Added play to delete Intermediate file containing realized variables once it's no longer needed.
+    - Added Intermediate filename to DEBUG play (Shown if debugging is enabled).
+    - Revised time estimate for creation of static configuration file.
+    - Move time estimate banner before workaround code block.
