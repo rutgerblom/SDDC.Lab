@@ -1373,3 +1373,9 @@
     - Added Intermediate filename to DEBUG play (Shown if debugging is enabled).
     - Revised time estimate for creation of static configuration file.
     - Move time estimate banner before workaround code block.
+
+## Dev-v5.0.0 20-SEPTEMBER-2022
+
+### Added by Rutger Blom
+  - Changed default version of vCenter to 7.00U3H in ```config_sample.yml``` file.
+  - Please be sure to update your ```config.yml``` file(s).
