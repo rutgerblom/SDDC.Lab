@@ -358,7 +358,7 @@
 
 ### Added by Luis Chanu
 
-  - Modifed createVds.yml to prune VLAN ID range on NSXEdgeUplink1 and NSXEdgeUplink2 uplinks to the VLAN ID range of the Pod being deployed.  Previously, it was allowing all VLANs (0-4094).
+  - Modifed CreateVds.yml to prune VLAN ID range on NSXEdgeUplink1 and NSXEdgeUplink2 uplinks to the VLAN ID range of the Pod being deployed.  Previously, it was allowing all VLANs (0-4094).
 
 ## Dev-v4.0.0 25-JULY-2021
 
@@ -1059,7 +1059,7 @@
 ## Dev-v5.0.0 12-APRIL-2022
 
 ### Added by Rutger Blom
-  - Added the active uplinks teaming policy parameter to vmware_dvs_portgroups tasks in ```createVds.yml```. Active uplink configuration is stored in the Nested_vCenter dictionary in ```config_sample.yml```.
+  - Added the active uplinks teaming policy parameter to vmware_dvs_portgroups tasks in ```CreateVds.yml```. Active uplink configuration is stored in the Nested_vCenter dictionary in ```config_sample.yml```.
   - Modified the active uplinks of port groups NSXEdgeUplink1 and NSXEdgeUplink2 in ```config_sample.yml``` so that these use only Uplink 1 and Uplink 2 respectively. This to support pinning to ToR-A and ToR-B.
   - Changed the following in ```config_sample.yml```:
     - vCenter version 7.00U3D
@@ -1084,11 +1084,11 @@
 ## Dev-v5.0.0 14-APRIL-2022
 
 ### Added by Rutger Blom
-  - Added the standby uplinks teaming policy parameter to vmware_dvs_portgroups task in ```createVds.yml```. Standby uplink configuration is stored in the Nested_vCenter dictionary in ```config_sample.yml```.
+  - Added the standby uplinks teaming policy parameter to vmware_dvs_portgroups task in ```CreateVds.yml```. Standby uplink configuration is stored in the Nested_vCenter dictionary in ```config_sample.yml```.
   - Modified the standby uplinks of port groups NSXEdgeUplink1 and NSXEdgeUplink2 in ```config_sample.yml``` so that these use only Uplink 2 and Uplink 1 respectively. This to facilitate failover of Geneve traffic in case of a ToR failure. Although this failure scenario is not likely in a nested lab, we want to mirror configuration of a production environment whereever we can. 
-  - Updated ```createVds.yml``` to loop over the port groups rather than having one task for each port group object.
-  - Added network policy parameters (forged_transmits, mac_changes, promiscuous) to the vmware_dvs_portgroups task in ```createVds.yml```. Network policy configuration is stored in the Nested_vCenter dictionary in ```config_sample.yml```.
-  - The parameters num_ports and port_binding used by the vmware_dvs_portgroups task in ```createVds.yml``` now fetch their values from the Nested_vCenter dictionary in ```config_sample.yml``` (instead of having them hard-coded in the Playbook).
+  - Updated ```CreateVds.yml``` to loop over the port groups rather than having one task for each port group object.
+  - Added network policy parameters (forged_transmits, mac_changes, promiscuous) to the vmware_dvs_portgroups task in ```CreateVds.yml```. Network policy configuration is stored in the Nested_vCenter dictionary in ```config_sample.yml```.
+  - The parameters num_ports and port_binding used by the vmware_dvs_portgroups task in ```CreateVds.yml``` now fetch their values from the Nested_vCenter dictionary in ```config_sample.yml``` (instead of having them hard-coded in the Playbook).
   - Please be sure to update your ```config.yml``` file
 
 ## Dev-v5.0.0 21-APRIL-2022

@@ -1,13 +1,13 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/createVds.yml
+##   Filename: playbooks/CreateVds.yml
 ##
 ---
 - hosts: localhost
-  name: createVds.yml
+  name: CreateVds.yml
   tasks:
-    - name: createVds_Playbook
+    - name: CreateVds_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -44,7 +44,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                       Ansible Playbook: {{ ansible_play_name }}
 
@@ -63,7 +63,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
 
     - name: Create distributed switch in the nested vCenter
@@ -74,7 +74,8 @@
         datacenter_name: "{{ Nested_vCenter.DataCenter }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
-        switch_version: "{% if Deploy.Software.vCenter.vSwitch == Deploy.Software.ESXi.vSwitch %}{{ omit }}{% else %}{{ Deploy.Software.ESXi.vSwitch }}{% endif %}"
+        switch_version: "{% if Deploy.Software.vCenter.vSwitch == Deploy.Software.ESXi.vSwitch %}{{ omit }}\
+                         {% else %}{{ Deploy.Software.ESXi.vSwitch }}{% endif %}"
         mtu: "{{ Nested_vCenter.Networking.vSwitch.Config.MTU }}"
         uplink_quantity: "{{ Nested_vCenter.Networking.vSwitch.Config.NumberOfUplinks }}"
         discovery_proto: "{{ Nested_vCenter.Networking.vSwitch.Config.LinkDiscoveryProtocol.Type }}"
@@ -91,8 +92,8 @@
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         vlan_trunk: "{{ item.value.VLAN.Trunk }}"
         vlan_id: "{{ item.value.VLAN.ID }}"
-        num_ports: "{{ item.value.NumPorts}}"
-        port_binding: "{{ item.value.PortBinding}}"
+        num_ports: "{{ item.value.NumPorts }}"
+        port_binding: "{{ item.value.PortBinding }}"
         teaming_policy:
           active_uplinks: "{{ item.value.Teaming.ActiveUplinks }}"
           standby_uplinks: "{% if item.value.Teaming.StandbyUplinks is none %}{{ omit }}{% else %}{{ item.value.Teaming.StandbyUplinks }}{% endif %}"
@@ -116,8 +117,8 @@
           - vmnic2
         state: present
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: 
-        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+      when:
+        - Nested_Cluster[item.value.Cluster]['DeployHosts']
 
     - name: Migrate vmk0 to the VDS
       community.vmware.vmware_migrate_vmk:
@@ -132,8 +133,8 @@
         migrate_switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
         migrate_portgroup_name: "{{ item.value.vmk.vmk0.PortGroup }}"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: 
-        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+      when:
+        - Nested_Cluster[item.value.Cluster]['DeployHosts']
 
     - name: Create vmk1 for vMotion
       community.vmware.vmware_vmkernel:
@@ -153,8 +154,8 @@
           tcpip_stack: "{{ item.value.vmk.vmk1.Stack }}"
         state: present
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: 
-        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+      when:
+        - Nested_Cluster[item.value.Cluster]['DeployHosts']
 
     - name: Configure vMotion TCP/IP stack gateway address on Nested_ESXi hosts
       community.vmware.vmware_vm_shell:
@@ -172,7 +173,7 @@
         vm_shell_args: "network ip route ipv4 add --netstack vmotion --network default --gateway {{ item.value.vmk.vmk1.Address.IPv4.Gateway }}"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when:
-        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Cluster[item.value.Cluster]['DeployHosts']
 
     - name: Create vmk2 for vSAN
       community.vmware.vmware_vmkernel:
@@ -192,9 +193,9 @@
           tcpip_stack: "{{ item.value.vmk.vmk2.Stack }}"
         state: present
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: 
-        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
-      
+      when:
+        - Nested_Cluster[item.value.Cluster]['DeployHosts']
+
     - name: Create vmk3 for IP Storage
       community.vmware.vmware_vmkernel:
         hostname: "{{ Nested_vCenter.FQDN }}"
@@ -212,9 +213,9 @@
           tcpip_stack: "{{ item.value.vmk.vmk3.Stack }}"
         state: present
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: 
-        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
-      
+      when:
+        - Nested_Cluster[item.value.Cluster]['DeployHosts']
+
     - name: Remove the standard switch from the ESXi hosts
       community.vmware.vmware_vswitch:
         hostname: '{{ item.value.FQDN }}'
@@ -224,5 +225,5 @@
         switch: 'vSwitch0'
         state: absent
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: 
-        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+      when:
+        - Nested_Cluster[item.value.Cluster]['DeployHosts']
