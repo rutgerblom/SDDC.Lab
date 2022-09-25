@@ -1,13 +1,13 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/configureHA.yml
+##   Filename: playbooks/ConfigureHA.yml
 ##
 ---
 - hosts: localhost
-  name: configureHA.yml
+  name: ConfigureHA.yml
   tasks:
-    - name: configureHA_Playbook
+    - name: ConfigureHA_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -67,7 +67,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Enable HA on each Cluster, if applicable
       community.vmware.vmware_cluster_ha:
@@ -84,5 +84,5 @@
         pdl_response: "{{ item.value.HA.PDL_Response }}"
         host_isolation_response: "{{ item.value.HA.Host_Isolation_Response }}"
       loop: "{{ Nested_Cluster | dict2items }}"
-      when: 
-        - item.value.DeployHosts == true
+      when:
+        - item.value.DeployHosts
