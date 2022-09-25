@@ -143,7 +143,7 @@
       ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }} \
                                 -extract / {{ ISOExtractPoint }}"
       when: vcenter_check.status != 200
-      failed_when: false
+      changed_when: false
 
     - name: Add execute permission to extracted files
       ansible.builtin.file:

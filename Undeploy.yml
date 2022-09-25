@@ -1,14 +1,14 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: undeploy.yml
+##   Filename: Undeploy.yml
 ##
 ---
 - hosts: localhost
-  name: undeploy.yml
+  name: Undeploy.yml
   tasks:
     - name: Display error message if Pod-XXX-Config file is not valid or provided
-      pause:
+      ansible.builtin.pause:
         seconds: 5
         prompt: |
           *****************************************************************************************************
@@ -22,7 +22,7 @@
               1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
                  command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
                  located in your home directory:
-                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" undeploy.yml
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Undeploy.yml
 
               2) The Pod-XXX-Config.yml file provided was created using the playbooks/createPodConfig.yml script.
                  All Pod configuration files used to deploy labs MUST be generated using that script.
@@ -36,15 +36,15 @@
         - Valid_Pod_Config_File is not defined
 
     - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
-      meta: end_play
+      ansible.builtin.meta: end_play
       when: Valid_Pod_Config_File is not defined
 
 
     - name: DEBUG -- Display Target Variables (Pause)
-      pause:
+      ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
@@ -69,7 +69,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
 
     - name: Remove VyOS router VM
@@ -81,7 +81,7 @@
         name: "{{ Nested_Router.Name }}"
         force: true
         state: absent
-      ignore_errors: true
+      failed_when: false
 
     - name: Remove vRLI VM
       community.vmware.vmware_guest:
@@ -92,7 +92,7 @@
         name: "{{ Nested_vRLI.VMName }}"
         force: true
         state: absent
-      ignore_errors: true
+      failed_when: false
 
     - name: Remove ESXi VMs
       community.vmware.vmware_guest:
@@ -106,7 +106,7 @@
       async: 7200
       poll: 0
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      ignore_errors: true
+      failed_when: false
 
     - name: Remove vCenter VM
       community.vmware.vmware_guest:
@@ -117,7 +117,7 @@
         name: "{{ Nested_vCenter.VMName }}"
         force: true
         state: absent
-      ignore_errors: true
+      failed_when: false
 
     - name: Remove NSX Local Manager VM
       community.vmware.vmware_guest:
@@ -128,7 +128,7 @@
         name: "{{ Nested_NSXT.Component.LocalManager.VMName }}"
         force: true
         state: absent
-      ignore_errors: true
+      failed_when: false
 
     - name: Remove NSX Global Manager VM
       community.vmware.vmware_guest:
@@ -139,7 +139,7 @@
         name: "{{ Nested_NSXT.Component.GlobalManager.VMName }}"
         force: true
         state: absent
-      ignore_errors: true
+      failed_when: false
 
 ##
 ## Remove Networking - Host Deployment
@@ -150,12 +150,12 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: False        
+        validate_certs: false
         esxi_hostname: "{{ Target.FQDN }}"
         switch_name: "{{ Target.vSwitch }}"
         portgroup_name: "{{ Target.PortGroup.Trunk.Name }}"
         state: absent
-      ignore_errors: true
+      failed_when: false
       when:
         - Target.Deployment == "Host"
 
@@ -164,12 +164,12 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: False        
+        validate_certs: false
         esxi_hostname: "{{ Target.FQDN }}"
         switch_name: "{{ Target.vSwitch }}"
         portgroup_name: "{{ Target.PortGroup.Management.Name }}"
         state: absent
-      ignore_errors: true
+      failed_when: false
       when:
         - Target.Deployment == "Host"
 
@@ -178,13 +178,13 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: False
+        validate_certs: false
         esxi_hostname: "{{ Target.FQDN }}"
         switch_name: "{{ Target.vSwitch }}"
         state: absent
       async: 7200
       poll: 0
-      ignore_errors: true
+      failed_when: false
       when:
         - Target.Deployment == "Host"
 
@@ -209,7 +209,7 @@
           promiscuous: true
           forged_transmits: true
           mac_changes: false
-      ignore_errors: true
+      failed_when: false
       when: Target.Deployment == "vCenter"
 
     - name: Remove a Trunk Distributed Port-Group in vCenter
@@ -229,7 +229,7 @@
           promiscuous: true
           forged_transmits: true
           mac_changes: false
-      ignore_errors: true
+      failed_when: false
       when: Target.Deployment == "vCenter"
 
 ##
@@ -246,10 +246,10 @@
         datacenter: "{{ Target.DataCenter }}"
         folder_type: vm
         parent_folder: "{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}"                     # Extract parent folder from VMFolder full path
-        folder_name:   "{{ Target.VMFolder | regex_replace('^.*/(.*)$', '\\1') }}"                     # Extract remaining folder name
+        folder_name: "{{ Target.VMFolder | regex_replace('^.*/(.*)$', '\\1') }}"                     # Extract remaining folder name
         state: absent
-      ignore_errors: true
-      when: 
+      failed_when: false
+      when:
         - Target.Deployment == "vCenter"
 
 ##
@@ -257,14 +257,15 @@
 ##
 
     - name: Remove static route on the Ansible Control Station
-      command: ./ip route del "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}"
+      ansible.builtin.command: ./ip route del "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}"
       args:
         chdir: /bin/
       register: iproute
-      ignore_errors: true
-      when: 
-        - Deploy.Product.Router.Deploy == true
-        - Deploy.Setting.IPv4 == true
+      failed_when: false
+      changed_when: false
+      when:
+        - Deploy.Product.Router.Deploy
+        - Deploy.Setting.IPv4
         - Nested_Router.Protocol == "Static"
 
 ##

@@ -79,7 +79,7 @@
 
 ### Added by Rutger
 
-- Converted to Ansible FQCN in script "undeploy.yml"
+- Converted to Ansible FQCN in script "Undeploy.yml"
 
 ## Dev-v3.0.0 11-APRIL-2021
 
@@ -392,7 +392,7 @@
 ## Dev-v4.0.0 23-AUG-2021
 
 ### Added by Luis Chanu
-  - Added removal of Global Manager to undeploy.yml playbook
+  - Added removal of Global Manager to Undeploy.yml playbook
 
   ## Dev-v4.0.0 25-AUG-2021
 
@@ -1042,7 +1042,7 @@
 ## Dev-v5.0.0 10-APRIL-2022
 
 ### Added by Rutger Blom
-  - Fixed an issue with the port groups not being removed when running "undeploy.yml".
+  - Fixed an issue with the port groups not being removed when running "Undeploy.yml".
 
 ## Dev-v5.0.0 10-APRIL-2022
 
@@ -1213,7 +1213,7 @@
 ### Added by Luis Chanu
   - Removed extra spaces from Nested_Cluster section of ```config_sample.yml``` file.
   - Noticed an issue where if more than 1 vSphere Cluster was configured to be prepared by NSX, only one vSphere cluster would end up being prepared.  Corrected the issue by making the transport node collection display name be unique for each cluster by including the cluster name in the TNC display name field within ```attchNsxTnp.yml```.
-  - Added "ignore_errors: true" to Port-Group removal plays in ```undeploy.yml``` file.
+  - Added "ignore_errors: true" to Port-Group removal plays in ```Undeploy.yml``` file.
 
 ## Dev-v5.0.0 02-AUGUST-2022
 
