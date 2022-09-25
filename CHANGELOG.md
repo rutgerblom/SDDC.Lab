@@ -127,7 +127,7 @@
 ### Added by Rutger
 
 - The generated Pod documentation will now contain information on whether NSX-T Edge was deployed or not.
-- Converted module references within PrepareISOInstaller.yml, deployVc.yml, and DeployDNSServer.yml to use FQCNs (ansible.posix.mount).
+- Converted module references within PrepareISOInstaller.yml, DeployVc.yml, and DeployDNSServer.yml to use FQCNs (ansible.posix.mount).
 - Updated project documentation regarding the ansible.posix collection which is now required by some playbooks. Install this collection by running: **ansible-galaxy collection install ansible.posix** on your Ansible controller.
 
 ## Dev-v3.0.0 15-APRIL-2021
@@ -1117,10 +1117,10 @@
 ## Dev-v5.0.0 24-APRIL-2022
 
 ### Added by Rutger Blom
-  - Replaced the ```ansible.posix.mount``` task in the ```playbooks/deployVc.yml``` playbook with a ```ansible.builtin.command```task running ```7z``` to extract the contents of the vCenter ISO file. The ```ansible.posix.mount``` task requires root or CAP_SYS_ADMIN privileges which is something we want to eliminate in the upcoming version.
+  - Replaced the ```ansible.posix.mount``` task in the ```playbooks/DeployVc.yml``` playbook with a ```ansible.builtin.command```task running ```7z``` to extract the contents of the vCenter ISO file. The ```ansible.posix.mount``` task requires root or CAP_SYS_ADMIN privileges which is something we want to eliminate in the upcoming version.
   - A non-critical error occurs when 7z extracts vCenter ISO files so added the ```ìgnore_errors: true```parameter to the task.
-  - Updated playbook ```playbooks/deployVc.yml``` to use the new ```WorkingFolder``` variable.
-  - Added a task to ```playbooks/deployVc.yml``` that conditionaly (```DEBUG.KeepInstallerFiles != true```) deletes the local ISOExtractPoint directory.
+  - Updated playbook ```playbooks/DeployVc.yml``` to use the new ```WorkingFolder``` variable.
+  - Added a task to ```playbooks/DeployVc.yml``` that conditionaly (```DEBUG.KeepInstallerFiles != true```) deletes the local ISOExtractPoint directory.
 
 ## Dev-v5.0.0 24-APRIL-2022
 
@@ -1172,7 +1172,7 @@
 ## Dev-v5.0.0 10-MAY-2022
 
 ### Added by Luis Chanu
-  - Added "Ignore Fatal Error Message" to "Extract vCenter ISO" task in ```playbooks/deployVc.yml``` playbook.
+  - Added "Ignore Fatal Error Message" to "Extract vCenter ISO" task in ```playbooks/DeployVc.yml``` playbook.
   - Added vRLI VIP entry in the "IP Address Assignments" table
   - Modified (a) vRLI IP for vRLI-1 and (b) syslog server entry in ```config_sample.yml```
   - Please be sure to update your ```config.yml``` file(s).
