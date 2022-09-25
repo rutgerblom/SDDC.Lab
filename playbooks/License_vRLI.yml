@@ -1,15 +1,15 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/license_vRLI.yml
+##   Filename: playbooks/License_vRLI.yml
 ##
 ---
 - hosts: localhost
-  name: license_vRLI.yml
+  name: License_vRLI.yml
   vars:
     - LOCAL_LicenseFile: ../licenses.yml
   tasks:
-    - name: license_vRLI_Playbook
+    - name: License_vRLI_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -49,7 +49,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
@@ -68,8 +68,8 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-        - Deploy.Product.vRLI.Deploy == true
+        - DEBUG.DisplayVariables
+        - Deploy.Product.vRLI.Deploy
 
 
 ###
@@ -79,19 +79,19 @@
     - name: Check for existance of license file
       ansible.builtin.stat:
         path: "{{ LOCAL_LicenseFile }}"
-        get_checksum: no
+        get_checksum: false
       register: stat_results
 
     - name: Assume file does not exist, so set flag to skip licensing products
       ansible.builtin.set_fact:
-        LicenseProducts: False
+        LicenseProducts: false
 
     - name: If License file does exist and is a regular file, then set flag to license products
       ansible.builtin.set_fact:
-        LicenseProducts: True
+        LicenseProducts: true
       when:
-        - stat_results.stat.exists == True
-        - stat_results.stat.isreg == True
+        - stat_results.stat.exists
+        - stat_results.stat.isreg
 
     - name: If not licensing products, notify user
       ansible.builtin.pause:
@@ -107,22 +107,23 @@
              For that reason, the following products will NOT be licensed, and
              will operate with their respective default license(s):
 
-                                 vRealize Log Insight 
+                                 vRealize Log Insight
 
           =========================================================================
       when:
-        - LicenseProducts != True
+        - not LicenseProducts
 
     - name: If we are licensing products, read in license information
       ansible.builtin.include_vars:
         file: "{{ LOCAL_LicenseFile }}"
-      when: LicenseProducts == True
+      when:
+        - LicenseProducts
 
 
 ##
 ## License vRealize Log Insight
 ##
-    - name: Obtain a session ID from the vRLI API 
+    - name: Obtain a session ID from the vRLI API
       ansible.builtin.uri:
         url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/sessions
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
@@ -134,7 +135,7 @@
         body_format: json
       register: vrli_session
       when:
-        - Deploy.Product.vRLI.Deploy == true
+        - Deploy.Product.vRLI.Deploy
 
     - name: Add all licenses to vRLI
       ansible.builtin.uri:
@@ -144,12 +145,12 @@
         headers:
           Authorization: "Bearer {{ vrli_session.json.sessionId }}"
         body:
-          key: "{{ item.KeyCode }}" 
+          key: "{{ item.KeyCode }}"
         body_format: json
         status_code: 201
       loop: "{{ License.VMware.vRLI.Licenses }}"
-      ignore_errors: yes                                                             # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
+      failed_when: false # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
       no_log: true
       when:
-        - Deploy.Product.vRLI.Deploy == true
+        - Deploy.Product.vRLI.Deploy
         - Deploy.Software.vRLI.Version is match(item.Version)
