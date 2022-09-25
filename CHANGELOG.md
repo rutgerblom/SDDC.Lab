@@ -1013,7 +1013,7 @@
 ## Dev-v4.0.0 13-MARCH-2022
 
 ### Added by Rutger Blom
-  - Moved configuring NTP on nested ESXi hosts from kickstart file to an Ansible task in "configureNestedEsxi.yml". 
+  - Moved configuring NTP on nested ESXi hosts from kickstart file to an Ansible task in "ConfigureNestedEsxi.yml". 
 
 ## Dev-v4.0.0 25-MARCH-2022
 

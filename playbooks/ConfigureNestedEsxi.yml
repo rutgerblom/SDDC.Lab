@@ -1,13 +1,13 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/configureNestedEsxi.yml
+##   Filename: playbooks/ConfigureNestedEsxi.yml
 ##
 ---
 - hosts: localhost
-  name: configureNestedEsxi.yml
+  name: ConfigureNestedEsxi.yml
   tasks:
-    - name: configureNestedEsxi_Playbook
+    - name: ConfigureNestedEsxi_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -54,7 +54,7 @@
                             Nested_vCenter.DataCenter: {{ Nested_vCenter.DataCenter }}
 
                                Common.NFS.Server.IPv4: {{ Common.NFS.Server.IPv4 }}
-                                      Common.NFS.Path: {{ Common.NFS.Path  }} 
+                                      Common.NFS.Path: {{ Common.NFS.Path  }}
                                  Common.NFS.Datastore: {{ Common.NFS.Datastore }}
                                  Common.NFS.Datastore: {{ Common.NFS.Type }}
 
@@ -76,8 +76,8 @@
       retries: 15
       delay: 60
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: 
-        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+      when:
+        - Nested_Cluster[item.value.Cluster]['DeployHosts']
 
     - name: Add nested ESXi host to vCenter
       community.vmware.vmware_host:
@@ -93,8 +93,8 @@
         state: present
       ignore_errors: true
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: 
-        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+      when:
+        - Nested_Cluster[item.value.Cluster]['DeployHosts']
 
     - name: Mount NFS datastore on nested ESXi host
       community.vmware.vmware_host_datastore:
@@ -107,14 +107,14 @@
         datastore_type: "{{ Common.NFS.Type }}"
         nfs_server: "{{ Common.NFS.Server.IPv4 }}"
         nfs_path: "{{ Common.NFS.Path }}"
-        nfs_ro: no
+        nfs_ro: false
         state: present
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       async: 1800
       poll: 0
-      when: 
-        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
-        - Deploy.Setting.UseNFS == true
+      when:
+        - Nested_Cluster[item.value.Cluster]['DeployHosts']
+        - Deploy.Setting.UseNFS
 
     - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the datastore
       community.vmware.vsphere_file:
@@ -127,9 +127,9 @@
         path: "{{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
         state: absent
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: 
-        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
-        - DEBUG.KeepInstallerFiles != true
+      when:
+        - Nested_Cluster[item.value.Cluster]['DeployHosts']
+        - No DEBUG.KeepInstallerFiles
 
 ##
 ## Nested ESXi host deployment complete, so below we apply configuration settings to the ESXi hosts
@@ -145,7 +145,7 @@
         rules: "{{ Nested_ESXi.FirewallRules }}"
       loop: "{{ Nested_Cluster | dict2items }}"
       when:
-        - Nested_Cluster[item.key]['DeployHosts'] == true
+        - Nested_Cluster[item.key]['DeployHosts']
 
     - name: Set NTP servers for all ESXi Host in given Cluster
       community.vmware.vmware_host_ntp:
@@ -156,11 +156,11 @@
         cluster_name: "{{ item.key }}"
         state: present
         ntp_servers:
-            - "{{ Common.NTP.Server1.IPv4 }}"
-            - "{{ Common.NTP.Server2.IPv4 }}"
+          - "{{ Common.NTP.Server1.IPv4 }}"
+          - "{{ Common.NTP.Server2.IPv4 }}"
       loop: "{{ Nested_Cluster | dict2items }}"
       when:
-        - Nested_Cluster[item.key]['DeployHosts'] == true
+        - Nested_Cluster[item.key]['DeployHosts']
 
     - name: Start ntpd service setting for all ESXi Host in given Cluster
       community.vmware.vmware_host_service_manager:
@@ -174,6 +174,4 @@
         state: present
       loop: "{{ Nested_Cluster | dict2items }}"
       when:
-        - Nested_Cluster[item.key]['DeployHosts'] == true
-
-        
+        - Nested_Cluster[item.key]['DeployHosts']
