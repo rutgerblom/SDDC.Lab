@@ -7,8 +7,6 @@
 - hosts: localhost
   name: DeployDNSServer.yml
   vars:
-    LOCAL_Ubuntu_Template: "{{ Target.TemplateFolder }}/{{ Deploy.Software.DNSServer.Template }}"
-    ISOExtractPoint: "{{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}"
   tasks:
     - name: DeployDNSServer_Playbook
       ansible.builtin.debug:
@@ -55,8 +53,6 @@
                                      Ansible Playbook: {{ ansible_play_name }}
 
                                     Target.Deployment: {{ Target.Deployment }}
-
-                                      ISOExtractPoint: {{ ISOExtractPoint }}
 
                                           Target.FQDN: {{ Target.FQDN }}
                                           Target.User: {{ Target.User }}
@@ -111,7 +107,7 @@
 
     - name: Read the structure from template into a variable
       ansible.builtin.set_fact:
-        var_UbuntuConfiguration: "{{ lookup('template', LOCAL_Ubuntu_Template) | from_yaml }}"
+        var_UbuntuConfiguration: "{{ lookup('template', Target.TemplateFolder + '/' + Deploy.Software.DNSServer.Template) | from_yaml }}"
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
@@ -159,13 +155,14 @@
         - Deploy.Product.DNSServer.Deploy
 
     - name: Extract Ubuntu ISO
-      ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }} -extract / {{ ISOExtractPoint }}"
+      ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }} -extract / \
+                                {{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}"
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
 
     - name: Add write permission to extracted files 
-      ansible.builtin.command: "chmod -R +w {{ ISOExtractPoint }}"        # Using chmod as Ansible (Python) can't handle the recursion depth on the Ubuntu ISO
+      ansible.builtin.command: "chmod -R +w {{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}"        # Using chmod as Ansible (Python) can't handle the recursion depth on the Ubuntu ISO
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
@@ -175,7 +172,8 @@
 ## Details of the issue and the workaround: https://askubuntu.com/questions/1394441/ubuntu-20-04-3-autoinstall-with-embedded-user-data-crashing-i-got-workaround
 
     - name: Extract the Packages.gz file on Ubuntu ISO
-      ansible.builtin.command: "gunzip {{ ISOExtractPoint }}/dists/focal/main/binary-amd64/Packages.gz --keep"
+      ansible.builtin.command: "gunzip {{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}\
+                                /dists/focal/main/binary-amd64/Packages.gz --keep"
       changed_when: false
       when:
         - ubuntu_status is failed
@@ -186,7 +184,7 @@
 
     - name: Copy txt.cfg from Ubuntu ISO
       ansible.builtin.copy: 
-        src: "{{ ISOExtractPoint }}/isolinux/txt.cfg"
+        src: "{{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}/isolinux/txt.cfg"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/isolinux/"
         mode: "666"
       when:
@@ -222,7 +220,8 @@
 
     - name: Create custom Ubuntu ISO
       ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }} \
-                                -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table  {{ ISOExtractPoint }}/ \
+                                -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table  \
+                                {{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}/ \
                                 {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
       args:
         chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
@@ -428,9 +427,9 @@
         - Deploy.Product.DNSServer.Deploy
         - var_UbuntuConfiguration.Configuration.Packages != ""
 
-    - name: Delete local ISOExtractPoint directory
+    - name: Delete local ISO extraction directory
       ansible.builtin.file:
-        path: "{{ ISOExtractPoint }}"
+        path: "{{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}"
         state: absent
       when:
         - not DEBUG.KeepInstallerFiles
