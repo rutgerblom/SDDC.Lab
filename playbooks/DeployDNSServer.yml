@@ -222,8 +222,8 @@
 
     - name: Create custom Ubuntu ISO
       ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }} \
-                               -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table  {{ ISOExtractPoint }}/ \
-                              {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
+                                -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table  {{ ISOExtractPoint }}/ \
+                                {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
       args:
         chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
       changed_when: false
@@ -258,9 +258,9 @@
         datacenter: "{{ Target.DataCenter }}"
         folder: "{% if Target.Deployment == 'vCenter' %}{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}{% else %}{{ Target.VMFolder }}{% endif %}"          # If vCenter, use Parent folder
         disk:
-        - size_gb: "{{ Nested_DNSServer.VM.HardwareSettings.DiskSize }}"
-          type: "{{ Common.DiskProvisioning }}"
-          datastore: "{{ Target.Datastore }}"
+          - size_gb: "{{ Nested_DNSServer.VM.HardwareSettings.DiskSize }}"
+            type: "{{ Common.DiskProvisioning }}"
+            datastore: "{{ Target.Datastore }}"
         hardware:
           version: "{{ Nested_DNSServer.VM.HardwareSettings.Version }}"
           memory_mb: "{{ Nested_DNSServer.VM.HardwareSettings.Memory }}"
