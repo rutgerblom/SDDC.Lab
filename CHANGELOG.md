@@ -1237,7 +1237,7 @@
 ## Dev-v5.0.0 04-AUGUST-2022
 
 ### Added by Rutger Blom
-  - Updated the "community.vmware.vmware_guest" task in the ```playbooks/deployNestedEsxi.yml``` playbook. It now adds the advanced setting "featMask.vm.cpuid.pdpe1gb:Val1" to the nested ESXi virtual machines. This setting enables hosting VMs that require 1 GB page support (PDPE1GB). NSX-T Edge VMs require 1 GB page support since NSX-T version 3.2.
+  - Updated the "community.vmware.vmware_guest" task in the ```playbooks/DeployNestedEsxi.yml``` playbook. It now adds the advanced setting "featMask.vm.cpuid.pdpe1gb:Val1" to the nested ESXi virtual machines. This setting enables hosting VMs that require 1 GB page support (PDPE1GB). NSX-T Edge VMs require 1 GB page support since NSX-T version 3.2.
 
 ## Dev-v5.0.0 08-AUGUST-2022
 

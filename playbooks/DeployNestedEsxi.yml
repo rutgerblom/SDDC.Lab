@@ -1,13 +1,13 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/deployNestedEsxi.yml
+##   Filename: playbooks/DeployNestedEsxi.yml
 ##
 ---
 - hosts: localhost
-  name: deployNestedEsxi.yml
+  name: DeployNestedEsxi.yml
   tasks:
-    - name: deployNestedEsxi_Playbook
+    - name: DeployNestedEsxi_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -44,7 +44,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
@@ -65,7 +65,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Deploy nested ESXi hosts
       community.vmware.vmware_guest:
@@ -80,15 +80,15 @@
         datacenter: "{{ Target.DataCenter }}"
         folder: "{{ Target.VMFolder }}"
         disk:
-        - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['BootDiskSize'] }}"
-          type: "{{ Common.DiskProvisioning }}"
-          datastore: "{{ Target.Datastore }}"
-        - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['vSAN']['CacheSize'] }}"
-          type: "{{ Common.DiskProvisioning }}"
-          datastore: "{{ Target.Datastore }}"
-        - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['vSAN']['CapacitySize'] }}"
-          type: "{{ Common.DiskProvisioning }}"
-          datastore: "{{ Target.Datastore }}"
+          - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['BootDiskSize'] }}"
+            type: "{{ Common.DiskProvisioning }}"
+            datastore: "{{ Target.Datastore }}"
+          - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['vSAN']['CacheSize'] }}"
+            type: "{{ Common.DiskProvisioning }}"
+            datastore: "{{ Target.Datastore }}"
+          - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['vSAN']['CapacitySize'] }}"
+            type: "{{ Common.DiskProvisioning }}"
+            datastore: "{{ Target.Datastore }}"
         hardware:
           nested_virt: true
           memory_mb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['Memory'] }}"
@@ -113,9 +113,10 @@
             iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
             state: present
         advanced_settings:
-          - key: "featMask.vm.cpuid.pdpe1gb"        # Enables 1GB page support on the nested ESXi hosts. With certain older physical CPUs this setting is required in order to run NSX-T version ≥3.2 Edge VMs on the nested ESXi hosts.
+          # Enable 1GB page support on the nested ESXi hosts. Required with older physical CPUs in order to run NSX-T ≥3.2 Edge VMs on the nested ESXi hosts.
+          - key: "featMask.vm.cpuid.pdpe1gb"
             value: "Val:1"
-        annotation: | 
+        annotation: |
                     {{ Common.Annotation }}
                     {{ Deploy.Software.ESXi.Vendor }} {{ Deploy.Software.ESXi.Product }} {{ Deploy.Software.ESXi.Version }}
                     Username: {{ item.value.User }}
@@ -124,6 +125,6 @@
       async: 1800
       poll: 0
       when:
-        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+        - Nested_Cluster[item.value.Cluster]['DeployHosts']
 
   tags: nestedESX
