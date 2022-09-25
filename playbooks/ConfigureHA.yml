@@ -48,7 +48,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 

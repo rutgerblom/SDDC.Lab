@@ -44,7 +44,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
@@ -54,13 +54,13 @@
                             Nested_vCenter.DataCenter: {{ Nested_vCenter.DataCenter }}
 
                                Common.NFS.Server.IPv4: {{ Common.NFS.Server.IPv4 }}
-                                      Common.NFS.Path: {{ Common.NFS.Path  }}
+                                      Common.NFS.Path: {{ Common.NFS.Path }}
                                  Common.NFS.Datastore: {{ Common.NFS.Datastore }}
                                  Common.NFS.Datastore: {{ Common.NFS.Type }}
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Check if the nested ESXi hosts are ready
       community.vmware.vmware_guest_info:
