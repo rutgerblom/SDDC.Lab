@@ -1,15 +1,15 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/enableWorkloadManagement.yml
+##   Filename: playbooks/EnableWorkloadManagement.yml
 ##
 ---
 - hosts: localhost
-  name: enableWorkloadManagement.yml
+  name: EnableWorkloadManagement.yml
   vars:
-      LOCAL_TanzuPayload: "{{ Target.TemplateFolder }}/Tanzu_Payload.j2"
+    - LOCAL_TanzuPayload: "{{ Target.TemplateFolder }}/Tanzu_Payload.j2"
   tasks:
-    - name: enableWorkloadManagement_Playbook
+    - name: EnableWorkloadManagement_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -50,7 +50,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
@@ -68,7 +68,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
 ##
 ## Check if any Tanzu Supervisor Clusters will deployed
@@ -78,9 +78,9 @@
         tanzu_supervisor: "{{ Nested_Cluster }}"
       loop: "{{ Nested_Cluster | dict2items }}"
       when:
-        - item.value.Tanzu.SupervisorCluster.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - item.value.Tanzu.SupervisorCluster.Enable
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
 
 ##
@@ -93,25 +93,25 @@
         method: POST
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
-        force_basic_auth: yes
+        force_basic_auth: true
         url_username: "{{ Nested_vCenter.User }}"
         url_password: "{{ Nested_vCenter.Password }}"
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
       register: vcenter_auth_result
       when:
         - tanzu_supervisor is defined
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
     - name: Store vCenter Session ID for later use
       ansible.builtin.set_fact:
         vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
       when:
         - tanzu_supervisor is defined
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
 
 ##
@@ -124,20 +124,20 @@
         method: GET
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
-        force_basic_auth: yes
+        force_basic_auth: true
         url_username: "{{ Nested_vCenter.User }}"
         url_password: "{{ Nested_vCenter.Password }}"
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
       register: cluster_info
       loop: "{{ Nested_Cluster | dict2items }}"
       when:
         - tanzu_supervisor is defined
-        - item.value.DeployHosts == true
-        - item.value.Tanzu.SupervisorCluster.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - item.value.DeployHosts
+        - item.value.Tanzu.SupervisorCluster.Enable
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
     - name: Store vSphere Cluster Object ID (MoREF) and name in a list for later use
       ansible.builtin.set_fact:
@@ -146,14 +146,8 @@
         query: "[*].json.value[*].{MoRef: cluster, Name: name}[]"
       when:
         - tanzu_supervisor is defined
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
-
-#    - name: DEBUG -- Print variable set in previous task
-#      ansible.builtin.debug:
-#        msg: "{{ cluster_id }}"
-#      tags:
-#        - debug
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
 
 ##
@@ -169,8 +163,8 @@
       register: vds_info
       when:
         - tanzu_supervisor is defined
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
     - name: Store Distributed Switch ID for later use
       ansible.builtin.set_fact:
@@ -179,8 +173,8 @@
         query: distributed_virtual_switches[*].uuid
       when:
         - tanzu_supervisor is defined
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
 
 ##
@@ -196,18 +190,19 @@
       register: vdspg_info
       when:
         - tanzu_supervisor is defined
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
     - name: Store Management Port Group ID for later use
       ansible.builtin.set_fact:
         vdspg_id: "{{ vdspg_info | community.general.json_query(query) }}"
       vars:
-        query: dvs_portgroup_info."{{ Nested_vCenter.Networking.vSwitch.Name }}"[?portgroup_name=='{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}'].key
+        query: dvs_portgroup_info."{{ Nested_vCenter.Networking.vSwitch.Name }}"\
+               [?portgroup_name=='{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}'].key
       when:
         - tanzu_supervisor is defined
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
 
 ##
@@ -222,8 +217,8 @@
       register: sp_info
       when:
         - tanzu_supervisor is defined
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
     - name: Store Storage Policy ID for later use
       ansible.builtin.set_fact:
@@ -232,8 +227,8 @@
         query: spbm_profiles[?name=='vSAN Default Storage Policy'].id
       when:
         - tanzu_supervisor is defined
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
 
 ##
@@ -248,8 +243,8 @@
       register: ec_info
       when:
         - tanzu_supervisor is defined
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
     - name: Store NSX-T Edge Cluster ID for later use
       ansible.builtin.set_fact:
@@ -258,8 +253,8 @@
         query: results[?display_name=='{{ SiteCode }}-T0-Edge-Cluster-01'].id
       when:
         - tanzu_supervisor is defined
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
 
 ##
@@ -274,8 +269,8 @@
       register: cl_info
       when:
         - tanzu_supervisor is defined
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
     - name: Store vSphere Content Library ID for later use
       ansible.builtin.set_fact:
@@ -284,8 +279,8 @@
         query: content_libs
       when:
         - tanzu_supervisor is defined
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
 
 ##
@@ -302,7 +297,7 @@
           =================================================================================================
       loop: "{{ cluster_id }}"
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
 
 ##
@@ -320,5 +315,5 @@
       loop: "{{ cluster_id }}"
       when:
         - tanzu_supervisor is defined
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
