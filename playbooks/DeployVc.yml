@@ -137,7 +137,8 @@
 
     - name: Extract vCenter ISO
       ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }} -extract / \
-                                {{ Target.TempFolder }}/isos/{{ Deploy.Software.vCenter.Vendor }}_{{ Deploy.Software.vCenter.Product }}_{{ Deploy.Software.vCenter.Version }}"
+                                {{ Target.TempFolder }}/isos/{{ Deploy.Software.vCenter.Vendor }}_\
+                                {{ Deploy.Software.vCenter.Product }}_{{ Deploy.Software.vCenter.Version }}"
       when: vcenter_check.status != 200
       changed_when: false
 
