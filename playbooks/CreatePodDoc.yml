@@ -1,17 +1,17 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/createPodDoc.yml
+##   Filename: playbooks/CreatePodDoc.yml
 ##
 ---
 - hosts: localhost
-  name: createPodDoc.yml
+  name: CreatePodDoc.yml
   vars:
     - LOCAL_PodDocHTML: "{{ SiteCode }}-Doc.html"
     - LOCAL_PodDocTemplate: "Pod_Doc.j2"
     - LOCAL_PodDocDestination: "{{ lookup('env','HOME') }}"
   tasks:
-    - name: createPodDoc_Playbook
+    - name: CreatePodDoc_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -47,8 +47,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
-
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
@@ -61,7 +60,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Inform user of Pod documentation HTML file location
       ansible.builtin.pause:
@@ -78,11 +77,11 @@
           =====================================================================================================
 
     - name: Create variable with current date and time
-      ansible.builtin.set_fact: 
-        time: "{{lookup('pipe','date \"+%d-%B-%Y %H:%M\"')}}"
+      ansible.builtin.set_fact:
+        time: "{{ lookup('pipe', 'date \"+%d-%B-%Y %H:%M\"') }}"
 
     - name: Write Pod Documentation in HTML format
-      ansible.builtin.template: 
+      ansible.builtin.template:
         src: "{{ Target.TemplateFolder }}/{{ LOCAL_PodDocTemplate }}"
         dest: "{{ LOCAL_PodDocDestination }}/{{ LOCAL_PodDocHTML }}"
         mode: "666"
