@@ -6,8 +6,6 @@
 ---
 - hosts: localhost
   name: DeployVc.yml
-  vars:
-    ISOExtractPoint: "{{ Target.TempFolder }}/isos/{{ Deploy.Software.vCenter.Vendor }}_{{ Deploy.Software.vCenter.Product }}_{{ Deploy.Software.vCenter.Version }}"
   tasks:
     - name: DeployVc_Playbook
       ansible.builtin.debug:
@@ -63,8 +61,6 @@
                                     Target.DataCenter: {{ Target.DataCenter }}
                                      Target.Datastore: {{ Target.Datastore }}
                                       Target.VMFolder: {{ Target.VMFolder }}
-
-                                        ISOExtractPoint: {{ ISOExtractPoint }}
 
                                                Vendor: {{ Deploy.Software.vCenter.Vendor }}
                                               Product: {{ Deploy.Software.vCenter.Product }}
@@ -140,14 +136,14 @@
         - Nested_vCenter.SSO.ReplicationPartner != ""
 
     - name: Extract vCenter ISO
-      ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }} \
-                                -extract / {{ ISOExtractPoint }}"
+      ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }} -extract / \
+                                {{ Target.TempFolder }}/isos/{{ Deploy.Software.vCenter.Vendor }}_{{ Deploy.Software.vCenter.Product }}_{{ Deploy.Software.vCenter.Version }}"
       when: vcenter_check.status != 200
       changed_when: false
 
     - name: Add execute permission to extracted files
       ansible.builtin.file:
-        path: "{{ ISOExtractPoint }}"
+        path: "{{ Target.TempFolder }}/isos/{{ Deploy.Software.vCenter.Vendor }}_{{ Deploy.Software.vCenter.Product }}_{{ Deploy.Software.vCenter.Version }}"
         state: directory
         recurse: true
         mode: "775"
@@ -162,13 +158,15 @@
       ansible.builtin.command: "./vcsa-deploy install --accept-eula --no-ssl-certificate-verification --acknowledge-ceip \
                                 {{ Target.TempFolder }}/{{ Deploy.Software.vCenter.Config }}"
       args:
-        chdir: "{{ ISOExtractPoint }}/vcsa-cli-installer/lin64/"
+        chdir: "{{ Target.TempFolder }}/isos/{{ Deploy.Software.vCenter.Vendor }}_\
+                {{ Deploy.Software.vCenter.Product }}_{{ Deploy.Software.vCenter.Version }}/vcsa-cli-installer/lin64/"
+      changed_when: false
       register: vcdeploy
       when: vcenter_check.status != 200
 
-    - name: Delete local ISOExtractPoint directory
+    - name: Delete local ISO extraction directory
       ansible.builtin.file:
-        path: "{{ ISOExtractPoint }}"
+        path: "{{ Target.TempFolder }}/isos/{{ Deploy.Software.vCenter.Vendor }}_{{ Deploy.Software.vCenter.Product }}_{{ Deploy.Software.vCenter.Version }}"
         state: absent
       when:
         - not DEBUG.KeepInstallerFiles
