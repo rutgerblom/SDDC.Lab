@@ -127,7 +127,7 @@
 ### Added by Rutger
 
 - The generated Pod documentation will now contain information on whether NSX-T Edge was deployed or not.
-- Converted module references within prepareISOInstaller.yml, deployVc.yml, and deployDNSServer.yml to use FQCNs (ansible.posix.mount).
+- Converted module references within prepareISOInstaller.yml, deployVc.yml, and DeployDNSServer.yml to use FQCNs (ansible.posix.mount).
 - Updated project documentation regarding the ansible.posix collection which is now required by some playbooks. Install this collection by running: **ansible-galaxy collection install ansible.posix** on your Ansible controller.
 
 ## Dev-v3.0.0 15-APRIL-2021
@@ -1109,9 +1109,9 @@
 ## Dev-v5.0.0 23-APRIL-2022
 
 ### Added by Rutger Blom
-  - Replaced the ```ansible.posix.mount``` task in the ```playbooks/deployDNSServer.yml``` playbook with a ```ansible.builtin.command```task running ```7z``` to extract the contents of the Ubuntu ISO file. The ```ansible.posix.mount``` task requires root or CAP_SYS_ADMIN privileges which is something we want to eliminate in the upcoming version.
-  - Updated playbook ```playbooks/deployDNSServer.yml``` and the associated template files to use the new ```WorkingFolder``` variable.
-  - Added a task to ```playbooks/deployDNSServer.yml``` that conditionaly (```DEBUG.KeepInstallerFiles != true```) deletes the local ISOExtractPoint directory
+  - Replaced the ```ansible.posix.mount``` task in the ```playbooks/DeployDNSServer.yml``` playbook with a ```ansible.builtin.command```task running ```7z``` to extract the contents of the Ubuntu ISO file. The ```ansible.posix.mount``` task requires root or CAP_SYS_ADMIN privileges which is something we want to eliminate in the upcoming version.
+  - Updated playbook ```playbooks/DeployDNSServer.yml``` and the associated template files to use the new ```WorkingFolder``` variable.
+  - Added a task to ```playbooks/DeployDNSServer.yml``` that conditionaly (```DEBUG.KeepInstallerFiles != true```) deletes the local ISOExtractPoint directory
   - Added a task to ```playbooks/prepareISOInstaller.yml``` that conditionaly (```DEBUG.KeepInstallerFiles != true```) deletes the local ISOExtractPoint directory
 
 ## Dev-v5.0.0 24-APRIL-2022
@@ -1312,7 +1312,7 @@
 
 ### Added by Rutger Blom
   - Updated the "ISO extraction" tasks found in several Playbooks so that these use xorriso instead of 7z. 7z is no longer required.
-  - Implemented a workaround for an Ubuntu 20.04.x autoinstall issue in ```playbooks/deployDNSServer.yml```. More details on the issue and the workaround we implemented can be found here: https://askubuntu.com/questions/1394441/ubuntu-20-04-3-autoinstall-with-embedded-user-data-crashing-i-got-workaround
+  - Implemented a workaround for an Ubuntu 20.04.x autoinstall issue in ```playbooks/DeployDNSServer.yml```. More details on the issue and the workaround we implemented can be found here: https://askubuntu.com/questions/1394441/ubuntu-20-04-3-autoinstall-with-embedded-user-data-crashing-i-got-workaround
 
 ## Dev-v5.0.0 02-SEPTEMBER-2022
 
