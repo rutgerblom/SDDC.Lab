@@ -80,7 +80,7 @@
 
     - name: Extract ESXi ISO
       ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }} \
-                               -extract / {{ ISOExtractPoint }}"
+                                -extract / {{ ISOExtractPoint }}"
       changed_when: false
 
     - name: Add write permission to extracted files
