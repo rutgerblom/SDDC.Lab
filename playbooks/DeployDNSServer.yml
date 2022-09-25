@@ -157,12 +157,15 @@
     - name: Extract Ubuntu ISO
       ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }} -extract / \
                                 {{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}"
+      changed_when: false
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
 
     - name: Add write permission to extracted files 
-      ansible.builtin.command: "chmod -R +w {{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}"        # Using chmod as Ansible (Python) can't handle the recursion depth on the Ubuntu ISO
+ ## Using chmod as Ansible (Python) can't handle the recursion depth on the Ubuntu ISO
+      ansible.builtin.command: "chmod -R +w {{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}"
+      changed_when: false
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
