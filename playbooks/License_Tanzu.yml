@@ -1,15 +1,15 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/license_Tanzu.yml
+##   Filename: playbooks/License_Tanzu.yml
 ##
 ---
 - hosts: localhost
-  name: license_Tanzu.yml
+  name: License_Tanzu.yml
   vars:
     - LOCAL_LicenseFile: ../licenses.yml
   tasks:
-    - name: license_Tanzu_Playbook
+    - name: License_Tanzu_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -49,7 +49,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
@@ -65,7 +65,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
 ##
 ## Check if any Tanzu Supervisor Clusters will deployed
@@ -75,9 +75,9 @@
         tanzu_supervisor: "{{ Nested_Cluster }}"
       loop: "{{ Nested_Cluster | dict2items }}"
       when:
-        - item.value.Tanzu.SupervisorCluster.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - item.value.Tanzu.SupervisorCluster.Enable
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
 
 ###
@@ -87,30 +87,30 @@
     - name: Check for existance of license file
       ansible.builtin.stat:
         path: "{{ LOCAL_LicenseFile }}"
-        get_checksum: no
+        get_checksum: false
       register: stat_results
-      when: 
+      when:
         - tanzu_supervisor is defined
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
     - name: Assume file does not exist, so set flag to skip licensing products
       ansible.builtin.set_fact:
-        LicenseProducts: False
-      when: 
+        LicenseProducts: false
+      when:
         - tanzu_supervisor is defined
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
     - name: If License file does exist and is a regular file, then set flag to license products
       ansible.builtin.set_fact:
-        LicenseProducts: True
+        LicenseProducts: true
       when:
         - tanzu_supervisor is defined
-        - stat_results.stat.exists == True
-        - stat_results.stat.isreg == True
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - stat_results.stat.exists == true
+        - stat_results.stat.isreg == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
     - name: If not licensing products, notify user
       ansible.builtin.pause:
@@ -131,25 +131,26 @@
           =========================================================================
       when:
         - tanzu_supervisor is defined
-        - LicenseProducts != True
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - not LicenseProducts
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
     - name: If we are licensing products, read in license information
       ansible.builtin.include_vars:
         file: "{{ LOCAL_LicenseFile }}"
       no_log: true
-      when: 
+      when:
         - tanzu_supervisor is defined
-        - LicenseProducts == True
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - LicenseProducts
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
 
 ##
-## License Tanzu 
+## License Tanzu
 ##
-    - name: Add Tanzu license to vCenter                                             # TBD - This task only adds the Tanzu license to vCenter. It does not assign the license to the Supervisor Cluster "asset". Needs further investugation
+## TBD - This task only adds the Tanzu license to vCenter. It does not assign the license to the Supervisor Cluster "asset". Needs further investugation
+    - name: Add Tanzu license to vCenter
       community.vmware.vcenter_license:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
@@ -158,9 +159,9 @@
         license: "{{ item.KeyCode }}"
         state: present
       loop: "{{ License.VMware.Tanzu.Licenses }}"
-      ignore_errors: yes                                                             # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
+      failed_when: false # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
       no_log: true
-      when: 
+      when:
         - tanzu_supervisor is defined
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
