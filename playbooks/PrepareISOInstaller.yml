@@ -1,15 +1,15 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/prepareISOInstaller.yml
+##   Filename: playbooks/PrepareISOInstaller.yml
 ##
 ---
 - hosts: localhost
-  name: prepareISOInstaller.yml
+  name: PrepareISOInstaller.yml
   vars:
     ISOExtractPoint: "{{ Target.TempFolder }}/isos/{{ Deploy.Software.ESXi.Vendor }}_{{ Deploy.Software.ESXi.Product }}_{{ Deploy.Software.ESXi.Version }}"
   tasks:
-    - name: prepareISOInstaller_Playbook
+    - name: PrepareISOInstaller_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -50,7 +50,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
@@ -70,15 +70,18 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Create temp directory
       ansible.builtin.file:
         path: "{{ Target.TempFolder }}"
         state: directory
+        mode: "755"
 
     - name: Extract ESXi ISO
-      ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }} -extract / {{ ISOExtractPoint }}"
+      ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }} \
+                               -extract / {{ ISOExtractPoint }}"
+      changed_when: false
 
     - name: Add write permission to extracted files
       ansible.builtin.file:
@@ -88,7 +91,7 @@
         mode: u+w
 
     - name: Copy BOOT.CFG from the ESXi ISOExtractPoint
-      ansible.builtin.copy: 
+      ansible.builtin.copy:
         src: "{{ ISOExtractPoint }}/BOOT.CFG"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
         mode: "666"
@@ -105,53 +108,57 @@
       ansible.builtin.file:
         path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
         state: directory
+        mode: "755"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+      when: Nested_Cluster[item.value.Cluster]['DeployHosts']
       tags: esxi-install-media
 
     - name: Create kickstart file for each nested ESXi host
-      ansible.builtin.template: 
+      ansible.builtin.template:
         src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.ESXi.Template }}"
         dest: "{{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
         mode: "666"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+      when: Nested_Cluster[item.value.Cluster]['DeployHosts']
       tags: esxi-install-media
 
     - name: Create custom ESXi ISO for each nested ESXi host
-      ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }} -b ISOLINUX.BIN -c BOOT.CAT -no-emul-boot -boot-load-size 4 -boot-info-table {{ ISOExtractPoint }}/ {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/ {{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
+      ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }} \
+                              -b ISOLINUX.BIN -c BOOT.CAT -no-emul-boot -boot-load-size 4 -boot-info-table {{ ISOExtractPoint }}/ \
+                              {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/ \
+                              {{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
       args:
         chdir: "{{ Target.TempFolder }}/{{ item.value.VMName }}/"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+      when: Nested_Cluster[item.value.Cluster]['DeployHosts']
       tags: esxi-install-media
 
     - name: Upload the ESXi ISO to the datastore
-      community.vmware.vsphere_copy: 
+      community.vmware.vsphere_copy:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter: "{{ Target.DataCenter }}"
-        src: "{{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }}" 
-        datastore: "{{ Target.Datastore }}" 
+        src: "{{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }}"
+        datastore: "{{ Target.Datastore }}"
         path: "{{ Target.ISOFolder }}/{{ Pod.Number }}{{ item.key }}"
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
+      when: Nested_Cluster[item.value.Cluster]['DeployHosts']
       tags: esxi-install-media
 
     - name: Delete local ISOExtractPoint directory
       ansible.builtin.file:
         path: "{{ ISOExtractPoint }}"
         state: absent
-      when: DEBUG.KeepInstallerFiles != true
+      when: not DEBUG.KeepInstallerFiles
       tags: esxi-install-media
-      
+
     - name: Delete local ISO content directory
       ansible.builtin.file:
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}"
         state: absent
-      when: DEBUG.KeepInstallerFiles != true
+      when: not DEBUG.KeepInstallerFiles
       tags: esxi-install-media
 
     - name: Delete nested ESXi host directories
@@ -159,17 +166,17 @@
         path: "{{ Target.TempFolder }}/{{ item.value.VMName }}"
         state: absent
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: 
-        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
-        - DEBUG.KeepInstallerFiles != true
+      when:
+        - Nested_Cluster[item.value.Cluster]['DeployHosts']
+        - not DEBUG.KeepInstallerFiles
       tags: esxi-install-media
 
     - name: Delete the ESXi ISO files
       ansible.builtin.file:
-        path: "{{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }}" 
+        path: "{{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }}"
         state: absent
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      when: 
-        - Nested_Cluster[item.value.Cluster]['DeployHosts'] == true
-        - DEBUG.KeepInstallerFiles != true
+      when:
+        - Nested_Cluster[item.value.Cluster]['DeployHosts']
+        - not DEBUG.KeepInstallerFiles
       tags: esxi-install-media

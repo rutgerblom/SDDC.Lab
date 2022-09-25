@@ -127,7 +127,7 @@
 ### Added by Rutger
 
 - The generated Pod documentation will now contain information on whether NSX-T Edge was deployed or not.
-- Converted module references within prepareISOInstaller.yml, deployVc.yml, and DeployDNSServer.yml to use FQCNs (ansible.posix.mount).
+- Converted module references within PrepareISOInstaller.yml, deployVc.yml, and DeployDNSServer.yml to use FQCNs (ansible.posix.mount).
 - Updated project documentation regarding the ansible.posix collection which is now required by some playbooks. Install this collection by running: **ansible-galaxy collection install ansible.posix** on your Ansible controller.
 
 ## Dev-v3.0.0 15-APRIL-2021
@@ -1094,8 +1094,8 @@
 ## Dev-v5.0.0 21-APRIL-2022
 
 ### Added by Rutger Blom
-  - Replaced the ```ansible.posix.mount``` task in the ```playbooks/prepareISOInstaller.yml``` playbook with a ```ansible.builtin.command```task running ```7z``` to extract the contents of the ESXi ISO file. The ```ansible.posix.mount``` task requires root or CAP_SYS_ADMIN privileges which is something we want to eliminate in the upcoming version.
-  - Added a new variable to the ```TargetConfig``` dictionary in ```config_sample.yml``` called ```ISOExtract``` which is used by the ```playbooks/prepareISOInstaller.yml``` playbook
+  - Replaced the ```ansible.posix.mount``` task in the ```playbooks/PrepareISOInstaller.yml``` playbook with a ```ansible.builtin.command```task running ```7z``` to extract the contents of the ESXi ISO file. The ```ansible.posix.mount``` task requires root or CAP_SYS_ADMIN privileges which is something we want to eliminate in the upcoming version.
+  - Added a new variable to the ```TargetConfig``` dictionary in ```config_sample.yml``` called ```ISOExtract``` which is used by the ```playbooks/PrepareISOInstaller.yml``` playbook
   - The 7Zip software package is now required so updated the ```README.md``` with this requirement. 
   - Please be sure to update your ```config.yml``` file
 
@@ -1103,7 +1103,7 @@
 
 ### Added by Rutger Blom
   - Added variable ```WorkingFolder``` to the ```TargetConfig``` dictionary in ```config_sample.yml```. The location of ```WorkingFolder``` is used for temporary files created during the Pod deployment process. The variable's default value is ```"{{ lookup('env','HOME') }}/SDDC.Lab/{{ SiteCode }}"```. Eventually ```WorkingFolder``` will replace or be renamed to variable ```TempFolder```. This will be done once all playbooks have been updated to make use of the new location.
-  - Updated playbook ```playbooks/prepareISOInstaller.yml``` to use the new ```WorkingFolder``` variable.
+  - Updated playbook ```playbooks/PrepareISOInstaller.yml``` to use the new ```WorkingFolder``` variable.
   - Please be sure to update your ```config.yml``` file
 
 ## Dev-v5.0.0 23-APRIL-2022
@@ -1112,7 +1112,7 @@
   - Replaced the ```ansible.posix.mount``` task in the ```playbooks/DeployDNSServer.yml``` playbook with a ```ansible.builtin.command```task running ```7z``` to extract the contents of the Ubuntu ISO file. The ```ansible.posix.mount``` task requires root or CAP_SYS_ADMIN privileges which is something we want to eliminate in the upcoming version.
   - Updated playbook ```playbooks/DeployDNSServer.yml``` and the associated template files to use the new ```WorkingFolder``` variable.
   - Added a task to ```playbooks/DeployDNSServer.yml``` that conditionaly (```DEBUG.KeepInstallerFiles != true```) deletes the local ISOExtractPoint directory
-  - Added a task to ```playbooks/prepareISOInstaller.yml``` that conditionaly (```DEBUG.KeepInstallerFiles != true```) deletes the local ISOExtractPoint directory
+  - Added a task to ```playbooks/PrepareISOInstaller.yml``` that conditionaly (```DEBUG.KeepInstallerFiles != true```) deletes the local ISOExtractPoint directory
 
 ## Dev-v5.0.0 24-APRIL-2022
 
