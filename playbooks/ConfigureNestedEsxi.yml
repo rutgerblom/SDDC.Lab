@@ -129,7 +129,7 @@
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when:
         - Nested_Cluster[item.value.Cluster]['DeployHosts']
-        - No DEBUG.KeepInstallerFiles
+        - not DEBUG.KeepInstallerFiles
 
 ##
 ## Nested ESXi host deployment complete, so below we apply configuration settings to the ESXi hosts
