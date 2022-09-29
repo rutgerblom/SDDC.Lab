@@ -1,13 +1,13 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/attachNsxTnp.yml
+##   Filename: playbooks/AttachNsxTnp.yml
 ##
 ---
 - hosts: localhost
-  name: attachNsxTnp.yml
+  name: AttachNsxTnp.yml
   tasks:
-    - name: attachNsxTnp_Playbook
+    - name: AttachNsxTnp_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -47,7 +47,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
 
                                                       Ansible Playbook: {{ ansible_play_name }}
@@ -60,9 +60,9 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-      
+        - DEBUG.DisplayVariables
+        - Deploy.Product.NSXT.LocalManager.Deploy
+
     - name: Attach NSX-T transport node profile to vSphere cluster
       vmware.ansible_for_nsxt.nsxt_transport_node_collections:
         hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
@@ -77,10 +77,10 @@
         transport_node_profile_name: "{{ item.value.NSXT_TransportNodeProfile }}"
         state: present
       loop: "{{ Nested_Cluster | dict2items }}"
-      when: 
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - item.value.Prep_NSX == true
-        - item.value.DeployHosts == true
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - item.value.Prep_NSX
+        - item.value.DeployHosts
         - item.value.NSXT_TransportNodeProfile != ""
 
     - name: Wait until the NSX-T API reports that the Transport Zones are in "UP" state
@@ -88,17 +88,17 @@
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-zones/status
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
-        force_basic_auth: yes
+        force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         method: GET
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
       register: result
       until: (result.json.up_count | default(0)) > 0
       retries: 20
       delay: 60
-      when: 
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy != true
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - not Deploy.Product.NSXT.Edge.Deploy
