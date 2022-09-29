@@ -863,7 +863,7 @@
 ## Dev-v4.0.0 01-JANUARY-2022
 
 ### Added by Luis Chanu
-  - Created "deployWorkloadVms.yml" playbook to deploy Workload VM Templates (VM or OVF) from the Content Library after Pod deployment
+  - Created "DeployWorkloadVms.yml" playbook to deploy Workload VM Templates (VM or OVF) from the Content Library after Pod deployment
   - Created "include_tasks_deployWorkloadVm.yml" file with plays that does the "heavy lifting" of the VM deployment.
   - Added additional sections to config_sample.yml file, includng:
     - Deploy.WorkloadVMs section enable WorkloadVMs functionality and provide default settings for Cluster and VMFolder placement of VMs.  These default settings can be over-written at a VM level.

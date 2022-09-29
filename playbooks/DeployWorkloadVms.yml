@@ -1,7 +1,7 @@
 ##
 ##      Project: SDDC.Lab
 ##      Authors: Luis Chanu & Rutger Blom
-##     Filename: playbooks/deployWorkloadVms.yml
+##     Filename: playbooks/DeployWorkloadVms.yml
 ##
 ##  Description: This playbook loops through the Workload VMs, and provisions them one-by-one, by "sending" the object to the
 ##               "include_tasks_deployWorkloadVm.yml" file.  That file includes ALL of the tasks needed to provision the given
@@ -11,9 +11,9 @@
 ##
 ---
 - hosts: localhost
-  name: deployWorkloadVms.yml
+  name: DeployWorkloadVms.yml
   tasks:
-    - name: deployWorkloadVms_Playbook
+    - name: DeployWorkloadVms_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -53,7 +53,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                              Ansible Playbook: {{ ansible_play_name }}
 
@@ -66,7 +66,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
 
 ##
@@ -79,5 +79,5 @@
       when:
         - WorkloadVMs is defined
         - WorkloadVMs | length > 0
-        - Deploy.WorkloadVMs.Deploy == true
-        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable == true
+        - Deploy.WorkloadVMs.Deploy
+        - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable
