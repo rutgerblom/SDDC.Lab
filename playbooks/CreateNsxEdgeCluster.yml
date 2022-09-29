@@ -50,7 +50,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
 
                                              Ansible Playbook: {{ ansible_play_name }}
@@ -143,7 +143,7 @@
         - Deploy.Product.NSXT.Edge.Deploy
         - var_EdgeClusters != ""
 
-    - name:  Wait until the NSX-T API reports that the Edge Cluster is in realized state
+    - name: Wait until the NSX-T API reports that the Edge Cluster is in realized state
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/policy/api/v1/infra/sites/default/enforcement-points/default/edge-clusters/\
              {{ edge_cluster | json_query('results[].id') | first }}
