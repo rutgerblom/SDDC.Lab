@@ -816,7 +816,7 @@
 
 ### Added by Luis Chanu
   - Created utils/util_ApplyConfigToTemplate.yml playbook to be able to test any template quickly.  Modify the variable within to indicate what template you want to have it generate.
-  - Began working on createNsxDhcpProfiles.yml playbook to create DHCP Server and DHCP Relay profiles.
+  - Began working on CreateNsxDhcpProfiles.yml playbook to create DHCP Server and DHCP Relay profiles.
   - Added Nested_NSXT.Networking.DHCPProfiles section to config_sample.yml.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml

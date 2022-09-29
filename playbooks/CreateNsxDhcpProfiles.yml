@@ -1,15 +1,15 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/createNsxDhcpProfiles.yml
+##   Filename: playbooks/CreateNsxDhcpProfiles.yml
 ##
 ---
 - hosts: localhost
-  name: createNsxDhcpProfiles.yml
+  name: CreateNsxDhcpProfiles.yml
   vars:
-      LOCAL_DHCPProfilesTemplate: "{{ Target.TemplateFolder }}/vars_NSXT_DHCPProfiles.j2"
+    LOCAL_DHCPProfilesTemplate: "{{ Target.TemplateFolder }}/vars_NSXT_DHCPProfiles.j2"
   tasks:
-    - name: createNsxDhcpProfiles_Playbook
+    - name: CreateNsxDhcpProfiles_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -42,14 +42,14 @@
         - Valid_Pod_Config_File is not defined
 
     - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
-      meta: end_play
+      ansible.builtin.meta: end_play
       when: Valid_Pod_Config_File is not defined
 
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                              Ansible Playbook: {{ ansible_play_name }}
 
@@ -62,10 +62,10 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
 ##
-## For each Edge Cluster, we need it's path for the DHCP Server REST API call.  Thus, let's create a EdgeClusterPath dictionary with Key being 
+## For each Edge Cluster, we need it's path for the DHCP Server REST API call.  Thus, let's create a EdgeClusterPath dictionary with Key being
 ## the EdgeCluster Name, and the Value being the given Edge Clusters path.
 ##
     - name: Obtain list of all Edge Clusters
@@ -76,8 +76,8 @@
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
       register: EdgeClusters
       when:
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
@@ -90,19 +90,19 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - DEBUG.DisplayVariables
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
     - name: Create EdgeClusterPath dictionary
       ansible.builtin.set_fact:
-        EdgeClusterPath: "{{ EdgeClusterPath | default({}) | combine({ item.display_name : PathToEdgeCluster }) }}"
+        EdgeClusterPath: "{{ EdgeClusterPath | default({}) | combine({item.display_name : PathToEdgeCluster}) }}"
       vars:
         PathToEdgeCluster: "/infra/sites/default/enforcement-points/default/edge-clusters/{{ item.id }}"
       loop: "{{ EdgeClusters.results }}"
       when:
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
@@ -115,9 +115,9 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - DEBUG.DisplayVariables
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
 
     - name: Read DHCP Profiles structure from template into a variable
       ansible.builtin.set_fact:
@@ -134,8 +134,8 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - DEBUG.DisplayVariables
+        - Deploy.Product.NSXT.LocalManager.Deploy
 
 
 ##
@@ -148,10 +148,10 @@
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 20
-        force_basic_auth: yes
+        force_basic_auth: true
         method: PUT
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
         body: "{{ item }}"
       register: result
@@ -159,9 +159,9 @@
       until: result.status == 200
       retries: 5
       delay: 30
-      when: 
+      when:
         - item.resource_type == "DhcpServerConfig"
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
 
     - name:  Create NSX-T DHCP Relay Profiles
       ansible.builtin.uri:
@@ -170,10 +170,10 @@
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 20
-        force_basic_auth: yes
+        force_basic_auth: true
         method: PUT
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
         body: "{{ item }}"
       register: result
@@ -181,6 +181,6 @@
       until: result.status == 200
       retries: 5
       delay: 30
-      when: 
+      when:
         - item.resource_type == "DhcpRelayConfig"
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
