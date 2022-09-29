@@ -1,7 +1,7 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/preparePhysical.yml
+##   Filename: playbooks/PreparePhysical.yml
 ##    Purpose: This Ansbile script is to prepare the physical environment, which includes:
 ##              a) Creating vSphere Switch (vDS or vSS)
 ##              b) Creating vSphere Port-Groups (Mgmt and Trunk)
@@ -9,9 +9,9 @@
 ##
 ---
 - hosts: localhost
-  name: preparePhysical.yml
+  name: PreparePhysical.yml
   tasks:
-    - name: preparePhysical_Playbook
+    - name: PreparePhysical_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -52,7 +52,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
@@ -73,7 +73,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
 
 ##
@@ -114,7 +114,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
         - Target.Deployment == "vCenter"
         - vds_result is defined
 
@@ -125,11 +125,11 @@
         method: POST
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
-        force_basic_auth: yes
+        force_basic_auth: true
         url_username: "{{ Target.User }}"
         url_password: "{{ Target.Password }}"
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
       register: vcenter_auth_result
       when:
@@ -148,7 +148,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
         - Target.Deployment == "vCenter"
         - vcenter_auth_result is defined
 
@@ -171,7 +171,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
         - Target.Deployment == "vCenter"
         - vds_result.result == "DVS created"
         - vCenter_SessionID is defined
@@ -187,11 +187,11 @@
         method: GET
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
-        force_basic_auth: yes
+        force_basic_auth: true
         url_username: "{{ Target.User }}"
         url_password: "{{ Target.Password }}"
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
       register: cluster_info
       when:
@@ -210,7 +210,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
         - Target.Deployment == "vCenter"
         - vds_result.result == "DVS created"
         - cluster_info is defined
@@ -234,7 +234,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
         - Target.Deployment == "vCenter"
         - vds_result.result == "DVS created"
         - Cluster_ID is defined
@@ -246,11 +246,11 @@
         method: GET
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
-        force_basic_auth: yes
+        force_basic_auth: true
         url_username: "{{ Target.User }}"
         url_password: "{{ Target.Password }}"
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
       register: cluster_hosts
       when:
@@ -269,7 +269,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
         - Target.Deployment == "vCenter"
         - vds_result.result == "DVS created"
         - cluster_hosts is defined
@@ -332,8 +332,8 @@
         vlan_trunk: false
         state: present
         network_policy:
-          promiscuous: true                                                                            # Must be true in order for NSX-T Edge Transport Node deployment to succeed
-          forged_transmits: true                                                                       # Must be true in order for NSX-T Edge Transport Node deployment to succeed
+          promiscuous: true               # Must be true in order for NSX-T Edge Transport Node deployment to succeed
+          forged_transmits: true          # Must be true in order for NSX-T Edge Transport Node deployment to succeed
           mac_changes: false
       when: Target.Deployment == "vCenter"
 
@@ -350,11 +350,10 @@
         vlan_trunk: true
         state: present
         network_policy:
-          promiscuous: true                                                                            # Must be true in order for vmk migration to succeed
-          forged_transmits: true                                                                       # Must be true in order for vmk migration to succeed
+          promiscuous: true               # Must be true in order for vmk migration to succeed
+          forged_transmits: true          # Must be true in order for vmk migration to succeed
           mac_changes: false
       when: Target.Deployment == "vCenter"
-
 
 
 ##
@@ -391,7 +390,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
         - Target.Deployment == "vCenter"
         - vm_parent_folder_creation_result is defined
 
@@ -403,14 +402,14 @@
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter: "{{ Target.DataCenter }}"
         folder_type: vm
-        parent_folder: "{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}"                     # Extract parent folder from VMFolder full path
-        folder_name:   "{{ Target.VMFolder | regex_replace('^.*/(.*)$', '\\1') }}"                     # Extract remaining folder name
+        parent_folder: "{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}"       # Extract parent folder from VMFolder full path
+        folder_name: "{{ Target.VMFolder | regex_replace('^.*/(.*)$', '\\1') }}"       # Extract remaining folder name
         state: present
       register: vm_child_folder_creation_result
-      when: 
+      when:
         - Target.Deployment == "vCenter"
         - vm_parent_folder_creation_result is defined
-        - vm_parent_folder_creation_result.failed != true
+        - not vm_parent_folder_creation_result.failed
 
     - name: DEBUG -- Display vm_child_folder_creation_result
       ansible.builtin.pause:
@@ -424,11 +423,9 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
         - Target.Deployment == "vCenter"
         - vm_child_folder_creation_result is defined
-
-
 
 ##
 ###############################################################################################################
@@ -454,13 +451,13 @@
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"        
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
         esxi_hostname: "{{ Target.FQDN }}"
         switch_name: "{{ Target.vSwitch }}"
         portgroup_name: "{{ Target.PortGroup.Management.Name }}"
         vlan_id: "{{ Target.PortGroup.Management.VLAN }}"
         security:
-          promiscuous_mode: True
+          promiscuous_mode: true
       when: Target.Deployment == "Host"
 
     - name: Create trunk port group for the lab environment
@@ -474,9 +471,9 @@
         portgroup_name: "{{ Target.PortGroup.Trunk.Name }}"
         vlan_id: "{{ Target.PortGroup.Trunk.VLAN }}"
         security:
-          promiscuous_mode: True
-          forged_transmits: True
-          mac_changes: True
+          promiscuous_mode: true
+          forged_transmits: true
+          mac_changes: true
       when: Target.Deployment == "Host"
 
 

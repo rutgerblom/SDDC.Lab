@@ -917,7 +917,7 @@
 
 ### Added by Rutger Blom
   - Added NSX-T collection to requirements.yml
-  - Updated preparePhysical.yml to remove deprecated and add required parameters to community.vmware.vmware_dvs_portgroup tasks
+  - Updated PreparePhysical.yml to remove deprecated and add required parameters to community.vmware.vmware_dvs_portgroup tasks
 
 ## Dev-v4.0.0 24-JANUARY-2022
 
@@ -1190,7 +1190,7 @@
 ## Dev-v5.0.0 16-JUNE-2022
 
 ### Added by Rutger Blom
-  - Removed the "num_ports" parameter from "community.vmware.vmware_dvs_portgroup" tasks in ```playbooks/preparePhysical.yml```. This to prevent an error when re-running a failed/broken off deployment and "num_ports" on the distributed port group has increased beyond specified by "num_ports" (we cannot decrease num_ports if ports are in use).
+  - Removed the "num_ports" parameter from "community.vmware.vmware_dvs_portgroup" tasks in ```playbooks/PreparePhysical.yml```. This to prevent an error when re-running a failed/broken off deployment and "num_ports" on the distributed port group has increased beyond specified by "num_ports" (we cannot decrease num_ports if ports are in use).
 
 ## Dev-v5.0.0 26-JULY-2022
 
