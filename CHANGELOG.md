@@ -659,7 +659,7 @@
   - Modfied TZ-Edge to take advantage of the new ToR-A and ToR-B named teaming policies
   - Added filter in deployNsxLocalManager.yml and deployNsxGlobalManager.yml to force 'Deployment Size' to lower as a safety net in case user accidentally changes case.  OVFTool requires Size to be in lower case.
   - Added 'upper' filter in templates/vars_NSXT_EdgeTransportNodes.j2 to ensure FormFactor sizing is always in upper case, as required by the NSX-T API.
-  - Modified createNsxEdgeTn.yml to disable password expiration for all users on NSX-T Edges
+  - Modified CreateNsxEdgeTn.yml to disable password expiration for all users on NSX-T Edges
   - Modified deployNsxLocalManager.yml and deployNsxGlobalManager.yml to also disable password expiration for 'root' user
   - Updated software versions in config_sample.yml for NSX-T and vCenter Server to v3.1.3.3 and v7.00U3a, respectively.
   - The following files were updated so please update your non-sample files:
@@ -781,7 +781,7 @@
 ### Added by Luis Chanu
   - **IMPORTANT**: As part of NSX-T Federation, NSX-T v3.2.0 appears to not support importing objects from a Location into the Global Manager.  For this reason, SDDC.Lab can not be used to deploy Federation when deploying NSX-T v3.2.0, as SDDC.Lab utilizes this functionality.  The workaround to this is to deploy Federation using NSX-T v3.1.3.3, then manually upgrade the Pods to v3.2.0.  It's assumed that this functionality will be re-introduced in a later release.  Standalone (i.e. Non-Federated) deployments of NSX-T v3.2.0 has been tested, and works fine.
   - NSX-T v3.2.0 Federation details added to README.md file
-  - NSX-T v3.2.0 takes MUCH longer to set the "password_change_frequency" on an Edge Transport Node users than it did under NSX-T v3.1.3.3.  For this reason, the timeout on the task that performs this operation within "createNsxEdgeTn.yml" playbook has been increased from 15 to 60 seconds.
+  - NSX-T v3.2.0 takes MUCH longer to set the "password_change_frequency" on an Edge Transport Node users than it did under NSX-T v3.1.3.3.  For this reason, the timeout on the task that performs this operation within "CreateNsxEdgeTn.yml" playbook has been increased from 15 to 60 seconds.
   - NSX-T Version Tested Status:
     - v3.1.3.3: Standalone and Federation
     - v3.1.3.5: We are still looking into an issue when deploying against this version.  Until further testing has been done, please do not deploy directly to this version...use v3.1.3.3 instead, then manually upgrade to v3.1.3.5.
@@ -790,7 +790,7 @@
   - The "var_NSXT_EdgeTransportNodes.j2" template has been updated to support v3.2.0.  These changes have also been tested against v3.1.3.3, and deployed fine.
   - Modified "createPodConfig.yml" to append the Global Manager Pod to the end of the filename if Federation is enabled.
   - The following playbooks have been modified to support NSX-T v3.2.0:
-    - createNsxEdgeTn.yml
+    - CreateNsxEdgeTn.yml
     - createNsxTz.yml
 
 ## Dev-v4.0.0 25-DEC-2021
@@ -824,7 +824,7 @@
 ## Dev-v4.0.0 28-DEC-2021
 
 ### Added by Luis Chanu
-  - Following changes were made to createNsxEdgeTn.yml playbook:
+  - Following changes were made to CreateNsxEdgeTn.yml playbook:
     - The nested loop to set password aging to 0 was reversed so that each of the EdgeVMs are cycled through for each user.  This permits the EdgeVM to "recover" to the "SUCCESS" state before the next REST API call is attempted to it.
     - Added an additional check at the end of the playbook to verify all EdgeVMs are in a "SUCCESS" state before the playbook is completed.  This hopefully ensures all EdgeVMs are ready for other REST API calls.
 
