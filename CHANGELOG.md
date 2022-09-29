@@ -1379,3 +1379,8 @@
 ### Added by Rutger Blom
   - Changed default version of vCenter to 7.00U3H in ```config_sample.yml``` file.
   - Please be sure to update your ```config.yml``` file(s).
+
+## Dev-v5.0.0 29-SEPTEMBER-2022
+
+### Added by Luis Chanu
+  - Updated ```deploy.yml``` references in ```FirstPod.md```, ```README.md```, and ```playbooks/createPodConfig.yml``` files to upper case.
