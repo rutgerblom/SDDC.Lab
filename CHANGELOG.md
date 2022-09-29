@@ -806,7 +806,7 @@
 ## Dev-v4.0.0 26-DEC-2021
 
 ### Added by Luis Chanu
-  - Modified createNsxEdgeCluster.yml play to address the flapping of EdgeVM state when the user password aging is disabled.
+  - Modified CreateNsxEdgeCluster.yml play to address the flapping of EdgeVM state when the user password aging is disabled.
   - The following deployment scenarios completed successfully:
     - VCSA v7.00U3A, ESXi 7.00U3, NSX-T v3.1.3.3 (2-Site Federation)
     - VCSA v7.00U3A, ESXi 7.00U3, NSX-T v3.1.3.5 (Standalone)
@@ -881,7 +881,7 @@
 ## Dev-v4.0.0 06-JANUARY-2022
 
 ### Added by Luis Chanu
-  - Modify createNsxEdgeCluster.yml and vars_NSXT_EdgeClusters.j2 to permit creation of Edge Clusters without any member Edge Nodes.
+  - Modify CreateNsxEdgeCluster.yml and vars_NSXT_EdgeClusters.j2 to permit creation of Edge Clusters without any member Edge Nodes.
 
 ## Dev-v4.0.0 11-JANUARY-2022
 
