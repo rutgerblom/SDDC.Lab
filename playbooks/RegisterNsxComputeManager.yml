@@ -1,13 +1,13 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/registerNsxComputeManager.yml
+##   Filename: playbooks/RegisterNsxComputeManager.yml
 ##
 ---
 - hosts: localhost
-  name: registerNsxComputeManager.yml
+  name: RegisterNsxComputeManager.yml
   tasks:
-    - name: registerNsxComputeManager_Playbook
+    - name: RegisterNsxComputeManager_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -48,7 +48,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                        Ansible Playbook: {{ ansible_play_name }}
 
@@ -72,42 +72,42 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Register NSX-T Compute Manager to Local Manager
       vmware.ansible_for_nsxt.nsxt_fabric_compute_managers:
-          hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
-          username: "{{ Nested_NSXT.Credential.admin.Name }}"
-          password: "{{ Nested_NSXT.Credential.admin.Password }}"
-          validate_certs: "{{ Common.PKI.ValidateCerts }}"
-          display_name: "{{ item.Name }}"
-          server: "{{ item.Address }}"
-          origin_type: "{{ item.Type }}"
-          set_as_oidc_provider: "{% if Deploy.Software.vCenter.Version.startswith('6.') %}{{ omit }}{% else %}{{ item.Trust }}{% endif %}"
-          credential:
-            credential_type: "{{ item.Credential.Type }}"
-            username: "{{ item.Credential.User }}"
-            password: "{{ item.Credential.Password }}"
-          state: present
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        display_name: "{{ item.Name }}"
+        server: "{{ item.Address }}"
+        origin_type: "{{ item.Type }}"
+        set_as_oidc_provider: "{% if Deploy.Software.vCenter.Version.startswith('6.') %}{{ omit }}{% else %}{{ item.Trust }}{% endif %}"
+        credential:
+          credential_type: "{{ item.Credential.Type }}"
+          username: "{{ item.Credential.User }}"
+          password: "{{ item.Credential.Password }}"
+        state: present
       loop: "{{ Nested_NSXT.System.Fabric.ComputeManagers }}"
-      when: Deploy.Product.NSXT.LocalManager.Deploy == true
+      when: Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: Register NSX-T Compute Manager to Global Manager
       vmware.ansible_for_nsxt.nsxt_fabric_compute_managers:
-          hostname: "{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}"
-          username: "{{ Nested_NSXT.Credential.admin.Name }}"
-          password: "{{ Nested_NSXT.Credential.admin.Password }}"
-          validate_certs: "{{ Common.PKI.ValidateCerts }}"
-          display_name: "{{ item.Name }}"
-          server: "{{ item.Address }}"
-          origin_type: "{{ item.Type }}"
-          set_as_oidc_provider: "{% if Deploy.Software.vCenter.Version.startswith('6.') %}{{ omit }}{% else %}{{ item.Trust }}{% endif %}"
-          credential:
-            credential_type: "{{ item.Credential.Type }}"
-            username: "{{ item.Credential.User }}"
-            password: "{{ item.Credential.Password }}"
-          state: present
+        hostname: "{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        display_name: "{{ item.Name }}"
+        server: "{{ item.Address }}"
+        origin_type: "{{ item.Type }}"
+        set_as_oidc_provider: "{% if Deploy.Software.vCenter.Version.startswith('6.') %}{{ omit }}{% else %}{{ item.Trust }}{% endif %}"
+        credential:
+          credential_type: "{{ item.Credential.Type }}"
+          username: "{{ item.Credential.User }}"
+          password: "{{ item.Credential.Password }}"
+        state: present
       loop: "{{ Nested_NSXT.System.Fabric.ComputeManagers }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
