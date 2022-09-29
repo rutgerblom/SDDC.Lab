@@ -104,8 +104,8 @@
 ### Added by Luis Chanu
 
 - Added support in concurrent Pod deployment to support vCenter Server Replication Partners.
-- Created new 'checkVcReplicationPartner.yml' playbook to verify Replication Partner vCenter Server is operational.  It pauses the Pod with the Replication Partner until the Replication Partner vCenter Server is operational.
-- Added new 'checkVcReplicationPartner.yml' playbook to deploy.yml playbook.
+- Created new 'CheckVcReplicationPartner.yml' playbook to verify Replication Partner vCenter Server is operational.  It pauses the Pod with the Replication Partner until the Replication Partner vCenter Server is operational.
+- Added new 'CheckVcReplicationPartner.yml' playbook to deploy.yml playbook.
 
 ## Dev-v3.0.0 14-APRIL-2021
 

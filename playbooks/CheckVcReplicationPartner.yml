@@ -1,7 +1,7 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/checkVcReplicationPartner.yml
+##   Filename: playbooks/CheckVcReplicationPartner.yml
 ##    Purpose: This Ansbile playbook verifies that the Replication Partner's vCenter Server is on-line and ready to process requests.
 ##             If the Replication Partner vCenter Server is not responding, then it continues to check for up to two (2) hours.
 ##             Once the Replication Partner vCenter Server responds, we make sure it's healthy.  If it is not healthy, then we
@@ -10,9 +10,9 @@
 ##
 ---
 - hosts: localhost
-  name: checkVcReplicationPartner.yml
+  name: CheckVcReplicationPartner.yml
   tasks:
-    - name: checkVcReplicationPartner_Playbook
+    - name: CheckVcReplicationPartner_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -53,7 +53,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
@@ -67,7 +67,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
 ##
 ## Authenticate to Replication Partner vCenter Server and obtain Session ID
@@ -80,14 +80,14 @@
         method: POST
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
-        force_basic_auth: yes
+        force_basic_auth: true
         url_username: "{{ Nested_vCenter.User }}"                             # Assumes all Nested_vCenter servers use the same credentials
         url_password: "{{ Nested_vCenter.Password }}"                         # Assumes all Nested_vCenter servers use the same credentials
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
       register: vcenter_auth_result
-      until:    vcenter_auth_result.status == 200
+      until: vcenter_auth_result.status == 200
       retries: 120
       delay: 60
       when:
@@ -105,7 +105,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
         - vcenter_auth_result is defined
         - Nested_vCenter.SSO.ReplicationPartner != ""
 
@@ -127,7 +127,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
         - vCenter_SessionID is defined
         - Nested_vCenter.SSO.ReplicationPartner != ""
 
@@ -142,14 +142,14 @@
         method: GET
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
-        force_basic_auth: yes
+        force_basic_auth: true
         url_username: "{{ Nested_vCenter.User }}"                             # Assumes all Nested_vCenter servers use the same credentials
         url_password: "{{ Nested_vCenter.Password }}"                         # Assumes all Nested_vCenter servers use the same credentials
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
       register: health_result
-      until:    health_result.status == 200 and health_result.json.value == "green"
+      until: health_result.status == 200 and health_result.json.value == "green"
       retries: 45
       delay: 60
       when:
@@ -168,7 +168,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
         - health_result is defined
         - Nested_vCenter.SSO.ReplicationPartner != ""
 
@@ -188,4 +188,3 @@
       when:
         - vCenter_SessionID is defined
         - Nested_vCenter.SSO.ReplicationPartner != ""
-
