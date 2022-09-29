@@ -1,22 +1,22 @@
 ##
 ##      Project: SDDC.Lab
 ##      Authors: Luis Chanu & Rutger Blom
-##     Filename: playbooks/createContentLibrary.yml
+##     Filename: playbooks/CreateContentLibrary.yml
 ##
 ##  Description: This playbook supports the creating both local and subscribing (vCenter and URL) content libraries.
 ##               If a Datastore is not specified in the Pod config file, an Datastore is selected for you.  Given it
-##               is assumed that NSX-T will deploy it's EdgeVMs in the Edge vSphere cluster, if multiple datastores 
+##               is assumed that NSX-T will deploy it's EdgeVMs in the Edge vSphere cluster, if multiple datastores
 ##               are avaialble, the Edge datastore is not chosen.
 ##
-##               This playbook loops through the Content Libraries that need to be created, and creates them one-by-one, 
-##               by "sending" the object to the "include_tasks_createContentLibrary.yml" playbook.  That file includes 
+##               This playbook loops through the Content Libraries that need to be created, and creates them one-by-one,
+##               by "sending" the object to the "include_tasks_CreateContentLibrary.yml" playbook.  That file includes
 ##               ALL of the tasks needed to provision the given content library, either 'local' or 'subscribed'.
 ##
 ---
 - hosts: localhost
-  name: createContentLibrary.yml
+  name: CreateContentLibrary.yml
   tasks:
-    - name: createContentLibrary_Playbook
+    - name: CreateContentLibrary_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -56,7 +56,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                          Ansible Playbook: {{ ansible_play_name }}
 
@@ -77,7 +77,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
 
 ##
@@ -85,5 +85,5 @@
 ##
     - name: Create Content Libraries one at a time
       ansible.builtin.include_tasks:
-        file: include_tasks_createContentLibrary.yml
+        file: include_tasks_CreateContentLibrary.yml
       loop: "{{ Nested_vCenter.ContentLibrary | dict2items }}"

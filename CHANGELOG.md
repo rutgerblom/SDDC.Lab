@@ -750,7 +750,7 @@
 ## Dev-v4.0.0 26-NOV-2021
 
 ### Added by Luis Chanu
-  - Updated 'createContentLibrary.yml' file implemented which supports additional functionality, including the ability to subscribe to remotely publised content libraries.
+  - Updated 'CreateContentLibrary.yml' file implemented which supports additional functionality, including the ability to subscribe to remotely publised content libraries.
   - Updated config_sample.yml configuration file with additional Content Library variables to support the additional functionality
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
@@ -1246,8 +1246,8 @@
   - To aid with pre-populating TKG Content Library, added support to subscribe to Content Libraries via URLs.
   - Added additional libraries, including the the default TKG Content Library.  Because of it's size, this library is configured as an "On-Demand" library, which of course can be changed in the config.
   - New content libraries can be found in the ```config_sample.yml``` file, in the ```Nested_vCenter.ContentLibraries``` section.
-  - New ansible playbook added to project: ```include_tasks_createContentLibrary.yml```
-  - Moved individual content library creation to ```include_tasks_createContentLibrary.yml```.  The existing ```createContentLibrary.yml``` playbook now dispatches the creation of each content library to the ```include_tasks_createContentLibrary.yml``` playbook, one-by-one.
+  - New ansible playbook added to project: ```include_tasks_CreateContentLibrary.yml```
+  - Moved individual content library creation to ```include_tasks_CreateContentLibrary.yml```.  The existing ```CreateContentLibrary.yml``` playbook now dispatches the creation of each content library to the ```include_tasks_CreateContentLibrary.yml``` playbook, one-by-one.
   - WorkloadVMs playbooks modified to support new content library structure.
   - Changes made to ```config_sample.yml``` does increase the time it takes for ```playbooks/createPodConfig.yml``` to generate the static Pod configuration, so please be patient.  You may want to consider running the ```utils/utils_CreateAllPodConfigs.sh``` script, which will generate the static Pod Configuration files for ALL of your configurations.  Please see description in the documentation included in the header of the script file for more details about the utility.
   - There were changes in ```config_sample.yml``` file.
