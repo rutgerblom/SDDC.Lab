@@ -1,7 +1,7 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/configureNsxBackup.yml
+##   Filename: playbooks/ConfigureNsxBackup.yml
 ##
 ##   Comments: This Ansible Playbook:
 ##               1) Configures a DISABLED backup job on the NSX-T Global Manager (If GlobalManager.SiteCode == SiteCode)
@@ -10,9 +10,9 @@
 ##
 ---
 - hosts: localhost
-  name: configureNsxBackup.yml
+  name: ConfigureNsxBackup.yml
   tasks:
-    - name: configureNsxBackup_Playbook
+    - name: ConfigureNsxBackup_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -52,7 +52,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
@@ -73,7 +73,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
 ##
 ## Configure Backup on NSX-T Local Manager
@@ -84,7 +84,7 @@
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/policy/api/v1/cluster/backups?action=retrieve_ssh_fingerprint
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        force_basic_auth: True
+        force_basic_auth: true
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         method: POST
         body_format: json
@@ -100,7 +100,7 @@
       ignore_errors: true
       failed_when: false
       no_log: true
-      when: Deploy.Product.NSXT.LocalManager.Deploy == True
+      when: Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: Store SSH Fingerprint of SFTP Server [Local Manager]
       ansible.builtin.set_fact:
@@ -116,14 +116,14 @@
 
           ===========================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Configure Disabled Weekly NSX-T Backup Job [Local Manager]
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/cluster/backups/config
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        force_basic_auth: True
+        force_basic_auth: true
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         method: PUT
         body_format: json
@@ -160,7 +160,7 @@
       ignore_errors: true
       failed_when: false
       no_log: true
-      when: Deploy.Product.NSXT.LocalManager.Deploy == True
+      when: Deploy.Product.NSXT.LocalManager.Deploy
 
 
 ##
@@ -171,7 +171,7 @@
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/cluster/backups?action=retrieve_ssh_fingerprint
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        force_basic_auth: True
+        force_basic_auth: true
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         method: POST
         body_format: json
@@ -187,14 +187,14 @@
       ignore_errors: true
       failed_when: false
       when:
-        - Deploy.Product.NSXT.Federation.Enable == True
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Store SSH Fingerprint of SFTP Server [Global Manager]
       ansible.builtin.set_fact:
         ssh_fingerprint: "{{ result.json.ssh_fingerprint | default(None) }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable == True
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: DEBUG -- Display SSH Fingerprint of SFTP Server [Global Manager] (Pause)
@@ -207,16 +207,16 @@
 
           ===========================================================================================
       when:
-        - Deploy.Product.NSXT.Federation.Enable == True
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Configure Disabled Weekly NSX-T Backup Job [Global Manager]
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/cluster/backups/config
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        force_basic_auth: True
+        force_basic_auth: true
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         method: PUT
         body_format: json
@@ -253,7 +253,7 @@
       ignore_errors: true
       failed_when: false
       when:
-        - Deploy.Product.NSXT.Federation.Enable == True
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
 
@@ -266,32 +266,31 @@
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/cluster?action=backup_to_remote
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        force_basic_auth: True
+        force_basic_auth: true
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         method: POST
         body_format: json
         headers:
           Accept: application/json
         timeout: 5
-      ignore_errors: true
       failed_when: false
       no_log: true
       when:
-        - Deploy.Product.NSXT.Federation.Enable == True
-        - Deploy.Product.NSXT.LocalManager.Deploy == True
+        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: Wait 10 seconds before start checking whether the NSX-T Local Manager backup has completed [Local Manager]
       ansible.builtin.pause: seconds=10
-      when: 
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == True
+      when:
+        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: Wait for NSX-T Local Manager backup to complete [Local Manager]
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/cluster/backups/overview?show_backups_list=false
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        force_basic_auth: True
+        force_basic_auth: true
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         method: GET
         body_format: json
@@ -306,5 +305,5 @@
       retries: 60
       delay: 30
       when:
-        - Deploy.Product.NSXT.Federation.Enable == True
-        - Deploy.Product.NSXT.LocalManager.Deploy == True
+        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.LocalManager.Deploy

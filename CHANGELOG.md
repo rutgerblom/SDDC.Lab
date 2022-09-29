@@ -524,7 +524,7 @@
 ### Added by Luis Chanu
   - Renamed playbooks/registerNsxLocalManager.yml to playbooks/federateNsxLocalManager.yml
   - Added the following playbooks to deploy.yml:
-    - configureNsxBackup.yml
+    - ConfigureNsxBackup.yml
     - registerNsxLocalManager.yml
       - This is still untested, so it is excluded from running.  Remove the "false" flag in order to try it.
   - Added vCenter Server "7.00U2D" entry in sample templates file.
@@ -552,10 +552,10 @@
 ## Dev-v4.0.0 10-OCT-2021
 
 ### Added by Luis Chanu
-  - Changes made to the configureNsxBackup.yml playbook, and it appears to be functioning properly.
+  - Changes made to the ConfigureNsxBackup.yml playbook, and it appears to be functioning properly.
   - Added comments to playbook to document what backups are created, and which ones are run.
   - Additional changes to federateNsxLocalManager.yml...still work in progress.
-  - Enabled configureNsxBackup.yml in deploy.yml.
+  - Enabled ConfigureNsxBackup.yml in deploy.yml.
 
 ## Dev-v4.0.0 11-OCT-2021
 
