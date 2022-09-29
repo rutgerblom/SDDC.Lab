@@ -1,13 +1,13 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/enableNsxIPv6.yml
+##   Filename: playbooks/EnableNsxIPv6.yml
 ##
 ---
 - hosts: localhost
-  name: enableNsxIPv6.yml
+  name: EnableNsxIPv6.yml
   tasks:
-    - name: enableNsxIPv6_Playbook
+    - name: EnableNsxIPv6_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -47,7 +47,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
@@ -56,21 +56,21 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Enable Both IPv4 and IPv6 Forwarding within NSX-T
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/policy/api/v1/infra/global-config
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
-        force_basic_auth: yes
+        force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         method: PATCH
         body_format: json
         body: '{ "l3_forwarding_mode": "IPV4_AND_IPV6" }'
-        return_content: yes
+        return_content: true
         status_code: 200
-      when: 
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Setting.IPv6 == true
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Setting.IPv6
