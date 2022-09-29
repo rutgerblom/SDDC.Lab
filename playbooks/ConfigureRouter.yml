@@ -17,9 +17,7 @@
   name: ConfigureRouter.yml
   connection: ansible.netcommon.network_cli
   vars:
-    - LOCAL_HomeDirectory: "{{ lookup('env','HOME') }}"
     - LOCAL_UserConfigTempFile: "{{ Nested_Router.UserConfig.Template | regex_replace('^(.*).j2$', '\\1', ignorecase=True) }}.conf"
-
   tasks:
     - name: ConfigureRouter_Playbook
       ansible.builtin.debug:
@@ -148,7 +146,7 @@
 
     - name: Determine directory path to use for {{ Nested_Router.UserConfig.Template }} file
       ansible.builtin.set_fact:
-        UserConfigDirectory: "{% if Nested_Router.UserConfig.Directory == '~' %}{{ LOCAL_HomeDirectory }}\
+        UserConfigDirectory: "{% if Nested_Router.UserConfig.Directory == '~' %}{{ lookup('env','HOME') }}\
                               {% else %}{{ Nested_Router.UserConfig.Directory }}{% endif %}"
 
     - name: See if the template exists
