@@ -719,8 +719,8 @@
     - licenses_sample.yml
   - Removed Nested_NSXT.System.LocationManager  from config_sample.yml
   - Added Nested_NSXT.System.Fabric.GlocalSetting to config_sample.yml
-  - Added playbooks/configureNsxFabricMTU.yml to project
-  - Added configureNsxFabricMTU.yml to deploy.yml
+  - Added playbooks/ConfigureNsxFabricMTU.yml to project
+  - Added ConfigureNsxFabricMTU.yml to deploy.yml
   - NSX-T Global Fabric MTU settings are now configured to match the values defined in Net.Transport.MTU and Net.RTEP.MTU.  Make sure these values supported by your physical networking environment.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml

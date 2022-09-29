@@ -1,16 +1,16 @@
 ##
 ##      Project: SDDC.Lab
 ##      Authors: Luis Chanu & Rutger Blom
-##     Filename: playbooks/configureNsxFabricMTU.yml
+##     Filename: playbooks/ConfigureNsxFabricMTU.yml
 ##
 ##  Description: This playbook configures the Global Fabric MTUs for both TEP and RTEP to settings defined
 ##               at Nested_NSXT.System.Fabric.GlobalSetting.
 ##
 ---
 - hosts: localhost
-  name: configureNsxFabricMTU.yml
+  name: ConfigureNsxFabricMTU.yml
   tasks:
-    - name: configureNsxFabricMTU_Playbook
+    - name: ConfigureNsxFabricMTU_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -50,7 +50,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
@@ -60,7 +60,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Get current _revision number for NSX-T Fabric MTU Settings
       ansible.builtin.uri:
@@ -69,21 +69,21 @@
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
-        force_basic_auth: yes
+        force_basic_auth: true
         method: GET
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
       register: result
       until: result.status == 200
-      when: 
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: Store current _revision number
       ansible.builtin.set_fact:
         current_revision: "{{ result.json._revision | default(0) }}"
       when:
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
         - result.status == 200
 
     - name: Set NSX-T Fabric MTU Settings
@@ -93,7 +93,7 @@
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 15
-        force_basic_auth: yes
+        force_basic_auth: true
         method: PUT
         body_format: json
         body: |
@@ -103,9 +103,9 @@
             "remote_tunnel_physical_mtu": {{ Nested_NSXT.System.Fabric.GlobalSetting.RTEP.MTU }},
             "_revision": {{ current_revision }}
           }
-        return_content: yes
+        return_content: true
         status_code: 200
       register: result
       until: result.status == 200
-      when: 
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy
