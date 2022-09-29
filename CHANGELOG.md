@@ -120,7 +120,7 @@
 ### Added by Luis Chanu
 
 - Converted module references within deploy.yml to use FQCNs
-- Correct issue with deployRouter.yml playbook where it would fail if router was already deployed
+- Correct issue with DeployRouter.yml playbook where it would fail if router was already deployed
 
 ## Dev-v3.0.0 15-APRIL-2021
 
@@ -247,10 +247,10 @@
   - VyOS Ansible modules requires the "Paramiko" module, so please be sure to use PIP3 to install it.  The README.md has been updated to now include this module as a requirement.
   - Due to SSH authentication failure with VyOS module, added "host_key_checking = false" to ansible.cfg file to permit SSH connections to succeed without first importing the hash.
   - Changes to VyOS router playbooks
-    - Module deployRouter.yml now not only deploys the VyOS router, but also performs basic configuration (Name, Eth0 IP Address, Floating default route, enable SSH).
+    - Module DeployRouter.yml now not only deploys the VyOS router, but also performs basic configuration (Name, Eth0 IP Address, Floating default route, enable SSH).
     - Due to changing syntax of the VyOS "/config/config.boot" file with newer versions of VyOS, instead of creating that file and copying it to the VyOS router (as was previously done), we now develop the individual VyOS "SET" commands for the target configuration, then send those commands to the provisioned VyOS router.  Once that's done, we then 'commit' and 'save' the configuration.  The creation of the VyOS router configuration is performed by the new ConfigureRouter.yml playbook.
     - Added a pre-login message that shows the VyOS router name, along with a reminder that the login username is "vyos".
-    - As a precaution, previous "deployRouter.yml" and "vyos_router.j2" files have been renamed to *_OLD, respectively.  They will be removed once the new VyOS router deployment has been throughly tested.
+    - As a precaution, previous "DeployRouter.yml" and "vyos_router.j2" files have been renamed to *_OLD, respectively.  They will be removed once the new VyOS router deployment has been throughly tested.
 
 ## Dev-v4.0.0 05-JULY-2021
 
@@ -297,7 +297,7 @@
 
 ### Added by Luis Chanu
 
-  - Corrected missing "{" for annotation variable in deployRouter.yml
+  - Corrected missing "{" for annotation variable in DeployRouter.yml
   - Updated all module references in tests and utils directory playbooks to use FQCN
   - Added virtual IPv4 addresses variables to NSX-T GM and LM in config_sample.yml to prepare for future changes
   - The following file was updated so please update your non-sample file:
@@ -1291,7 +1291,7 @@
   - Command syntax change found with VyOS "nightly" release.  When configuring bgp, 'local-as' has been changed to 'system-as'.
   - Corrected bgp command in ```templates/vyos_router.j2``` file to support current "nightly" VyOS release ISO.
   - You must delete (yes, delete) your VyOS ISO file, located here: ```/Software/VyOS/Router/Latest/vyos-rolling-latest.iso```.  By default, SDDC.Lab will download the latest VyOS ISO nightly build ISO if the file is not found in ```/Software/VyOS/Router/Latest```.
-  - Removed ```Deploy.Software.Router.Version == "Latest"``` conditions from ```playbooks/deployRouter.yml``` playbook.
+  - Removed ```Deploy.Software.Router.Version == "Latest"``` conditions from ```playbooks/DeployRouter.yml``` playbook.
   - Added vRLI version 8.8.2 to ```software_sample.yml```.
   - Added VyOS version "Test" to ```software_sample.yml```, which is used for internal testing.  You should continue to use "Latest" in your builds.
   - Update your ```software.yml``` file.

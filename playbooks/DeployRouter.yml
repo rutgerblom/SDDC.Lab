@@ -1,13 +1,13 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/deployRouter.yml
+##   Filename: playbooks/DeployRouter.yml
 ##
 ---
 - hosts: localhost
-  name: deployRouter.yml
+  name: DeployRouter.yml
   tasks:
-    - name: deployRouter_Playbook
+    - name: DeployRouter_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -48,7 +48,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
 
                                      Ansible Playbook: {{ ansible_play_name }}
@@ -79,7 +79,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Check if the VyOS router is already deployed
       community.vmware.vmware_guest_info:
@@ -94,17 +94,18 @@
         properties: ["overallStatus"]
       delegate_to: localhost
       register: status
-      ignore_errors: true
+      failed_when: false
       no_log: true
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
 
     - name: Create temp directory
       ansible.builtin.file:
         path: "{{ Target.TempFolder }}"
         state: directory
+        mode: "755"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Check if VyOS installation file exists locally in the software repository
@@ -112,51 +113,46 @@
         path: "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
       register: InstallerFileCheck
 
-    - name: Create temp directory for installation file
-      ansible.builtin.file:
-        path: "{{ Target.TempFolder }}"
-        state: directory
-
     - name: Copy VyOS installation file to temp folder if it already exists locally rather than downloading (overwrite if exists)
       ansible.builtin.copy:
-        src:  "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
+        src: "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         mode: "666"
-        force: yes
+        force: true
       when:
-        - InstallerFileCheck.stat.exists == true
-        - Deploy.Software.Options.UseLocalInstaller == true
-        - Deploy.Product.Router.Deploy == true
+        - InstallerFileCheck.stat.exists
+        - Deploy.Software.Options.UseLocalInstaller
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Download VyOS installation media (overwrite if exists)
       ansible.builtin.get_url:
-        url:  "{{ Deploy.Software.Router.URL }}/{{ Deploy.Software.Router.File }}"
+        url: "{{ Deploy.Software.Router.URL }}/{{ Deploy.Software.Router.File }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
-        force: yes
+        force: true
       when:
         - (InstallerFileCheck.stat.exists != true) or (Deploy.Software.Options.UseLocalInstaller != true)
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Update VyOS installation file in the local software repository (overwrite if exists)
       ansible.builtin.copy:
-        src:  "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
+        src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         dest: "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
-        force: yes
+        force: true
       when:
         - InstallerFileCheck.stat.exists != true
-        - Deploy.Software.Options.KeepNewInstallers == true
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Software.Options.KeepNewInstallers
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Create configuration file for VyOS router
       ansible.builtin.template: 
-        src:  "{{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}"
+        src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
         mode: "666"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
 
@@ -171,12 +167,12 @@
         password: "{{ Target.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter: "{{ Target.DataCenter }}"
-        datastore: "{{ Target.Datastore }}" 
+        datastore: "{{ Target.Datastore }}"
         src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         path: "{{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
       tags: upload
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Create VyOS router VM on vCenter from ISO
@@ -192,9 +188,9 @@
         datacenter: "{{ Target.DataCenter }}"
         folder: "{{ Target.VMFolder }}"
         disk:
-        - size_gb: "10"
-          type: "{{ Common.DiskProvisioning }}"
-          datastore: "{{ Target.Datastore }}"
+          - size_gb: "10"
+            type: "{{ Common.DiskProvisioning }}"
+            datastore: "{{ Target.Datastore }}"
         hardware:
           memory_mb: "512"
           num_cpus: "1"
@@ -211,20 +207,20 @@
             type: iso
             iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
             state: present
-        annotation: | 
+        annotation: |
                     {{ Common.Annotation }}
                     {{ Deploy.Software.Router.Vendor }} {{ Deploy.Software.Router.Product }} {{ Deploy.Software.Router.Version }}
                     Username: vyos
                     Password: {{ Common.Password.Nested }}
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 2 minutes for the VyOS router to boot
       ansible.builtin.pause:
         minutes: 2
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Walk through the setup dialog 1 (Enter 'vyos' username)
@@ -236,14 +232,14 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "vyos"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
       ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Walk through the setup dialog 2 (Press 'ENTER' after username)
@@ -256,14 +252,14 @@
         keys_send:
           - ENTER
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
       ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Walk through the setup dialog 3 (Send 'vyos' password)
@@ -275,14 +271,14 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "vyos"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
       ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Walk through the setup dialog 4
@@ -297,14 +293,14 @@
           - ENTER
         string_send: "install image"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
       ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Walk through the setup dialog 5 (Destroy data on /dev/sda)
@@ -321,14 +317,14 @@
           - ENTER
         string_send: "yes"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
       ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Walk through the setup dialog 6 (Create root partition and confirm with 'vyos' password)
@@ -345,14 +341,14 @@
           - ENTER
         string_send: "vyos"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
-      ansible.builtin.pause: 
+      ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Walk through the setup dialog 7 (Re-enter 'vyos' password to confirm)
@@ -366,14 +362,14 @@
           - ENTER
         string_send: "vyos"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
-      ansible.builtin.pause: 
+      ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Walk through the setup dialog 8 (Configure GRUB on boot partition)
@@ -387,14 +383,14 @@
           - ENTER
           - ENTER
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 30 seconds before shutting down the VyOS router
-      ansible.builtin.pause: 
+      ansible.builtin.pause:
         seconds: 30
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Shutdown VyOS VM
@@ -406,7 +402,7 @@
         name: "{{ Nested_Router.Name }}"
         state: shutdown-guest
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait for Pod-Router to be Powered Off
@@ -417,14 +413,14 @@
         datacenter: "{{ Target.DataCenter }}"
         name: "{{ Nested_Router.Name }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        tags: False
-        tag_details: False
+        tags: false
+        tag_details: false
       register: result
       until: result.instance.hw_power_status == "poweredOff"
       retries: 10
       delay: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Disconnect CDROM on VyOS router VM
@@ -441,7 +437,7 @@
             iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
             state: absent
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Start the VyOS VM
@@ -453,14 +449,14 @@
         name: "{{ Nested_Router.Name }}"
         state: powered-on
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 2 minutes for the VyOS router to boot
-      ansible.builtin.pause: 
+      ansible.builtin.pause:
         minutes: 2
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
 ##
@@ -476,14 +472,14 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "vyos"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
       ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Login after powering on VM (Press 'ENTER' after username)
@@ -496,14 +492,14 @@
         keys_send:
           - ENTER
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
       ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Login after powering on VM (Send 'vyos' password)
@@ -515,14 +511,14 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "vyos"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
       ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Login after powering on VM (Send 'ENTER' after password)
@@ -536,7 +532,7 @@
           - ENTER
           - ENTER
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Get into configuration mode (Send 'configure' command)
@@ -548,14 +544,14 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "configure"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
       ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Get into configuration mode (Send 'ENTER' after command)
@@ -568,7 +564,7 @@
         keys_send:
           - ENTER
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Configure Eth0 IP address (Send 'SET' command)
@@ -580,14 +576,14 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "set interfaces ethernet eth0 address {{ Nested_Router.Interface.Uplink.IPv4.Address }}/{{ Nested_Router.Interface.Uplink.IPv4.Prefix }}"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
       ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Configure Eth0 IP address (Send 'ENTER' after SET command)
@@ -600,7 +596,7 @@
         keys_send:
           - ENTER
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Configure IPv4 Floating Static Default Route (Send 'SET' command)
@@ -612,14 +608,14 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "set protocols static route 0.0.0.0/0 next-hop {{ Nested_Router.Interface.Uplink.IPv4.Gateway }} distance 250"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
       ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Configure IPv4 Floating Static Default Route (Send 'ENTER' after SET command)
@@ -632,7 +628,7 @@
         keys_send:
           - ENTER
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Enable SSH (Send 'SET' command)
@@ -644,14 +640,14 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "set service ssh port 22"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
       ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Enable SSH (Send 'ENTER' after SET command)
@@ -664,7 +660,7 @@
         keys_send:
           - ENTER
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
 ##
@@ -680,14 +676,14 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "commit && save"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
       ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Commit and save VyOS configuration to config.boot file (Send 'ENTER' after COMMIT && SAVE commands)
@@ -700,7 +696,7 @@
         keys_send:
           - ENTER
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Exit configuration mode (Send 'EXIT' command)
@@ -712,14 +708,14 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "exit"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
       ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Exit configuration mode (Send 'ENTER' after EXIT command)
@@ -732,7 +728,7 @@
         keys_send:
           - ENTER
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: PING Lab-Router to populate ARP tables (Send 'PING' command)
@@ -744,14 +740,14 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "ping {{ Nested_Router.Interface.Uplink.IPv4.Gateway }} count 4"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
       ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: PING Lab-Router to populate ARP tables (Send 'ENTER' after PING command)
@@ -764,7 +760,7 @@
         keys_send:
           - ENTER
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Logout of VyOS router (Send 'EXIT' command)
@@ -776,14 +772,14 @@
         name: "{{ Nested_Router.Name }}"
         string_send: "exit"
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Wait 5 seconds
       ansible.builtin.pause:
         seconds: 5
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Logout of VyOS router (Send 'ENTER' after EXIT command)
@@ -796,17 +792,18 @@
         keys_send:
           - ENTER
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Add static route on the Ansible control node
-      ansible.builtin.command: ./ip route add "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}" via "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
+      ansible.builtin.command: ./ip route add "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}" \
+                               via "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
       args:
         chdir: /bin/
       register: iproute
       ignore_errors: true
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - Nested_Router.Protocol == "Static"
         - status is failed
 
@@ -816,7 +813,7 @@
 
     - name: Delete VyOS installer from vSphere datastore
       community.vmware.vsphere_file:
-        host:     "{{ Target.FQDN }}"
+        host: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
@@ -826,24 +823,24 @@
         state: absent
       tags: upload
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
-        - DEBUG.KeepInstallerFiles != true
+        - not DEBUG.KeepInstallerFiles
 
     - name: Delete the temporary template file for VyOS router
-      ansible.builtin.file: 
+      ansible.builtin.file:
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
         state: absent
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
-        - DEBUG.KeepConfigFiles != true
+        - not DEBUG.KeepConfigFiles
 
     - name: Delete the temporary installer file for VyOS router
-      ansible.builtin.file: 
+      ansible.builtin.file:
         path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         state: absent
       when:
-        - Deploy.Product.Router.Deploy == true
+        - Deploy.Product.Router.Deploy
         - status is failed
-        - DEBUG.KeepInstallerFiles != true
+        - not DEBUG.KeepInstallerFiles
