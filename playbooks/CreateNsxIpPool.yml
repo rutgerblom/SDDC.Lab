@@ -1,15 +1,15 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/createNsxIpPool.yml
+##   Filename: playbooks/CreateNsxIpPool.yml
 ##
 ---
 - hosts: localhost
-  name: createNsxIpPool.yml
+  name: CreateNsxIpPool.yml
   vars:
     LOCAL_IPPools_Template: "{{ Target.TemplateFolder }}/vars_NSXT_IPPools.j2"
   tasks:
-    - name: createNsxIpPool_Playbook
+    - name: CreateNsxIpPool_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -46,7 +46,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                         Ansible Playbook: {{ ansible_play_name }}
 
@@ -67,14 +67,14 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - DEBUG.DisplayVariables
+        - Deploy.Product.NSXT.LocalManager.Deploy
 
 
     - name: Get list of IP Pools
       ansible.builtin.set_fact:
         IPPoolsToCreate: "{{ lookup('template', LOCAL_IPPools_Template) | from_yaml }}"
-      when: Deploy.Product.NSXT.LocalManager.Deploy == true
+      when: Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
@@ -86,8 +86,8 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - DEBUG.DisplayVariables
+        - Deploy.Product.NSXT.LocalManager.Deploy
         - IPPoolsToCreate != ""
 
     - name: Create NSX-T IP Pools using Polcy API
@@ -98,11 +98,11 @@
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         state: present
         display_name: "{{ item.display_name }}"
-        description:  "{{ item.description }}"
+        description: "{{ item.description }}"
         pool_static_subnets: "{{ item.pool_static_subnets }}"
         tags: "{{ item.tags }}"
       with_items:
         - "{{ IPPoolsToCreate }}"
       when:
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
         - IPPoolsToCreate != ""
