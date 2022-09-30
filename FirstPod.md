@@ -81,7 +81,7 @@ After cloning the repository you will end up with a directory called "SDDC.Lab" 
     licenses_sample.yml
     software_sample.yml
     templates_sample.yml
-    Undeploy.yml
+    UnDeploy.yml
 
 Four files in the root of the ~/git/SDDC.Lab directory require your attention:
 * config_sample.yml

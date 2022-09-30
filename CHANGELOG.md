@@ -79,7 +79,7 @@
 
 ### Added by Rutger
 
-- Converted to Ansible FQCN in script "Undeploy.yml"
+- Converted to Ansible FQCN in script "UnDeploy.yml"
 
 ## Dev-v3.0.0 11-APRIL-2021
 
@@ -105,7 +105,7 @@
 
 - Added support in concurrent Pod deployment to support vCenter Server Replication Partners.
 - Created new 'CheckVcReplicationPartner.yml' playbook to verify Replication Partner vCenter Server is operational.  It pauses the Pod with the Replication Partner until the Replication Partner vCenter Server is operational.
-- Added new 'CheckVcReplicationPartner.yml' playbook to deploy.yml playbook.
+- Added new 'CheckVcReplicationPartner.yml' playbook to Deploy.yml playbook.
 
 ## Dev-v3.0.0 14-APRIL-2021
 
@@ -119,7 +119,7 @@
 
 ### Added by Luis Chanu
 
-- Converted module references within deploy.yml to use FQCNs
+- Converted module references within Deploy.yml to use FQCNs
 - Correct issue with DeployRouter.yml playbook where it would fail if router was already deployed
 
 ## Dev-v3.0.0 15-APRIL-2021
@@ -376,7 +376,7 @@
 ### Added by Luis Chanu
 
   - Renamed playbooks\deployNsxManager.yml to playbooks\deployNsxLocalManager.yml to prepare for the development of Global Manager specific playbooks.
-  - Updated deploy.yml with updated deployNsxLocalManager.yml playbook.
+  - Updated Deploy.yml with updated deployNsxLocalManager.yml playbook.
 
 ## Dev-v4.0.0 22-AUG-2021
 
@@ -392,7 +392,7 @@
 ## Dev-v4.0.0 23-AUG-2021
 
 ### Added by Luis Chanu
-  - Added removal of Global Manager to Undeploy.yml playbook
+  - Added removal of Global Manager to UnDeploy.yml playbook
 
   ## Dev-v4.0.0 25-AUG-2021
 
@@ -468,7 +468,7 @@
 ## Dev-v4.0.0 17-SEP-2021
 
 ### Added by Luis Chanu
-  - Moved NSX-T Local Manager licensing playbook immediately after it's deployment in deploy.yml
+  - Moved NSX-T Local Manager licensing playbook immediately after it's deployment in Deploy.yml
   - Added missing ".ova" file extension to NSX-T v3.1.3.1 entry in software_sample.yml
 
 ## Dev-v4.0.0 21-SEP-2021
@@ -523,7 +523,7 @@
 
 ### Added by Luis Chanu
   - Renamed playbooks/registerNsxLocalManager.yml to playbooks/federateNsxLocalManager.yml
-  - Added the following playbooks to deploy.yml:
+  - Added the following playbooks to Deploy.yml:
     - ConfigureNsxBackup.yml
     - registerNsxLocalManager.yml
       - This is still untested, so it is excluded from running.  Remove the "false" flag in order to try it.
@@ -555,14 +555,14 @@
   - Changes made to the ConfigureNsxBackup.yml playbook, and it appears to be functioning properly.
   - Added comments to playbook to document what backups are created, and which ones are run.
   - Additional changes to federateNsxLocalManager.yml...still work in progress.
-  - Enabled ConfigureNsxBackup.yml in deploy.yml.
+  - Enabled ConfigureNsxBackup.yml in Deploy.yml.
 
 ## Dev-v4.0.0 11-OCT-2021
 
 ### Added by Luis Chanu
   - Changed expected "ready" state for GlobalManager in deployNsxGlobalManager.yml from "NONE" to "ACTIVE".
   - Increased delay before VIP in an attempt to address a race condition.
-  - Modified deploy.yml to support the following:
+  - Modified Deploy.yml to support the following:
     - If deployment is Federated, then only provision NSX-T logical objects in the same pod that is deploying Global Manager
     - Federation deployment as been enabled, but will only execute if Federation is enabled (Federation.Enable == true)
   - Removed Deploy.Product.NSXT.Edge.UplinksToUse variable from config_sample.yml and Pod_Config.j2.
@@ -720,7 +720,7 @@
   - Removed Nested_NSXT.System.LocationManager  from config_sample.yml
   - Added Nested_NSXT.System.Fabric.GlocalSetting to config_sample.yml
   - Added playbooks/ConfigureNsxFabricMTU.yml to project
-  - Added ConfigureNsxFabricMTU.yml to deploy.yml
+  - Added ConfigureNsxFabricMTU.yml to Deploy.yml
   - NSX-T Global Fabric MTU settings are now configured to match the values defined in Net.Transport.MTU and Net.RTEP.MTU.  Make sure these values supported by your physical networking environment.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
@@ -731,11 +731,11 @@
   - Added BGP Neighbor description to vars_NSXT_T0Gateways.j2 template.
   - Added federateNsxT0BGPNeighbors.yml playbook to project, which configures BGP Neighbors to the stretched Tier-0 Gateway.
   - Added federateNsxT0RouteReDist.yml playbook to project.  This handles configuration of Tier-0 Gateway Route Re-Distribution on non-GM SiteCodes.
-  - Added federateNsxT0RouteReDist.yml playbook to deploy.yml.
+  - Added federateNsxT0RouteReDist.yml playbook to Deploy.yml.
   - Corredted issue with T0Edges variable.
   - Increased time on some loops to support large deployments.
   - In config_sample.yml, changed Tier-0 Gateway Locale-Service from "T0-Gateway-01_Locale_Service" to "{{ SiteCode }}" to aid with Federation automation.
-  - Added federateNsxT0BGPNeighbors.yml to deploy.yml
+  - Added federateNsxT0BGPNeighbors.yml to Deploy.yml
   - Removed 'EdgeTransit' field from all NSX-T Segments in the config_sample.yml file as it is not used.
   - Renamed 'SEG-Example-Overlay-Without-VLANS' segment to 'SEG-Example-Tier0-Overlay-Segment' to better describe its existance/purpose.
   - The following files were updated so please update your non-sample files:
@@ -978,7 +978,7 @@
   - In validateConfiguration.yml, changed DIG target from ```www.google.com``` to ```github.com``` because it was oberved that ipaddr returns ```False``` when multiple A records are returned.
   - Change permissions set within ```util_CreateSoftwareDir.yml``` from 775 to 777 to ensure non-root user can update the software repsoritory.
   - Modified ```util_CreateSoftwareDir.yml``` to set 777 permissions to top-level RootDirectory (/Software) directory as well.
-  - Enabled ```deployWorkloadVMs.yml``` task in ```deploy.yml```.
+  - Enabled ```deployWorkloadVMs.yml``` task in ```Deploy.yml```.
 
 ## Dev-v4.0.0 20-FEBRUARY-2022
 
@@ -1042,7 +1042,7 @@
 ## Dev-v5.0.0 10-APRIL-2022
 
 ### Added by Rutger Blom
-  - Fixed an issue with the port groups not being removed when running "Undeploy.yml".
+  - Fixed an issue with the port groups not being removed when running "UnDeploy.yml".
 
 ## Dev-v5.0.0 10-APRIL-2022
 
@@ -1128,7 +1128,7 @@
   - Updated variable ```TempFolder``` with new value in ```config_sample.yml``` as it replaces variable ```WorkingFolder```.
   - Removed variable ```ISOMount``` from ```config_sample.yml``` as it is not used anymore.
   - Removed variable ```WorkingFolder``` as it is not used anymore.
-  - Updated documentation as well as comments in playbooks as Pod deployments can now be performed without using ```sudo``` e.g. ```ansible-playbook -e "@~/Pod-XXX-Config.yml" deploy.yml```.
+  - Updated documentation as well as comments in playbooks as Pod deployments can now be performed without using ```sudo``` e.g. ```ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml```.
   - Please be sure to update your ```config.yml``` file
 
 ## Dev-v5.0.0 29-APRIL-2022
@@ -1213,7 +1213,7 @@
 ### Added by Luis Chanu
   - Removed extra spaces from Nested_Cluster section of ```config_sample.yml``` file.
   - Noticed an issue where if more than 1 vSphere Cluster was configured to be prepared by NSX, only one vSphere cluster would end up being prepared.  Corrected the issue by making the transport node collection display name be unique for each cluster by including the cluster name in the TNC display name field within ```attchNsxTnp.yml```.
-  - Added "ignore_errors: true" to Port-Group removal plays in ```Undeploy.yml``` file.
+  - Added "ignore_errors: true" to Port-Group removal plays in ```UnDeploy.yml``` file.
 
 ## Dev-v5.0.0 02-AUGUST-2022
 
@@ -1383,4 +1383,4 @@
 ## Dev-v5.0.0 29-SEPTEMBER-2022
 
 ### Added by Luis Chanu
-  - Updated ```deploy.yml``` references in ```FirstPod.md```, ```README.md```, and ```playbooks/CreatePodConfig.yml``` files to upper case.
+  - Updated ```Deploy.yml``` references in ```FirstPod.md```, ```README.md```, and ```playbooks/CreatePodConfig.yml``` files to upper case.
