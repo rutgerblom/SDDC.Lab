@@ -173,7 +173,7 @@
 
     - name: Create list of EdgeVM Node IDs
       ansible.builtin.set_fact:
-        EdgeNodeIDs: "{{ EdgeNodeIDs | default([]) + [ item.node_id ] }}"
+        EdgeNodeIDs: "{{ EdgeNodeIDs | default([]) + [item.node_id] }}"
       loop: "{{ result.json.results }}"
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy
