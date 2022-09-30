@@ -98,18 +98,18 @@
 
     - name: Generate VyOS configuration SET and DELETE commands from template (removing comments and empty lines)
       ansible.builtin.set_fact:
-        RouterConfig: "{{ lookup('template', '{{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}') \
+        routerconfig: "{{ lookup('template', '{{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}') \
                        | regex_findall('^set.+$|^delete.+$', multiline=true, ignorecase=true) | join('\n') }}"
       when:
         - Deploy.Product.Router.Deploy
         - Deploy.Software.Router.Vendor == "VyOS"
 
-    - name: DEBUG -- Display RouterConfig Variable (Pause)
+    - name: DEBUG -- Display routerconfig Variable (Pause)
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display RouterConfig Variable ================================
-          {{ RouterConfig }}
+          ================================ Display routerconfig Variable ================================
+          {{ routerconfig }}
           ===============================================================================================
       when:
         - DEBUG.DisplayVariables
@@ -118,7 +118,7 @@
 
     - name: Write VyOS router configuration to a file
       ansible.builtin.copy:
-        content: "{{ RouterConfig }}"
+        content: "{{ routerconfig }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
         mode: "666"
         force: true
@@ -144,50 +144,50 @@
 ## Apply Custom User Configuration Commands (if file exists)
 ##
 
-    - name: Determine directory path to use for {{ Nested_Router.UserConfig.Template }} file
+    - name: Determine directory path to use for file {{ Nested_Router.UserConfig.Template }}
       ansible.builtin.set_fact:
-        UserConfigDirectory: "{% if Nested_Router.UserConfig.Directory == '~' %}{{ lookup('env','HOME') }}\
+        userconfigdirectory: "{% if Nested_Router.UserConfig.Directory == '~' %}{{ lookup('env', 'HOME') }}\
                               {% else %}{{ Nested_Router.UserConfig.Directory }}{% endif %}"
 
     - name: See if the template exists
       ansible.builtin.stat:
-        path: "{{ UserConfigDirectory }}/{{ Nested_Router.UserConfig.Template }}"
-      register: UserConfigTemplate
+        path: "{{ userconfigdirectory }}/{{ Nested_Router.UserConfig.Template }}"
+      register: userconfigtemplate
       when:
         - Deploy.Product.Router.Deploy
 
     - name: If UserConfig template exists, generate VyOS Pod-Router commands to apply (removing non-commands and empty lines)
       ansible.builtin.set_fact:
-        RouterUserConfig: "{{ lookup('template', '{{ UserConfigDirectory }}/{{ Nested_Router.UserConfig.Template }}') \
+        routeruserconfig: "{{ lookup('template', '{{ userconfigdirectory }}/{{ Nested_Router.UserConfig.Template }}') \
                            | regex_findall('^set.+$|^delete.+$', multiline=true, ignorecase=true) | join('\n') }}"
       when:
         - Deploy.Product.Router.Deploy
         - Deploy.Software.Router.Vendor == "VyOS"
-        - UserConfigTemplate.stat.exists
+        - userconfigtemplate.stat.exists
 
-    - name: DEBUG -- Display RouterUserConfig Variable (Pause)
+    - name: DEBUG -- Display routeruserconfig Variable (Pause)
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ============================== Display RouterUserConfig Variable ==============================
-          {{ RouterUserConfig }}
+          ============================== Display routeruserconfig Variable ==============================
+          {{ routeruserconfig }}
           ===============================================================================================
       when:
         - DEBUG.DisplayVariables
         - Deploy.Product.Router.Deploy
         - Deploy.Software.Router.Vendor == "VyOS"
-        - UserConfigTemplate.stat.exists
+        - userconfigtemplate.stat.exists
 
-    - name: Write VyOS RouterUserConfig configuration to a file
+    - name: Write VyOS routeruserconfig configuration to a file
       ansible.builtin.copy:
-        content: "{{ RouterUserConfig }}"
+        content: "{{ routeruserconfig }}"
         dest: "{{ Target.TempFolder }}/{{ LOCAL_UserConfigTempFile }}"
         mode: "666"
         force: true
       when:
         - Deploy.Product.Router.Deploy
         - Deploy.Software.Router.Vendor == "VyOS"
-        - UserConfigTemplate.stat.exists
+        - userconfigtemplate.stat.exists
 
     - name: Apply VyOS router UserConfig configuration to {{ Nested_Router.Name }}
       vyos.vyos.vyos_config:
@@ -201,7 +201,7 @@
       when:
         - Deploy.Product.Router.Deploy
         - Deploy.Software.Router.Vendor == "VyOS"
-        - UserConfigTemplate.stat.exists
+        - userconfigtemplate.stat.exists
 
 ##
 ## Clean Up -- All Routers
@@ -222,4 +222,4 @@
       when:
         - Deploy.Product.Router.Deploy
         - not DEBUG.KeepConfigFiles
-        - UserConfigTemplate.stat.exists
+        - userconfigtemplate.stat.exists
