@@ -21,7 +21,7 @@
 * [Preparations](#preparations)
 * [Upgrade Considerations](#upgrade-considerations)
 * [Networking](#networking)
-* [IP Address Assignments](#ip-address-assignments)
+* [IP Address Assignments](#ip-address-assignments-yellowsddclab-v5-and-lateryellow)
 * [Usage](#usage)
 * [Project Features](#project-features)
   * [NSX-T Federation](#nsx-t-federation)
