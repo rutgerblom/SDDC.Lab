@@ -1,15 +1,13 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/createNsxT0Gateway.yml
+##   Filename: playbooks/CreateNsxT0Gateway.yml
 ##
 ---
 - hosts: localhost
-  name: createNsxT0Gateway.yml
-  vars:
-    LOCAL_T0Gateways_Template: "{{ Target.TemplateFolder }}/vars_NSXT_T0Gateways.j2"
+  name: CreateNsxT0Gateway.yml
   tasks:
-    - name: createNsxT0Gateway_Playbook
+    - name: CreateNsxT0Gateway_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -49,7 +47,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                        Ansible Playbook: {{ ansible_play_name }}
 
@@ -61,12 +59,12 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Get list of Tier-0 Gateways
       ansible.builtin.set_fact:
-        T0GatewaysToCreate: "{{ lookup('template', LOCAL_T0Gateways_Template) | from_yaml }}"
-      when: Deploy.Product.NSXT.LocalManager.Deploy == true
+        T0GatewaysToCreate: "{{ lookup('template', Target.TemplateFolder + '/vars_NSXT_T0Gateways.j2') | from_yaml }}"
+      when: Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
@@ -78,9 +76,9 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - DEBUG.DisplayVariables
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
         - T0GatewaysToCreate != ""
 
     - name: Create NSX-T Tier-0 Gateway
@@ -98,5 +96,5 @@
       with_items:
         - "{{ T0GatewaysToCreate }}"
       when:
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy

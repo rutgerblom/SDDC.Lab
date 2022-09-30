@@ -114,7 +114,7 @@
   when:
     - Deploy.Product.NSXT.Federation.Enable == false
 
-- ansible.builtin.import_playbook: playbooks/createNsxT0Gateway.yml
+- ansible.builtin.import_playbook: playbooks/CreateNsxT0Gateway.yml
   when: 
     - Deploy.Product.NSXT.Federation.Enable == false or (Deploy.Product.NSXT.Federation.Enable and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
     - Deploy.Product.NSXT.LocalManager.Deploy
