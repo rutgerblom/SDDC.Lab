@@ -1,14 +1,15 @@
 ##
 ##      Project: SDDC.Lab
 ##      Authors: Luis Chanu & Rutger Blom
-##     Filename: playbooks/createPodConfig.yml
+##     Filename: playbooks/CreatePodConfig.yml
 ##
-##  Description: This playbook takes a configuration file based on config_sample.yml, and generates a static Pod Configuration file in the user's home directory, which can then be used for Pod deployment.
+##  Description: This playbook takes a configuration file based on config_sample.yml, and generates a static Pod Configuration file
+##  in the user's home directory, which can then be used for Pod deployment.
 ##
 ---
 - hosts: localhost
-  name: createPodConfig.yml
-  gather_facts: no
+  name: CreatePodConfig.yml
+  gather_facts: false
   vars_files:
     - ../software.yml
     - ../templates.yml
@@ -16,20 +17,26 @@
   vars:
     - PodTemplate: "Pod_Config.j2"
     - PodTempConfigFile: "{{ SiteCode }}-Config_Temp.yml"
-    - IntermediatePodConfigFile: "Intermediate-{{ SiteCode }}-Config_VCSAv{{ Deploy.Software.vCenter.Version }}_ESXIv{{ Deploy.Software.ESXi.Version }}_NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}_Fed-{% if Deploy.Product.NSXT.Federation.Enable == true %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}{% else %}N{% endif %}{% endif %}.json"
-    - PodConfigFile: "{{ SiteCode }}-Config_VCSAv{{ Deploy.Software.vCenter.Version }}_ESXIv{{ Deploy.Software.ESXi.Version }}_NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}_Fed-{% if Deploy.Product.NSXT.Federation.Enable == true %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}{% else %}N{% endif %}{% endif %}.yml"
+    - IntermediatePodConfigFile: "Intermediate-{{ SiteCode }}-Config_VCSAv{{ Deploy.Software.vCenter.Version }}_ESXIv{{ Deploy.Software.ESXi.Version }}\
+                                  _NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}\
+                                  _Fed-{% if Deploy.Product.NSXT.Federation.Enable %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}\
+                                  {% else %}N{% endif %}{% endif %}.json"
+    - PodConfigFile: "{{ SiteCode }}-Config_VCSAv{{ Deploy.Software.vCenter.Version }}_ESXIv{{ Deploy.Software.ESXi.Version }}\
+                      _NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}\
+                      _Fed-{% if Deploy.Product.NSXT.Federation.Enable %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}\
+                      {% else %}N{% endif %}{% endif %}.yml"
 
   vars_prompt:
     - name: SourceConfigPath
       prompt: "In which directory is the Pod-Config file you want to have prepared located?"
-      unsafe: yes
-      private: no
+      unsafe: true
+      private: false
       default: "{{ lookup('env','PWD') }}"
 
     - name: SourceConfigFile
       prompt: "What is the name of the configuration file that you would like to have prepared?"
-      unsafe: yes
-      private: no
+      unsafe: true
+      private: false
       default: "config.yml"
 
   tasks:
@@ -56,13 +63,13 @@
 
           *****************************************************************************************************
       when:
-        - ConfigFileCheck.stat.exists != true
+        - not ConfigFileCheck.stat.exists
 
 
     - name: Exit Ansible playbook if Pod-Config file does not exist
       ansible.builtin.meta: end_play
       when:
-        - ConfigFileCheck.stat.exists != true
+        - not ConfigFileCheck.stat.exists
 
     - name: Include Pod-Config variables into playbook
       ansible.builtin.include_vars:
@@ -72,7 +79,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
@@ -88,7 +95,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Notify user that this will take some time
       ansible.builtin.pause:
@@ -103,75 +110,68 @@
           on the size of your lab, and the speed of your Ansible Control Station (a.k.a. Ansible Controller).
 
               The following source file is being prepared: {{ SourceConfigPath }}/{{ SourceConfigFile }}
-             Once prepared, it will be saved to this file: {{ lookup('env','HOME') }}/{{ PodConfigFile }}
+             Once prepared, it will be saved to this file: {{ lookup('env', 'HOME') }}/{{ PodConfigFile }}
 
           Once prepared, you can deploy the Pod using the following command:
-              ansible-playbook -e "@{{ lookup('env','HOME') }}/{{ PodConfigFile }}" Deploy.yml
+              ansible-playbook -e "@{{ lookup('env', 'HOME') }}/{{ PodConfigFile }}" Deploy.yml
 
           ====================================================================================================
-
-
 
 ## Start workaround issue with slow static Pod Config creation
 ## Details of the underlying issue and suggested workaround: https://github.com/ansible/ansible/issues/68763
 
-
-    - name: Read SourceConfigFile into a variable
-      ansible.builtin.set_fact:
-        SourceConfigVariable: "{{ lookup('template', SourceConfigPath + '/' + SourceConfigFile) | from_yaml }}"
-
     - name: Create an intermediate Pod-Config file with realized variables
       ansible.builtin.copy:
-        content: "{{ SourceConfigVariable }}"
-        dest: "{{ lookup('env','HOME') }}/{{ IntermediatePodConfigFile }}"
+        content: "{{ lookup('template', SourceConfigPath + '/' + SourceConfigFile) | from_yaml }}"
+        dest: "{{ lookup('env', 'HOME') }}/{{ IntermediatePodConfigFile }}"
+        mode: "775"
 
     - name: Include intermediate Pod-Config variables into playbook
       ansible.builtin.include_vars:
-        file: "{{ lookup('env','HOME') }}/{{ IntermediatePodConfigFile }}"
+        file: "{{ lookup('env', 'HOME') }}/{{ IntermediatePodConfigFile }}"
 
     - name: Delete intermediate Pod-Config file with realized variables
       ansible.builtin.file:
-        path: "{{ lookup('env','HOME') }}/{{ IntermediatePodConfigFile }}"
+        path: "{{ lookup('env', 'HOME') }}/{{ IntermediatePodConfigFile }}"
         state: absent
       when:
-        - DEBUG.KeepConfigFiles == false
-
+        - not DEBUG.KeepConfigFiles
 
 ## End workaround issue with slow static Pod Config creation
 
 
     - name: Delete existing temp configuration file if it exists
       ansible.builtin.file:
-        path: "{{ lookup('env','HOME') }}/{{ PodTempConfigFile }}"
+        path: "{{ lookup('env', 'HOME') }}/{{ PodTempConfigFile }}"
         state: absent
 
     - name: Create variable with current date and time
-      ansible.builtin.set_fact: 
-        time: "{{lookup('pipe','date \"+%d-%B-%Y %H:%M\"')}}"
- 
+      ansible.builtin.set_fact:
+        time: "{{ lookup('pipe', 'date \"+%d-%B-%Y %H:%M\"') }}"
+
     - name: Create Temp Pod Configuration File (Used For Pod Deployment)
-      ansible.builtin.template: 
+      ansible.builtin.template:
         src: "{{ Target.TemplateFolder }}/{{ PodTemplate }}"
-        dest: "{{ lookup('env','HOME') }}/{{ PodTempConfigFile }}"
+        dest: "{{ lookup('env', 'HOME') }}/{{ PodTempConfigFile }}"
         mode: "666"
-        force: yes
-      when: 
+        force: true
+      when:
         - Pod.Number is defined
         - Pod.Number >= 10
         - Pod.Number <= 240
 
     - name: Verify Temp Pod Configuration File Exists
-      ansible.builtin.stat: path="{{ lookup('env','HOME') }}/{{ PodTempConfigFile }}"
+      ansible.builtin.stat: path="{{ lookup('env', 'HOME') }}/{{ PodTempConfigFile }}"
       register: result
 
     - name: Delete Pod Configuration file if Temp Pod Config file exists
       ansible.builtin.file:
-        path: "{{ lookup('env','HOME') }}/{{ PodConfigFile }}"
+        path: "{{ lookup('env', 'HOME') }}/{{ PodConfigFile }}"
         state: absent
       when: result.stat.exists
 
     - name: Move/Rename Temp Pod Config to Pod Config
-      ansible.builtin.command: mv {{ lookup('env','HOME') }}/{{ PodTempConfigFile }} {{ lookup('env','HOME') }}/{{ PodConfigFile }}
+      ansible.builtin.command: mv {{ lookup('env', 'HOME') }}/{{ PodTempConfigFile }} {{ lookup('env', 'HOME') }}/{{ PodConfigFile }}
       when: result.stat.exists
 
     - name: Display command to deploy SDDC.Lab Pod
@@ -183,6 +183,6 @@
           ====================================================================================================
 
            You can deploy the Pod using the following command:
-              ansible-playbook -e "@{{ lookup('env','HOME') }}/{{ PodConfigFile }}" deploy.yml
+              ansible-playbook -e "@{{ lookup('env', 'HOME') }}/{{ PodConfigFile }}" deploy.yml
 
           ====================================================================================================

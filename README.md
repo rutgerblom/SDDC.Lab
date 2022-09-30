@@ -343,7 +343,7 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 
 To deploy a Pod:
 1. Generate a Pod configuration with:  
-```ansible-playbook ~/git/SDDC.Lab/playbooks/createPodConfig.yml```
+```ansible-playbook ~/git/SDDC.Lab/playbooks/CreatePodConfig.yml```
 
 2. Start a Pod deployment per the instructions. For example:  
 ```ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" ~/git/SDDC.Lab/Deploy.yml```
@@ -460,7 +460,7 @@ As we use SDDC.Lab in our labs, every now-and-then we notice some issues/problem
 ## More Information
 For detailed installation, preparation, and deployment steps, please see the "[Deploying your first SDDC.Lab Pod](FirstPod.md)" document.
 
-We also suggest that you watch [our vBrownBag video](https://www.youtube.com/watch?v=caSkrOFs0qs) from VMworld 2021.  In that video, we provide an overview of the SDDC.Lab environment, and go over the various configuration files that need to be modified to deploy your first SDDC.Lab Pod.  We also explain the Pod configuration file, along with the reason why the ```createPodConfig.yml``` playbook needs to be run.  Keep in mind that this video is based on SDDC.Lab version 3.
+We also suggest that you watch [our vBrownBag video](https://www.youtube.com/watch?v=caSkrOFs0qs) from VMworld 2021.  In that video, we provide an overview of the SDDC.Lab environment, and go over the various configuration files that need to be modified to deploy your first SDDC.Lab Pod.  We also explain the Pod configuration file, along with the reason why the ```CreatePodConfig.yml``` playbook needs to be run.  Keep in mind that this video is based on SDDC.Lab version 3.
 
 
 ## Credits

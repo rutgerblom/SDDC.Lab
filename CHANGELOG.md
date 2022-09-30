@@ -91,7 +91,7 @@
 
 ### Added by Luis Chanu
 
-- Changes have been made to the Pod_Config.j2 template, so please re-run createPodConfig playbook against all of your config files.
+- Changes have been made to the Pod_Config.j2 template, so please re-run CreatePodConfig playbook against all of your config files.
 - Support for "Legacy" VyOS image (v1.1.8) has been removed/deprecated.  All deployments must now use "Latest" for the Router version.  If you have existing configuration files that are using "Legacy", please be sure to update them.
 - ValidateConfiguration.yml playbook updated to verify that the Router version is "Latest".
 - Added "FileExt" to all "Software" entries via the Jinja2 template.  This has been added to simplify the ability for an installation process to determine if the installation source is "iso" or "ova".
@@ -160,7 +160,7 @@
 
 ### Added by Luis Chanu
 
-- Modified createPodConfig.yml playbook to redisplay the Pod deployment command at the end of the playbook.
+- Modified CreatePodConfig.yml playbook to redisplay the Pod deployment command at the end of the playbook.
 - Due to failure while preparing vSphere 7.0U2 host with NSX-T v3.1.2 due to RAM disk running out of space, increased RAM in config_sample.yml for all clusters to 17GB.  In reality, only needs to be on hosts being prepared for NSX-T, but changed all for consistency.
 
 ## Dev-v3.0.0 28-APRIL-2021
@@ -191,7 +191,7 @@
 - Updated FirstPod.MD file
 - Updated utils/util_CreateConfig.sh
 - Renamed all instances of "RouterUplink" to "Uplink" in config_sample.yml
-- IMPORTANT: Please recreate static Pod-Config files using createPodConfig.yml
+- IMPORTANT: Please recreate static Pod-Config files using CreatePodConfig.yml
 - Added "Net.<Intf>.MTU" and "NET.<Intf>.Description" fields to config_sample.yml
 - Added new "vyos_router_commands.j2" template to project (Name my change).  This is a work in progress of developing the VyOS configuration via the "SET" commands used by VyOS.
 
@@ -312,7 +312,7 @@
   - The following changes were made to the config_sample.yml file:
     - Added FQDN_VIP entries for NSX-T LocalManager and GlobalManager
     - Added Common.PKI.ValidateCerts varilable with a default value of 'false'
-  - The config_sample.yml file was updated so please update your non-sample configuration files, then rerun the createPodConfig.yml playbook to regenerate your static configuration files.
+  - The config_sample.yml file was updated so please update your non-sample configuration files, then rerun the CreatePodConfig.yml playbook to regenerate your static configuration files.
 
 ## Dev-v4.0.0 16-JULY-2021
 
@@ -352,7 +352,7 @@
   - Updated DNS playbooks, along with deployNsxManager.yml to use the newly created variables.
   - The following file was updated so please update your non-sample file:
     - config_sample.yml
-  - After updating your non-sample configuration files, be sure to recreate your static Pod configuration files by running "createPodConfig.yml" against each of the updated config files.
+  - After updating your non-sample configuration files, be sure to recreate your static Pod configuration files by running "CreatePodConfig.yml" against each of the updated config files.
 
 ## Dev-v4.0.0 24-JULY-2021
 
@@ -369,7 +369,7 @@
   - OSPFv2 configuration was not added to NSX-T's Tier-0 Gateway within the configuration file.  If the user wants to configure OSPFv2 within NSX-T, they will have to do it manually.  There are currently no plans to add OSPFv2 configuration to the SDDC.Lab project given BGP is fully functional, supports IPv6, and is the protocol used by Federation.
   - The following file was updated so please update your non-sample file:
     - config_sample.yml
-  - After updating your non-sample configuration files, be sure to recreate your static Pod configuration files by running "createPodConfig.yml" against each of the updated config files.
+  - After updating your non-sample configuration files, be sure to recreate your static Pod configuration files by running "CreatePodConfig.yml" against each of the updated config files.
 
 ## Dev-v4.0.0 21-AUG-2021
 
@@ -387,7 +387,7 @@
     - tempaltes\Pod_Doc.j2
   - The following file was updated so please update your non-sample file:
     - config_sample.yml
-  - After updating your non-sample configuration files, be sure to recreate your static Pod configuration files by running "createPodConfig.yml" against each of the updated config files.
+  - After updating your non-sample configuration files, be sure to recreate your static Pod configuration files by running "CreatePodConfig.yml" against each of the updated config files.
 
 ## Dev-v4.0.0 23-AUG-2021
 
@@ -758,8 +758,8 @@
 ## Dev-v4.0.0 21-DEC-2021
 
 ### Added by Luis Chanu
-  - As the sample_config.yml file has changed over time, the amount of time it takes for createPodConfig.yml to complete is increasing.  Latest testing shows it's now taking just over 2 hours to complete.  You can run multiple in parallel without issue.  We are looking into this, but for now, that's how long to expect.
-  - Updated verbiage in createPodConfig.yml on how long it takes to create the static Pod-XXX-Config.yml file.
+  - As the sample_config.yml file has changed over time, the amount of time it takes for CreatePodConfig.yml to complete is increasing.  Latest testing shows it's now taking just over 2 hours to complete.  You can run multiple in parallel without issue.  We are looking into this, but for now, that's how long to expect.
+  - Updated verbiage in CreatePodConfig.yml on how long it takes to create the static Pod-XXX-Config.yml file.
   - Added Deploy.Product.NSXT.GlobalManager.PodNumber variable to support Federation, as a stretched Tier-0 uses the same ASN across all sites.
   - Added the following updated products to software_sample.yml:
     - NSX-T v3.2.0 (Untested)
@@ -771,7 +771,7 @@
 ## Dev-v4.0.0 23-DEC-2021
 
 ### Added by Luis Chanu
-  - Modified createPodConfig.yml to include additional fields in created static Pod Config filename.  Those fields are:
+  - Modified CreatePodConfig.yml to include additional fields in created static Pod Config filename.  Those fields are:
     - VCSA version (VCSAvXXXXX) where XXXXX is VCSA version
     - NSXT version (NSXTvYYYYY) where YYYYY is NSX-T version
     - Fed-Z where Z is either Y or N, and indicates whether the Pod Configuration has NSX-T Federation deployment enabled or not
@@ -788,7 +788,7 @@
     - v3.2.0:   Standalone only (See 'IMPORTANT' comment above)
   - Manually edited Ansible module "nsxt_fabric_compute_managers.py" to incorporate a change that was made in the VMware NSX-T Ansible modules to support Compute Manager registartion under NSX-T v3.2.0.
   - The "var_NSXT_EdgeTransportNodes.j2" template has been updated to support v3.2.0.  These changes have also been tested against v3.1.3.3, and deployed fine.
-  - Modified "createPodConfig.yml" to append the Global Manager Pod to the end of the filename if Federation is enabled.
+  - Modified "CreatePodConfig.yml" to append the Global Manager Pod to the end of the filename if Federation is enabled.
   - The following playbooks have been modified to support NSX-T v3.2.0:
     - CreateNsxEdgeTn.yml
     - CreateNsxTz.yml
@@ -1249,7 +1249,7 @@
   - New ansible playbook added to project: ```include_tasks_CreateContentLibrary.yml```
   - Moved individual content library creation to ```include_tasks_CreateContentLibrary.yml```.  The existing ```CreateContentLibrary.yml``` playbook now dispatches the creation of each content library to the ```include_tasks_CreateContentLibrary.yml``` playbook, one-by-one.
   - WorkloadVMs playbooks modified to support new content library structure.
-  - Changes made to ```config_sample.yml``` does increase the time it takes for ```playbooks/createPodConfig.yml``` to generate the static Pod configuration, so please be patient.  You may want to consider running the ```utils/utils_CreateAllPodConfigs.sh``` script, which will generate the static Pod Configuration files for ALL of your configurations.  Please see description in the documentation included in the header of the script file for more details about the utility.
+  - Changes made to ```config_sample.yml``` does increase the time it takes for ```playbooks/CreatePodConfig.yml``` to generate the static Pod configuration, so please be patient.  You may want to consider running the ```utils/utils_CreateAllPodConfigs.sh``` script, which will generate the static Pod Configuration files for ALL of your configurations.  Please see description in the documentation included in the header of the script file for more details about the utility.
   - There were changes in ```config_sample.yml``` file.
   - Please be sure to update your ```config.yml``` file(s).
 
@@ -1363,12 +1363,12 @@
 ## Dev-v5.0.0 15-SEPTEMBER-2022
 
 ### Added by Rutger Blom
-  - Added a workaround for the issue with long creation time for static Pod configuration files (took between 1.5 to 2.5 hours to complete). Variables in the user Pod-Config file are now finalized before templating in ```playbooks/createPodConfig.yml```. This brings down static Pod configuration creation time to 5-10 minutes.
+  - Added a workaround for the issue with long creation time for static Pod configuration files (took between 1.5 to 2.5 hours to complete). Variables in the user Pod-Config file are now finalized before templating in ```playbooks/CreatePodConfig.yml```. This brings down static Pod configuration creation time to 5-10 minutes.
 
 ## Dev-v5.0.0 18-SEPTEMBER-2022
 
 ### Added by Luis Chanu
-  - Made the following changes to ```playbooks/createPodConfig.yml``` file:
+  - Made the following changes to ```playbooks/CreatePodConfig.yml``` file:
     - Added play to delete Intermediate file containing realized variables once it's no longer needed.
     - Added Intermediate filename to DEBUG play (Shown if debugging is enabled).
     - Revised time estimate for creation of static configuration file.
@@ -1383,4 +1383,4 @@
 ## Dev-v5.0.0 29-SEPTEMBER-2022
 
 ### Added by Luis Chanu
-  - Updated ```deploy.yml``` references in ```FirstPod.md```, ```README.md```, and ```playbooks/createPodConfig.yml``` files to upper case.
+  - Updated ```deploy.yml``` references in ```FirstPod.md```, ```README.md```, and ```playbooks/CreatePodConfig.yml``` files to upper case.

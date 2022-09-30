@@ -264,7 +264,7 @@ A populated software library could look something like this:
 ## Generate your Pod configuration
 You can now continue with generating your Pod configuration. This is the process where all of your settings are combined into a static configuration file. To generate this configuration file you run:
 
-* **ansible-playbook ~/git/SDDC.Lab/playbooks/createPodConfig.yml**
+* **ansible-playbook ~/git/SDDC.Lab/playbooks/CreatePodConfig.yml**
 
 The script needs to know where your configuration file is located:
 
