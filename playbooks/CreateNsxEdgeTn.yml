@@ -208,22 +208,22 @@
         body_format: json
         return_content: true
         status_code: 200
-      register: UserList
-      until: UserList.status == 200
+      register: userlist
+      until: userlist.status == 200
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: DEBUG -- Display UserList variable
+    - name: DEBUG -- Display userlist variable
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================== Display UserList Variable ====================================
+          ================================== Display userlist Variable ====================================
 
-          Quantity: {{ UserList | length }}
+          Quantity: {{ userlist | length }}
 
-          UserList:
-            {{ UserList | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+          userlist:
+            {{ userlist | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
           =================================================================================================
       when:
@@ -249,7 +249,7 @@
       retries: 10
       delay: 3
       with_nested:
-        - "{{ UserList.json.results }}"
+        - "{{ userlist.json.results }}"
         - "{{ EdgeNodeIDs }}"
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy

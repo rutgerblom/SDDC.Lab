@@ -262,7 +262,7 @@
         body_format: json
         return_content: yes
         status_code: 200
-      register: UserList
+      register: userlist
       when: 
         - Deploy.Product.NSXT.LocalManager.Deploy == true
 
@@ -283,7 +283,7 @@
       until: result.status == 200
       retries: 10
       delay: 3
-      loop: "{{ UserList.json.results }}"
+      loop: "{{ userlist.json.results }}"
       when: 
         - Deploy.Product.NSXT.LocalManager.Deploy == true
 
