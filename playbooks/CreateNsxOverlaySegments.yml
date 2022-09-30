@@ -1,15 +1,13 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/createNsxOverlaySegments.yml
+##   Filename: playbooks/CreateNsxOverlaySegments.yml
 ##
 ---
 - hosts: localhost
-  name: createNsxOverlaySegments.yml
-  vars:
-      LOCAL_Segments_Template: "{{ Target.TemplateFolder }}/vars_NSXT_Segments.j2"
+  name: CreateNsxOverlaySegments.yml
   tasks:
-    - name: createNsxOverlaySegments_Playbook
+    - name: CreateNsxOverlaySegments_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -50,7 +48,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
 
                                        Ansible Playbook: {{ ansible_play_name }}
@@ -63,7 +61,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Define DHCPProfilePath dictionary if it does not already exist
       ansible.builtin.include_tasks:
@@ -71,8 +69,8 @@
 
     - name: Get list of Segments
       ansible.builtin.set_fact:
-        SegmentsToCreate: "{{ lookup('template', LOCAL_Segments_Template) | from_yaml }}"
-      when: Deploy.Product.NSXT.LocalManager.Deploy == true
+        SegmentsToCreate: "{{ lookup('template', Target.TemplateFolder + '/vars_NSXT_Segments.j2') | from_yaml }}"
+      when: Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
@@ -85,9 +83,9 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - DEBUG.DisplayVariables
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
         - SegmentsToCreate != ""
 
     - name: Create NSX-T Overlay Segments
@@ -97,8 +95,8 @@
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         display_name: "{{ item.display_name }}"
-        description:  "{{ item.description }}"
-        admin_state:  "{{ item.admin_state }}"
+        description: "{{ item.description }}"
+        admin_state: "{{ item.admin_state }}"
         replication_mode: "{{ item.replication_mode }}"
         transport_zone_display_name: "{{ item.transport_zone_display_name }}"
         tier0_display_name: "{{ item.tier0_display_name | default(omit) }}"
@@ -109,7 +107,7 @@
         tags: "{{ item.tags }}"
         state: "present"
       loop: "{{ SegmentsToCreate }}"
-      when: 
-      - Deploy.Product.NSXT.LocalManager.Deploy == true
-      - Deploy.Product.NSXT.Edge.Deploy == true
-      - Nested_NSXT.System.Fabric.TransportZone[item.transport_zone_display_name].Type == "OVERLAY"
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
+        - Nested_NSXT.System.Fabric.TransportZone[item.transport_zone_display_name].Type == "OVERLAY"
