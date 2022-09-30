@@ -107,8 +107,7 @@
       - gateway_address: {{ ipv6_subnet | ansible.utils.ipaddr('1') }}
 {%           if Deploy.Product.NSXT.Federation.Enable == false %}
         dhcp_ranges:
-{# Unclear why the line below needs to be indented so far, but Jinja2 throws a unicode error if it's moved to the left.  The '-' needs to align up with the "_"  above it #}
-            - {{ ipv6_subnet | ansible.utils.ipaddr('-1') | ansible.utils.previous_nth_usable(2**(128-Pod.BaseOverlay.IPv6.RangePrefix)-1) }}-{{ ipv6_subnet | ansible.utils.ipaddr('last_usable') }}
+          - {{ ipv6_subnet | ansible.utils.ipaddr('-1') | ansible.utils.previous_nth_usable(2**(128-Pod.BaseOverlay.IPv6.RangePrefix)-1) }}-{{ ipv6_subnet | ansible.utils.ipaddr('last_usable') }}
         dhcp_config:
           resource_type: SegmentDhcpV6Config
           server_address: {{ ipv6_subnet | ansible.utils.ipaddr('2') }}
