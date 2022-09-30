@@ -94,7 +94,7 @@
         properties: ["overallStatus"]
       delegate_to: localhost
       register: status
-      failed_when: false
+      ignore_errors: true
       no_log: true
       when:
         - Deploy.Product.Router.Deploy
@@ -130,8 +130,9 @@
         url: "{{ Deploy.Software.Router.URL }}/{{ Deploy.Software.Router.File }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         force: true
+        mode: "755"
       when:
-        - (InstallerFileCheck.stat.exists != true) or (Deploy.Software.Options.UseLocalInstaller != true)
+        - (not InstallerFileCheck.stat.exists) or (not Deploy.Software.Options.UseLocalInstaller)
         - Deploy.Product.Router.Deploy
         - status is failed
 
@@ -140,14 +141,15 @@
         src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         dest: "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
         force: true
+        mode: "755"
       when:
-        - InstallerFileCheck.stat.exists != true
+        - not InstallerFileCheck.stat.exists
         - Deploy.Software.Options.KeepNewInstallers
         - Deploy.Product.Router.Deploy
         - status is failed
 
     - name: Create configuration file for VyOS router
-      ansible.builtin.template: 
+      ansible.builtin.template:
         src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
         mode: "666"
@@ -161,7 +163,7 @@
 ##
 
     - name: Upload the VyOS ISO to the datastore
-      community.vmware.vsphere_copy: 
+      community.vmware.vsphere_copy:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
