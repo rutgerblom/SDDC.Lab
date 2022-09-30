@@ -61,27 +61,7 @@
       when:
         - DEBUG.DisplayVariables
 
-    - name: Get list of Tier-0 Gateways
-      ansible.builtin.set_fact:
-        T0GatewaysToCreate: "{{ lookup('template', Target.TemplateFolder + '/vars_NSXT_T0Gateways.j2') | from_yaml }}"
-      when: Deploy.Product.NSXT.LocalManager.Deploy
-
-    - name: DEBUG -- Display Target Variables (Pause)
-      ansible.builtin.pause:
-        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
-        prompt: |
-          ================================ Display T0GatewaysToCreate Variable ===================================
-
-              T0GatewaysToCreate: {{ T0GatewaysToCreate | to_nice_yaml(indent=2) }}
-
-          =================================================================================================
-      when:
-        - DEBUG.DisplayVariables
-        - Deploy.Product.NSXT.LocalManager.Deploy
-        - Deploy.Product.NSXT.Edge.Deploy
-        - T0GatewaysToCreate != ""
-
-    - name: Create NSX-T Tier-0 Gateway
+    - name: Create NSX-T Tier-0 Gateway(s)
       vmware.ansible_for_nsxt.nsxt_policy_tier0:
         hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -93,8 +73,7 @@
         failover_mode: "{{ item.failover_mode }}"
         tags: "{{ item.tags | default(omit) }}"
         locale_services: "{{ item.locale_services }}"
-      with_items:
-        - "{{ T0GatewaysToCreate }}"
+      loop: "{{ lookup('template', Target.TemplateFolder + '/vars_NSXT_T0Gateways.j2') | from_yaml }}"
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
