@@ -173,22 +173,22 @@
 
     - name: Create list of EdgeVM Node IDs
       ansible.builtin.set_fact:
-        EdgeNodeIDs: "{{ EdgeNodeIDs | default([]) + [item.node_id] }}"
+        edgenodeids: "{{ edgenodeids | default([]) + [item.node_id] }}"
       loop: "{{ result.json.results }}"
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: DEBUG -- Display EdgeNodeIDs variable
+    - name: DEBUG -- Display edgenodeids variable
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display EdgeNodeIDs Variable ===================================
+          ================================ Display edgenodeids Variable ===================================
 
-          Quantity: {{ EdgeNodeIDs | length }}
+          Quantity: {{ edgenodeids | length }}
 
-          EdgeNodeIDs:
-            {{ EdgeNodeIDs | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+          edgenodeids:
+            {{ edgenodeids | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
           =================================================================================================
       when:
@@ -198,7 +198,7 @@
 
     - name: Obtain NSX-T Local Manager User List from first EdgeVM
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes/{{ EdgeNodeIDs[0] }}/node/users
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes/{{ edgenodeids[0] }}/node/users
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 15
         force_basic_auth: true
@@ -250,7 +250,7 @@
       delay: 3
       with_nested:
         - "{{ userlist.json.results }}"
-        - "{{ EdgeNodeIDs }}"
+        - "{{ edgenodeids }}"
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
