@@ -77,7 +77,7 @@ After cloning the repository you will end up with a directory called "SDDC.Lab" 
     FirstPod.md
     README.md
     config_sample.yml
-    deploy.yml
+    Deploy.yml
     licenses_sample.yml
     software_sample.yml
     templates_sample.yml

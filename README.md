@@ -346,7 +346,7 @@ To deploy a Pod:
 ```ansible-playbook ~/git/SDDC.Lab/playbooks/createPodConfig.yml```
 
 2. Start a Pod deployment per the instructions. For example:  
-```ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" ~/git/SDDC.Lab/deploy.yml```
+```ansible-playbook -e "@/home/ubuntu/Pod-230-Config.yml" ~/git/SDDC.Lab/Deploy.yml```
 
 Deploying an SDDC Pod will take somewhere between 1 and 1.5 hours depending on your environment and Pod configuration.
 
