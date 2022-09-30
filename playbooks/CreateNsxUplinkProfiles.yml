@@ -1,15 +1,13 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/createNsxUplinkProfiles.yml
+##   Filename: playbooks/CreateNsxUplinkProfiles.yml
 ##
 ---
 - hosts: localhost
-  name: createNsxUplinkProfiles.yml
-  vars:
-    LOCAL_UplinkProfiles_Template: "{{ Target.TemplateFolder }}/vars_NSXT_UplinkProfiles.j2"
+  name: CreateNsxUplinkProfiles.yml
   tasks:
-    - name: createNsxUplinkProfiles_Playbook
+    - name: CreateNsxUplinkProfiles_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -50,7 +48,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
 
                                           Ansible Playbook: {{ ansible_play_name }}
@@ -63,27 +61,8 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-
-    - name: Get list of Uplink Profiles
-      ansible.builtin.set_fact:
-        UplinkProfilesToCreate: "{{ lookup('template', LOCAL_UplinkProfiles_Template) | from_yaml }}"
-      when: Deploy.Product.NSXT.LocalManager.Deploy == true
-
-    - name: DEBUG -- Display Target Variables (Pause)
-      ansible.builtin.pause:
-        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
-        prompt: |
-          ================================ Display UplinkProfilesToCreate Variable ===================================
-
-              UplinkProfilesToCreate: {{ UplinkProfilesToCreate | to_nice_yaml(indent=2) }}
-
-          =================================================================================================
-      when:
-        - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - UplinkProfilesToCreate != ""
+        - DEBUG.DisplayVariables
+        - Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: Create Uplink Profiles
       vmware.ansible_for_nsxt.nsxt_uplink_profiles:
@@ -99,7 +78,6 @@
         teaming: "{{ item.teaming }}"                                      # Default NIC Teaming
         named_teamings: "{{ item.named_teamings | default(omit) }}"        # Named Teaming Policy, but omit if it does not exist
         state: "present"
-      with_list: "{{ UplinkProfilesToCreate }}"
+      loop: "{{ lookup('template', Target.TemplateFolder + '/vars_NSXT_UplinkProfiles.j2') | from_yaml }}"
       when:
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - UplinkProfilesToCreate != ""
+        - Deploy.Product.NSXT.LocalManager.Deploy
