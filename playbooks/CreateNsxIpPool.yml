@@ -6,8 +6,6 @@
 ---
 - hosts: localhost
   name: CreateNsxIpPool.yml
-  vars:
-    LOCAL_IPPools_Template: "{{ Target.TemplateFolder }}/vars_NSXT_IPPools.j2"
   tasks:
     - name: CreateNsxIpPool_Playbook
       ansible.builtin.debug:
@@ -41,7 +39,6 @@
       when:
         - Valid_Pod_Config_File is not defined
 
-
     - name: DEBUG -- Display Target Variables (Pause)
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
@@ -70,26 +67,6 @@
         - DEBUG.DisplayVariables
         - Deploy.Product.NSXT.LocalManager.Deploy
 
-
-    - name: Get list of IP Pools
-      ansible.builtin.set_fact:
-        IPPoolsToCreate: "{{ lookup('template', LOCAL_IPPools_Template) | from_yaml }}"
-      when: Deploy.Product.NSXT.LocalManager.Deploy
-
-    - name: DEBUG -- Display Target Variables (Pause)
-      ansible.builtin.pause:
-        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
-        prompt: |
-          ================================ Display var_IPPools Variable ===================================
-
-              IPPoolsToCreate: {{ IPPoolsToCreate | to_nice_yaml(indent=2) }}
-
-          =================================================================================================
-      when:
-        - DEBUG.DisplayVariables
-        - Deploy.Product.NSXT.LocalManager.Deploy
-        - IPPoolsToCreate != ""
-
     - name: Create NSX-T IP Pools using Polcy API
       vmware.ansible_for_nsxt.nsxt_policy_ip_pool:
         hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
@@ -101,8 +78,7 @@
         description: "{{ item.description }}"
         pool_static_subnets: "{{ item.pool_static_subnets }}"
         tags: "{{ item.tags }}"
-      with_items:
-        - "{{ IPPoolsToCreate }}"
+      loop: "{{ lookup('template', Target.TemplateFolder + '/vars_NSXT_IPPools.j2') | from_yaml }}"
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy
         - IPPoolsToCreate != ""
