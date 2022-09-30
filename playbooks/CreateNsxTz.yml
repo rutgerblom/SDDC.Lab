@@ -1,13 +1,13 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/createNsxTz.yml
+##   Filename: playbooks/CreateNsxTz.yml
 ##
 ---
 - hosts: localhost
-  name: createNsxTz.yml
+  name: CreateNsxTz.yml
   tasks:
-    - name: createNsxTz_Playbook
+    - name: CreateNsxTz_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -48,7 +48,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                        Ansible Playbook: {{ ansible_play_name }}
 
@@ -70,7 +70,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Create NSX-T transport zones
       vmware.ansible_for_nsxt.nsxt_transport_zones:
@@ -88,4 +88,4 @@
       register: result
       loop: "{{ Nested_NSXT.System.Fabric.TransportZone | dict2items }}"
       when:
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy

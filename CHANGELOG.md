@@ -791,7 +791,7 @@
   - Modified "createPodConfig.yml" to append the Global Manager Pod to the end of the filename if Federation is enabled.
   - The following playbooks have been modified to support NSX-T v3.2.0:
     - CreateNsxEdgeTn.yml
-    - createNsxTz.yml
+    - CreateNsxTz.yml
 
 ## Dev-v4.0.0 25-DEC-2021
 
