@@ -6,8 +6,6 @@
 ---
 - hosts: localhost
   name: CreateNsxDhcpProfiles.yml
-  vars:
-    LOCAL_DHCPProfilesTemplate: "{{ Target.TemplateFolder }}/vars_NSXT_DHCPProfiles.j2"
   tasks:
     - name: CreateNsxDhcpProfiles_Playbook
       ansible.builtin.debug:
@@ -119,29 +117,10 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Read DHCP Profiles structure from template into a variable
-      ansible.builtin.set_fact:
-        var_DHCPProfiles: "{{ lookup('template', LOCAL_DHCPProfilesTemplate) | from_yaml }}"
-
-    - name: DEBUG -- Display Target Variables (Pause)
-      ansible.builtin.pause:
-        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
-        prompt: |
-          ================================ Display var_DHCPProfiles Variable ===================================
-
-          var_DHCPProfiles:
-            {{ var_DHCPProfiles | to_nice_yaml(indent=2, width=99999) | indent(2) }}
-
-          =================================================================================================
-      when:
-        - DEBUG.DisplayVariables
-        - Deploy.Product.NSXT.LocalManager.Deploy
-
-
 ##
 ## Create all DHCP Profiles
 ##
-    - name:  Create NSX-T DHCP Server Profiles
+    - name: Create NSX-T DHCP Server Profiles
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/policy/api/v1/infra/dhcp-server-configs/{{ item.display_name }}
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -155,7 +134,7 @@
         status_code: 200
         body: "{{ item }}"
       register: result
-      loop: "{{ var_DHCPProfiles | default([]) }}"
+      loop: "{{ lookup('template', Target.TemplateFolder + '/vars_NSXT_DHCPProfiles.j2') | default([]) | from_yaml }}"
       until: result.status == 200
       retries: 5
       delay: 30
@@ -163,7 +142,7 @@
         - item.resource_type == "DhcpServerConfig"
         - Deploy.Product.NSXT.LocalManager.Deploy
 
-    - name:  Create NSX-T DHCP Relay Profiles
+    - name: Create NSX-T DHCP Relay Profiles
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/policy/api/v1/infra/dhcp-relay-configs/{{ item.display_name }}
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -177,7 +156,7 @@
         status_code: 200
         body: "{{ item }}"
       register: result
-      loop: "{{ var_DHCPProfiles | default([]) }}"
+      loop: "{{ lookup('template', Target.TemplateFolder + '/vars_NSXT_DHCPProfiles.j2') | default([]) | from_yaml }}"
       until: result.status == 200
       retries: 5
       delay: 30
