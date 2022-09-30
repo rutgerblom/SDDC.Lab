@@ -1384,3 +1384,8 @@
 
 ### Added by Luis Chanu
   - Updated ```Deploy.yml``` references in ```FirstPod.md```, ```README.md```, and ```playbooks/CreatePodConfig.yml``` files to upper case.
+
+## Dev-v5.0.0 30-SEPTEMBER-2022
+
+### Added by Luis Chanu
+  - Corrected IP Addresses hyperlink within ```README.md``` file.
