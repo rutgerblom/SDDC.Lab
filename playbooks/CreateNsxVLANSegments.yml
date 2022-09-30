@@ -1,15 +1,13 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/createNsxVLANSegments.yml
+##   Filename: playbooks/CreateNsxVLANSegments.yml
 ##
 ---
 - hosts: localhost
-  name: createNsxVLANSegments.yml
-  vars:
-      LOCAL_Segments_Template: "{{ Target.TemplateFolder }}/vars_NSXT_Segments.j2"
+  name: CreateNsxVLANSegments.yml
   tasks:
-    - name: createNsxVLANSegments_Playbook
+    - name: CreateNsxVLANSegments_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -49,7 +47,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
 
                                        Ansible Playbook: {{ ansible_play_name }}
@@ -62,30 +60,11 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Define DHCPProfilePath dictionary if it does not already exist
       ansible.builtin.include_tasks:
         file: include_var_DHCPProfilePath.yml
-
-    - name: Get list of Segments
-      ansible.builtin.set_fact:
-        SegmentsToCreate: "{{ lookup('template', LOCAL_Segments_Template) | from_yaml }}"
-      when: Deploy.Product.NSXT.LocalManager.Deploy == true
-
-    - name: DEBUG -- Display Target Variables (Pause)
-      ansible.builtin.pause:
-        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
-        prompt: |
-          ================================ Display SegmentsToCreate Variable ===================================
-
-              SegmentsToCreate: {{ SegmentsToCreate | to_nice_yaml(indent=2) }}
-
-          =================================================================================================
-      when:
-        - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - SegmentsToCreate != ""
 
     ## Create only VLAN-backed Segments in SegmentsToCreate  ##
     - name: Create NSX-T Segments
@@ -95,8 +74,8 @@
         password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         display_name: "{{ item.display_name }}"
-        description:  "{{ item.description }}"
-        admin_state:  "{{ item.admin_state }}"
+        description: "{{ item.description }}"
+        admin_state: "{{ item.admin_state }}"
         domain_name: "{{ item.domain_name }}"
         replication_mode: "{{ item.replication_mode }}"
         transport_zone_display_name: "{{ item.transport_zone_display_name }}"
@@ -106,7 +85,7 @@
           # Only include if item.uplink_teaming_policy_name is not empty, else omit line to use 'Default' Teaming Policy
           uplink_teaming_policy_name: "{% if item.uplink_teaming_policy_name %}{{ item.uplink_teaming_policy_name }}{% else %}{{ omit }}{% endif %}"
         state: "present"
-      loop: "{{ SegmentsToCreate }}"
-      when: 
-      - Deploy.Product.NSXT.LocalManager.Deploy == true
-      - Nested_NSXT.System.Fabric.TransportZone[item.transport_zone_display_name].Type == "VLAN"
+      loop: "{{ lookup('template', Target.TemplateFolder + '/vars_NSXT_Segments.j2') | from_yaml }}"
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Nested_NSXT.System.Fabric.TransportZone[item.transport_zone_display_name].Type == "VLAN"

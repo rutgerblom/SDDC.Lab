@@ -887,7 +887,7 @@
 
 ### Added by Luis Chanu
   - Added UplinkTeamingPolicy to Nested_NSXT.Networking.Segments data structure in config_sample.yml
-  - Modified createNsxVLANSegments.yml to now apply Uplink Teaming Policy to VLAN Segments.  If UplinkTeamingPolicy is set to "" or not defined, it will default to using the Default teaming policy.
+  - Modified CreateNsxVLANSegments.yml to now apply Uplink Teaming Policy to VLAN Segments.  If UplinkTeamingPolicy is set to "" or not defined, it will default to using the Default teaming policy.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
 
