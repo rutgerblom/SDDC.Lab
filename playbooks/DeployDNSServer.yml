@@ -106,7 +106,7 @@
 
     - name: Read the structure from template into a variable
       ansible.builtin.set_fact:
-        var_UbuntuConfiguration: "{{ lookup('template', Target.TemplateFolder + '/' + Deploy.Software.DNSServer.Template) | from_yaml }}"
+        var_ubuntuconfiguration: "{{ lookup('template', Target.TemplateFolder + '/' + Deploy.Software.DNSServer.Template) | from_yaml }}"
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
@@ -115,14 +115,14 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display var_UbuntuConfiguration Variable ===================================
+          ================================ Display var_ubuntuconfiguration Variable ===================================
 
-              var_UbuntuConfiguration: {{ var_UbuntuConfiguration | to_nice_yaml(indent=2) }}
+              var_ubuntuconfiguration: {{ var_ubuntuconfiguration | to_nice_yaml(indent=2) }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables
-        - var_UbuntuConfiguration != ""
+        - var_ubuntuconfiguration != ""
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
 
@@ -215,7 +215,7 @@
         src: "{{ item.Source }}"
         dest: "{{ item.FinalDestination }}"
         mode: "666"
-      loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AutoInstall }}"
+      loop: "{{ var_ubuntuconfiguration.Configuration.Templates.AutoInstall }}"
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
@@ -322,11 +322,11 @@
         src: "{{ item.Source }}"
         dest: "{{ item.LocalDestination }}"
         mode: "666"
-      loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
+      loop: "{{ var_ubuntuconfiguration.Configuration.Templates.AfterBoot }}"
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
-        - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
+        - var_ubuntuconfiguration.Configuration.Templates.AfterBoot != ""
 
     - name: Copy configuration files to the Ubuntu VM
       community.vmware.vmware_guest_file_operation:
@@ -340,11 +340,11 @@
         copy:
           src: "{{ item.LocalDestination }}"
           dest: "{{ item.StageDestination }}"
-      loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
+      loop: "{{ var_ubuntuconfiguration.Configuration.Templates.AfterBoot }}"
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
-        - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
+        - var_ubuntuconfiguration.Configuration.Templates.AfterBoot != ""
 
     - name: Move configuration files to their final location on the Ubuntu VM
       community.vmware.vmware_vm_shell:
@@ -357,11 +357,11 @@
         vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "mv {{ item.StageDestination }} {{ item.FinalDestination }}"
-      loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
+      loop: "{{ var_ubuntuconfiguration.Configuration.Templates.AfterBoot }}"
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
-        - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
+        - var_ubuntuconfiguration.Configuration.Templates.AfterBoot != ""
 
     - name: Create directories on Ubuntu VM
       community.vmware.vmware_vm_shell:
@@ -374,11 +374,11 @@
         vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "mkdir {{ item.Path }}"
-      loop: "{{ var_UbuntuConfiguration.Configuration.Directories }}"
+      loop: "{{ var_ubuntuconfiguration.Configuration.Directories }}"
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
-        - var_UbuntuConfiguration.Configuration.Directories != ""
+        - var_ubuntuconfiguration.Configuration.Directories != ""
 
     - name: Set owner on directories on Ubuntu VM
       community.vmware.vmware_vm_shell:
@@ -391,11 +391,11 @@
         vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "chown {{ item.Owner }} {{ item.Path }} "
-      loop: "{{ var_UbuntuConfiguration.Configuration.Directories }}"
+      loop: "{{ var_ubuntuconfiguration.Configuration.Directories }}"
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
-        - var_UbuntuConfiguration.Configuration.Directories != ""
+        - var_ubuntuconfiguration.Configuration.Directories != ""
 
     - name: Apply the network configuration on Ubuntu VM
       community.vmware.vmware_vm_shell:
@@ -423,11 +423,11 @@
         vm_password: "{{ Nested_DNSServer.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "systemctl restart {{ item.Daemon }}"
-      loop: "{{ var_UbuntuConfiguration.Configuration.Packages }}"
+      loop: "{{ var_ubuntuconfiguration.Configuration.Packages }}"
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
-        - var_UbuntuConfiguration.Configuration.Packages != ""
+        - var_ubuntuconfiguration.Configuration.Packages != ""
 
     - name: Delete local ISO extraction directory
       ansible.builtin.file:
@@ -458,9 +458,9 @@
       ansible.builtin.file:
         path: "{{ item.LocalDestination }}"
         state: absent
-      loop: "{{ var_UbuntuConfiguration.Configuration.Templates.AfterBoot }}"
+      loop: "{{ var_ubuntuconfiguration.Configuration.Templates.AfterBoot }}"
       when:
         - not DEBUG.KeepConfigFiles
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
-        - var_UbuntuConfiguration.Configuration.Templates.AfterBoot != ""
+        - var_ubuntuconfiguration.Configuration.Templates.AfterBoot != ""

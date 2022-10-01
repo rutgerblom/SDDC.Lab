@@ -75,8 +75,7 @@
                                     Network PortGroup: {{ Target.PortGroup.Management.Name }}
 
                                  Network IPv4 Address: {{ Nested_vRLI.Address.IPv4.Address }}
-                                      Network Netmask: {{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) \
-                                                          | ansible.utils.ipaddr('netmask') }}
+                                      Network Netmask: {{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
                                       Network Gateway: {{ Nested_vRLI.Address.IPv4.Gateway }}
 
                                    Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
@@ -110,7 +109,9 @@
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datastore: "{{ Target.Datastore }}"
         allow_duplicates: false
-        folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}{% else %}{{ Target.VMFolder }}{% endif %}"         # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
+        # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
+        folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}\
+                 {% else %}{{ Target.VMFolder }}{% endif %}"
         datacenter: "{{ Target.DataCenter }}"
         cluster: "{{ Target.Cluster }}"
         name: "{{ Nested_vRLI.VMName }}"
@@ -123,7 +124,8 @@
         wait_for_ip_address: true
         inject_ovf_env: true
         properties:
-          vm.vmname: "{% if Target.Deployment == 'Host' %}VMware_vCenter_Log_Insight{% else %}{{ omit }}{% endif %}"                                         # Host requires static vmname value, vCenter complains, so omitting property from vCenter Deployment
+          # Host requires static vmname value, vCenter complains, so omitting property from vCenter Deployment
+          vm.vmname: "{% if Target.Deployment == 'Host' %}VMware_vCenter_Log_Insight{% else %}{{ omit }}{% endif %}"
           preferipv6: "False"
           rootpw: "{{ Nested_vRLI.Credential.root.Password }}"
           hostname: "{{ Nested_vRLI.FQDN }}"
@@ -131,7 +133,8 @@
           vami.domain.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
           vami.gateway.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Address.IPv4.Gateway }}"
           vami.ip0.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Address.IPv4.Address }}"
-          vami.netmask0.VMware_vCenter_Log_Insight: "{{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}"
+          vami.netmask0.VMware_vCenter_Log_Insight: "{{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) | \
+                                                     ansible.utils.ipaddr('netmask') }}"
           vami.searchpath.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
       when:
         - Deploy.Product.vRLI.Deploy
@@ -166,7 +169,7 @@
         - Deploy.Product.vRLI.Deploy
         - vrli_check.status != 200
 
-    - name: Obtain a session ID from the vRLI API 
+    - name: Obtain a session ID from the vRLI API
       ansible.builtin.uri:
         url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/sessions
         validate_certs: "{{ Common.PKI.ValidateCerts }}"

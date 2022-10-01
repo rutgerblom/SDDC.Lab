@@ -375,8 +375,8 @@
 
 ### Added by Luis Chanu
 
-  - Renamed playbooks\deployNsxManager.yml to playbooks\deployNsxLocalManager.yml to prepare for the development of Global Manager specific playbooks.
-  - Updated Deploy.yml with updated deployNsxLocalManager.yml playbook.
+  - Renamed playbooks\deployNsxManager.yml to playbooks\DeployNsxLocalManager.yml to prepare for the development of Global Manager specific playbooks.
+  - Updated Deploy.yml with updated DeployNsxLocalManager.yml playbook.
 
 ## Dev-v4.0.0 22-AUG-2021
 
@@ -602,7 +602,7 @@
 ### Added by Luis Chanu
   - Added additional "Answer" variables and comments to Nested_NSXT.Question.CEIP section.  When "Answer" is set to "true", the CEIP is set accordingly.
   - Modified Global Manager EULA acceptance task to use policy API
-  - Modified deployNsxLocalManager.yml to include task to automatically answer CEIP.
+  - Modified DeployNsxLocalManager.yml to include task to automatically answer CEIP.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
 
@@ -610,7 +610,7 @@
 
 ### Added by Luis Chanu
   - In federateNsxLocalManager.yml, doubled length of time we'll loop to see if Global Manager is ready from 1 hour to 2 hours.
-  - Updated deployNsxLocalManager.yml to obtain current _revision number for CEIP config and telemetry settings
+  - Updated DeployNsxLocalManager.yml to obtain current _revision number for CEIP config and telemetry settings
   - To determine if Pod-Router VM is actually powered off, replaced timer with module to query VM state
   
 ## Dev-v4.0.0 28-OCT-2021
@@ -618,9 +618,9 @@
 ### Added by Luis Chanu
   - The "SEG-Example-Complicated-VLAN-Segment" segment was deleted from sample_config.yml to remove collisions during Federation onboarding. 
   - Changed few tasks in deployNsxGlobalManager.yml to use FQDN instead of IPv4 address
-  - Removed "lower" filters from deployNsxLocalManager.yml playbook
-  - Modified deployNsxGlobalManager and deployNsxLocalManager playbooks to use NSX-T REST API with a verification loop to configure VIPs rather than NSX-T Ansible Module
-  - Modified deployNsxLocalManager to use NSX-T LM VIP rather than appliance IP's after VIP is configured
+  - Removed "lower" filters from DeployNsxLocalManager.yml playbook
+  - Modified deployNsxGlobalManager and DeployNsxLocalManager playbooks to use NSX-T REST API with a verification loop to configure VIPs rather than NSX-T Ansible Module
+  - Modified DeployNsxLocalManager to use NSX-T LM VIP rather than appliance IP's after VIP is configured
   - Added vCenter Server v7.0 Update 3A to software repository
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
@@ -657,10 +657,10 @@
   - Corrected issue where Edge nodes were not setting 'audit' user password
   - Added Named Teaming Policies to Edge-Uplink-Profile to support pinning to ToR-A and ToR-B
   - Modfied TZ-Edge to take advantage of the new ToR-A and ToR-B named teaming policies
-  - Added filter in deployNsxLocalManager.yml and deployNsxGlobalManager.yml to force 'Deployment Size' to lower as a safety net in case user accidentally changes case.  OVFTool requires Size to be in lower case.
+  - Added filter in DeployNsxLocalManager.yml and deployNsxGlobalManager.yml to force 'Deployment Size' to lower as a safety net in case user accidentally changes case.  OVFTool requires Size to be in lower case.
   - Added 'upper' filter in templates/vars_NSXT_EdgeTransportNodes.j2 to ensure FormFactor sizing is always in upper case, as required by the NSX-T API.
   - Modified CreateNsxEdgeTn.yml to disable password expiration for all users on NSX-T Edges
-  - Modified deployNsxLocalManager.yml and deployNsxGlobalManager.yml to also disable password expiration for 'root' user
+  - Modified DeployNsxLocalManager.yml and deployNsxGlobalManager.yml to also disable password expiration for 'root' user
   - Updated software versions in config_sample.yml for NSX-T and vCenter Server to v3.1.3.3 and v7.00U3a, respectively.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml

@@ -43,7 +43,7 @@
     - name: Check to see if the Pod-Config file to be prepared exists
       ansible.builtin.stat:
         path: "{{ SourceConfigPath }}/{{ SourceConfigFile }}"
-      register: ConfigFileCheck
+      register: configfilecheck
 
 
     - name: Display error message if Pod-Config file is not found
@@ -63,13 +63,13 @@
 
           *****************************************************************************************************
       when:
-        - not ConfigFileCheck.stat.exists
+        - not configfilecheck.stat.exists
 
 
     - name: Exit Ansible playbook if Pod-Config file does not exist
       ansible.builtin.meta: end_play
       when:
-        - not ConfigFileCheck.stat.exists
+        - not configfilecheck.stat.exists
 
     - name: Include Pod-Config variables into playbook
       ansible.builtin.include_vars:

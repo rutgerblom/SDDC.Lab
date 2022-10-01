@@ -111,24 +111,24 @@
 
     - name: Store Replication Partner vCenter Session ID for later use
       ansible.builtin.set_fact:
-        vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
+        vcenter_sessionid: "{{ vcenter_auth_result.json.value | default(None) }}"
       when:
         - Nested_vCenter.SSO.ReplicationPartner != ""
 
-    - name: DEBUG -- Display Replication Partner vCenter_SessionID
+    - name: DEBUG -- Display Replication Partner vcenter_sessionid
       ansible.builtin.pause:
         seconds: 1
         prompt: |
           =================================================================================================
 
-          Variable: vCenter_SessionID
+          Variable: vcenter_sessionid
           ===========================
-          {{ vCenter_SessionID | to_nice_yaml }}
+          {{ vcenter_sessionid | to_nice_yaml }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables
-        - vCenter_SessionID is defined
+        - vcenter_sessionid is defined
         - Nested_vCenter.SSO.ReplicationPartner != ""
 
 ##
@@ -138,7 +138,7 @@
     - name: Wait until Replication Partner vCenter Server appliance is healthy
       ansible.builtin.uri:
         url: "https://{{ Nested_vCenter.SSO.ReplicationPartner }}/rest/appliance/health/system"
-        headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
+        headers: "{ 'vmware-api-session-id':'{{ vcenter_sessionid }}' }"
         method: GET
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
@@ -153,7 +153,7 @@
       retries: 45
       delay: 60
       when:
-        - vCenter_SessionID is defined
+        - vcenter_sessionid is defined
         - Nested_vCenter.SSO.ReplicationPartner != ""
 
     - name: DEBUG -- Display Replication Partner vCenter Server health information
@@ -180,11 +180,11 @@
     - name: Logout of Replication Partner vCenter Server
       ansible.builtin.uri:
         url: "https://{{ Nested_vCenter.SSO.ReplicationPartner }}/rest/com/vmware/cis/session"
-        headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
+        headers: "{ 'vmware-api-session-id':'{{ vcenter_sessionid }}' }"
         method: DELETE
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
         status_code: 200
       when:
-        - vCenter_SessionID is defined
+        - vcenter_sessionid is defined
         - Nested_vCenter.SSO.ReplicationPartner != ""

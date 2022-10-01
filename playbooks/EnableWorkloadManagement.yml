@@ -107,7 +107,7 @@
 
     - name: Store vCenter Session ID for later use
       ansible.builtin.set_fact:
-        vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
+        vcenter_sessionid: "{{ vcenter_auth_result.json.value | default(None) }}"
       when:
         - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy
@@ -120,7 +120,7 @@
     - name: Get the vSphere Cluster's Object ID (MoREF)
       ansible.builtin.uri:
         url: "https://{{ Nested_vCenter.FQDN }}/rest/vcenter/cluster?filter.names={{ item.key }}"
-        headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
+        headers: "{ 'vmware-api-session-id':'{{ vcenter_sessionid }}' }"
         method: GET
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
@@ -307,7 +307,7 @@
       ansible.builtin.uri:
         url: "https://{{ Nested_vCenter.FQDN }}/api/vcenter/namespace-management/clusters/{{ item.MoRef }}?action=enable"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
+        headers: "{ 'vmware-api-session-id':'{{ vcenter_sessionid }}' }"
         method: POST
         body: "{{ lookup('template', LOCAL_TanzuPayload) }}"
         body_format: json

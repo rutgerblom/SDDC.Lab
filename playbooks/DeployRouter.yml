@@ -111,7 +111,7 @@
     - name: Check if VyOS installation file exists locally in the software repository
       ansible.builtin.stat:
         path: "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
-      register: InstallerFileCheck
+      register: installerfilecheck
 
     - name: Copy VyOS installation file to temp folder if it already exists locally rather than downloading (overwrite if exists)
       ansible.builtin.copy:
@@ -120,7 +120,7 @@
         mode: "666"
         force: true
       when:
-        - InstallerFileCheck.stat.exists
+        - installerfilecheck.stat.exists
         - Deploy.Software.Options.UseLocalInstaller
         - Deploy.Product.Router.Deploy
         - status is failed
@@ -132,7 +132,7 @@
         force: true
         mode: "755"
       when:
-        - (not InstallerFileCheck.stat.exists) or (not Deploy.Software.Options.UseLocalInstaller)
+        - (not installerfilecheck.stat.exists) or (not Deploy.Software.Options.UseLocalInstaller)
         - Deploy.Product.Router.Deploy
         - status is failed
 
@@ -143,7 +143,7 @@
         force: true
         mode: "755"
       when:
-        - not InstallerFileCheck.stat.exists
+        - not installerfilecheck.stat.exists
         - Deploy.Software.Options.KeepNewInstallers
         - Deploy.Product.Router.Deploy
         - status is failed
