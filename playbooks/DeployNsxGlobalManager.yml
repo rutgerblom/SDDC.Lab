@@ -1,15 +1,15 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/deployNsxGlobalManager.yml
+##   Filename: playbooks/DeployNsxGlobalManager.yml
 ##
 ##   Notes: All "LocalManager" references changed to "GlobalManager".  REST calls and module references still need to be updated.
 ##          This module is NOT YET FUNCTIONAL.
 ---
 - hosts: localhost
-  name: deployNsxGlobalManager.yml
+  name: DeployNsxGlobalManager.yml
   tasks:
-    - name: deployNsxGlobalManager_Playbook
+    - name: DeployNsxGlobalManager_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -50,7 +50,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
 
                                      Ansible Playbook: {{ ansible_play_name }}
@@ -101,7 +101,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
 
     - name: If NSX-T Global Manager is part of this deployment, check if it is already installed
@@ -114,7 +114,7 @@
       failed_when: false
       no_log: true
       when:
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Deploy NSX-T Global Manager from OVA
@@ -134,11 +134,11 @@
         networks:
           "Network 1": "{{ Target.PortGroup.Management.Name }}"
         disk_provisioning: "{{ Common.DiskProvisioning }}"
-        power_on: yes
-        fail_on_spec_warnings: yes
-        wait: yes
-        wait_for_ip_address: yes
-        inject_ovf_env: yes
+        power_on: true
+        fail_on_spec_warnings: true
+        wait: true
+        wait_for_ip_address: true
+        inject_ovf_env: true
         properties:
           nsx_cli_audit_username: "{{ Nested_NSXT.Credential.audit.Name }}"
           nsx_cli_audit_passwd_0: "{{ Nested_NSXT.Credential.audit.Password }}"
@@ -155,9 +155,8 @@
           nsx_ntp_0:     "{{ Common.NTP.Server1.IPv4 }}"
           nsx_passwd_0:  "{{ Nested_NSXT.Credential.admin.Password }}"
           nsx_role:      "{{ Nested_NSXT.Component.GlobalManager.Deployment.Role }}"
-      delegate_to: localhost
       when:
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
         - nsxman_check.status != 200
       async: 7200
@@ -166,10 +165,10 @@
 
     - name: Wait 3 seconds before start checking whether the NSX-T Global Manager node is ready
       ansible.builtin.pause: seconds=3
-      when: 
-        - Deploy.Product.NSXT.Federation.Enable == true
+      when:
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
-        - deployment.changed == true
+        - deployment.changed
 
     - name: Result check for NSX-T Global Manager node deployment
       ansible.builtin.async_status:
@@ -177,9 +176,9 @@
       register: job_result
       with_items: "{{ deployment.results }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
-        - deployment.changed == true
+        - deployment.changed
         - item.started is defined
 
     - name: Wait until the NSX-T API reports that the NSX-T Global Manager operational state is "NONE"
@@ -187,39 +186,40 @@
         url: https://{{ Nested_NSXT.Component.GlobalManager.FQDN }}/global-manager/api/v1/gm-operational-state
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
-        force_basic_auth: yes
+        force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         method: GET
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
       register: result
       until: result.status == 200 and result.json.status == "NONE"
       retries: 60
       delay: 60
       when:
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Configure NSX-T Global Manager Virtual IP (VIP) Address
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager.FQDN }}/api/v1/cluster/api-virtual-ip?action=set_virtual_ip&ip_address={{ Nested_NSXT.Component.GlobalManager_VIP.Address.IPv4.Address }}
+        url: https://{{ Nested_NSXT.Component.GlobalManager.FQDN }}/api/v1/cluster/api-virtual-ip?action=set_virtual_ip&ip_address=\
+             {{ Nested_NSXT.Component.GlobalManager_VIP.Address.IPv4.Address }}
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
-        force_basic_auth: yes
+        force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         method: POST
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
       register: result
       until: result.status == 200 and result.json.ip_address == Nested_NSXT.Component.GlobalManager_VIP.Address.IPv4.Address
       retries: 10
       delay: 60
       when:
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Wait until the NSX-T API reports that the NSX-T Global Manager operational state is "NONE" on the VIP
@@ -227,19 +227,19 @@
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/gm-operational-state
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
-        force_basic_auth: yes
+        force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         method: GET
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
       register: result
       until: result.status == 200 and result.json.status == "NONE"
       retries: 60
       delay: 60
       when:
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Enable and Activate NSX-T Global Manager
@@ -252,7 +252,7 @@
         id: "{{ Nested_NSXT.Component.GlobalManager_VIP.VMName }}"
       no_log: true
       when:
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Wait until the NSX-T API reports that the NSX-T Global Manager operational state is "ACTIVE" on the VIP
@@ -260,19 +260,19 @@
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/gm-operational-state
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
-        force_basic_auth: yes
+        force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         method: GET
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
       register: result
       until: result.status == 200 and result.json.status == "ACTIVE"
       retries: 60
       delay: 60
       when:
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Write annotation on the NSX-T Global Manager VM
@@ -285,13 +285,13 @@
         datacenter: "{{ Target.DataCenter }}"
         folder: "{{ Target.VMFolder }}"
         name: "{{ Nested_NSXT.Component.GlobalManager.VMName }}"
-        annotation: | 
+        annotation: |
                     {{ Common.Annotation }}
                     {{ Deploy.Software.NSXT.Vendor }} {{ Deploy.Software.NSXT.Product }} {{ Deploy.Software.NSXT.Version }}
                     Username: {{ Nested_NSXT.Credential.admin.Name }}
                     Password: {{ Nested_NSXT.Credential.admin.Password }}
-      when: 
-        - Deploy.Product.NSXT.Federation.Enable == true
+      when:
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
 
@@ -303,16 +303,16 @@
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/api/v1/node/users
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 15
-        force_basic_auth: yes
+        force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         method: GET
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
       register: userlist
-      when: 
-        - Deploy.Product.NSXT.Federation.Enable == true
+      when:
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Disable Password Expiration Of All NSX-T Users
@@ -320,13 +320,13 @@
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/api/v1/node/users/{{ item.userid }}
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 15
-        force_basic_auth: yes
+        force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         method: PUT
         body_format: json
         body: '{ "password_change_frequency": 0 }'
-        return_content: yes
+        return_content: true
         status_code: 200
       register: result
       until: result.status == 200
@@ -334,7 +334,7 @@
       delay: 3
       loop: "{{ userlist.json.results }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
 ##
@@ -347,14 +347,14 @@
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/api/v1/eula/accept
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 15
-        force_basic_auth: yes
+        force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         method: POST
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
-      when: 
-        - Deploy.Product.NSXT.Federation.Enable == true
+      when:
+        - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
-        - Nested_NSXT.Question.EULA.Accept == true
+        - Nested_NSXT.Question.EULA.Accept

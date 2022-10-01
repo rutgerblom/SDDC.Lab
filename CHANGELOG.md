@@ -381,7 +381,7 @@
 ## Dev-v4.0.0 22-AUG-2021
 
 ### Added by Luis Chanu
-  - Began development on playbooks\deployNsxGlobalManager.yml
+  - Began development on playbooks\DeployNsxGlobalManager.yml
   - Updated the following files to support changes to Deploy.Product.NSXT.GlobalManager structure
     - templates\Pod_Config.j2
     - tempaltes\Pod_Doc.j2
@@ -397,7 +397,7 @@
   ## Dev-v4.0.0 25-AUG-2021
 
 ### Added by Luis Chanu
-  - Added task to enable and activate Global Manager within deployNsxGlobalManager.yml
+  - Added task to enable and activate Global Manager within DeployNsxGlobalManager.yml
   - Created "tests/ShowURI.yml" playbook
   - Began working on "registerNsxLocalWithNsxGlobal.yml" playbook
   - Updated software_sample.yml and templates_sample.yml with vCenter Server v7.0 Update 2C details
@@ -560,7 +560,7 @@
 ## Dev-v4.0.0 11-OCT-2021
 
 ### Added by Luis Chanu
-  - Changed expected "ready" state for GlobalManager in deployNsxGlobalManager.yml from "NONE" to "ACTIVE".
+  - Changed expected "ready" state for GlobalManager in DeployNsxGlobalManager.yml from "NONE" to "ACTIVE".
   - Increased delay before VIP in an attempt to address a race condition.
   - Modified Deploy.yml to support the following:
     - If deployment is Federated, then only provision NSX-T logical objects in the same pod that is deploying Global Manager
@@ -617,9 +617,9 @@
 
 ### Added by Luis Chanu
   - The "SEG-Example-Complicated-VLAN-Segment" segment was deleted from sample_config.yml to remove collisions during Federation onboarding. 
-  - Changed few tasks in deployNsxGlobalManager.yml to use FQDN instead of IPv4 address
+  - Changed few tasks in DeployNsxGlobalManager.yml to use FQDN instead of IPv4 address
   - Removed "lower" filters from DeployNsxLocalManager.yml playbook
-  - Modified deployNsxGlobalManager and DeployNsxLocalManager playbooks to use NSX-T REST API with a verification loop to configure VIPs rather than NSX-T Ansible Module
+  - Modified DeployNsxGlobalManager and DeployNsxLocalManager playbooks to use NSX-T REST API with a verification loop to configure VIPs rather than NSX-T Ansible Module
   - Modified DeployNsxLocalManager to use NSX-T LM VIP rather than appliance IP's after VIP is configured
   - Added vCenter Server v7.0 Update 3A to software repository
   - The following files were updated so please update your non-sample files:
@@ -657,10 +657,10 @@
   - Corrected issue where Edge nodes were not setting 'audit' user password
   - Added Named Teaming Policies to Edge-Uplink-Profile to support pinning to ToR-A and ToR-B
   - Modfied TZ-Edge to take advantage of the new ToR-A and ToR-B named teaming policies
-  - Added filter in DeployNsxLocalManager.yml and deployNsxGlobalManager.yml to force 'Deployment Size' to lower as a safety net in case user accidentally changes case.  OVFTool requires Size to be in lower case.
+  - Added filter in DeployNsxLocalManager.yml and DeployNsxGlobalManager.yml to force 'Deployment Size' to lower as a safety net in case user accidentally changes case.  OVFTool requires Size to be in lower case.
   - Added 'upper' filter in templates/vars_NSXT_EdgeTransportNodes.j2 to ensure FormFactor sizing is always in upper case, as required by the NSX-T API.
   - Modified CreateNsxEdgeTn.yml to disable password expiration for all users on NSX-T Edges
-  - Modified DeployNsxLocalManager.yml and deployNsxGlobalManager.yml to also disable password expiration for 'root' user
+  - Modified DeployNsxLocalManager.yml and DeployNsxGlobalManager.yml to also disable password expiration for 'root' user
   - Updated software versions in config_sample.yml for NSX-T and vCenter Server to v3.1.3.3 and v7.00U3a, respectively.
   - The following files were updated so please update your non-sample files:
     - config_sample.yml
