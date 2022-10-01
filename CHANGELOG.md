@@ -745,7 +745,7 @@
 
 ### Added by Luis Chanu
   - Where applicable, playbooks were updated to use Local Manager and Global Manager VIPs instead of direct appliance IP
-  - Added task to end of validateConfiguration.yml playbook to recursively delete /tmp/{{ SiteCode }} directory
+  - Added task to end of ValidateConfiguration.yml playbook to recursively delete /tmp/{{ SiteCode }} directory
 
 ## Dev-v4.0.0 26-NOV-2021
 
@@ -975,7 +975,7 @@
   - SDDC.Lab was **NOT** tested against these new software updates
   - Renamed VMFolder for vCenter Server target deployments from "SDDC Labs" to "SDDC Pods" in ```config_sample.yml```.
   - Please be sure to update your configuration files and rename your VM Folder from "SDDC Labs" to "SDDC Pods" within your target vCenter Server.
-  - In validateConfiguration.yml, changed DIG target from ```www.google.com``` to ```github.com``` because it was oberved that ipaddr returns ```False``` when multiple A records are returned.
+  - In ValidateConfiguration.yml, changed DIG target from ```www.google.com``` to ```github.com``` because it was oberved that ipaddr returns ```False``` when multiple A records are returned.
   - Change permissions set within ```util_CreateSoftwareDir.yml``` from 775 to 777 to ensure non-root user can update the software repsoritory.
   - Modified ```util_CreateSoftwareDir.yml``` to set 777 permissions to top-level RootDirectory (/Software) directory as well.
   - Enabled ```deployWorkloadVMs.yml``` task in ```Deploy.yml```.
@@ -1330,7 +1330,7 @@
 
 ### Added by Luis Chanu
   - Updated SDDCLab.Version from 4 to 5 in ```templates/Pod_Config.j2``` file.
-  - Modified SDDCLab version check in ```playbooks/validateConfiguration.yml``` file to support either 4 or 5.
+  - Modified SDDCLab version check in ```playbooks/ValidateConfiguration.yml``` file to support either 4 or 5.
   - Added automatic IP subnet addressing for NSX-T Segments.  See expanded explanation within the ```config_sample.yml``` file in the NSX-T Segments and ```Pod.BaseOverlay``` sections.
   - Added additional information on how NSX-T Segment Auto-Allocation works in the ```README.md``` file.
   - Modified ```templates/vars_NSXT_Segments.j2``` to support new automatic IP subnet addressing feature.
