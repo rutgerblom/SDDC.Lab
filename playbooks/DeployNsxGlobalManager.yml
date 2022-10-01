@@ -203,8 +203,7 @@
 
     - name: Configure NSX-T Global Manager Virtual IP (VIP) Address
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager.FQDN }}/api/v1/cluster/api-virtual-ip?action=set_virtual_ip&ip_address=\
-             {{ Nested_NSXT.Component.GlobalManager_VIP.Address.IPv4.Address }}
+        url: https://{{ Nested_NSXT.Component.GlobalManager.FQDN }}/api/v1/cluster/api-virtual-ip?action=set_virtual_ip&ip_address={{ Nested_NSXT.Component.GlobalManager_VIP.Address.IPv4.Address }}
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
         force_basic_auth: true
