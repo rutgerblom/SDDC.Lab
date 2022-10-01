@@ -1,15 +1,15 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/license_NSXT-LM.yml
+##   Filename: playbooks/License_NSXT-LM.yml
 ##
 ---
 - hosts: localhost
-  name: license_NSXT-LM.yml
+  name: License_NSXT-LM.yml
   vars:
     - LOCAL_LicenseFile: ../licenses.yml
   tasks:
-    - name: license_NSXT-LM_Playbook
+    - name: License_NSXT-LM_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -49,7 +49,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ============================ Display Variables For Pod {{Pod.Number}} ===========================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                        Ansible Playbook: {{ ansible_play_name }}
 
@@ -68,8 +68,8 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - DEBUG.DisplayVariables
+        - Deploy.Product.NSXT.LocalManager.Deploy
 
 
 ###
@@ -79,19 +79,19 @@
     - name: Check for existance of license file
       ansible.builtin.stat:
         path: "{{ LOCAL_LicenseFile }}"
-        get_checksum: no
+        get_checksum: false
       register: stat_results
 
     - name: Assume file does not exist, so set flag to skip licensing products
       ansible.builtin.set_fact:
-        LicenseProducts: False
+        licenseproducts: false
 
     - name: If License file does exist and is a regular file, then set flag to license products
       ansible.builtin.set_fact:
-        LicenseProducts: True
+        licenseproducts: true
       when:
-        - stat_results.stat.exists == True
-        - stat_results.stat.isreg == True
+        - stat_results.stat.exists
+        - stat_results.stat.isreg
 
     - name: If not licensing products, notify user
       ansible.builtin.pause:
@@ -111,13 +111,12 @@
 
           =========================================================================
       when:
-        - LicenseProducts != True
+        - not licenseproducts
 
     - name: If we are licensing products, read in license information
       ansible.builtin.include_vars:
         file: "{{ LOCAL_LicenseFile }}"
-      when: LicenseProducts == True
-
+      when: licenseproducts
 
 ##
 ## License NSX-T
@@ -131,9 +130,9 @@
         license_key: "{{ item.KeyCode }}"
         state: present
       loop: "{{ License.VMware.NSXT.Licenses | default([]) }}"
-      ignore_errors: yes                                                             # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
+      failed_when: false    # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
       no_log: true
       when:
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
+        - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Software.NSXT.Version is match(item.Version)
-        - LicenseProducts == True
+        - licenseproducts
