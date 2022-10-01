@@ -84,11 +84,11 @@
 
     - name: Assume file does not exist, so set flag to skip licensing products
       ansible.builtin.set_fact:
-        LicenseProducts: false
+        licenseproducts: false
 
     - name: If License file does exist and is a regular file, then set flag to license products
       ansible.builtin.set_fact:
-        LicenseProducts: true
+        licenseproducts: true
       when:
         - stat_results.stat.exists
         - stat_results.stat.isreg
@@ -111,13 +111,13 @@
 
           =========================================================================
       when:
-        - not LicenseProducts
+        - not licenseproducts
 
     - name: If we are licensing products, read in license information
       ansible.builtin.include_vars:
         file: "{{ LOCAL_LicenseFile }}"
       when:
-        - LicenseProducts
+        - licenseproducts
 
 
 ##
