@@ -1,17 +1,15 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/federateNsxT0BGPNeighbors.yml
+##   Filename: playbooks/FederateNsxT0BGPNeighbors.yml
 ##
 ##      Notes: The purpose of this playbook is configure BGP Neighbors on the Federated Tier-0 Gateway.
 ##
 ---
 - hosts: localhost
-  name: federateNsxT0BGPNeighbors.yml
-  vars:
-    LOCAL_T0BGPNeighbors_Template: "{{ Target.TemplateFolder }}/vars_NSXT_T0BGPNeighbors.j2"
+  name: FederateNsxT0BGPNeighbors.yml
   tasks:
-    - name: federateNsxT0BGPNeighbors_Playbook
+    - name: FederateNsxT0BGPNeighbors_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -52,7 +50,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                          Ansible Playbook: {{ ansible_play_name }}
 
@@ -64,56 +62,29 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-
-    - name: Generate data structure containing the Tier-0 Gateway BGP Neighbors to create
-      ansible.builtin.set_fact:
-        bgp_neighbors: "{{ lookup('template', LOCAL_T0BGPNeighbors_Template) | from_yaml }}"
-      when:
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
-        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
-
-    - name: DEBUG -- Display 'bgp_neighbors' data structure
-      ansible.builtin.pause:
-        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
-        prompt: |
-          ====================== Display IP Pools 'bgp_neighbors' Variable ==========================
-
-          Quantity: {{ bgp_neighbors | length }}
-
-          bgp_neighbors (YAML):
-            {{ bgp_neighbors | to_nice_yaml(indent=2, width=99999) | indent(2) }}
-
-          =================================================================================================
-      when:
-        - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
-        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
+        - DEBUG.DisplayVariables
 
     - name: Configure BGP Neighbors on Tier-0 Gatweay for Pod
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ SiteCode }}/bgp/neighbors/{{ item.display_name }}
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/\
+             {{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ SiteCode }}/bgp/neighbors/{{ item.display_name }}
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 15
-        force_basic_auth: yes
+        force_basic_auth: true
         method: PATCH
         body_format: json
         body: "{{ item | to_json }}"
-        return_content: yes
+        return_content: true
         status_code: 200
       register: result
       until: result.status == 200
       retries: 12
       delay: 10
-      loop: "{{ bgp_neighbors }}"
-      when: 
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+      loop: "{{ lookup('template', Target.TemplateFolder + '/vars_NSXT_T0BGPNeighbors.j2') | from_yaml }}"
+      when:
+        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
