@@ -14,7 +14,7 @@
  #}
 {% set ns = namespace() %}
 {% set ns.LicenseAssignedToHost=false %}
-{% set ns.Licenses=ESXi_Licenses %}
+{% set ns.Licenses=esxi_licenses %}
 {% for HostName, HostConfig in Nested_ESXi.Host.items() %}
 {# Calculate number of sockets this host needs #}
 {% set HostSockets = (Nested_ESXi.HardwareSettings[HostConfig.Cluster].CPU / Nested_ESXi.HardwareSettings[HostConfig.Cluster].CoresPerSocket) | int %}

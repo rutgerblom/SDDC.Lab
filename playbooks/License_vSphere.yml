@@ -201,7 +201,7 @@
         license: "{{ item.License }}"
         state: present
       loop: "{{ hoststolicense }}"
-      failed_when: true    # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
+      failed_when: false    # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
       no_log: true
       when:
         - licenseproducts
