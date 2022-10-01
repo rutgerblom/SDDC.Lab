@@ -581,7 +581,7 @@
 ### Added by Luis Chanu
   - NOTE: Successfully deployed vRealize Log Insight v8.6.0 as part of a deployment
   - Made slight modifications to federateNsxLocalManager.yml around order of operations and delays
-  - Began developing federateNsxEdgeNodes.yml playbook to make the necessary changes to the Edge Nodes for Federation.  Initial thoughts on tasks include:
+  - Began developing FederateNsxEdgeNodes.yml playbook to make the necessary changes to the Edge Nodes for Federation.  Initial thoughts on tasks include:
     - Connect EdgeNodes to T0-Gateway-01 interfaces
     - Assign IP addresses to the EdgeNode interfaces
     - Configure RTEP interfaces on EdgeNodes
@@ -694,7 +694,7 @@
 ## Dev-v4.0.0 21-NOV-2021
 
 ### Added by Luis Chanu
-  - Added code to federateNsxEdgeNodes.yml which:
+  - Added code to FederateNsxEdgeNodes.yml which:
     - Configures RTEP interface on Edge Nodes
     - Configures Tier-0 Gateway Interfaces on the Edge Node SRs
     - **IMPORTANT**: Only the first Tier-0 Gateway is configured

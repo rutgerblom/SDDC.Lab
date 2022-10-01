@@ -63,7 +63,7 @@
         - DEBUG.DisplayVariables
 
 ##
-## For each Edge Cluster, we need it's path for the DHCP Server REST API call.  Thus, let's create a EdgeClusterPath dictionary with Key being
+## For each Edge Cluster, we need it's path for the DHCP Server REST API call.  Thus, let's create a edgeclusterpath dictionary with Key being
 ## the EdgeCluster Name, and the Value being the given Edge Clusters path.
 ##
     - name: Obtain list of all Edge Clusters
@@ -92,11 +92,11 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Create EdgeClusterPath dictionary
+    - name: Create edgeclusterpath dictionary
       ansible.builtin.set_fact:
-        EdgeClusterPath: "{{ EdgeClusterPath | default({}) | combine({item.display_name : PathToEdgeCluster}) }}"
+        edgeclusterpath: "{{ edgeclusterpath | default({}) | combine({item.display_name: pathtoedgecluster}) }}"
       vars:
-        PathToEdgeCluster: "/infra/sites/default/enforcement-points/default/edge-clusters/{{ item.id }}"
+        pathtoedgecluster: "/infra/sites/default/enforcement-points/default/edge-clusters/{{ item.id }}"
       loop: "{{ edgeclusters.results }}"
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy
@@ -106,10 +106,10 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ============================= Display EdgeClusterPath Dictionary  ===============================
+          ============================= Display edgeclusterpath Dictionary  ===============================
 
-          EdgeClusterPath:
-            {{ EdgeClusterPath | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+          edgeclusterpath:
+            {{ edgeclusterpath | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
           =================================================================================================
       when:
