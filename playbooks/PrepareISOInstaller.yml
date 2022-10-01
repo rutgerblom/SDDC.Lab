@@ -7,7 +7,7 @@
 - hosts: localhost
   name: PrepareISOInstaller.yml
   vars:
-    ISOExtractPoint: "{{ Target.TempFolder }}/isos/{{ Deploy.Software.ESXi.Vendor }}_{{ Deploy.Software.ESXi.Product }}_{{ Deploy.Software.ESXi.Version }}"
+    isoextractpoint: "{{ Target.TempFolder }}/isos/{{ Deploy.Software.ESXi.Vendor }}_{{ Deploy.Software.ESXi.Product }}_{{ Deploy.Software.ESXi.Version }}"
   tasks:
     - name: PrepareISOInstaller_Playbook
       ansible.builtin.debug:
@@ -63,7 +63,7 @@
                                      Target.ISOFolder: {{ Target.ISOFolder }}
                                     Target.TempFolder: {{ Target.TempFolder }}
 
-                                        ISOExtractPoint: {{ ISOExtractPoint }}
+                                        isoextractpoint: {{ isoextractpoint }}
 
                          Deploy.Software.ESXi.Version: {{ Deploy.Software.ESXi.Version }}
                        Deploy.Software.ESXi.Installer: {{ Deploy.Software.ESXi.Installer }}
@@ -80,19 +80,19 @@
 
     - name: Extract ESXi ISO
       ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.ESXi.Directory }}/{{ Deploy.Software.ESXi.File }} \
-                                -extract / {{ ISOExtractPoint }}"
+                                -extract / {{ isoextractpoint }}"
       changed_when: false
 
     - name: Add write permission to extracted files
       ansible.builtin.file:
-        path: "{{ ISOExtractPoint }}"
+        path: "{{ isoextractpoint }}"
         state: directory
         recurse: true
         mode: u+w
 
-    - name: Copy BOOT.CFG from the ESXi ISOExtractPoint
+    - name: Copy BOOT.CFG from the ESXi isoextractpoint
       ansible.builtin.copy:
-        src: "{{ ISOExtractPoint }}/BOOT.CFG"
+        src: "{{ isoextractpoint }}/BOOT.CFG"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/"
         mode: "666"
       tags: esxi-install-media
@@ -124,7 +124,7 @@
 
     - name: Create custom ESXi ISO for each nested ESXi host
       ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Pod.Number }}{{ item.key }} \
-                              -b ISOLINUX.BIN -c BOOT.CAT -no-emul-boot -boot-load-size 4 -boot-info-table {{ ISOExtractPoint }}/ \
+                              -b ISOLINUX.BIN -c BOOT.CAT -no-emul-boot -boot-load-size 4 -boot-info-table {{ isoextractpoint }}/ \
                               {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/ \
                               {{ Target.TempFolder }}/{{ item.value.VMName }}/{{ Deploy.Software.ESXi.Config }}"
       args:
@@ -147,9 +147,9 @@
       when: Nested_Cluster[item.value.Cluster]['DeployHosts']
       tags: esxi-install-media
 
-    - name: Delete local ISOExtractPoint directory
+    - name: Delete local isoextractpoint directory
       ansible.builtin.file:
-        path: "{{ ISOExtractPoint }}"
+        path: "{{ isoextractpoint }}"
         state: absent
       when: not DEBUG.KeepInstallerFiles
       tags: esxi-install-media
