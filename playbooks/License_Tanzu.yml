@@ -96,7 +96,7 @@
 
     - name: Assume file does not exist, so set flag to skip licensing products
       ansible.builtin.set_fact:
-        LicenseProducts: false
+        licenseproducts: false
       when:
         - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy
@@ -104,11 +104,11 @@
 
     - name: If License file does exist and is a regular file, then set flag to license products
       ansible.builtin.set_fact:
-        LicenseProducts: true
+        licenseproducts: true
       when:
         - tanzu_supervisor is defined
-        - stat_results.stat.exists == true
-        - stat_results.stat.isreg == true
+        - stat_results.stat.exists
+        - stat_results.stat.isreg
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
@@ -131,7 +131,7 @@
           =========================================================================
       when:
         - tanzu_supervisor is defined
-        - not LicenseProducts
+        - not licenseproducts
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
@@ -141,7 +141,7 @@
       no_log: true
       when:
         - tanzu_supervisor is defined
-        - LicenseProducts
+        - licenseproducts
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
