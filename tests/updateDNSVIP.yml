@@ -1,18 +1,18 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: tests/updateDNSVIP.yml
+##   Filename: tests/UpdateDNSVIP.yml
 ##
 ##      Notes: This 'test' module populates DNS with the NSX-T Global Manager and Local Manager VIPs.  It populates both forward and reverse DNS records.  **TESTED**
-##             This code needs to be in integrated into the 'updateDNS' and 'CleanupDNS' modules.
+##             This code needs to be in integrated into the 'UpdateDNS' and 'CleanupDNS' modules.
 ##
 ---
 - hosts: localhost
-  name: updateDNSVIP.yml
+  name: UpdateDNSVIP.yml
   vars:
     - LOCAL_RecordState: "present"           # LOCAL_RecordState values are either "present" (Records will be added) or "absent" (Records will be deleted)
   tasks:
-    - name: updateDNSVIP_Playbook
+    - name: UpdateDNSVIP_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -54,12 +54,12 @@
 ##
     - name: Determine IPv6 Zone for PTR Records (i.e. Reverse DNS) if BaseNetwork.IPv6 begins with 'fd'
       ansible.builtin.set_fact:
-        IPv6_Reverse_Zone: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ansible.utils.ipaddr('revdns') | regex_replace('^.{60}(.*).$', '\\1') }}"
+        ipv6_reverse_zone: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ansible.utils.ipaddr('revdns') | regex_replace('^.{60}(.*).$', '\\1') }}"
       when: (Pod.BaseNetwork.IPv6[0:2] | lower) == 'fd'
 
     - name: Determine IPv6 Zone for PTR Records (i.e. Reverse DNS) if BaseNetwork.IPv6 does NOT begin with 'fd'
       ansible.builtin.set_fact:
-        IPv6_Reverse_Zone: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ansible.utils.ipaddr('revdns') | regex_replace('^.{36}(.*).$', '\\1') }}"
+        ipv6_reverse_zone: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ansible.utils.ipaddr('revdns') | regex_replace('^.{36}(.*).$', '\\1') }}"
       when: (Pod.BaseNetwork.IPv6[0:2] | lower) != 'fd'
 
 
@@ -68,7 +68,7 @@
 ##
     - name: Determine IPv4 Zone for PTR Records
       ansible.builtin.set_fact:
-        IPv4_Reverse_Zone: "{{ Pod.BaseNetwork.IPv4 | ansible.utils.ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
+        ipv4_reverse_zone: "{{ Pod.BaseNetwork.IPv4 | ansible.utils.ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
 
 
 ##
@@ -95,8 +95,8 @@
                                  Pod.BaseNetwork.IPv4: {{ Pod.BaseNetwork.IPv4 }}
                                  Pod.BaseNetwork.IPv6: {{ Pod.BaseNetwork.IPv6 }}
 
-                                IPv4 Reverse DNS Zone: {{ IPv4_Reverse_Zone }}
-                                IPv6 Reverse DNS Zone: {{ IPv6_Reverse_Zone }}
+                                IPv4 Reverse DNS Zone: {{ ipv4_reverse_zone }}
+                                IPv6 Reverse DNS Zone: {{ ipv6_reverse_zone }}
 
           =================================================================================================
       when:
@@ -153,7 +153,7 @@
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
-                                                 Zone: {{ IPv4_Reverse_Zone }}
+                                                 Zone: {{ ipv4_reverse_zone }}
                                                Record: {{ Nested_NSXT.Component.GlobalManager.Address.IPv4.Virtual | ansible.utils.ipaddr('revdns') }}
                                                 Value: {{ (Nested_NSXT.Component.GlobalManager.FQDN_VIP).split('.')[0] }}.{{ Common.DNS.Domain }}.
 
@@ -169,7 +169,7 @@
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
         protocol: udp
-        zone:     "{{ IPv4_Reverse_Zone }}"
+        zone:     "{{ ipv4_reverse_zone }}"
         record:   "{{ Nested_NSXT.Component.GlobalManager.Address.IPv4.Virtual | ansible.utils.ipaddr('revdns') }}"
         value:    "{{ (Nested_NSXT.Component.GlobalManager.FQDN_VIP).split('.')[0] }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"
@@ -228,7 +228,7 @@
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
-                                                 Zone: {{ IPv4_Reverse_Zone }}
+                                                 Zone: {{ ipv4_reverse_zone }}
                                                Record: {{ Nested_NSXT.Component.LocalManager.Address.IPv4.Virtual | ansible.utils.ipaddr('revdns') }}
                                                 Value: {{ (Nested_NSXT.Component.LocalManager.FQDN_VIP).split('.')[0] }}.{{ Common.DNS.Domain }}.
 
@@ -244,7 +244,7 @@
         server:   "{{ Common.DNS.Server1.IPv4 }}"
         type:     PTR
         protocol: udp
-        zone:     "{{ IPv4_Reverse_Zone }}"
+        zone:     "{{ ipv4_reverse_zone }}"
         record:   "{{ Nested_NSXT.Component.LocalManager.Address.IPv4.Virtual | ansible.utils.ipaddr('revdns') }}"
         value:    "{{ (Nested_NSXT.Component.LocalManager.FQDN_VIP).split('.')[0] }}.{{ Common.DNS.Domain }}."
         state:    "{{ LOCAL_RecordState }}"

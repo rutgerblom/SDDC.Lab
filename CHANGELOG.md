@@ -318,13 +318,13 @@
 
 ### Added by Luis Chanu
 
-  - Created test module "tests/updateDNSVIP.yml" module to populate NSX-T VIP entries into DNS.  This module is working, and the code is ready to be integrated into the two modules with touch DNS records.
+  - Created test module "tests/UpdateDNSVIP.yml" module to populate NSX-T VIP entries into DNS.  This module is working, and the code is ready to be integrated into the two modules with touch DNS records.
 
 ## Dev-v4.0.0 17-JULY-2021
 
 ### Added by Luis Chanu
 
-  - Integrated DNS VIP code into both "updateDNS.yml" and "CleanupDNS.yml" playbooks.  Tested both playbooks, and they completed without any issues.  Verified using utils/showdns that the NSX-T Global Manager and Local Manager VIPs were populated in DNS.
+  - Integrated DNS VIP code into both "UpdateDNS.yml" and "CleanupDNS.yml" playbooks.  Tested both playbooks, and they completed without any issues.  Verified using utils/showdns that the NSX-T Global Manager and Local Manager VIPs were populated in DNS.
 
 ## Dev-v4.0.0 18-JULY-2021
 
@@ -542,7 +542,7 @@
 ## Dev-v4.0.0 06-OCT-2021
 
 ### Added by Luis Chanu
-  - Added conditional to updateDNS.yml to only populate Global Manager records in DNS if the deploying SiteCode == Global Manager SiteCode.  It should be noted that the conditional was NOT added to CleanupDNS.yml, as they should always be removed if present.
+  - Added conditional to UpdateDNS.yml to only populate Global Manager records in DNS if the deploying SiteCode == Global Manager SiteCode.  It should be noted that the conditional was NOT added to CleanupDNS.yml, as they should always be removed if present.
   - Originally, Deploy.Product.NSXT.GlobalManager.Deploy was used to signify if GM was being deployed.  That has now been changed, and now Deploy.Product.NSXT.Federation.Enable is used.  If it is set to True, then when the deployment SiteCode matches the GlobalManager.SiteCode, the Global Manager is deployed.
   - Modify EULA structure for Nested_NSXT
   - Added automated EULA acceptance to the NSX-T Global and Local Manager deployment playbooks.  EULA must be accepted in the config.yml file (under Nested_NSXT.Question.EULA)
