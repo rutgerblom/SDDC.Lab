@@ -154,27 +154,27 @@
 
     - name: Store vCenter Session ID for later use
       ansible.builtin.set_fact:
-        vCenter_SessionID: "{{ vcenter_auth_result.json.value | default(None) }}"
+        vcenter_sessionid: "{{ vcenter_auth_result.json.value | default(None) }}"
       when:
         - Target.Deployment == "vCenter"
         - vds_result.result == "DVS created"
 
-    - name: DEBUG -- Display vCenter_SessionID
+    - name: DEBUG -- Display vcenter_sessionid
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
           =================================================================================================
 
-          Variable: vCenter_SessionID
+          Variable: vcenter_sessionid
           ===========================
-          {{ vCenter_SessionID | to_nice_yaml }}
+          {{ vcenter_sessionid | to_nice_yaml }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables
         - Target.Deployment == "vCenter"
         - vds_result.result == "DVS created"
-        - vCenter_SessionID is defined
+        - vcenter_sessionid is defined
 
 ##
 ## Add vSphere Cluster's Member Servers to the vDS
@@ -183,7 +183,7 @@
     - name: Get the vSphere Cluster's Object ID (MoREF)
       ansible.builtin.uri:
         url: "https://{{ Target.FQDN }}/rest/vcenter/cluster?filter.names={{ Target.Cluster }}"
-        headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
+        headers: "{ 'vmware-api-session-id':'{{ vcenter_sessionid }}' }"
         method: GET
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
@@ -217,7 +217,7 @@
 
     - name: Store vSphere Cluster Object ID (MoREF) for later use
       ansible.builtin.set_fact:
-        Cluster_ID: "{{ cluster_info.json.value[0].cluster | default(None) }}"
+        cluster_id: "{{ cluster_info.json.value[0].cluster | default(None) }}"
       when:
         - Target.Deployment == "vCenter"
         - vds_result.result == "DVS created"
@@ -242,7 +242,7 @@
     - name: Get ESXi hosts in vSphere Cluster
       ansible.builtin.uri:
         url: "https://{{ Target.FQDN }}/rest/vcenter/host?filter.clusters={{ Cluster_ID }}"
-        headers: "{ 'vmware-api-session-id':'{{ vCenter_SessionID }}' }"
+        headers: "{ 'vmware-api-session-id':'{{ vcenter_sessionid }}' }"
         method: GET
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 10
