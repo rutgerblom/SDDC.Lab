@@ -80,6 +80,8 @@ Deploy:
         PodNumber: "{{ Pod.Number }}"                     # If not deploying Global Manager to this site as part of this deployment, change to indicate the Pod Number (i.e. 30) of the Pod in which the Global Manager is being deployed to.  When Federation is deployed, this is used to determine the proper eBGP Peering ASN to use on the Pod Router.
       Edge:
         Deploy: true                                      # Edge - Deploy NSX-T Edge Transport Nodes as part of the Pod deployment.
+      NSXALB:
+        Deploy: false                                     # NSX - Deploy NSX Advanced Load Balancer as part of the Pod deployment.
   WorkloadVMs:
     Deploy: false                                         # Controls whether Guest Workload VMs are deployed from the Content Library after the Pod deployment is completed
     Cluster: ComputeA                                     # Default vSphere Cluster to place the Workload VMs in
