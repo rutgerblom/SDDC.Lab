@@ -522,7 +522,7 @@
 ## Dev-v4.0.0 03-OCT-2021
 
 ### Added by Luis Chanu
-  - Renamed playbooks/registerNsxLocalManager.yml to playbooks/federateNsxLocalManager.yml
+  - Renamed playbooks/registerNsxLocalManager.yml to playbooks/FederateNsxLocalManager.yml
   - Added the following playbooks to Deploy.yml:
     - ConfigureNsxBackup.yml
     - registerNsxLocalManager.yml
@@ -554,7 +554,7 @@
 ### Added by Luis Chanu
   - Changes made to the ConfigureNsxBackup.yml playbook, and it appears to be functioning properly.
   - Added comments to playbook to document what backups are created, and which ones are run.
-  - Additional changes to federateNsxLocalManager.yml...still work in progress.
+  - Additional changes to FederateNsxLocalManager.yml...still work in progress.
   - Enabled ConfigureNsxBackup.yml in Deploy.yml.
 
 ## Dev-v4.0.0 11-OCT-2021
@@ -580,7 +580,7 @@
 
 ### Added by Luis Chanu
   - NOTE: Successfully deployed vRealize Log Insight v8.6.0 as part of a deployment
-  - Made slight modifications to federateNsxLocalManager.yml around order of operations and delays
+  - Made slight modifications to FederateNsxLocalManager.yml around order of operations and delays
   - Began developing FederateNsxEdgeNodes.yml playbook to make the necessary changes to the Edge Nodes for Federation.  Initial thoughts on tasks include:
     - Connect EdgeNodes to T0-Gateway-01 interfaces
     - Assign IP addresses to the EdgeNode interfaces
@@ -609,7 +609,7 @@
 ## Dev-v4.0.0 27-OCT-2021
 
 ### Added by Luis Chanu
-  - In federateNsxLocalManager.yml, doubled length of time we'll loop to see if Global Manager is ready from 1 hour to 2 hours.
+  - In FederateNsxLocalManager.yml, doubled length of time we'll loop to see if Global Manager is ready from 1 hour to 2 hours.
   - Updated DeployNsxLocalManager.yml to obtain current _revision number for CEIP config and telemetry settings
   - To determine if Pod-Router VM is actually powered off, replaced timer with module to query VM state
   
@@ -631,7 +631,7 @@
 
 ### Added by Luis Chanu
   - Created tests/TestFailure.yml playbook to test various failure handling scenarios
-  - Many changes to federateNsxLocalManager.yml playbook:
+  - Many changes to FederateNsxLocalManager.yml playbook:
     - Identified race condition, and modified various tasks to address it
     - Identified onboarding issue if multiple simultaneous Pods are being deployed, as only one NSX-T Location can be onboarded at a time.  Resolved by adding logic so that sites can onboard only if NSX-T is accepting onboarding, else the sites keep waiting.
   - Successfully tested NSX-T Federation deployment with three (3) sites.
