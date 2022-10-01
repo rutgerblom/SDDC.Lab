@@ -184,7 +184,7 @@
     - name: Wait until the NSX-T API reports that the NSX-T Global Manager operational state is "NONE"
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager.FQDN }}/global-manager/api/v1/gm-operational-state
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        validate_certs: false
         timeout: 5
         force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -204,7 +204,7 @@
     - name: Configure NSX-T Global Manager Virtual IP (VIP) Address
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager.FQDN }}/api/v1/cluster/api-virtual-ip?action=set_virtual_ip&ip_address={{ Nested_NSXT.Component.GlobalManager_VIP.Address.IPv4.Address }}
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        validate_certs: false
         timeout: 5
         force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -224,7 +224,7 @@
     - name: Wait until the NSX-T API reports that the NSX-T Global Manager operational state is "NONE" on the VIP
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/gm-operational-state
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        validate_certs: false
         timeout: 5
         force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -257,7 +257,7 @@
     - name: Wait until the NSX-T API reports that the NSX-T Global Manager operational state is "ACTIVE" on the VIP
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/gm-operational-state
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        validate_certs: false
         timeout: 5
         force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -300,7 +300,7 @@
     - name: Obtain NSX-T Global Manager User List
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/api/v1/node/users
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        validate_certs: false
         timeout: 15
         force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -317,7 +317,7 @@
     - name: Disable Password Expiration Of All NSX-T Users
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/api/v1/node/users/{{ item.userid }}
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        validate_certs: false
         timeout: 15
         force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -344,7 +344,7 @@
       ansible.builtin.uri:
 ### Do NOT convert the URL below to /policy/api/v1/eula/accept, as it does not work, even though it's listed in the Global Manager REST API documentation as the proper API call ###
         url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/api/v1/eula/accept
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        validate_certs: false
         timeout: 15
         force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
