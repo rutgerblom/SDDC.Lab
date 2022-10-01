@@ -1,7 +1,7 @@
 ##
 ##      Project: SDDC.Lab
 ##      Authors: Luis Chanu & Rutger Blom
-##     Filename: utils/util_CreateSoftwareDir.yml
+##     Filename: utils/Util_CreateSoftwareDir.yml
 ##
 ##  Description: This utility performs the following functions:
 ##                 1) It creates the /Software folder structure
@@ -11,12 +11,13 @@
 ##               For that reason, it should NOT be run with 'sudo', and it should be executed as follows
 ##               from the root of the SDDC.Lab folder:
 ##
-##                         ansible-playbook --ask-become-pass utils/util_CreateSoftwareDir.yml
+##                         ansible-playbook --ask-become-pass utils/Util_CreateSoftwareDir.yml
 ##
 ##               When you run the util as shown above, it will prompt you for the 'root' password.
 ##
 ---
 - hosts: localhost
+  name: Util_CreateSoftwareDir.yml
   vars_files:
     - ../software.yml
   tasks:
@@ -25,70 +26,80 @@
 ## Set Software Repository RootDirectory Permissions
 ##
     - name: Set permissions on {{ RootDirectory }}
-      file:
+      ansible.builtin.file:
         path: "{{ RootDirectory }}"
         state: directory
         mode: "0777"
-      become: yes
-
+      become: true
 
 ##
 ## VMware
 ##
     - name: Create VMware vCenter directories
-      file:
+      ansible.builtin.file:
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
-      become: yes
+      become: true
       loop: "{{ Software.VMware.vCenter.Installers | dict2items }}"
       when: Software.VMware.vCenter.Installers is defined
 
     - name: Create VMware ESXi directories
-      file:
+      ansible.builtin.file:
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
-      become: yes
+      become: true
       loop: "{{ Software.VMware.ESXi.Installers | dict2items }}"
       when: Software.VMware.ESXi.Installers is defined
 
     - name: Create VMware NSXT directories
-      file:
+      ansible.builtin.file:
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
-      become: yes
+      become: true
       loop: "{{ Software.VMware.NSXT.Installers | dict2items }}"
       when: Software.VMware.NSXT.Installers is defined
 
     - name: Create VMware vRLI directories
-      file:
+      ansible.builtin.file:
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
-      become: yes
+      become: true
       loop: "{{ Software.VMware.vRLI.Installers | dict2items }}"
       when: Software.VMware.vRLI.Installers is defined
 
-    - name: Create Ubuntu directories
-      file:
+    - name: Create VMware NSX Advanced Load Balancer directories
+      ansible.builtin.file:
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
-      become: yes
+      become: true
+      loop: "{{ Software.VMware.NSXALB.Installers | dict2items }}"
+      when: Software.VMware.NSXALB.Installers is defined
+
+##
+## Ubuntu
+##
+    - name: Create Ubuntu directories
+      ansible.builtin.file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0777"
+      become: true
       loop: "{{ Software.Ubuntu.Server.Installers | dict2items }}"
       when: Software.Ubuntu.Server.Installers is defined
-
 
 ##
 ## VyOS
 ##
     - name: Create VyOS directories
-      file:
+      ansible.builtin.file:
         path: "{{ item.value.Location.Local }}"
         state: directory
         mode: "0777"
-      become: yes
+      become: true
       loop: "{{ Software.VyOS.Router.Installers | dict2items }}"
       when: Software.VyOS.Router.Installers is defined

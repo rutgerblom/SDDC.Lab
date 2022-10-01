@@ -976,8 +976,8 @@
   - Renamed VMFolder for vCenter Server target deployments from "SDDC Labs" to "SDDC Pods" in ```config_sample.yml```.
   - Please be sure to update your configuration files and rename your VM Folder from "SDDC Labs" to "SDDC Pods" within your target vCenter Server.
   - In ValidateConfiguration.yml, changed DIG target from ```www.google.com``` to ```github.com``` because it was oberved that ipaddr returns ```False``` when multiple A records are returned.
-  - Change permissions set within ```util_CreateSoftwareDir.yml``` from 775 to 777 to ensure non-root user can update the software repsoritory.
-  - Modified ```util_CreateSoftwareDir.yml``` to set 777 permissions to top-level RootDirectory (/Software) directory as well.
+  - Change permissions set within ```Util_CreateSoftwareDir.yml``` from 775 to 777 to ensure non-root user can update the software repsoritory.
+  - Modified ```Util_CreateSoftwareDir.yml``` to set 777 permissions to top-level RootDirectory (/Software) directory as well.
   - Enabled ```deployWorkloadVMs.yml``` task in ```Deploy.yml```.
 
 ## Dev-v4.0.0 20-FEBRUARY-2022
@@ -1076,7 +1076,7 @@
 ## Dev-v5.0.0 13-APRIL-2022
 
 ### Added by Luis Chanu
-  - Changed /Software directory permissions from 0777 to 0775 in ```util_CreateSoftwareDir.yml```
+  - Changed /Software directory permissions from 0777 to 0775 in ```Util_CreateSoftwareDir.yml```
   - Changed NSX-T version to v3.1.3.6 in ```config_sample.yml```
   - Cleaning up minor spacing issues in ```config_sample.yml```
   - Please be sure to update your ```config.yml``` file
@@ -1270,8 +1270,8 @@
 ## Dev-v5.0.0 17-AUGUST-2022
 
 ### Added by Luis Chanu
-  - As part of the ongoing effort to stop running playbooks using "sudo ansible-playbook", ```utils/util_CreateSoftwareDir.yml``` was modified to use the ```become``` directive to elevate permissions within the playbook.
-  - The ```README.md``` file has been updated to reflect the changes made to the ```utils/util_CreateSoftwareDir.yml``` playbook.
+  - As part of the ongoing effort to stop running playbooks using "sudo ansible-playbook", ```utils/Util_CreateSoftwareDir.yml``` was modified to use the ```become``` directive to elevate permissions within the playbook.
+  - The ```README.md``` file has been updated to reflect the changes made to the ```utils/Util_CreateSoftwareDir.yml``` playbook.
 
 ## Dev-v5.0.0 17-AUGUST-2022
 
