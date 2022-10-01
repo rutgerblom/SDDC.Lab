@@ -195,8 +195,7 @@
 
     - name: Configure NSX-T Local Manager Virtual IP (VIP) Address
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/api/v1/cluster/api-virtual-ip?action=set_virtual_ip&ip_address=\
-                     {{ Nested_NSXT.Component.LocalManager_VIP.Address.IPv4.Address }}
+        url: https://{{ Nested_NSXT.Component.LocalManager.FQDN }}/api/v1/cluster/api-virtual-ip?action=set_virtual_ip&ip_address={{ Nested_NSXT.Component.LocalManager_VIP.Address.IPv4.Address }}
         validate_certs: false
         timeout: 15
         force_basic_auth: true
