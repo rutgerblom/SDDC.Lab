@@ -1,7 +1,7 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/federateNsxT0RouteReDist.yml.yml
+##   Filename: playbooks/FederateNsxT0RouteReDist.yml.yml
 ##
 ##      Notes: The purpose of this playbook is configure Route Redistribution on the Tier-0 Gateway.
 ##             For consistency, it copies the Route Re-Distribution configuration from the GM SiteCode LocaleServices,
@@ -9,9 +9,9 @@
 ##
 ---
 - hosts: localhost
-  name: federateNsxT0RouteReDist.yml.yml
+  name: FederateNsxT0RouteReDist.yml.yml
   tasks:
-    - name: federateNsxT0RouteReDist.yml_Playbook
+    - name: FederateNsxT0RouteReDist.yml_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -52,7 +52,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                          Ansible Playbook: {{ ansible_play_name }}
 
@@ -64,37 +64,38 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Obtain current Tier-0 Gateway Route Redistribution configuration from GM SiteCode
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/\
+             {{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 15
-        force_basic_auth: yes
+        force_basic_auth: true
         method: GET
         body_format: json
-        return_content: yes
+        return_content: true
         status_code: 200
       register: result
       until: result.status == 200
       retries: 12
       delay: 5
-      when: 
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+      when:
+        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
 
     - name: Save GM SiteCode Tier-0 Gateway Route Redistribution configuration for later use
       ansible.builtin.set_fact:
         route_redistribution_config: "{{ result.json.route_redistribution_config }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
         - result.status == 200
 
@@ -112,20 +113,21 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+        - DEBUG.DisplayVariables
+        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
 
     - name: Configure Route Redistribution on Tier-0 Gateway for our Pod
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ SiteCode }}
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/\
+             {{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ SiteCode }}
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 15
-        force_basic_auth: yes
+        force_basic_auth: true
         method: PATCH
         body_format: json
         body: |
@@ -133,14 +135,14 @@
            "resource_type": "LocaleServices",
            "route_redistribution_config": {{ route_redistribution_config }}
          }
-        return_content: yes
+        return_content: true
         status_code: 200
       register: result
       until: result.status == 200
       retries: 12
       delay: 5
-      when: 
-        - Deploy.Product.NSXT.Federation.Enable == true
-        - Deploy.Product.NSXT.LocalManager.Deploy == true
-        - Deploy.Product.NSXT.Edge.Deploy == true
+      when:
+        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
