@@ -1394,6 +1394,11 @@
 
 ### Added by Rutger Blom
   - Modified playbooks to become (more) Ansible lint compliant.
-  - Added playbook for automatic deployment of NSX Advanced Load Balancer.   
+  - Added playbook for automatic deployment of NSX Advanced Load Balancer.
   - Updated templates, playbooks, and configuration to support automatic deployment of NSX Advanced Load Balancer as part of a Pod deployment. This is still work in progress.
   - Please be sure to update your ```config.yml``` and ```software.yml``` files.
+
+## Dev-v5.0.0 02-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Renamed AVI references to ALB within ```README.md``` file.
