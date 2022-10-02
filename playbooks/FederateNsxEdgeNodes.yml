@@ -77,8 +77,7 @@
 ##
     - name: Wait until the Tier-0 Gateway has been imported into the Global Manager
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}\
-                        /global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
@@ -324,8 +323,7 @@
 ##
     - name: Obtain our Edge Clusters path (Non-GM SiteCodes only)
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/\
-             {{ SiteCode }}/enforcement-points/default/edge-clusters
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/sites/{{ SiteCode }}/enforcement-points/default/edge-clusters
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 15
         force_basic_auth: true
@@ -398,8 +396,7 @@
 ##
     - name: Add Non-GM SiteCode Site as a Location to the first Tier-0 Gateway
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/\
-             {{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ SiteCode }}
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ SiteCode }}
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 15
         force_basic_auth: true
@@ -544,8 +541,7 @@
 ##
     - name: Add interfaces to Tier-0 Gateway
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/\
-             {{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ SiteCode }}/interfaces/{{ item.display_name }}
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ SiteCode }}/interfaces/{{ item.display_name }}
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 15
         force_basic_auth: true
