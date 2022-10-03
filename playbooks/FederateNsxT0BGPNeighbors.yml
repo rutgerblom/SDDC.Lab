@@ -66,8 +66,7 @@
 
     - name: Configure BGP Neighbors on Tier-0 Gatweay for Pod
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/\
-             {{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ SiteCode }}/bgp/neighbors/{{ item.display_name }}
+        url: https://{{ Nested_NSXT.Component.GlobalManager_VIP.FQDN }}/global-manager/api/v1/global-infra/tier-0s/{{ Nested_NSXT.Networking.Tier0Gateways[0].Name }}/locale-services/{{ SiteCode }}/bgp/neighbors/{{ item.display_name }}
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"

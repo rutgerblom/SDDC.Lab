@@ -60,19 +60,21 @@
         prompt: |
           =================================== Configuration Issue Found ===================================
 
-                        Issue: Deploy.Software.Router.Version must be 'Latest'.  Other options are no longer supported.
+                        Issue: Deploy.Software.Router.Version must be 'Latest' or 'Test'.  Other options are no longer supported.
 
              Configured Value: {{ Deploy.Software.Router.Version }}
 
           =================================================================================================
       when:
         - Deploy.Software.Router.Version != "Latest"
+        - Deploy.Software.Router.Version != "Test"
 
     - name: Set flag if issue found with Deploy.Software.Router.Version
       ansible.builtin.set_fact:
         issuefound: true
       when:
         - Deploy.Software.Router.Version != "Latest"
+        - Deploy.Software.Router.Version != "Test"
 
 
 ##

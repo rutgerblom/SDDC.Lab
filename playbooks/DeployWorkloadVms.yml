@@ -4,7 +4,7 @@
 ##     Filename: playbooks/DeployWorkloadVms.yml
 ##
 ##  Description: This playbook loops through the Workload VMs, and provisions them one-by-one, by "sending" the object to the
-##               "include_tasks_deployWorkloadVm.yml" file.  That file includes ALL of the tasks needed to provision the given
+##               "Include_Tasks_DeployWorkloadVm.yml" file.  That file includes ALL of the tasks needed to provision the given
 ##               Workload VM from a VM/OVF Template.  That includes connecting the VM to the appropriate Port-Group(s), assigning
 ##               NSX-T Tags, and powering on the VM.  See additional comments near the "WorkloadVMs" section in the config_sample.yml
 ##               file.
@@ -74,7 +74,7 @@
 ##
     - name: Provision Workload VMs one at a time
       ansible.builtin.include_tasks:
-        file: include_tasks_DeployWorkloadVm.yml
+        file: Include_Tasks_DeployWorkloadVm.yml
       loop: "{{ WorkloadVMs }}"
       when:
         - WorkloadVMs is defined
