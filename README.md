@@ -15,7 +15,7 @@
 * [Preparations](#preparations)
 * [Upgrade Considerations](#upgrade-considerations)
 * [Networking](#networking)
-* [IP Address Assignments](#ip-address-assignments-sddclab-v5-and-later)
+* [IP Address Assignments](#ip-address-assignments)
 * [Usage](#usage)
 * [Project Features](#project-features)
   * [NSX-T Federation](#nsx-t-federation)
@@ -196,7 +196,7 @@ When three or more physical ESXi servers are being used to run Pod workloads, yo
 2. If the number of available ports on the "NetLab-L3-Switch" is limited, you can use two switches as is shown in the Pod Logical Networking Overview above.  In this configuration, a layer-2 only switch is used for the SDDCLab_vDS vswitch, and a layer-3 switch is used to connect to the "Lab-Routers" segment.
 
 
-## IP Address Assignments (SDDC.Lab v5 and later)
+## IP Address Assignments
 When a Pod is deployed, various components are deployed as part of that Pod.  Each of those components are connected to the Pod's Management subnet.  Here is a listing of those components along with their respective host IP address:
 
 | IPv4 Address | Component | Description | DNS Name | Part of Default Deployment |
@@ -270,67 +270,6 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 252 | Reserved  | NSX-T Edge Transport Node  | | No |
 | 253 | EdgeVM-02 | NSX-T Tier-0 Edge Transport Node 2 | Pod-240-T0-EdgeVM-02 | Yes |
 | 254 | EdgeVM-01 | NSX-T Tier-0 Edge Transport Node 1 | Pod-240-T0-EdgeVM-01 | Yes |
-
-
-## IP Address Assignments (SDDC.Lab v4)
-When a Pod is deployed, various components are deployed as part of that Pod.  Each of those components are connected to the Pod's Management subnet.  Here is a listing of those components along with their respective host IP address:
-
-| IPv4 Address | Component | Description | Part of Default Deployment |
-|-------------------|-----------|-------------|----------------------------|
-| 1 | Gateway | VyOS Router | Yes |
-| 2 | Reserved | Reserved for Future Use | |
-| 3 | Reserved | Reserved for Future Use | |
-| 4 | Reserved | Reserved for Future Use | |
-| 5 | vCenter | vCenter Appliance | Yes |
-| 6 | vRLI | vRealize Log Insight Appliance | Yes |
-| 7 | GM VIP | NSX-T Global Manager VIP | Only if deploying NSX-T Federation |
-| 8 | GM1 | NSX-T Global Manager Node 1 | Only if deploying NSX-T Federation |
-| 9 | GM2 | NSX-T Global Manager Node 2 | No |
-| 10 | GM3 | NSX-T Global Manager Node 3 | No |
-| 11 | LM VIP | NSX-T Local Manager VIP | Yes |
-| 12 | LM1 | NSX-T Local Manager Node 1 | Yes |
-| 13 | LM2 | NSX-T Local Manager Node 2 | No |
-| 14 | LM3 | NSX-T Local Manager Node 3 | No |
-| 15 | CSM | NSX-T Cloud Services Manager (Future) | No |
-| 16 | vRNI Platform | vRealize Network Insight Platform Appliance | No |
-| 17 | vRNI Collector | vRealize Network Insight Collector Node | No |
-| 18 | Reserved | Reserved for Future Use | |
-| 19 | Reserved | Reserved for Future Use | |
-| 20 | Reserved | Reserved for Future Use | |
-| 21 | Mgmt-1 | Nested ESXi Host in Management Cluster | No |
-| 22 | Mgmt-2 | Nested ESXi Host in Management Cluster | No |
-| 23 | Mgmt-3 | Nested ESXi Host in Management Cluster | No |
-| 31 | ComputeA-1 | Nested ESXi Host in ComputeA Cluster | Yes |
-| 32 | ComputeA-2 | Nested ESXi Host in ComputeA Cluster | Yes |
-| 33 | ComputeA-3 | Nested ESXi Host in ComputeA Cluster | Yes |
-| 41 | ComputeB-1 | Nested ESXi Host in ComputeB Cluster | No |
-| 42 | ComputeB-2 | Nested ESXi Host in ComputeB Cluster | No |
-| 43 | ComputeB-3 | Nested ESXi Host in ComputeB Cluster | No |
-| 91 | Edge-1 | Nested ESXi Host in Edge Cluster | Yes |
-| 92 | Edge-2 | Nested ESXi Host in Edge Cluster | Yes |
-| 93 | Edge-3 | Nested ESXi Host in Edge Cluster | Yes |
-| 101 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | No |
-| 102 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | No |
-| 103 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | No |
-| 104 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | No |
-| 105 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | No |
-| 106 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | No |
-| 107 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | No |
-| 108 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | No |
-| 109 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | No |
-| 110 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | No |
-| 111 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | No |
-| 112 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | No |
-| 113 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | No |
-| 114 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | No |
-| 115 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB) | No |
-| 116 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | No |
-| 117 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | No |
-| 118 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | No |
-| 119 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | No |
-| 120 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | No |
-| 253 | EdgeVM-02 | NSX-T Edge Transport Node 2 | Yes |
-| 254 | EdgeVM-01 | NSX-T Edge Transport Node 1 | Yes |
 
 
 ## Usage
