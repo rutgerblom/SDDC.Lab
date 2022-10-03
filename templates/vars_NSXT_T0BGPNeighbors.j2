@@ -8,7 +8,7 @@
  #}
 {% for Neighbor in Nested_NSXT.Networking.Tier0Gateways[0].BGP.Neighbors %}
 {##### Verify Neighbor address type matches Deploy IP type #####}
-{% if (Deploy.Setting.IPv4 and (Neighbor.Address|ipv4)) or (Deploy.Setting.IPv6 and (Neighbor.Address|ipv6)) %}
+{% if (Deploy.Setting.IPv4 and (Neighbor.Address|ansible.utils.ipv4)) or (Deploy.Setting.IPv6 and (Neighbor.Address|ansible.utils.ipv6)) %}
   - display_name: "{{ Neighbor.Name }}"
     neighbor_address: "{{ Neighbor.Address }}"
     remote_as_num: {{ Neighbor.RemoteASN }}
@@ -25,7 +25,7 @@
     maximum_hop_limit: {{ Neighbor.BGPSettings.MaxHopLimit }}
     password: "{{ Neighbor.BGPSettings.Password }}"
     route_filtering:
-      - address_family: {% if (Neighbor.Address|ipv4) %}IPV4{% else %}IPV6{% endif %}{{''}}
+      - address_family: {% if (Neighbor.Address|ansible.utils.ipv4) %}IPV4{% else %}IPV6{% endif %}{{''}}
         enabled: true
         in_route_filters: null
         out_route_filters: null
@@ -33,7 +33,7 @@
     source_addresses:
 {% for Address in Neighbor.SourceAddresses %}
 {##### Only add source addresses that are the same address type as the neighbor's ip address #}
-{% if ((Neighbor.Address | ipv4) and (Address | ipv4)) or ((Neighbor.Address | ipv6) and (Address | ipv6)) %}
+{% if ((Neighbor.Address | ansible.utils.ipv4) and (Address | ansible.utils.ipv4)) or ((Neighbor.Address | ansible.utils.ipv6) and (Address | ansible.utils.ipv6)) %}
       - "{{ Address }}"
 {% endif %}{# Neighbor.Address #}
 {% endfor %}{# Address #}
