@@ -1402,3 +1402,9 @@
 
 ### Added by Luis Chanu
   - Renamed AVI references to ALB within ```README.md``` file.
+
+## Dev-v5.0.0 03-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Updated ```EdgeClusterPath``` to lower case in ```templates/vars_NSXT_DHCPProfiles.j2``` file to match lint changes.
+  - Correct type-O in ```playbooks/FederateNsxT0BGPNeighbors.yml``` file.
