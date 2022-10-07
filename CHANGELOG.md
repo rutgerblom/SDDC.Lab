@@ -1422,3 +1422,9 @@
     - Converted commands from **BOLD** to ```command``` syntax.
     - Updated ```Start your Pod deployment``` section
     - Updated ```Access your Pod's components``` section
+
+## Dev-v5.0.0 07-OCTOBER-2022
+
+### Added by Rutger Blom
+  - Updated the ```playbooks/EnableWorkloadManagement.yml``` playbook so that the correct vSphere content library is used when Workload Management is enabled.
+  - Updated ```templates/Tanzu_Payload.j2``` so that only one vSphere content library is defined in the payload that is send to the vCenter API.  
