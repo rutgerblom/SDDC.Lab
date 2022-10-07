@@ -197,8 +197,7 @@
       ansible.builtin.set_fact:
         vdspg_id: "{{ vdspg_info | community.general.json_query(query) }}"
       vars:
-        query: dvs_portgroup_info."{{ Nested_vCenter.Networking.vSwitch.Name }}"\
-               [?portgroup_name=='{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}'].key
+        query: dvs_portgroup_info."{{ Nested_vCenter.Networking.vSwitch.Name }}"[?portgroup_name=='{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}'].key
       when:
         - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy
