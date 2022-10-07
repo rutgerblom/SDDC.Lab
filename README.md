@@ -55,7 +55,7 @@ The following are the requirements for successful Pod deployments:
 * If IPv6 deployment is enabled (Deploy.Setting.IPv6 = True):
   * Pod.BaseNetwork.IPv6 must be a fully expanded /56 IPv6 network prefix.  By default, [RFC4193](https://tools.ietf.org/html/rfc4193) ULA fd00::/56 prefix is used as a placeholder.
   * Router Version should be set to "Latest" (default)
-  * It is recommended that the physical layer-3 switch be configured with OSPFv3 enabed on the Lab-Routers segment
+  * It is recommended that the physical layer-3 switch be configured with OSPFv3 enabled on the Lab-Routers segment
   * The Ansible controller must be IPv6 enabled, and have IPv6 transit to the DNS server
   * DNS server must be IPv6 enabled
   * DNS server must have IPv6 forward and reverse zones
@@ -131,7 +131,7 @@ Consider the following when upgrading SDDC.Lab to a newer version.
   * Remove the VyOS ISO file from your software library and let the router deployment script download the latest version of the rolling release.
 
 * v3 to v4
-  * The "SDDC Labs" folder has been renamed to "SDDC Pods" within the ```config_sample.yml``` configuration file.  It's suggestd that you renamed your folder and update this as part of updating your configuration files for v4.
+  * The "SDDC Labs" folder has been renamed to "SDDC Pods" within the ```config_sample.yml``` configuration file.  It's suggested that you renamed your folder and update this as part of updating your configuration files for v4.
   * TBD - More to come...
 
 
@@ -375,7 +375,9 @@ Here are some known items to be aware of:
 
 4. If there is no local [VyOS](https://www.vyos.io/) ISO image in the software repository, SDDC.Lab will automatically download and use the latest nightly build of [VyOS](https://www.vyos.io/).  Keep in mind, however, that this nightly build is part of their development branch.  Because of this, they may make changes to their product or command syntax as part of their development, which might break the deployment of the Pod-Router.  For this reason, if/when you update your [VyOS](https://www.vyos.io/) software image within the software repository, we recommend that you do not delete the existing file, but rather, rename it, so that you can always fall-back to that file should there be changes in the newer version.  If after you download an updated [VyOS](https://www.vyos.io/) image you are unable to ping across the Pod-Router, or if you notice the Pod-Router is missing some configuration, this is probably the cause.  This is out of our control, and are very thankful to the [VyOS](https://www.vyos.io/) team for providing the nightly image build to the public for free.  That said, as we identify changes in the [VyOS](https://www.vyos.io/) command syntax, we will do our best to implement those changes in future releases.  As we make changes to this in our development branch, we'll do our best to also document them in the CHANGELOG.md file within our development branch.
 
-5. When deploying a Federation configuration using NSX v4.0.0.1, the Workload VM Ansible playbook will fail when the playbook attempts to connect the VM's vNIC to the stretched NSX-T segment.
+5. When deploying a Federation configuration using NSX v4.0.0.1, the Workload VM Ansible playbook will fail when the playbook attempts to connect the VM's vNIC to the stretched NSX-T segment.  This is due to a NSX v4.0.0.1 bug related to onboarding of the an NSX Location into Federation.  Hopefully this will be corrected soon in a subsequent NSX version.  For additional information, please see "Issues With Various Software Versions" section below.
+
+6. If you are utilizing SDDC.Lab's content library functionality to subscribe to the ```SDDC.Lab Content Library``` on the physical vCenter Server, and are running into SSL issues, try deleting and recreating the content library on the physical vCenter Server.  We are aware of one installation that ran into this, and we could find no issue with the Ansible playbooks.  After the user deleted and recreated the content library on the phsycial vCenter Server, all the issues were resolved.  We just thought we would mention this in case someone runs into the same issue.
 
 
 ## Issues With Various Software Versions

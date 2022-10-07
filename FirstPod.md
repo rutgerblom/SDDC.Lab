@@ -27,7 +27,7 @@ For detailed information regarding the Pod networking, please see the [README](R
 
 As setting up the physical networking is one area where many of our users run into issues, we are providing a sample configuration from a working environment.  The configuration is provided "as-is", without any support, warranty, or guarantees.  The configuration may require additional modifications for your environment.
 
-| Manufacture | Switch Model | Configuration File |
+| Manufacturer | Switch Model | Configuration File |
 |-------------|--------------|--------------------|
 | Cisco Systems | [Nexus 3048](https://www.cisco.com/c/en/us/products/collateral/switches/nexus-3000-series-switches/data_sheet_c78-685363.html?dtid=osscdc000283) | [Cisco Nexus 3048 Configuration](misc/Cisco_Nexus-3048_Running-Configuration) |
 

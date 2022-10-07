@@ -1408,3 +1408,10 @@
 ### Added by Luis Chanu
   - Updated ```EdgeClusterPath``` to lower case in ```templates/vars_NSXT_DHCPProfiles.j2``` file to match lint changes.
   - Correct type-O in ```playbooks/FederateNsxT0BGPNeighbors.yml``` file.
+
+## Dev-v5.0.0 06-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Corrected type-O in ```README.md``` file.
+  - Added additional content to ```README.md``` file.
+  - Corrected type-O in ```FirstPod.md``` file.
