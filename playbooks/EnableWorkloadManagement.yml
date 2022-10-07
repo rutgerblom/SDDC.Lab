@@ -259,24 +259,72 @@
 ##
 ## Get and store vSphere Content Library ID
 ##
-    - name: Get vSphere Content Library Info
+    - name: Get list of all vSphere Content Library IDs
       community.vmware.vmware_content_library_info:
         hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-      register: cl_info
+      register: result
       when:
         - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Store vSphere Content Library ID for later use
-      ansible.builtin.set_fact:
-        cl_id: "{{ cl_info | community.general.json_query(query) }}"
-      vars:
-        query: content_libs
+    - name: Get details on each of the vSphere Content Libraries
+      community.vmware.vmware_content_library_info:
+        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        library_id: "{{ loop_var }}"
+      register: content_libraries
+      loop: "{{ result.content_libs }}"
+      loop_control:
+        loop_var: loop_var
       when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
+
+    - name: DEBUG -- Display vSphere 'content_libraries' Variable (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================= Display 'content_libraries' Variable ==============================
+
+          content_libraries:
+            {{ content_library | to_nice_json(indent=2) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
+
+    - name: Query Content Library list for the vSphere Content Library we want to use
+      ansible.builtin.set_fact:
+        content_library: "{{ content_libraries | community.general.json_query(query) }}"
+      vars:
+        query: "results[*].content_lib_details[?library_name=='{{ Nested_vCenter.ContentLibrary.Local.Name }}'].library_id|[0]|[0]"
+      when:
+        - tanzu_supervisor is defined
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
+
+    - name: DEBUG -- Display 'content_library' Variable (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================== Display 'content_library' Variable ===============================
+
+          content_library (JSON):
+            {{ content_library | to_nice_json(indent=2) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
         - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
