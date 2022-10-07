@@ -55,7 +55,7 @@ The following are the requirements for successful Pod deployments:
 * If IPv6 deployment is enabled (Deploy.Setting.IPv6 = True):
   * Pod.BaseNetwork.IPv6 must be a fully expanded /56 IPv6 network prefix.  By default, [RFC4193](https://tools.ietf.org/html/rfc4193) ULA fd00::/56 prefix is used as a placeholder.
   * Router Version should be set to "Latest" (default)
-  * It is recommended that the physical layer-3 switch be configured with OSPFv3 enabed on the Lab-Routers segment
+  * It is recommended that the physical layer-3 switch be configured with OSPFv3 enabled on the Lab-Routers segment
   * The Ansible controller must be IPv6 enabled, and have IPv6 transit to the DNS server
   * DNS server must be IPv6 enabled
   * DNS server must have IPv6 forward and reverse zones
@@ -131,8 +131,26 @@ Consider the following when upgrading SDDC.Lab to a newer version.
   * Remove the VyOS ISO file from your software library and let the router deployment script download the latest version of the rolling release.
 
 * v3 to v4
-  * The "SDDC Labs" folder has been renamed to "SDDC Pods" within the ```config_sample.yml``` configuration file.  It's suggestd that you renamed your folder and update this as part of updating your configuration files for v4.
-  * TBD - More to come...
+  * The "SDDC Labs" folder has been renamed to "SDDC Pods" within the ```config_sample.yml``` configuration file.  It's suggested that you renamed your folder and update this as part of updating your configuration files for v4.
+
+* v4 to v5
+  * Additional modules have been added, and are required in order for SDDC.Lab to work.  For this reason, please follow the steps outlined in the [Preparations](#preparations) section to update your Ansile environment.
+
+  * There have been **MANY** changes to the ```config_sample.yml``` file.  Please make sure you update your ```config.yml``` files.  Once you update your ```config.yml``` file(s), be sure to run ```playbooks/CreatePodConfig.yml``` against them to rebuild the static configuration files in your home directory.
+
+  * The [VyOS](https://www.vyos.io/) router configuration that is generated in v5 has changed from v4 due to various changes [VyOS](https://www.vyos.io/) has made since v4 was originally published.  For that reason, you need to rename (or delete) the following file: ```/Software/VyOS/Router/Latest/vyos-rolling-latest.iso```.  During your next Pod deployment, SDDC.Lab will see that you no longer have a [VyOS](https://www.vyos.io/) ISO image in the software repository, and will automatically download the latest rolling nightly build for you.
+
+  * The default value for ```Target.TempFolder``` has changed from ```/tmp/Pod-###``` to ```~/SDDC.Lab/Pod-###```.  This assumes the ```SiteCode``` variable is left at the default value of ```Pod-###```.
+
+  * If you look closely at the ```Install the required software on your Ansible controller``` section of [Preparations](#preparations), you'll notice that our instructions now clone the SDDC.Lab repository to ```~/git/SDDC.Lab```.  We suggest you use the same location.
+
+  * ```Ansible-lint``` has been run against the SDDC.Lab project files.  As part of this effort, and our desire to be compliant with ```Ansible-lint``` rules, playbooks and templates have been renamed.  If you have scripts to run certain SDDC.Lab playbooks, you may need to update your scripts.
+
+  * [IP Address Assignments](#ip-address-assignments) have changed from previous versions.  Please take a moment to become familiar with the updated [IP Address Assignments](#ip-address-assignments).
+
+  * Please review the [Project Features](#project-features) section, as many entries have been updated with additional functionality introduced in this release.  In particular:
+    1. Additional functionaly was added to [vSphere Content Libraries](#vsphere-content-libraries).  Not only are multiple Content Libraries now supported, but you can now also subscribe to Internet-based content libraries (i.e. TKG).
+    2. Overlay Segments now support automatic IP subnet address assignment for both IPv4 and IPv6.  For more information, see [NSX-T Segment IP Subnet Auto-Allocation](#nsx-t-segment-ip-subnet-auto-allocation).
 
 
 ## Networking
@@ -315,7 +333,7 @@ When deploying NSX-T Federation, keep the following in mind:
 
 10. SDDC.Lab does not support Federation with NSX-T v3.2.x.  If you want to deploy Federation in your lab, deploy Federation using NSX-T v3.1.3.7, then manually upgrade the Pods to NSX-T v3.2.x.
 
-11. Automatic [Deployment of Test Workloads](#deploy-test-workloads) is not supported with Federation.
+11. Automatic [Deployment of Test Workloads](#deploy-test-workloads) is supported with Federation.
 
 ### vSphere Content Libraries
 SDDC.Lab now supports both local and subscribed vSphere Content Libraries, which can be very helpful in a lab environment by centralizing workload ISOs and VMs (i.e. On the physical vCenter Server or a stand-alone Content Library target), then accessing them via the deployed Pods.  There are a few things to keep in mind with Content Libraries:
@@ -375,7 +393,9 @@ Here are some known items to be aware of:
 
 4. If there is no local [VyOS](https://www.vyos.io/) ISO image in the software repository, SDDC.Lab will automatically download and use the latest nightly build of [VyOS](https://www.vyos.io/).  Keep in mind, however, that this nightly build is part of their development branch.  Because of this, they may make changes to their product or command syntax as part of their development, which might break the deployment of the Pod-Router.  For this reason, if/when you update your [VyOS](https://www.vyos.io/) software image within the software repository, we recommend that you do not delete the existing file, but rather, rename it, so that you can always fall-back to that file should there be changes in the newer version.  If after you download an updated [VyOS](https://www.vyos.io/) image you are unable to ping across the Pod-Router, or if you notice the Pod-Router is missing some configuration, this is probably the cause.  This is out of our control, and are very thankful to the [VyOS](https://www.vyos.io/) team for providing the nightly image build to the public for free.  That said, as we identify changes in the [VyOS](https://www.vyos.io/) command syntax, we will do our best to implement those changes in future releases.  As we make changes to this in our development branch, we'll do our best to also document them in the CHANGELOG.md file within our development branch.
 
-5. When deploying a Federation configuration using NSX v4.0.0.1, the Workload VM Ansible playbook will fail when the playbook attempts to connect the VM's vNIC to the stretched NSX-T segment.
+5. When deploying a Federation configuration using NSX v4.0.0.1, the Workload VM Ansible playbook will fail when the playbook attempts to connect the VM's vNIC to the stretched NSX-T segment.  This is due to a NSX v4.0.0.1 bug related to onboarding of the an NSX Location into Federation.  Hopefully this will be corrected soon in a subsequent NSX version.  For additional information, please see "Issues With Various Software Versions" section below.
+
+6. If you are utilizing SDDC.Lab's content library functionality to subscribe to the ```SDDC.Lab Content Library``` on the physical vCenter Server, and are running into SSL issues, try deleting and recreating the content library on the physical vCenter Server.  We are aware of one installation that ran into this, and we could find no issue with the Ansible playbooks.  After the user deleted and recreated the content library on the phsycial vCenter Server, all the issues were resolved.  We just thought we would mention this in case someone runs into the same issue.
 
 
 ## Issues With Various Software Versions

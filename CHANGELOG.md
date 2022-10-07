@@ -1408,3 +1408,17 @@
 ### Added by Luis Chanu
   - Updated ```EdgeClusterPath``` to lower case in ```templates/vars_NSXT_DHCPProfiles.j2``` file to match lint changes.
   - Correct type-O in ```playbooks/FederateNsxT0BGPNeighbors.yml``` file.
+
+## Dev-v5.0.0 06-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Made the following changes to ```README.md``` file
+    - Corrected type-O
+    - Added additional content
+    - Updated ```Upgrade Consideration``` section to include details on items to consider as part of upgrading to v5
+  - Made the following changes to ```FirstPod.md``` file
+    - Corrected type-O
+    - Updated installation steps to align with new v5 steps listed in ```README.md```
+    - Converted commands from **BOLD** to ```command``` syntax.
+    - Updated ```Start your Pod deployment``` section
+    - Updated ```Access your Pod's components``` section
