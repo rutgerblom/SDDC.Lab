@@ -1412,6 +1412,13 @@
 ## Dev-v5.0.0 06-OCTOBER-2022
 
 ### Added by Luis Chanu
-  - Corrected type-O in ```README.md``` file.
-  - Added additional content to ```README.md``` file.
-  - Corrected type-O in ```FirstPod.md``` file.
+  - Made the following changes to ```README.md``` file
+    - Corrected type-O
+    - Added additional content
+    - Updated ```Upgrade Consideration``` section to include details on items to consider as part of upgrading to v5
+  - Made the following changes to ```FirstPod.md``` file
+    - Corrected type-O
+    - Updated installation steps to align with new v5 steps listed in ```README.md```
+    - Converted commands from **BOLD** to ```command``` syntax.
+    - Updated ```Start your Pod deployment``` section
+    - Updated ```Access your Pod's components``` section
