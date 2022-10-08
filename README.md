@@ -134,6 +134,8 @@ Consider the following when upgrading SDDC.Lab to a newer version.
   * The "SDDC Labs" folder has been renamed to "SDDC Pods" within the ```config_sample.yml``` configuration file.  It's suggested that you renamed your folder and update this as part of updating your configuration files for v4.
 
 * v4 to v5
+  * Use of ```sudo``` is no longer required to deploy Pods.
+
   * Additional modules have been added, and are required in order for SDDC.Lab to work.  For this reason, please follow the steps outlined in the [Preparations](#preparations) section to update your Ansile environment.
 
   * There have been **MANY** changes to the ```config_sample.yml``` file.  Please make sure you update your ```config.yml``` files.  Once you update your ```config.yml``` file(s), be sure to run ```playbooks/CreatePodConfig.yml``` against them to rebuild the static configuration files in your home directory.
