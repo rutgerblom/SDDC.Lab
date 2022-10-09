@@ -103,8 +103,6 @@ The following are recommendations based on our experience with deploying Pods:
 * Install Ansible collections on your Ansible controller:
   * ```ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml```
 
-The remaining commands in this section are performed from with the SDDC.Lab parent directory.
-
 * Copy/rename the sample files:
   * ```cp ~/git/SDDC.Lab/config_sample.yml ~/git/SDDC.Lab/config.yml```
   * ```cp ~/git/SDDC.Lab/licenses_sample.yml ~/git/SDDC.Lab/licenses.yml```
