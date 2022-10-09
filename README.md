@@ -22,6 +22,7 @@
   * [vSphere Content Libraries](#vsphere-content-libraries)
   * [Deploy Test Workloads](#deploy-test-workloads)
   * [NSX-T Segment IP Subnet Auto-Allocation](#nsx-t-segment-ip-subnet-auto-allocation)
+  * [Workload Management](#workload-management)
 * [Known Items](#known-items)
 * [Issues With Various Software Versions](#issues-with-various-software-versions)
 * [More Information](#more-information)
@@ -378,9 +379,9 @@ Here are the important settings to understand in order to properly utilize this 
 5. The ```Pod.BaseOverlay.<IPVersion>.RangePrefix``` setting specifies the CIDR setting used by the DHCP Scope to create it's range of addresses from.  The IP addresses comprised within this CIDR range is always the highest network within the provisioned IP subnet.  For example, if the IP subnet that is provisioned is ```10.204.60.0/24```, and if the ```Pod.BaseOverlay.IPv4.RangePrefix``` setting is set to ```28```, the IPv4 range configured on the DHCP Scope will be ```10.204.60.241-10.204.60.254```.  DHCP ranges are created for both IPv4 and IPv6 subnets.
 
 ### Workload Management
-SDDC.Lab can now enable Workload Management on nested vSphere Clusters during Pod deployment.  This feature is enabled per vSphere Cluster under ```Nested_Cluster``` in your ```config.yml```.  When enabled a Tanzu Supervisor Cluster is automatically configured for the selected vSphere Cluster(s).  As Workload Management in SDDC.Lab currently relies on the NSX-T Native Load Balancer, NSX-T with an NSX-T Edge must also be deployed as part of the Pod. If you decide to leverage this feature, here are the items that need to be configured to enable the automatic configuration of Workload Management:
+SDDC.Lab can now enable Workload Management on nested vSphere Clusters during Pod deployment.  This feature is enabled per vSphere Cluster under the ```Nested_Cluster``` section in your ```config.yml```.  When enabled a Tanzu Supervisor Cluster is automatically configured for that/those vSphere Cluster(s).  Workload Management in SDDC.Lab currently relies on the NSX-T Native Load Balancer so NSX-T with an NSX-T Edge must also be deployed as part of the Pod. If you decide to leverage this feature, here are the items that need to be configured to enable the automatic configuration of Workload Management:
 
-1. Set the ```SupervisorCluster``` setting to ```true``` for a vSphere Cluster under the ```Nested_Cluster``` section in your ```config.yml```. By default, this setting is set to ```false```, thereby preventing Workload Management from being configured.
+1. Set the ```SupervisorCluster.Enable``` setting to ```true``` for a vSphere Cluster under the ```Nested_Cluster``` section in your ```config.yml```. By default, this setting is set to ```false```, thereby preventing Workload Management from being configured.
 
 2. Optionally, make changes to the other settings related to the Supervisor Cluster.
 
