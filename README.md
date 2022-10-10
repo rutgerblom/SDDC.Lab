@@ -18,11 +18,11 @@
 * [IP Address Assignments](#ip-address-assignments)
 * [Usage](#usage)
 * [Project Features](#project-features)
-  * [NSX-T Federation](#nsx-t-federation)
-  * [vSphere Content Libraries](#vsphere-content-libraries)
-  * [Deploy Test Workloads](#deploy-test-workloads)
-  * [NSX-T Segment IP Subnet Auto-Allocation](#nsx-t-segment-ip-subnet-auto-allocation)
-  * [Workload Management](#workload-management)
+  * [NSX-T Federation](#nsx-t-federation-v4)
+  * [vSphere Content Libraries](#vsphere-content-libraries-v4--updated-in-v5)
+  * [Deploy Test Workloads](#deploy-test-workloads-v4)
+  * [Workload Management](#workload-management-v4)
+  * [NSX-T Segment IP Subnet Auto-Allocation](#nsx-t-segment-ip-subnet-auto-allocation-v5)
 * [Known Items](#known-items)
 * [Issues With Various Software Versions](#issues-with-various-software-versions)
 * [More Information](#more-information)
@@ -134,6 +134,8 @@ Consider the following when upgrading SDDC.Lab to a newer version.
 
 * v4 to v5
   * Use of ```sudo``` is no longer required to deploy Pods.
+
+  * With the removal of using ```sudo``` in executing Ansbile playbooks, the ```utils/Util_CreateSoftwareDir.yml``` utility has been changed to leverage the ```--ask-become-pass``` option, and thus will prompt for the root password when executed.
 
   * Additional modules have been added, and are required in order for SDDC.Lab to work.  For this reason, please follow the steps outlined in the [Preparations](#preparations) section to update your Ansile environment.
 
@@ -308,7 +310,9 @@ Similary you remove an SDDC Pod with:
 
 ## Project Features
 
-### NSX-T Federation
+Below are some project features that we feel are important enough to provide further explanation on, along with the SDDC.Lab version it was introduced in.
+
+### NSX-T Federation (v4)
 When deploying NSX-T Federation, keep the following in mind:
 
 1. Each NSX-T Location will be deployed from a separate SDDC.Lab Pod configuration file.
@@ -336,7 +340,7 @@ When deploying NSX-T Federation, keep the following in mind:
 
 11. Automatic [Deployment of Test Workloads](#deploy-test-workloads) is supported with Federation.
 
-### vSphere Content Libraries
+### vSphere Content Libraries (v4 & updated in v5)
 SDDC.Lab now supports both local and subscribed vSphere Content Libraries, which can be very helpful in a lab environment by centralizing workload ISOs and VMs (i.e. On the physical vCenter Server or a stand-alone Content Library target), then accessing them via the deployed Pods.  There are a few things to keep in mind with Content Libraries:
 
 1. Make sure to provision sufficient Pod storage to store whatever content items are used.
@@ -345,7 +349,14 @@ SDDC.Lab now supports both local and subscribed vSphere Content Libraries, which
 
 3. By default, ```config_sample.yml``` assumes the published content library exists on the physical vCenter Server servicing the SDDC.Lab environment.  The default name of this content library is ```SDDC.Lab Content Library```.  Although this entry is included in the ```config_sample.yml``` file, it is not enabled by default.  In order to replicate the content library from the physical vCenter Server, you must enable this content library.
 
-### Deploy Test Workloads
+In SDDC.Lab v5, the following functionality was added to Content Library support:
+
+1. Multiple content libraries are now supported.
+
+2. Content libraries located on the Internet are now supported.
+
+
+### Deploy Test Workloads (v4)
 SDDC.Lab has a feature where it can automatically deploy test workload VMs from the Pod's content library at the end of the Pod deployment process.  The test workload VMs to deploy are defined in the ```WorkloadVMs``` section of the ```config_sample.yml``` file.  The default test workload VM included in ```config_sample.yml``` is called [TinyVM](https://github.com/luischanu/TinyVM), and it can be downloaded from the [TinyVM](https://github.com/luischanu/TinyVM) project site.  If you decide to leverage this feature, here are the items that need to be configured to enable the deployment of test workload VMs:
 
 1. On your physical vCenter Server, create a content library called ```SDDC.Lab Content Library```, and enable the ```Enable publishing``` flag.
@@ -358,7 +369,18 @@ SDDC.Lab has a feature where it can automatically deploy test workload VMs from 
 
 5. Enable the WorkloadVMs functionality by setting ```Deploy.WorkloadVMs.Deploy``` to ```true``` in the ```config_sample.yml``` file.  By default, this setting is set to ```false```, thereby preventing the test workload VMs from being deployed.
 
-### NSX-T Segment IP Subnet Auto-Allocation
+### Workload Management (v4)
+SDDC.Lab can now enable Workload Management on nested vSphere Clusters during Pod deployment.  This feature is enabled per vSphere Cluster under the ```Nested_Cluster``` section in your ```config.yml```.  When enabled a Tanzu Supervisor Cluster is automatically configured for the vSphere Cluster.  Workload Management in SDDC.Lab relies on the NSX-T Native Load Balancer so NSX-T with an NSX-T Edge must also be deployed as part of the Pod. If you decide to leverage this feature, here are the items that need to be configured to enable the automatic configuration of Workload Management:
+
+1. Make sure that ```Deploy.Product.NSXT.LocalManager.Deploy``` and ```Deploy.Product.NSXT.Edge.Deploy``` settings are set to ```true``` in your ```config.yml```.  By default, these settings are set to ```true```.
+
+1. Set the ```SupervisorCluster.Enable``` setting to ```true``` for a nested vSphere Cluster under the ```Nested_Cluster``` section in your ```config.yml```. By default, this setting is set to ```false```, thereby preventing Workload Management from being configured.
+
+2. Optionally, make changes to the other settings related to the Supervisor Cluster.
+
+3. After Pod deployment finishes you need to assign your Tanzu license to the Supervisor Cluster asset in the vCenter "Licenses" module. This is needed even when you have added a Tanzu license to your ```licenses.yml``` as currently it isn't possible to automate the Supervisor Cluster license assignment. 
+
+### NSX-T Segment IP Subnet Auto-Allocation (v5)
 SDDC.Lab has a feature where it can automatically assign both IPv4 and IPv6 IP subnet addresses to NSX-T Segments included in your ```config.yml``` file.  The benefit of using this feature is that it permits you to easily deploy Pods without having to manually configure non-overlapping IP subnets for each NSX-T Segment.  Of course, if you have a need to manually specify the IP subnet used by a given NSX-T Segment, then you still have that flexibility, too, just as you continue to have the ability to create layer-2 only segments as well.
 
 Here are the important settings to understand in order to properly utilize this feature:
@@ -377,17 +399,6 @@ Here are the important settings to understand in order to properly utilize this 
   b) If ```Deploy.Setting.IPv6: True```, then an IPv6 subnet will be allocated.
 
 5. The ```Pod.BaseOverlay.<IPVersion>.RangePrefix``` setting specifies the CIDR setting used by the DHCP Scope to create it's range of addresses from.  The IP addresses comprised within this CIDR range is always the highest network within the provisioned IP subnet.  For example, if the IP subnet that is provisioned is ```10.204.60.0/24```, and if the ```Pod.BaseOverlay.IPv4.RangePrefix``` setting is set to ```28```, the IPv4 range configured on the DHCP Scope will be ```10.204.60.241-10.204.60.254```.  DHCP ranges are created for both IPv4 and IPv6 subnets.
-
-### Workload Management
-SDDC.Lab can now enable Workload Management on nested vSphere Clusters during Pod deployment.  This feature is enabled per vSphere Cluster under the ```Nested_Cluster``` section in your ```config.yml```.  When enabled a Tanzu Supervisor Cluster is automatically configured for the vSphere Cluster.  Workload Management in SDDC.Lab relies on the NSX-T Native Load Balancer so NSX-T with an NSX-T Edge must also be deployed as part of the Pod. If you decide to leverage this feature, here are the items that need to be configured to enable the automatic configuration of Workload Management:
-
-1. Make sure that ```Deploy.Product.NSXT.LocalManager.Deploy``` and ```Deploy.Product.NSXT.Edge.Deploy``` settings are set to ```true``` in your ```config.yml```.  By default, these settings are set to ```true```.
-
-1. Set the ```SupervisorCluster.Enable``` setting to ```true``` for a nested vSphere Cluster under the ```Nested_Cluster``` section in your ```config.yml```. By default, this setting is set to ```false```, thereby preventing Workload Management from being configured.
-
-2. Optionally, make changes to the other settings related to the Supervisor Cluster.
-
-3. After Pod deployment finishes you need to assign your Tanzu license to the Supervisor Cluster asset in the vCenter "Licenses" module. This is needed even when you have added a Tanzu license to your ```licenses.yml``` as currently it isn't possible to automate the Supervisor Cluster license assignment. 
 
 
 ## Known Items

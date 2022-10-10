@@ -1433,3 +1433,13 @@
 
 ### Added by Luis Chanu
   - Added additional entry to ```Upgrade Consideration``` section.
+
+## Dev-v5.0.0 10-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Following changes made to ```README.md``` file:
+    - Each entry in the ```Project Features``` section now includes the SDDC.Lab version number it was introduced.
+    - For Content Library, expanced on new v5 functionality.
+    - Re-ordered some project features around their chronological SDDC.Lab version introduction.
+    - Added details about running the ```CreateSoftwareDir.yml``` playbook.
+    - Updated table of content links.
