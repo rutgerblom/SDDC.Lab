@@ -1443,3 +1443,10 @@
     - Re-ordered some project features around their chronological SDDC.Lab version introduction.
     - Added details about running the ```CreateSoftwareDir.yml``` playbook.
     - Updated table of content links.
+
+## Dev-v5.0.0 11-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Added vCenter Server v8.00 and ESXi v8.00 to ```software_sample.yml```.
+  - Added templates for vCenter Server and ESXi v8.00.
+  - Note the new /Software directory numbering scheme used with vSphere and ESXi v8.00.  Starting with v8.00, all future versions will use that numbering scheme.
