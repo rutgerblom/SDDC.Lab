@@ -1451,3 +1451,4 @@
   - Added templates for vCenter Server and ESXi v8.00.
   - Note the new /Software directory numbering scheme used with vSphere and ESXi v8.00.  Starting with v8.00, all future versions will use that numbering scheme.
   - Successfully deployed vSphere 8 (vCenter and ESXi), but ran into issues with NSX being able to configure it.  Updated ```Known Issues``` section with information about the failure observed.
+  - Updated ```license_sample.yml``` with vCenter Server v8 and ESXi v8 examples.
