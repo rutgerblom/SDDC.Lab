@@ -1459,3 +1459,4 @@
   - Added NSX v4.0.1.1 to ```software_sample.yml``` file.
   - Be sure to update your local ```software.yml``` file.
   - Please take note that NSX v4.0.1.1 has not yet been tested with SDDC.Lab.
+  - Increased Nested_ESXi ```BootDiskSize``` parameter in ```config_sample.yml``` from 8 to 16 to support vSphere 8 deployments.  Without this change, there isn't enough space on the bootdisk, and the installation fails with the following error: ```RuntimeError: mpx.vmhba0:C0:T0:L0: disk device does not support OSDATA```.
