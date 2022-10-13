@@ -1452,3 +1452,10 @@
   - Note the new /Software directory numbering scheme used with vSphere and ESXi v8.00.  Starting with v8.00, all future versions will use that numbering scheme.
   - Successfully deployed vSphere 8 (vCenter and ESXi), but ran into issues with NSX being able to configure it.  Updated ```Known Issues``` section with information about the failure observed.
   - Updated ```license_sample.yml``` with vCenter Server v8 and ESXi v8 examples.
+
+## Dev-v5.0.0 13-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Added NSX v4.0.1.1 to ```software_sample.yml``` file.
+  - Be sure to update your local ```software.yml``` file.
+  - Please take note that NSX v4.0.1.1 has not yet been tested with SDDC.Lab.
