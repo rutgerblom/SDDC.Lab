@@ -1467,3 +1467,4 @@
   - Added vCenter Server v8.00 and ESXi v8.00 entries to ```templates_sample.yml``` file.
   - Added ASCII headers before each application section in ```software_sample.yml``` file to make it easier to find within Visual Studio Code (VSC).
   - Added ASCII headers before each application section in ```templates_sample.yml``` file to make it easier to find within Visual Studio Code (VSC).
+  - Added note to ```README.md``` regarding issue with NSX v4.0.1.1 Federation.
