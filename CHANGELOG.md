@@ -1469,3 +1469,9 @@
   - Added ASCII headers before each application section in ```templates_sample.yml``` file to make it easier to find within Visual Studio Code (VSC).
   - Added note to ```README.md``` regarding issue with NSX v4.0.1.1 Federation.
   - Updated comment in ```utils/Util_CreateAllPodConfigs.sh```.
+
+## Dev-v5.0.0 16-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Added NSX-T v3.2.1.2 to ```software_sample.yml``` file.
+  - Be sure to update your local ```software.yml``` file.
