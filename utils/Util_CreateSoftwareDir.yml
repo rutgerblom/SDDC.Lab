@@ -71,6 +71,15 @@
       loop: "{{ Software.VMware.vRLI.Installers | dict2items }}"
       when: Software.VMware.vRLI.Installers is defined
 
+    - name: Create VMware NSX Advanced Load Balancer directories
+      ansible.builtin.file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0777"
+      become: true
+      loop: "{{ Software.VMware.NSXALB.Installers | dict2items }}"
+      when: Software.VMware.NSXALB.Installers is defined
+
 ##
 ## Ubuntu
 ##
