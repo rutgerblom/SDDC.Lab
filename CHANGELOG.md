@@ -1540,3 +1540,22 @@
 ### Added by Rutger Blom & Luis Chanu
 
 - Released version 5 of the SDDC.Lab project.
+
+
+##
+##
+## ██████  ███████ ██    ██       ██    ██  ██████  
+## ██   ██ ██      ██    ██       ██    ██ ██       
+## ██   ██ █████   ██    ██ █████ ██    ██ ███████  
+## ██   ██ ██       ██  ██         ██  ██  ██    ██ 
+## ██████  ███████   ████           ████    ██████  
+##
+##                                                 
+                                                 
+
+## Dev-v6.0.0 16-OCTOBER-2022
+
+ ### Added by Rutger Blom
+   - Added playbook for automatic deployment of NSX Advanced Load Balancer.   
+   - Updated templates, playbooks, and configuration to support automatic deployment of NSX Advanced Load Balancer as part of a Pod deployment. This is still work in progress.
+   - Please be sure to update your ```config.yml``` and ```software.yml``` files.
