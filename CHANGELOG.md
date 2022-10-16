@@ -1,5 +1,17 @@
 # Changelog
 
+
+##
+##
+## ██████  ███████ ██    ██       ██    ██ ██████
+## ██   ██ ██      ██    ██       ██    ██      ██
+## ██   ██ █████   ██    ██ █████ ██    ██  █████
+## ██   ██ ██       ██  ██         ██  ██       ██
+## ██████  ███████   ████           ████   ██████
+##
+##
+
+
 ## Dev-v3.0.0 16-MARCH-2021
 
 ### Added by Luis
@@ -178,11 +190,31 @@
 - A new version of the VyOS Rolling release is required so please remove or replace the following file with the latest version in your software library (if removed the router deployment script will download the latest version during deployment):
   - vyos-rolling-latest.iso  
 
-## v3.0.0 30-MAY-2021
+
+<br>
+
+***
+<h1 style="text-align:center">SDDC.Lab Version 3.0 Released</h1>
+</br>
+
+
+## Release-v3.0.0 30-MAY-2021
 
 ### Added by Rutger Blom & Luis Chanu
 
 - Released version 3 of the SDDC.Lab project.
+
+
+##
+##
+## ██████  ███████ ██    ██       ██    ██ ██   ██
+## ██   ██ ██      ██    ██       ██    ██ ██   ██
+## ██   ██ █████   ██    ██ █████ ██    ██ ███████
+## ██   ██ ██       ██  ██         ██  ██       ██
+## ██████  ███████   ████           ████        ██
+##
+##
+
 
 ## Dev-v4.0.0 13-JUNE-2021
 
@@ -1034,6 +1066,24 @@
 <br>
 
 
+## Release-v4.0.0 6-APRIL-2022
+
+### Added by Rutger Blom & Luis Chanu
+
+- Released version 4 of the SDDC.Lab project.
+
+
+##
+##
+## ██████  ███████ ██    ██       ██    ██ ███████
+## ██   ██ ██      ██    ██       ██    ██ ██
+## ██   ██ █████   ██    ██ █████ ██    ██ ███████
+## ██   ██ ██       ██  ██         ██  ██       ██
+## ██████  ███████   ████           ████   ███████
+##
+##
+
+
 ## Dev-v5.0.0 6-APRIL-2022
 
 ### Added by Luis Chanu
@@ -1473,5 +1523,6 @@
 ## Dev-v5.0.0 16-OCTOBER-2022
 
 ### Added by Luis Chanu
+  - Added ASCII art banners to Changelog to ease navigation within VSC.
   - Added NSX-T v3.2.1.2 to ```software_sample.yml``` file.
   - Be sure to update your local ```software.yml``` file.
