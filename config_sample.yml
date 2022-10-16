@@ -80,7 +80,7 @@ Deploy:
         PodNumber: "{{ Pod.Number }}"                     # If not deploying Global Manager to this site as part of this deployment, change to indicate the Pod Number (i.e. 30) of the Pod in which the Global Manager is being deployed to.  When Federation is deployed, this is used to determine the proper eBGP Peering ASN to use on the Pod Router.
       Edge:
         Deploy: true                                      # Edge - Deploy NSX-T Edge Transport Nodes as part of the Pod deployment.
-    NSXALB:
+    ALB:
       Deploy: false                                      # NSX - Deploy NSX Advanced Load Balancer as part of the Pod deployment.
   WorkloadVMs:
     Deploy: false                                         # Controls whether Guest Workload VMs are deployed from the Content Library after the Pod deployment is completed
@@ -139,9 +139,9 @@ Deploy:
       Patch:   false
       Config:  "{{ SiteCode }}-Ubuntu.conf"
       Installer: "{{ SiteCode }}-Installer-Ubuntu"
-    NSXALB:                                               # Label used for selection of which template to use during deployment (templates.yml)
+    ALB:                                               # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
-      Product: NSXALB                                     # Indicates software product you want to deploy from the software repository (software.yml)
+      Product: ALB                                     # Indicates software product you want to deploy from the software repository (software.yml)
       Version: '22.1.2'                                   # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-AVI-Controller-1"
