@@ -1460,3 +1460,18 @@
   - Be sure to update your local ```software.yml``` file.
   - Please take note that NSX v4.0.1.1 has not yet been tested with SDDC.Lab.
   - Increased Nested_ESXi ```BootDiskSize``` parameter in ```config_sample.yml``` from 8 to 16 to support vSphere 8 deployments.  Without this change, there isn't enough space on the bootdisk, and the installation fails with the following error: ```RuntimeError: mpx.vmhba0:C0:T0:L0: disk device does not support OSDATA```.
+
+## Dev-v5.0.0 14-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Added vCenter Server v8.00 and ESXi v8.00 entries to ```templates_sample.yml``` file.
+  - Added ASCII headers before each application section in ```software_sample.yml``` file to make it easier to find within Visual Studio Code (VSC).
+  - Added ASCII headers before each application section in ```templates_sample.yml``` file to make it easier to find within Visual Studio Code (VSC).
+  - Added note to ```README.md``` regarding issue with NSX v4.0.1.1 Federation.
+  - Updated comment in ```utils/Util_CreateAllPodConfigs.sh```.
+
+## Dev-v5.0.0 16-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Added NSX-T v3.2.1.2 to ```software_sample.yml``` file.
+  - Be sure to update your local ```software.yml``` file.

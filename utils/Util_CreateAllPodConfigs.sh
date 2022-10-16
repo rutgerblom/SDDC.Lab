@@ -3,7 +3,7 @@
 ##
 ##      Project: SDDC.Lab
 ##      Authors: Luis Chanu & Rutger Blom
-##     Filename: utils/util_CreateAllPodConfigs.sh
+##     Filename: utils/Util_CreateAllPodConfigs.sh
 ##
 ## This script is used to run playbooks/CreatePodConfig.yml against all of the "config*.yml" files, 
 ## except for config_sample.yml which it skips, in the directory from which this is run.  This script

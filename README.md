@@ -433,6 +433,7 @@ As we use SDDC.Lab in our labs, every now-and-then we notice some issues/problem
 | 20-FEB-2022 |         |         |  3.2.0.1  | NSX-T Global MTU Settings are not properly set. | Luis Chanu |
 | 12-AUG-2022 |         |         |  4.0.0.1  | There is a bug with NSX Federation onboarding such that imported local objects are not properly migrated to global objects.  Because of this bug, you are unable to connect a VM's vNIC to imported stretched NSX Segments. | Luis Chanu |
 | 11-OCT-2022 | 8.0.0 (Build  20519528) | 8.0.0 (Build 20513097) | 4.0.0.1 | Although v8.0.0 of vCenter Server and ESXi deploy successfully using SDDC.Lab, NSX fails when it attempts to apply the Transport Node Profile to the vSphere cluster.  It fails with the following error message, "```NSX cannot be enabled on the cluster because it contains host 6e6954ea-2f6a-491a-a3d4-34ea27078709:host-14 of unsupported version.```"  So, it appears the next version of NSX is required in order to support vSphere 8.0.0 (GA). | Luis Chanu |
+| 14-OCT-2022 | 8.0.0 (Build  20519528) | 8.0.0 (Build 20513097) | 4.0.1.1 | NSX-T Federation deployment is not supported due to a Federation onboarding bug with NSX where the Segment paths are not correct within vCenter Server. | Luis Chanu |
 
 
 ## More Information
