@@ -1526,3 +1526,17 @@
   - Added ASCII art banners to Changelog to ease navigation within VSC.
   - Added NSX-T v3.2.1.2 to ```software_sample.yml``` file.
   - Be sure to update your local ```software.yml``` file.
+
+
+<br>
+
+***
+<h1 style="text-align:center">SDDC.Lab Version 5.0 Released</h1>
+<br>
+
+
+## Release-v5.0.0 16-OCTOBER-2022
+
+### Added by Rutger Blom & Luis Chanu
+
+- Released version 5 of the SDDC.Lab project.
