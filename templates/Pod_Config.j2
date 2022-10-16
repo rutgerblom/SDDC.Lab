@@ -53,6 +53,8 @@ Deploy:
       Deploy: {{ Deploy.Product.Router.Deploy }}
     vRLI:
       Deploy: {{ Deploy.Product.vRLI.Deploy }}
+    ALB:
+      Deploy: {{ Deploy.Product.ALB.Deploy }}
     DNSServer:
       Deploy: {{ Deploy.Product.DNSServer.Deploy }}
     NSXT:
@@ -152,6 +154,16 @@ Deploy:
       File:      "{{ Software[Deploy.Software.DNSServer.Vendor][Deploy.Software.DNSServer.Product]['Installers'][Deploy.Software.DNSServer.Version].File }}"
       FileExt:   "{{ Software[Deploy.Software.DNSServer.Vendor][Deploy.Software.DNSServer.Product]['Installers'][Deploy.Software.DNSServer.Version].FileExt }}"
       URL:       "{{ Software[Deploy.Software.DNSServer.Vendor][Deploy.Software.DNSServer.Product]['Installers'][Deploy.Software.DNSServer.Version]['Location'].URL }}"
+    ALB:
+      Vendor:    "{{ Deploy.Software.ALB.Vendor }}"
+      Product:   "{{ Deploy.Software.ALB.Product }}"
+      Version:   "{{ Deploy.Software.ALB.Version }}"
+      Patch:     {{ Deploy.Software.ALB.Patch }}
+      Config:    "{{ Deploy.Software.ALB.Config }}"
+      Installer: "{{ Deploy.Software.ALB.Installer }}"
+      Directory: "{{ Software[Deploy.Software.ALB.Vendor][Deploy.Software.ALB.Product]['Installers'][Deploy.Software.ALB.Version]['Location'].Local }}"
+      File:      "{{ Software[Deploy.Software.ALB.Vendor][Deploy.Software.ALB.Product]['Installers'][Deploy.Software.ALB.Version].File }}"
+      FileExt:   "{{ Software[Deploy.Software.ALB.Vendor][Deploy.Software.ALB.Product]['Installers'][Deploy.Software.ALB.Version].FileExt }}"
 
 
 
@@ -177,6 +189,10 @@ Nested_Router:
 
 Nested_vRLI:
   {{ Nested_vRLI | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+
+Nested_NSXALB:
+  {{ Nested_NSXALB | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
 
 Nested_DNSServer:

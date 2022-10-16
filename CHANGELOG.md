@@ -1,12 +1,11 @@
 # Changelog
-
 ```
 ██████  ███████ ██    ██       ██    ██ ██████
 ██   ██ ██      ██    ██       ██    ██      ██
 ██   ██ █████   ██    ██ █████ ██    ██  █████
 ██   ██ ██       ██  ██         ██  ██       ██
 ██████  ███████   ████           ████   ██████
-```      
+```
 
 ## Dev-v3.0.0 16-MARCH-2021
 
@@ -200,13 +199,14 @@
 
 - Released version 3 of the SDDC.Lab project.
 
+
 ```
 ██████  ███████ ██    ██       ██    ██ ██   ██
 ██   ██ ██      ██    ██       ██    ██ ██   ██
 ██   ██ █████   ██    ██ █████ ██    ██ ███████
 ██   ██ ██       ██  ██         ██  ██       ██
 ██████  ███████   ████           ████        ██
-```      
+```
 
 ## Dev-v4.0.0 13-JUNE-2021
 
@@ -1070,7 +1070,7 @@
 ██   ██ █████   ██    ██ █████ ██    ██ ███████
 ██   ██ ██       ██  ██         ██  ██       ██
 ██████  ███████   ████           ████   ███████
-```      
+```
 
 ## Dev-v5.0.0 6-APRIL-2022
 
@@ -1528,3 +1528,19 @@
 ### Added by Rutger Blom & Luis Chanu
 
 - Released version 5 of the SDDC.Lab project.
+
+```
+██████  ███████ ██    ██       ██    ██  ██████  
+██   ██ ██      ██    ██       ██    ██ ██       
+██   ██ █████   ██    ██ █████ ██    ██ ███████  
+██   ██ ██       ██  ██         ██  ██  ██    ██ 
+██████  ███████   ████           ████    ██████  
+```                                              
+                                                 
+
+## Dev-v6.0.0 16-OCTOBER-2022
+
+ ### Added by Rutger Blom
+   - Added playbook for automatic deployment of NSX Advanced Load Balancer.   
+   - Updated templates, playbooks, and configuration to support automatic deployment of NSX Advanced Load Balancer as part of a Pod deployment. This is still work in progress.
+   - Please be sure to update your ```config.yml``` and ```software.yml``` files.

@@ -1,0 +1,159 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/DeployNsxAlb.yml
+##
+---
+- hosts: localhost
+  name: DeployNsxAlb.yml
+  tasks:
+    - name: DeployNsxAlb_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+
+                                       ALB Version: {{ Deploy.Software.ALB.Version }}
+                                          ALB FQDN: {{ Nested_NSXALB.FQDN }}
+                                        ALB VMName: {{ Nested_NSXALB.VMName }}
+                                    ALB Admin User: {{ Nested_NSXALB.Credential.admin.Name }}
+                                ALB Admin Password: {{ Nested_NSXALB.Credential.admin.Password }}
+
+                                                OVF Variables
+                                                =============
+
+                                    Network PortGroup: {{ Target.PortGroup.Management.Name }}
+
+                                 Network IPv4 Address: {{ Nested_NSXALB.Address.IPv4.Address }}
+                                      Network Netmask: {{ (Nested_NSXALB.Address.IPv4.Address + '/' + Nested_NSXALB.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
+                                      Network Gateway: {{ Nested_NSXALB.Address.IPv4.Gateway }}
+
+                                   Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                   Network DNS Domain: {{ Common.DNS.Domain }}
+
+                                 ALB Root Password: {{ Nested_NSXALB.Credential.root.Password }}
+
+                                    ALB Media Path: {{ Deploy.Software.ALB.Directory }}
+                                    ALB Media File: {{ Deploy.Software.ALB.File }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+    - name: Check if ALB is already installed
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXALB.FQDN }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+      register: nsxalb_check
+      failed_when: false
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Deploy ALB from OVA
+      community.vmware.vmware_deploy_ovf:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datastore: "{{ Target.Datastore }}"
+        allow_duplicates: false
+        # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
+        folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}\
+                 {% else %}{{ Target.VMFolder }}{% endif %}"
+        datacenter: "{{ Target.DataCenter }}"
+        cluster: "{{ Target.Cluster }}"
+        name: "{{ Nested_NSXALB.VMName }}"
+        ovf: "{{ Deploy.Software.ALB.Directory }}/{{ Deploy.Software.ALB.File }}"
+        networks:
+          "network": "{{ Target.PortGroup.Management.Name }}"
+        disk_provisioning: "{{ Common.DiskProvisioning }}"
+        power_on: true
+        wait_for_ip_address: true
+        inject_ovf_env: true
+        properties:
+          avi.hostname.CONTROLLER: "{{ Nested_NSXALB.FQDN }}"
+          avi.default-gw.CONTROLLER: "{{ Nested_NSXALB.Address.IPv4.Gateway }}"
+          avi.mgmt-ip.CONTROLLER: "{{ Nested_NSXALB.Address.IPv4.Address }}"
+          avi.mgmt-mask.CONTROLLER: "{{ (Nested_NSXALB.Address.IPv4.Address + '/' + Nested_NSXALB.Address.IPv4.Prefix) | \
+                                     ansible.utils.ipaddr('netmask') }}"
+      when:
+        - Deploy.Product.ALB.Deploy
+        - nsxalb_check.status != 200
+
+    - name: Start checking if the ALB Web UI is available
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXALB.FQDN }}
+        validate_certs: false
+        timeout: 5
+      register: nsxalb_webui_check
+      until: nsxalb_webui_check.status == 200
+      when:
+        - Deploy.Product.ALB.Deploy
+        - nsxalb_check.status != 200
+      retries: 10
+      delay: 60
+
+    - name: Write annotation on the ALB VM
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
+        name: "{{ Nested_NSXALB.VMName }}"
+        annotation: |
+                    {{ Common.Annotation }}
+                    {{ Deploy.Software.ALB.Vendor }} {{ Deploy.Software.ALB.Product }} {{ Deploy.Software.ALB.Version }}
+                    Username: {{ Nested_NSXALB.Credential.admin.Name }}
+                    Password: {{ Nested_NSXALB.Credential.admin.Password }}
