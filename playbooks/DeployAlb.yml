@@ -180,3 +180,10 @@
           server_list:
             - type: V4
               addr: "{{ Common.DNS.Server1.IPv4 }}"
+        email_configuration:
+          from_email: "{{ Nested_ALB.Credential.admin.Name }}@{{ Common.DNS.Domain }}"
+        ntp_configuration:
+          ntp_servers:
+            - server:
+                type: V4
+                addr: "{{ Common.NTP.Server1.IPv4 }}"
