@@ -1550,3 +1550,10 @@
   - Removed excess spaces from DEV-V6 ASCII ART
   - Aligned comments for ALB.Deploy in ```config_sample.yml``` file.
   - Removed extra '/' from html 'br' tag or DEV-V3 entry.
+
+## Dev-v6.0.0 17-OCTOBER-2022
+
+### Added by Rutger Blom
+  - Updates to the data structure for Advanced Load Balancer in ```config_sample.yml```.
+  - Updates to ```playbooks/UpdateDNS.yml``` so that DNS records for the Advanced Load Balancer are created.
+  - Please be sure to update your ```config.yml``` files.
