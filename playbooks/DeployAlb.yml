@@ -1,11 +1,11 @@
 ##
 ##    Project: SDDC.Lab
 ##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/DeployNsxAlb.yml
+##   Filename: playbooks/DeployAlb.yml
 ##
 ---
 - hosts: localhost
-  name: DeployNsxAlb.yml
+  name: DeployAlb.yml
   tasks:
     - name: DeployNsxAlb_Playbook
       ansible.builtin.debug:
@@ -66,6 +66,8 @@
                                         ALB VMName: {{ Nested_ALB.VMName }}
                                     ALB Admin User: {{ Nested_ALB.Credential.admin.Name }}
                                 ALB Admin Password: {{ Nested_ALB.Credential.admin.Password }}
+                                     ALB Root User: {{ Nested_ALB.Credential.root.Name }}
+                                 ALB Root Password: {{ Nested_ALB.Credential.root.Password }}
 
                                                 OVF Variables
                                                 =============
@@ -90,10 +92,10 @@
 
     - name: Check if ALB is already installed
       ansible.builtin.uri:
-        url: https://{{ Nested_ALB.FQDN }}
+        url: https://{{ Nested_ALB.Component.Controller.FQDN }}
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
-      register: nsxalb_check
+      register: alb_check
       failed_when: false
       when:
         - Deploy.Product.ALB.Deploy
@@ -111,7 +113,7 @@
                  {% else %}{{ Target.VMFolder }}{% endif %}"
         datacenter: "{{ Target.DataCenter }}"
         cluster: "{{ Target.Cluster }}"
-        name: "{{ Nested_ALB.VMName }}"
+        name: "{{ Nested_ALB.Component.Controller.VMName }}"
         ovf: "{{ Deploy.Software.ALB.Directory }}/{{ Deploy.Software.ALB.File }}"
         networks:
           "network": "{{ Target.PortGroup.Management.Name }}"
@@ -120,25 +122,25 @@
         wait_for_ip_address: true
         inject_ovf_env: true
         properties:
-          avi.hostname.CONTROLLER: "{{ Nested_ALB.FQDN }}"
-          avi.default-gw.CONTROLLER: "{{ Nested_ALB.Address.IPv4.Gateway }}"
-          avi.mgmt-ip.CONTROLLER: "{{ Nested_ALB.Address.IPv4.Address }}"
-          avi.mgmt-mask.CONTROLLER: "{{ (Nested_ALB.Address.IPv4.Address + '/' + Nested_ALB.Address.IPv4.Prefix) | \
+          avi.hostname.CONTROLLER: "{{ Nested_ALB.Component.Controller.FQDN }}"
+          avi.default-gw.CONTROLLER: "{{ Nested_ALB.Component.Controller.Address.IPv4.Gateway }}"
+          avi.mgmt-ip.CONTROLLER: "{{ Nested_ALB.Component.Controller.Address.IPv4.Address }}"
+          avi.mgmt-mask.CONTROLLER: "{{ (Nested_ALB.Component.Controller.Address.IPv4.Address + '/' + Nested_ALB.Component.Controller.Address.IPv4.Prefix) | \
                                      ansible.utils.ipaddr('netmask') }}"
       when:
         - Deploy.Product.ALB.Deploy
-        - nsxalb_check.status != 200
+        - alb_check.status != 200
 
     - name: Start checking if the ALB Web UI is available
       ansible.builtin.uri:
-        url: https://{{ Nested_ALB.FQDN }}
+        url: https://{{ Nested_ALB.Component.Controller.FQDN }}
         validate_certs: false
         timeout: 5
-      register: nsxalb_webui_check
-      until: nsxalb_webui_check.status == 200
+      register: alb_webui_check
+      until: alb_webui_check.status == 200
       when:
         - Deploy.Product.ALB.Deploy
-        - nsxalb_check.status != 200
+        - alb_check.status != 200
       retries: 10
       delay: 60
 
@@ -155,5 +157,7 @@
         annotation: |
                     {{ Common.Annotation }}
                     {{ Deploy.Software.ALB.Vendor }} {{ Deploy.Software.ALB.Product }} {{ Deploy.Software.ALB.Version }}
-                    Username: {{ Nested_ALB.Credential.admin.Name }}
-                    Password: {{ Nested_ALB.Credential.admin.Password }}
+                    Admin Username: {{ Nested_ALB.Credential.admin.Name }}
+                    Admin Password: {{ Nested_ALB.Credential.admin.Password }}
+                    Root Username: {{ Nested_ALB.Credential.root.Name }}
+                    Root Password: {{ Nested_ALB.Credential.root.Password }}
