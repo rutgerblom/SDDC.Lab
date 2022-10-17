@@ -190,7 +190,7 @@
 
 ***
 <h1 style="text-align:center">SDDC.Lab Version 3.0 Released</h1>
-</br>
+<br>
 
 
 ## Release-v3.0.0 30-MAY-2021
@@ -1530,17 +1530,23 @@
 - Released version 5 of the SDDC.Lab project.
 
 ```
-██████  ███████ ██    ██       ██    ██  ██████  
-██   ██ ██      ██    ██       ██    ██ ██       
-██   ██ █████   ██    ██ █████ ██    ██ ███████  
-██   ██ ██       ██  ██         ██  ██  ██    ██ 
-██████  ███████   ████           ████    ██████  
-```                                              
-                                                 
+██████  ███████ ██    ██       ██    ██  ██████
+██   ██ ██      ██    ██       ██    ██ ██
+██   ██ █████   ██    ██ █████ ██    ██ ███████
+██   ██ ██       ██  ██         ██  ██  ██    ██
+██████  ███████   ████           ████    ██████
+```
 
 ## Dev-v6.0.0 16-OCTOBER-2022
 
- ### Added by Rutger Blom
-   - Added playbook for automatic deployment of NSX Advanced Load Balancer.   
-   - Updated templates, playbooks, and configuration to support automatic deployment of NSX Advanced Load Balancer as part of a Pod deployment. This is still work in progress.
-   - Please be sure to update your ```config.yml``` and ```software.yml``` files.
+### Added by Rutger Blom
+  - Added playbook for automatic deployment of NSX Advanced Load Balancer.
+  - Updated templates, playbooks, and configuration to support automatic deployment of NSX Advanced Load Balancer as part of a Pod deployment. This is still work in progress.
+  - Please be sure to update your ```config.yml``` and ```software.yml``` files.
+
+## Dev-v6.0.0 16-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Removed excess spaces from DEV-V6 ASCII ART
+  - Aligned comments for ALB.Deploy in ```config_sample.yml``` file.
+  - Removed extra '/' from html 'br' tag or DEV-V3 entry.
