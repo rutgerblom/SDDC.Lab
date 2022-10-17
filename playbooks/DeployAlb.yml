@@ -6,6 +6,12 @@
 ---
 - hosts: localhost
   name: DeployAlb.yml
+  vars:
+    avi_credentials:
+      username: "{{ Nested_ALB.Credential.admin.Name }}"
+      password: "{{ Nested_ALB.Credential.admin.Password }}"
+      controller: "{{ Nested_ALB.Component.Controller.FQDN }}"
+      api_version: "{{ Deploy.Software.ALB.Version}}"
   tasks:
     - name: DeployNsxAlb_Playbook
       ansible.builtin.debug:
@@ -163,3 +169,14 @@
                     Root Password: {{ Nested_ALB.Credential.root.Password }}
       when:
         - Deploy.Product.ALB.Deploy
+
+    - name: Apply Basic SystemConfiguration
+      vmware.alb.avi_systemconfiguration:
+        avi_credentials: "{{ avi_credentials }}"
+        state: present
+        welcome_workflow_complete: true
+        dns_configuration:
+          search_domain: "{{ Common.DNS.Domain }}"
+          server_list:
+            - type: V4
+              addr: "{{ Common.DNS.Server1.IPv4 }}"
