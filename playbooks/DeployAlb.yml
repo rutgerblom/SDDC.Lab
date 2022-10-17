@@ -153,7 +153,7 @@
         cluster: "{{ Target.Cluster }}"
         datacenter: "{{ Target.DataCenter }}"
         folder: "{{ Target.VMFolder }}"
-        name: "{{ Nested_ALB.VMName }}"
+        name: "{{ Nested_ALB.Component.Controller.VMName }}"
         annotation: |
                     {{ Common.Annotation }}
                     {{ Deploy.Software.ALB.Vendor }} {{ Deploy.Software.ALB.Product }} {{ Deploy.Software.ALB.Version }}
@@ -161,3 +161,5 @@
                     Admin Password: {{ Nested_ALB.Credential.admin.Password }}
                     Root Username: {{ Nested_ALB.Credential.root.Name }}
                     Root Password: {{ Nested_ALB.Credential.root.Password }}
+      when:
+        - Deploy.Product.ALB.Deploy
