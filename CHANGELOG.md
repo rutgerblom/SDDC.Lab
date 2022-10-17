@@ -1556,4 +1556,7 @@
 ### Added by Rutger Blom
   - Updates to the data structure for Advanced Load Balancer in ```config_sample.yml```.
   - Updates to ```playbooks/UpdateDNS.yml``` so that DNS records for the Advanced Load Balancer are created.
+  - Added the ```vmware.alb``` Ansible Galaxy collection to ```requirements.yml```.
+  - Updated ```playbooks/DeployAlb.yml``` to include a task for basic system configuration.
   - Please be sure to update your ```config.yml``` files.
+  - Please be sure to run ```ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml``` so that the ```vmware.alb``` Ansible Galaxy collection gets installed.
