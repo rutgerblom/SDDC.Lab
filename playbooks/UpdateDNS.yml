@@ -418,10 +418,11 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                                  Zone: {{ Common.DNS.Domain }}
-                                               Record: {{ Nested_ALB.VMName }}
-                                                Value: {{ Nested_ALB.Address.IPv4.Address }}
+                                               Record: {{ item.value.VMName }}
+                                                Value: {{ item.value.Address.IPv4.Address }}
 
           =================================================================================================
+      loop: "{{ Nested_ALB.Component | dict2items }}"
       when:
         - DEBUG.DisplayVariables_DNS
         - DEBUG.DisplayVariables
@@ -434,9 +435,10 @@
         type: A
         protocol: udp
         zone: "{{ Common.DNS.Domain }}"
-        record: "{{ Nested_ALB.VMName }}"
-        value: "{{ Nested_ALB.Address.IPv4.Address }}"
+        record: "{{ item.value.VMName }}"
+        value: "{{ item.value.Address.IPv4.Address }}"
         state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_ALB.Component | dict2items }}"
       when:
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv4
@@ -452,10 +454,11 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                                  Zone: {{ ipv4_reverse_zone }}
-                                               Record: {{ Nested_ALB.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}
-                                                Value: {{ Nested_ALB.VMName }}.{{ Common.DNS.Domain }}.
+                                               Record: {{ item.value.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}
+                                                Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
+      loop: "{{ Nested_ALB.Component | dict2items }}"
       when:
         - DEBUG.DisplayVariables_DNS
         - DEBUG.DisplayVariables
@@ -468,9 +471,10 @@
         type: PTR
         protocol: udp
         zone: "{{ ipv4_reverse_zone }}"
-        record: "{{ Nested_ALB.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
-        value:  "{{ Nested_ALB.VMName }}.{{ Common.DNS.Domain }}."
+        record: "{{ item.value.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
+        value: "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_ALB.Component | dict2items }}"
       when:
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv4
@@ -486,10 +490,11 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
                                                  Zone: {{ Common.DNS.Domain }}
-                                               Record: {{ Nested_ALB.VMName }}
-                                                Value: {{ Nested_ALB.Address.IPv6.Address }}
+                                               Record: {{ item.value.VMName }}
+                                                Value: {{ item.value.Address.IPv6.Address }}
 
           =================================================================================================
+      loop: "{{ Nested_ALB.Component | dict2items }}"
       when:
         - DEBUG.DisplayVariables_DNS
         - DEBUG.DisplayVariables
@@ -503,9 +508,10 @@
         type: AAAA
         protocol: udp
         zone: "{{ Common.DNS.Domain }}"
-        record: "{{ Nested_ALB.VMName }}"
-        value: "{{ Nested_ALB.Address.IPv6.Address }}"
+        record: "{{ item.value.VMName }}"
+        value: "{{ item.value.Address.IPv6.Address }}"
         state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_ALB.Component | dict2items }}"
       when:
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv6
@@ -522,10 +528,11 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
                                                  Zone: {{ ipv6_reverse_zone }}
-                                               Record: {{ Nested_ALB.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}
-                                                Value: {{ Nested_ALB.VMName }}.{{ Common.DNS.Domain }}.
+                                               Record: {{ item.value.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}
+                                                Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
+      loop: "{{ Nested_ALB.Component | dict2items }}"
       when:
         - DEBUG.DisplayVariables_DNS
         - DEBUG.DisplayVariables
@@ -539,9 +546,10 @@
         type: PTR
         protocol: udp
         zone: "{{ ipv6_reverse_zone }}"
-        record: "{{ Nested_ALB.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
-        value: "{{ Nested_ALB.VMName }}.{{ Common.DNS.Domain }}."
+        record: "{{ item.value.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
+        value: "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_ALB.Component | dict2items }}"
       when:
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv6
