@@ -660,7 +660,7 @@ Nested_vRLI:
 ## ██  ██ ██ ██           ██    ██    ██      ██   ██         ██   ██ ██      ██   ██ 
 ## ██   ████ ███████ ███████    ██    ███████ ██████  ███████ ██   ██ ███████ ██████  
 ##
-                                          
+
 Nested_ALB:
   Credential:
     root:
@@ -684,7 +684,6 @@ Nested_ALB:
       VMName: "{{ SiteCode }}-ALB-Controller-1"
       FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ALB-Controller-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.16{% endif %}"
       Deployment:
-        Size: small
         EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
         AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
       Address:
