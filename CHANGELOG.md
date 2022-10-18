@@ -1528,3 +1528,10 @@
 ### Added by Rutger Blom & Luis Chanu
 
 - Released version 5 of the SDDC.Lab project.
+
+
+## v5.0.0 18-OCTOBER-2022
+
+### Added by Rutger Blom
+  - Updated the ```requirements.yml``` so that a version number can be added to the collections.
+  - Added version 2.9.1 to the ```community.vmware``` collection which is required due to changes in newer versions of the ```community.vmware.vmware_dvs_portgroup```module.
