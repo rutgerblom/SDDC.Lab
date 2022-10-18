@@ -1573,3 +1573,4 @@
 ### Added by Rutger Blom
   - Updated the ```requirements.yml``` so that a version number can be added to the collections.
   - Added version 3.0.0 to the ```community.vmware``` collection which is required due to changes in the ```community.vmware.vmware_dvs_portgroup```module.
+  - Updated ```playbooks/PreparePhysical.yml``` so that the new and required parameter "inherited" is included in ```community.vmware.vmware_dvs_portgroup```tasks.
