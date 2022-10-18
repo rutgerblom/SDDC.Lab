@@ -1566,3 +1566,4 @@
 ### Added by Luis Chanu
   - Removed extra spaces from ```README.md``` file.
   - Modified ```CreateContentLibrary.yml``` to create Non-TKG Content Libraries first, so that they can start synchronizing before TKG is created.  This was to resolve issue with ```DeployWorkloadVms.yml``` failing due to the WorkloadVms Content Library not being synchronized.
+  - Removed excess conditional details from ```Include_Tasks_CreateContentLibrary.yml``` to adhere to lint rules.

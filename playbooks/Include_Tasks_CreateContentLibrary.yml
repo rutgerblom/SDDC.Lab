@@ -25,7 +25,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
         - item is defined
 
 
@@ -42,7 +42,7 @@
       vars:
         query: "[?value.DeployHosts].value.vsanDatastore"
       when:
-        - item.value.Enable == true
+        - item.value.Enable
         - item.value.Datastore == None
 
     - name: If more than 1 datastore is available, remove 'Edge' vSAN datastore from the list
@@ -50,7 +50,7 @@
         datastore_options: "{{ datastore_list | difference([ Nested_Cluster['Edge'].vsanDatastore ]) }}"
       when:
         - (datastore_list | length) > 1
-        - item.value.Enable == true
+        - item.value.Enable
         - item.value.Datastore == None
 
     - name: If only 1 datastore is avaialble, then use it
@@ -58,21 +58,21 @@
         datastore_options: "{{ datastore_list }}"
       when:
         - (datastore_list | length) == 1
-        - item.value.Enable == true
+        - item.value.Enable
         - item.value.Datastore == None
 
     - name: Select the first datastore from the available datastore options
       ansible.builtin.set_fact:
         library_datastore: "{{ datastore_options[0] }}"
       when:
-        - item.value.Enable == true
+        - item.value.Enable
         - item.value.Datastore == None
 
     - name: If Content Library Datastore is specified in config file, use it
       ansible.builtin.set_fact:
         library_datastore: "{{ item.value.Datastore }}"
       when:
-        - item.value.Enable == true
+        - item.value.Enable
         - item.value.Datastore != None
 
 
@@ -90,7 +90,7 @@
         library_type: "{{ item.value.Type }}"
         datastore_name: "{{ library_datastore }}"
       when:
-        - item.value.Enable == true
+        - item.value.Enable
         - item.value.Type == "local"
 
 
@@ -105,7 +105,7 @@
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
       register: result
       when:
-        - item.value.Enable == true
+        - item.value.Enable
         - item.value.Type == "subscribed"
         - item.value.Subscribed.Type == "vCenter"
 
@@ -120,8 +120,8 @@
 
           ======================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-        - item.value.Enable == true
+        - DEBUG.DisplayVariables
+        - item.value.Enable
         - item.value.Type == "subscribed"
         - item.value.Subscribed.Type == "vCenter"
 
@@ -137,7 +137,7 @@
       loop_control:
         loop_var: loop_var
       when:
-        - item.value.Enable == true
+        - item.value.Enable
         - item.value.Type == "subscribed"
         - item.value.Subscribed.Type == "vCenter"
 
@@ -152,8 +152,8 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-        - item.value.Enable == true
+        - DEBUG.DisplayVariables
+        - item.value.Enable
         - item.value.Type == "subscribed"
         - item.value.Subscribed.Type == "vCenter"
 
@@ -163,7 +163,7 @@
       vars:
         query: "results[*].content_lib_details[?library_name=='{{ item.value.Subscribed.vCenter.PublishedLibraryName }}']|[0]|[0]"
       when:
-        - item.value.Enable == true
+        - item.value.Enable
         - item.value.Type == "subscribed"
         - item.value.Subscribed.Type == "vCenter"
 
@@ -178,8 +178,8 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-        - item.value.Enable == true
+        - DEBUG.DisplayVariables
+        - item.value.Enable
         - item.value.Type == "subscribed"
         - item.value.Subscribed.Type == "vCenter"
 
@@ -193,7 +193,7 @@
         library_publish_url:  "{{ content_library.library_publish_info.publish_url | urlsplit('hostname') }}"
         library_publish_port: "{{ content_library.library_publish_info.publish_url | urlsplit('port') }}"
       when:
-        - item.value.Enable == true
+        - item.value.Enable
         - item.value.Type == "subscribed"
         - item.value.Subscribed.Type == "vCenter"
 
@@ -202,7 +202,7 @@
         library_publish_url:  "{{ item.value.Subscribed.URL.Path | urlsplit('hostname') }}"
         library_publish_port: "{{ item.value.Subscribed.URL.Port }}"
       when:
-        - item.value.Enable == true
+        - item.value.Enable
         - item.value.Type == "subscribed"
         - item.value.Subscribed.Type == "URL"
 
@@ -217,8 +217,8 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-        - item.value.Enable == true
+        - DEBUG.DisplayVariables
+        - item.value.Enable
         - item.value.Type == "subscribed"
 
     - name: Obtain SSL Certificate from Content Library server
@@ -227,7 +227,7 @@
         port: "{{ library_publish_port }}"
       register: ssl_cert
       when:
-        - item.value.Enable == true
+        - item.value.Enable
         - item.value.Type == "subscribed"
 
     - name: Obtain Information about the SSL Certificate
@@ -235,14 +235,14 @@
         content: "{{ ssl_cert.cert }}"
       register: ssl_cert_info
       when:
-        - item.value.Enable == true
+        - item.value.Enable
         - item.value.Type == "subscribed"
 
     - name: Store SSL Certificate SHA1 Thumbprint (WITH colons) for easier use
       ansible.builtin.set_fact:
         ssl_thumbprint: "{{ ssl_cert_info.fingerprints['sha1'] }}"
       when:
-        - item.value.Enable == true
+        - item.value.Enable
         - item.value.Type == "subscribed"
 
     - name: DEBUG -- Display SSL Certificate Thumbprint (Pause)
@@ -258,8 +258,8 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
-        - item.value.Enable == true
+        - DEBUG.DisplayVariables
+        - item.value.Enable
         - item.value.Type == "subscribed"
 
 
@@ -270,7 +270,7 @@
       ansible.builtin.set_fact:
         library_subscription_url: "{{ content_library.library_publish_info.publish_url }}"
       when:
-        - item.value.Enable == true
+        - item.value.Enable
         - item.value.Type == "subscribed"
         - item.value.Subscribed.Type == "vCenter"
 
@@ -278,10 +278,9 @@
       ansible.builtin.set_fact:
         library_subscription_url: "{{ item.value.Subscribed.URL.Path }}"
       when:
-        - item.value.Enable == true
+        - item.value.Enable
         - item.value.Type == "subscribed"
         - item.value.Subscribed.Type == "URL"
-
 
 
 ##
@@ -300,6 +299,22 @@
         subscription_url: "{{ library_subscription_url }}"
         ssl_thumbprint: "{{ ssl_thumbprint }}"
         update_on_demand: "{{ item.value.Subscribed.UpdateOnDemand }}"
+      register: new_content_library
       when:
-        - item.value.Enable == true
+        - item.value.Enable
+        - item.value.Type == "subscribed"
+
+    - name: DEBUG -- Display newly created content library information (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display 'new_content_library' ==================================
+
+          new_content_library:
+            {{ new_content_library | to_nice_json(indent=2) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+        - item.value.Enable
         - item.value.Type == "subscribed"
