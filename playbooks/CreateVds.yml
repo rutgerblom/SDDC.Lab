@@ -98,6 +98,7 @@
           active_uplinks: "{{ item.value.Teaming.ActiveUplinks }}"
           standby_uplinks: "{% if item.value.Teaming.StandbyUplinks is none %}{{ omit }}{% else %}{{ item.value.Teaming.StandbyUplinks }}{% endif %}"
         network_policy:
+          inherited: false
           forged_transmits: "{{ item.value.Security.ForgedTransmits }}"
           mac_changes: "{{ item.value.Security.MACAddressChanges }}"
           promiscuous: "{{ item.value.Security.PromiscuousMode }}"
