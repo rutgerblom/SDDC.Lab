@@ -1574,3 +1574,9 @@
   - Updated the ```requirements.yml``` so that a version number can be added to the collections.
   - Added version 3.0.0 to the ```community.vmware``` collection which is required due to changes in the ```community.vmware.vmware_dvs_portgroup```module.
   - Updated ```playbooks/PreparePhysical.yml``` so that the new and required parameter "inherited" is included in ```community.vmware.vmware_dvs_portgroup```tasks.
+
+## Dev-v6.0.0 18-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Added ```Test``` version to VyOS Router entry in ```templates_sample.yml```.
+  - Be sure to update your ```templates.yml``` file.
