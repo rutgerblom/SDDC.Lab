@@ -1,0 +1,15 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: DeployRouterOnly.yml
+##
+---
+# Deploy router
+- ansible.builtin.import_playbook: playbooks/DeployRouter.yml
+  when: 
+    - Deploy.Product.Router.Deploy
+
+# Configure router
+- ansible.builtin.import_playbook: playbooks/ConfigureRouter.yml
+  when: 
+    - Deploy.Product.Router.Deploy
