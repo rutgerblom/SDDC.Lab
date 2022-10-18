@@ -1560,3 +1560,9 @@
   - Updated ```playbooks/DeployAlb.yml``` to include a task for basic system configuration.
   - Please be sure to update your ```config.yml``` files.
   - Please be sure to run ```ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml``` so that the ```vmware.alb``` Ansible Galaxy collection gets installed.
+
+## Dev-v6.0.0 17-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Removed extra spaces from ```README.md``` file.
+  - Modified ```CreateContentLibrary.yml``` to create Non-TKG Content Libraries first, so that they can start synchronizing before TKG is created.  This was to resolve issue with ```DeployWorkloadVms.yml``` failing due to the WorkloadVms Content Library not being synchronized.

@@ -81,9 +81,19 @@
 
 
 ##
-## Create Content Libraries
+## Create Non-TKG Content Libraries first to make sure they begin syncrhonizing before TKG.
+## This ensures the Content Library is ready for when DeployWorkloadVms playbook is reached.
 ##
-    - name: Create Content Libraries one at a time
+    - name: Create Non-TKG Content Libraries one at a time
       ansible.builtin.include_tasks:
         file: Include_Tasks_CreateContentLibrary.yml
       loop: "{{ Nested_vCenter.ContentLibrary | dict2items }}"
+      when:
+        - item.key != "TKG"
+
+    - name: Create TKG Content Library
+      ansible.builtin.include_tasks:
+        file: Include_Tasks_CreateContentLibrary.yml
+      loop: "{{ Nested_vCenter.ContentLibrary | dict2items }}"
+      when:
+        - item.key == "TKG"
