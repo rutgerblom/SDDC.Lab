@@ -1567,3 +1567,9 @@
   - Removed extra spaces from ```README.md``` file.
   - Modified ```CreateContentLibrary.yml``` to create Non-TKG Content Libraries first, so that they can start synchronizing before TKG is created.  This was to resolve issue with ```DeployWorkloadVms.yml``` failing due to the WorkloadVms Content Library not being synchronized.
   - Removed excess conditional details from ```Include_Tasks_CreateContentLibrary.yml``` to adhere to lint rules.
+
+## Dev-v6.0.0 18-OCTOBER-2022
+
+### Added by Rutger Blom
+  - Updated the ```requirements.yml``` so that a version number can be added to the collections.
+  - Added version 3.0.0 to the ```community.vmware``` collection which is required due to changes in the ```community.vmware.vmware_dvs_portgroup```module.
