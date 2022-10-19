@@ -236,11 +236,11 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 12 | LM-1 | NSX-T Local Manager Node 1 | Pod-240-NSXT-LM-1 | Yes |
 | 13 | LM-2 | NSX-T Local Manager Node 2 | Pod-240-NSXT-LM-2 | No |
 | 14 | LM-3 | NSX-T Local Manager Node 3 | Pod-240-NSXT-LM-3 | No |
-| 15 | ALB VIP | NSX-T Advanced Load Balancer (ALB) Controller VIP | Pod-240-ALB-Controller-VIP | No |
+| 15 | ALB VIP | NSX-T Advanced Load Balancer (ALB) Controller VIP | Pod-240-ALB-Controller | No |
 | 16 | ALB Controller-1 | NSX Advanced Load Balancer (ALB) Controller 1 | Pod-240-ALB-Controller-1 | No |
 | 17 | ALB Controller-2 | NSX Advanced Load Balancer (ALB) Controller 2 | Pod-240-ALB-Controller-2 | No |
 | 18 | ALB Controller-3 | NSX Advanced Load Balancer (ALB) Controller 3 | Pod-240-ALB-Controller-3 | No |
-| 19 | vRLI VIP | vRealize Log Insight Cluster VIP | Pod-240-vRLI-VIP | No |
+| 19 | vRLI VIP | vRealize Log Insight Cluster VIP | Pod-240-vRLI | No |
 | 20 | vRLI-1 | vRealize Log Insight Appliance Node 1 | Pod-240-vRLI-1 | Yes |
 | 21 | vRLI-2 | vRealize Log Insight Appliance Node 2 | Pod-240-vRLI-2 | No |
 | 22 | vRLI-3 | vRealize Log Insight Appliance Node 3 | Pod-240-vRLI-3 | No |
