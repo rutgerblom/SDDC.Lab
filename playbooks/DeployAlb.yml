@@ -170,27 +170,39 @@
       when:
         - Deploy.Product.ALB.Deploy
 
-    - name: Apply Basic System Configuration
-      vmware.alb.avi_systemconfiguration:
-        avi_credentials: "{{ avi_credentials }}"
-        state: present
-        welcome_workflow_complete: true
-        dns_configuration:
-          search_domain: "{{ Common.DNS.Domain }}"
-          server_list:
-            - type: V4
-              addr: "{{ Common.DNS.Server1.IPv4 }}"
-        email_configuration:
-          from_email: "{{ Nested_ALB.Credential.admin.Name }}@{{ Common.DNS.Domain }}"
-        ntp_configuration:
-          ntp_servers:
-            - server:
-                type: V4
-                addr: "{{ Common.NTP.Server1.IPv4 }}"
-
-    - name: Configure ALB Controller Cluster Name and VIP
-      vmware.alb.avi_cluster:
-        avi_credentials: "{{ avi_credentials }}"
-        state: present
-        name: "{{ SiteCode }}-ALB-Controller-Cluster"
-        virtual_ip: "{{ Nested_ALB.Component.Controller_VIP.Address.IPv4.Address }}"
+## TBD ##
+#    - name: Initialize user password
+#     vmware.alb.avi_bootstrap_controller:
+#       avi_credentials:
+#         username: "{{ Nested_ALB.Credential.admin.Name }}"
+#         password: "{{ Nested_ALB.Credential.admin.Password }}"
+#         controller: "{{ Nested_ALB.Component.Controller.FQDN }}"
+#         api_version: "{{ Deploy.Software.ALB.Version}}"
+#       password: "{{ Nested_ALB.Credential.admin.Password }}"
+#       ssh_key_pair: "null"
+#
+#
+#   - name: Apply Basic System Configuration
+#     vmware.alb.avi_systemconfiguration:
+#       avi_credentials: "{{ avi_credentials }}"
+#       state: present
+#       welcome_workflow_complete: true
+#       dns_configuration:
+#         search_domain: "{{ Common.DNS.Domain }}"
+#         server_list:
+#           - type: V4
+#             addr: "{{ Common.DNS.Server1.IPv4 }}"
+#       email_configuration:
+#         from_email: "{{ Nested_ALB.Credential.admin.Name }}@{{ Common.DNS.Domain }}"
+#       ntp_configuration:
+#         ntp_servers:
+#           - server:
+#               type: V4
+#               addr: "{{ Common.NTP.Server1.IPv4 }}"
+#
+#   - name: Configure Controller Cluster Name and VIP
+#     vmware.alb.avi_cluster:
+#       avi_credentials: "{{ avi_credentials }}"
+#       state: present
+#       name: "{{ SiteCode }}-ALB-Controller-Cluster"
+#       virtual_ip: "{{ Nested_ALB.Component.Controller_VIP.Address.IPv4.Address }}"
