@@ -1589,3 +1589,4 @@
 
 ### Added by Rutger Blom
   - Added ```playbooks/DeployAlb.yml``` to ```Deploy.yml```. Advanced Load Balancer is not deployed by default (i.e. ```Deploy.Product.ALB.Deploy: false``` in ```config_sample.yml```). 
+  - Added task to ```playbooks/DeployAlb.yml``` that configures a cluster name and cluster VIP. 
