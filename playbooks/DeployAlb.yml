@@ -187,3 +187,10 @@
             - server:
                 type: V4
                 addr: "{{ Common.NTP.Server1.IPv4 }}"
+
+    - name: Configure ALB Controller Cluster and VIP
+      vmware.alb.avi_cluster:
+        avi_credentials: "{{ avi_credentials }}"
+        state: present
+        name: "{{ SiteCode }}-ALB-Controller-Cluster"
+        virtual_ip: "{{ Nested_ALB.Component.Controller_VIP.Address.IPv4.Address }}"
