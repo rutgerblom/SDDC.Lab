@@ -161,6 +161,11 @@
   when: 
     - Deploy.Product.vRLI.Deploy
 
+# Deploy Advanced Load Balancer
+- ansible.builtin.import_playbook: playbooks/DeployAlb.yml
+  when: 
+    - Deploy.Product.ALB.Deploy
+
 # Deploy Tanzu
 - ansible.builtin.import_playbook: playbooks/EnableWorkloadManagement.yml
   when: 
