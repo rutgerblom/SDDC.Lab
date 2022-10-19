@@ -1584,3 +1584,8 @@
   - Added ```version: 3.0.1``` to the ```vyos.vyos``` collection in ```~/git/SDDC.Lab/requirements.yml``` file to ensure proper version of VyOS Ansible Module is installed.
   - Updated ```playbooks/CreateVds.yml``` so that the new and required parameter "inherited" is included in ```community.vmware.vmware_dvs_portgroup```tasks.
   - Aligned comments in ```config_sample.yml``` file.
+
+## Dev-v6.0.0 19-OCTOBER-2022
+
+### Added by Rutger Blom
+  - Added ```playbooks/DeployAlb.yml``` to ```Deploy.yml```. Advanced Load Balancer is not deployed by default (i.e. ```Deploy.Product.ALB.Deploy: false``` in ```config_sample.yml```). 
