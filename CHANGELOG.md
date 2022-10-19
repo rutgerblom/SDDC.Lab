@@ -1535,3 +1535,9 @@
 ### Added by Rutger Blom
   - Updated the ```requirements.yml``` so that a version number can be added to the collections.
   - Added version 2.9.1 to the ```community.vmware``` collection which is required due to changes in newer versions of the ```community.vmware.vmware_dvs_portgroup```module.
+
+## v5.0.0 18-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Added version 3.0.1 to the ```vyos.vyos``` collection within ```requirements.yml``` to address configuration appying issues with v4.0.0 release of the VyOS Ansible module.
+
