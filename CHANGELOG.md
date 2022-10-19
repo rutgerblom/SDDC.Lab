@@ -1580,3 +1580,7 @@
 ### Added by Luis Chanu
   - Added ```Test``` version to VyOS Router entry in ```templates_sample.yml```.
   - Be sure to update your ```templates.yml``` file.
+  - Issue discovered with latest VyOS Ansible module (v4.0.0), whereas configuration would not be applied to the VyOS Pod-Router.  Solution is to roll back to VyOS Ansible module v3.0.1 via the following command: ```ansible-galaxy collection install --force vyos.vyos:3.0.1```
+  - Added ```version: 3.0.1``` to the ```vyos.vyos``` collection in ```~/git/SDDC.Lab/requirements.yml``` file to ensure proper version of VyOS Ansible Module is installed.
+  - Updated ```playbooks/CreateVds.yml``` so that the new and required parameter "inherited" is included in ```community.vmware.vmware_dvs_portgroup```tasks.
+  - Aligned comments in ```config_sample.yml``` file.
