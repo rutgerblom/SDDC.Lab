@@ -1591,3 +1591,8 @@
   - Added ```playbooks/DeployAlb.yml``` to ```Deploy.yml```. Advanced Load Balancer is not deployed by default (i.e. ```Deploy.Product.ALB.Deploy: false``` in ```config_sample.yml```). 
   - Added tasks to ```playbooks/DeployAlb.yml``` that perform bootstrap, a cluster name, and cluster VIP.
   - Commented out the newly added tasks for now as investigation is needed.
+
+## Dev-v6.0.0 19-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Removed ```no_log``` from playbooks which target nested components, with the exception of licensing playbooks.

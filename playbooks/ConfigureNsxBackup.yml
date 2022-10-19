@@ -99,7 +99,6 @@
       register: result
       ignore_errors: true
       failed_when: false
-      no_log: true
       when: Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: Store SSH Fingerprint of SFTP Server [Local Manager]
@@ -159,7 +158,6 @@
       register: result
       ignore_errors: true
       failed_when: false
-      no_log: true
       when: Deploy.Product.NSXT.LocalManager.Deploy
 
 
@@ -274,7 +272,6 @@
           Accept: application/json
         timeout: 5
       failed_when: false
-      no_log: true
       when:
         - Deploy.Product.NSXT.Federation.Enable
         - Deploy.Product.NSXT.LocalManager.Deploy
@@ -299,7 +296,6 @@
         timeout: 5
       ignore_errors: true
       failed_when: false
-      no_log: true
       register: result
       until: result.status == 200 and result.json.current_backup_operation_status.operation_type == "none"
       retries: 60
