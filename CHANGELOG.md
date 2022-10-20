@@ -1591,3 +1591,20 @@
   - Added ```playbooks/DeployAlb.yml``` to ```Deploy.yml```. Advanced Load Balancer is not deployed by default (i.e. ```Deploy.Product.ALB.Deploy: false``` in ```config_sample.yml```). 
   - Added tasks to ```playbooks/DeployAlb.yml``` that perform bootstrap, a cluster name, and cluster VIP.
   - Commented out the newly added tasks for now as investigation is needed.
+
+## Dev-v6.0.0 19-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Removed ```no_log``` from playbooks which target nested components, with the exception of licensing playbooks.
+  - Indented Jinja within ```templates/vars_License_ESXi.j2``` to improve readablity.
+  - Indented Jinja within ```templates/vars_License_vSAN.j2``` to improve readablity.
+  - Changed ```License``` to ```KeyCode``` in Jinja templates for consistency with other product license references.
+  - Modified ```templates/License_vSphere.yaml``` as follows:
+    - Added KeyCode defaults to handle use case where there are insufficiet socket licenses available (as Jinja does not include ```KeyCode``` key in that case)
+    - Added additional DEBUG tasks
+    - Udded additional comments
+    - Changed ESXi and vSAN licensing to use ESXi version rather than vCenter version to match license keys
+  - Added vRLI and ALB product versions to static Pod-Config filename within ```playbooks/CreatePodConfig.yml```.
+  - In preparation for future playbooks, added the following variables to ```config_sample.yml``` file:
+    - ```Common.Syslog.Level```
+    - ```Common.Timezone```

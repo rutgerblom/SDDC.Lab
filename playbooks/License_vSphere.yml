@@ -134,7 +134,7 @@
         license: "{{ item.KeyCode }}"
         state: present
       loop: "{{ License.VMware.vCenter.Licenses | default([]) }}"
-      failed_when: false    # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
+      failed_when: false                          # If license in use or not applicable, it will result in 'failure', so need to continue by ignoring the error
       no_log: true
       when:
         - Deploy.Software.vCenter.Version is match( item.Version )
@@ -183,7 +183,8 @@
         prompt: |
           ============================== Display hoststolicense Variable ==================================
 
-              hoststolicense: {{ hoststolicense | to_nice_yaml(indent=2) }}
+          hoststolicense:
+            {{ hoststolicense | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
           =================================================================================================
       when:
@@ -198,10 +199,10 @@
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         esxi_hostname: "{{ item.Host | lower }}"
-        license: "{{ item.License }}"
+        license: "{{ item.KeyCode | default('00000-00000-00000-00000-00000') }}"       # Include default KeyCode to handle insufficient socket qty in licenses
         state: present
       loop: "{{ hoststolicense }}"
-      failed_when: false    # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
+      failed_when: false                          # If license in use or not applicable, it will result in 'failure', so need to continue by ignoring the error
       no_log: true
       when:
         - licenseproducts
@@ -222,7 +223,7 @@
       loop: "{{ License.VMware.vSAN.Licenses | default([]) }}"
       no_log: true
       when:
-        - Deploy.Software.vCenter.Version is match( item.Version )
+        - Deploy.Software.ESXi.Version is match( item.Version )
         - licenseproducts
         - item.KeyCode != "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
 
@@ -233,9 +234,24 @@
       loop: "{{ License.VMware.vSAN.Licenses | default([]) }}"
       no_log: true
       when:
-        - Deploy.Software.vCenter.Version is match( item.Version )
+        - Deploy.Software.ESXi.Version is match( item.Version )
         - licenseproducts
         - item.KeyCode != "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+        - vsan_license_exists
+
+    - name: DEBUG - Display vSAN Licenses (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================== Display 'vsan_licenses' Variable =================================
+
+          vsan_licenses:
+            {{ vsan_licenses | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+        - licenseproducts
         - vsan_license_exists
 
     - name: Assign a vSAN license to each deployed vSAN Cluster
@@ -252,7 +268,8 @@
         prompt: |
           ============================= Display clusterstolicense Variable ================================
 
-              clusterstolicense: {{ clusterstolicense | to_nice_yaml(indent=2) }}
+          clusterstolicense:
+            {{ clusterstolicense | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
           =================================================================================================
       when:
@@ -267,10 +284,10 @@
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         cluster_name: "{{ item.Cluster }}"
-        license: "{{ item.License }}"
+        license: "{{ item.KeyCode | default('00000-00000-00000-00000-00000') }}"       # Include default KeyCode to handle insufficient socket qty in licenses
         state: present
       loop: "{{ clusterstolicense }}"
-      failed_when: false # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
+      failed_when: false                          # If license in use or not applicable, it will result in 'failure', so need to continue by ignoring the error
       no_log: true
       when:
         - licenseproducts
