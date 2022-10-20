@@ -1598,3 +1598,4 @@
   - Removed ```no_log``` from playbooks which target nested components, with the exception of licensing playbooks.
   - Indented Jinja within ```templates/vars_License_ESXi.j2``` to improve readablity.
   - Indented Jinja within ```templates/vars_License_vSAN.j2``` to improve readablity.
+  - Changed ```License``` to ```KeyCode``` in Jinja templates for consistency with other product license references.
