@@ -1619,4 +1619,6 @@
 ### Added by Rutger Blom
   - Added new tasks to ```playbooks/DeployAlb.yml``` for ALB bootstrap, base configuration, and controller cluster configuration.
   - Added new field ```Password``` to the ALB section in ```software_sample.yml``` and ```templates/Pod_Config.j2```. This is field contains a version specific default admin password and is required during ALB bootstrap.
-  - Be sure to update your ```software.yml``` file.
+  - Added task to ```playbooks/DeployAlb.yml``` that checks for Web UI availability on cluster VIP FQDN.
+  - Fixed a typo in ALB VIP FQDN in ```config_sample.yml```.
+  - Be sure to update your ```config.yml``` and ```software.yml``` file.
