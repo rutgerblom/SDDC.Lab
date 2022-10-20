@@ -11,7 +11,7 @@
       username: "{{ Nested_ALB.Credential.admin.Name }}"
       password: "{{ Nested_ALB.Credential.admin.Password }}"
       controller: "{{ Nested_ALB.Component.Controller.FQDN }}"
-      api_version: "{{ Deploy.Software.ALB.Version}}"
+      api_version: "{{ Deploy.Software.ALB.Version }}"
   tasks:
     - name: DeployAlb_Playbook
       ansible.builtin.debug:
@@ -171,39 +171,47 @@
       when:
         - Deploy.Product.ALB.Deploy
 
-## TBD ##
-#    - name: Initialize user password
-#     vmware.alb.avi_bootstrap_controller:
-#       avi_credentials:
-#         username: "{{ Nested_ALB.Credential.admin.Name }}"
-#         password: "{{ Nested_ALB.Credential.admin.Password }}"
-#         controller: "{{ Nested_ALB.Component.Controller.FQDN }}"
-#         api_version: "{{ Deploy.Software.ALB.Version}}"
-#       password: "{{ Nested_ALB.Credential.admin.Password }}"
-#       ssh_key_pair: "null"
-#
-#
-#   - name: Apply Basic System Configuration
-#     vmware.alb.avi_systemconfiguration:
-#       avi_credentials: "{{ avi_credentials }}"
-#       state: present
-#       welcome_workflow_complete: true
-#       dns_configuration:
-#         search_domain: "{{ Common.DNS.Domain }}"
-#         server_list:
-#           - type: V4
-#             addr: "{{ Common.DNS.Server1.IPv4 }}"
-#       email_configuration:
-#         from_email: "{{ Nested_ALB.Credential.admin.Name }}@{{ Common.DNS.Domain }}"
-#       ntp_configuration:
-#         ntp_servers:
-#           - server:
-#               type: V4
-#               addr: "{{ Common.NTP.Server1.IPv4 }}"
-#
-#   - name: Configure Controller Cluster Name and VIP
-#     vmware.alb.avi_cluster:
-#       avi_credentials: "{{ avi_credentials }}"
-#       state: present
-#       name: "{{ SiteCode }}-ALB-Controller-Cluster"
-#       virtual_ip: "{{ Nested_ALB.Component.Controller_VIP.Address.IPv4.Address }}"
+    - name: Update the admin user password
+      vmware.alb.avi_useraccount:
+        avi_credentials:
+          username: "{{ Nested_ALB.Credential.admin.Name }}"
+          password: "{{ Deploy.Software.ALB.Password }}"
+          controller: "{{ Nested_ALB.Component.Controller.FQDN }}"
+          api_version: "{{ Deploy.Software.ALB.Version }}"
+        old_password: "{{ Deploy.Software.ALB.Password }}"
+        password: "{{ Nested_ALB.Credential.admin.Password }}"
+        force_change: false
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Apply basic system configuration
+      vmware.alb.avi_systemconfiguration:
+        avi_credentials: "{{ avi_credentials }}"
+        state: present
+        welcome_workflow_complete: true
+        dns_configuration:
+          search_domain: "{{ Common.DNS.Domain }}"
+          server_list:
+            - type: V4
+              addr: "{{ Common.DNS.Server1.IPv4 }}"
+        email_configuration:
+          from_email: "{{ Nested_ALB.Credential.admin.Name }}@{{ Common.DNS.Domain }}"
+        ntp_configuration:
+          ntp_servers:
+            - server:
+                type: V4
+                addr: "{{ Common.NTP.Server1.IPv4 }}"
+
+    - name: Configure Controller Cluster
+      vmware.alb.avi_cluster:
+        avi_credentials: "{{ avi_credentials }}"
+        state: present
+        name: "{{ SiteCode }}-ALB-Controller-Cluster"
+        nodes:
+          - name: "{{ Nested_ALB.Component.Controller.VMName }}"
+            ip:
+              type: V4
+              addr: "{{ Nested_ALB.Component.Controller.Address.IPv4.Address }}"
+        virtual_ip:
+          type: V4
+          addr: "{{ Nested_ALB.Component.Controller_VIP.Address.IPv4.Address }}"
