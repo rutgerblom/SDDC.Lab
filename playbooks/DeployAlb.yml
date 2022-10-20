@@ -201,6 +201,8 @@
             - server:
                 type: V4
                 addr: "{{ Common.NTP.Server1.IPv4 }}"
+      when:
+        - Deploy.Product.ALB.Deploy
 
     - name: Configure Controller Cluster
       vmware.alb.avi_cluster:
@@ -215,3 +217,5 @@
         virtual_ip:
           type: V4
           addr: "{{ Nested_ALB.Component.Controller_VIP.Address.IPv4.Address }}"
+      when:
+        - Deploy.Product.ALB.Deploy
