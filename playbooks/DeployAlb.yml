@@ -219,3 +219,16 @@
           addr: "{{ Nested_ALB.Component.Controller_VIP.Address.IPv4.Address }}"
       when:
         - Deploy.Product.ALB.Deploy
+
+    - name: Start checking if the ALB Web UI is available on VIP
+      ansible.builtin.uri:
+        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}
+        validate_certs: false
+        timeout: 5
+      register: alb_vip_webui_check
+      until: alb_vip_webui_check.status == 200
+      when:
+        - Deploy.Product.ALB.Deploy
+        - alb_check.status != 200
+      retries: 10
+      delay: 60
