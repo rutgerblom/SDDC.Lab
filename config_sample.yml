@@ -187,8 +187,10 @@ Common:
   Syslog:
     Protocol: udp
     Port: 514
+    Level: INFO                                                               # Replace with your desired logging level.  Values include: EMERG, ALERT, CRIT, ERR, WARNING, NOTICE, INFO, DEBUG
     IPv4: "{{ Net.Management.IPv4.Network }}.20"                              # Replace with your IP address if Deploy.Product.vRLI.Deploy == false
     IPv6: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(20) }}"        # Replace with your IP address if Deploy.Product.vRLI.Deploy == false
+  Timezone: UTC                                                               # Replace with your desired ISO 8601 time zone abbreviation (https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations)
   NFS:                                                                        # NFS - The NFS settings below refer to a NFS share that can be used by the NESTED ESXi hosts for storage, and has nothing to do with physical ESXi server(s).  If possible, we suggest using vSAN storage on the nested ESXi hosts, which are backed by local physical storage.
     Server:
       IPv4: 192.168.0.12

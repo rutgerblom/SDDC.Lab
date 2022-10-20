@@ -1605,3 +1605,6 @@
     - Udded additional comments
     - Changed ESXi and vSAN licensing to use ESXi version rather than vCenter version to match license keys
   - Added vRLI and ALB product versions to static Pod-Config filename within ```playbooks/CreatePodConfig.yml```.
+  - In preparation for future playbooks, added the following variables to ```config_sample.yml``` file:
+    - ```Common.Syslog.Level```
+    - ```Common.Timezone```
