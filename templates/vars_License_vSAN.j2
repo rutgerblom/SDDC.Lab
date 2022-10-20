@@ -36,7 +36,7 @@
 {% endfor %}{# Hosts #}
     Sockets: {{ ns.ClusterSockets }}
 {% for License in ns.Licenses %}
-{# Only assign if Qty available, and if the cluster hasn't already been assigned a licnese #}
+{# Only assign if Qty available, and if the cluster hasn't already been assigned a license #}
 {% if License.Quantity >= ns.ClusterSockets and ns.LicenseAssignedToCluster != true %}
     License: "{{ License.KeyCode }}"
 {# Current Cluster has consumed a license, so flag that #}
