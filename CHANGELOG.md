@@ -1627,4 +1627,5 @@
 
 ### Added by Luis Chanu
   - Added additional NSX Advanced Load Balancer versions to ```software_sample.yml``` file.
-
+  - Updated ```SDDCLab.Version``` variable in ```templates/Pod_Config.j2``` from 5 to 6.
+  - Updated ```playbooks/ValidateConfiguration.yml``` to accept version 6 configuration files.
