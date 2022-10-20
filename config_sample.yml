@@ -674,7 +674,7 @@ Nested_ALB:
   Component:
     Controller_VIP:
       VMName: "{{ SiteCode }}-ALB-Controller"
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}--ALB-Controller.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.15{% endif %}"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ALB-Controller.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.15{% endif %}"
       Address:
         IPv4:
           Address: "{{ Net.Management.IPv4.Network }}.15"
