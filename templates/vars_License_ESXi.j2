@@ -17,19 +17,19 @@
 {% set ns.Licenses=esxi_licenses %}
 {% for HostName, HostConfig in Nested_ESXi.Host.items() %}
 {# Calculate number of sockets this host needs #}
-{% set HostSockets = (Nested_ESXi.HardwareSettings[HostConfig.Cluster].CPU / Nested_ESXi.HardwareSettings[HostConfig.Cluster].CoresPerSocket) | int %}
+{%   set HostSockets = (Nested_ESXi.HardwareSettings[HostConfig.Cluster].CPU / Nested_ESXi.HardwareSettings[HostConfig.Cluster].CoresPerSocket) | int %}
 {# Reset Global flag that ensures that each host only gets one license assigned to it #}
-{% set ns.LicenseAssignedToHost=false %}
-{% for License in ns.Licenses %}
+{%   set ns.LicenseAssignedToHost=false %}
+{%   for License in ns.Licenses %}
 {# Only assign license if Qty avaiable, Hosts for the given cluster were deployed, and Host hasn't already been assigned a licnese #}
-{% if License.Quantity >= HostSockets and Nested_Cluster[HostConfig.Cluster].DeployHosts == true and ns.LicenseAssignedToHost != true %}
+{%     if License.Quantity >= HostSockets and Nested_Cluster[HostConfig.Cluster].DeployHosts == true and ns.LicenseAssignedToHost != true %}
   - Host: "{{ HostConfig.FQDN }}"
-    License: "{{ License.KeyCode }}"
+    KeyCode: "{{ License.KeyCode }}"
 {# Current Host has consumed a license, so set flag #}
-{% set ns.LicenseAssignedToHost = true %}
+{%       set ns.LicenseAssignedToHost = true %}
 {# License assigned, so reduce available license count by socket number consumed by host #}
-{% set NewQuantity = License.Quantity - HostSockets %}
-{% do License.update({'Quantity': NewQuantity}) %}
-{% endif %}{# HostSockets #}
-{% endfor %}{# Licenses #}
+{%       set NewQuantity = License.Quantity - HostSockets %}
+{%       do License.update({'Quantity': NewQuantity}) %}
+{%     endif %}{# HostSockets #}
+{%   endfor %}{# Licenses #}
 {% endfor %}{# Hosts #}

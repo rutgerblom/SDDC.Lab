@@ -18,33 +18,33 @@
 {% set ns.ClusterSockets=0|int %}
 {% for ClusterName, ClusterSettings in Nested_Cluster.items() %}
 {# Reset Global flag that ensures that each Cluster only gets one license assigned to it #}
-{% set ns.LicenseAssignedToCluster=false %}
+{%   set ns.LicenseAssignedToCluster=false %}
 {# Only process this cluster if it has hosts deployed and has vSAN enabled #}
-{% if ClusterSettings.DeployHosts == true and ClusterSettings.vSAN == true %}
+{%   if ClusterSettings.DeployHosts == true and ClusterSettings.vSAN == true %}
   - Cluster: "{{ ClusterName }}"
 {# Reset Sockets Totals Used by this cluster #}
-{% set ns.ClusterSockets=0 %}
+{%     set ns.ClusterSockets=0 %}
 {# Iterate through all hosts #}
-{% for HostName, HostConfig in Nested_ESXi.Host.items() %}
+{%     for HostName, HostConfig in Nested_ESXi.Host.items() %}
 {# We only care about the ones that are members of this vSphere cluster #}
-{% if HostConfig.Cluster == ClusterName %}
+{%       if HostConfig.Cluster == ClusterName %}
 {# Calculate number of sockets this host needs #}
-{% set HostSockets = (Nested_ESXi.HardwareSettings[ClusterName].CPU / Nested_ESXi.HardwareSettings[ClusterName].CoresPerSocket) | int %}
+{%         set HostSockets = (Nested_ESXi.HardwareSettings[ClusterName].CPU / Nested_ESXi.HardwareSettings[ClusterName].CoresPerSocket) | int %}
 {# {% set NewQuantity = ns.ClusterSockets + HostSockets %} #}
-{% set ns.ClusterSockets = ns.ClusterSockets + HostSockets %}
-{% endif %}{# HostConfig.Cluster #}
-{% endfor %}{# Hosts #}
+{%         set ns.ClusterSockets = ns.ClusterSockets + HostSockets %}
+{%       endif %}{# HostConfig.Cluster #}
+{%     endfor %}{# Hosts #}
     Sockets: {{ ns.ClusterSockets }}
-{% for License in ns.Licenses %}
+{%     for License in ns.Licenses %}
 {# Only assign if Qty available, and if the cluster hasn't already been assigned a license #}
-{% if License.Quantity >= ns.ClusterSockets and ns.LicenseAssignedToCluster != true %}
-    License: "{{ License.KeyCode }}"
+{%       if License.Quantity >= ns.ClusterSockets and ns.LicenseAssignedToCluster != true %}
+    KeyCode: "{{ License.KeyCode }}"
 {# Current Cluster has consumed a license, so flag that #}
-{% set ns.LicenseAssignedToCluster = true %}
+{%         set ns.LicenseAssignedToCluster = true %}
 {# License assigned, so reduce available license count by socket number consumed by cluster #}
-{% set NewQuantity = License.Quantity - ns.ClusterSockets %}
-{% do License.update({'Quantity': NewQuantity}) %}
-{% endif %}{# License.Quantity #}
-{% endfor %}{# License #}
-{% endif %}{# ClusterSettings.DeployHosts == true #}
+{%         set NewQuantity = License.Quantity - ns.ClusterSockets %}
+{%         do License.update({'Quantity': NewQuantity}) %}
+{%       endif %}{# License.Quantity #}
+{%     endfor %}{# License #}
+{%   endif %}{# ClusterSettings.DeployHosts == true #}
 {% endfor %}{# Clusters #}
