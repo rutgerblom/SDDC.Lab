@@ -1622,3 +1622,9 @@
   - Added task to ```playbooks/DeployAlb.yml``` that checks for Web UI availability on cluster VIP FQDN.
   - Fixed a typo in ALB VIP FQDN in ```config_sample.yml```.
   - Be sure to update your ```config.yml``` and ```software.yml``` file.
+
+## Dev-v6.0.0 20-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Added additional NSX Advanced Load Balancer versions to ```software_sample.yml``` file.
+
