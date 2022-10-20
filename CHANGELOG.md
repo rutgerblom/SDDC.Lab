@@ -1599,3 +1599,8 @@
   - Indented Jinja within ```templates/vars_License_ESXi.j2``` to improve readablity.
   - Indented Jinja within ```templates/vars_License_vSAN.j2``` to improve readablity.
   - Changed ```License``` to ```KeyCode``` in Jinja templates for consistency with other product license references.
+  - Modified ```templates/License_vSphere.yaml``` as follows:
+    - Added KeyCode defaults to handle use case where there are insufficiet socket licenses available (as Jinja does not include ```KeyCode``` key in that case)
+    - Added additional DEBUG tasks
+    - Udded additional comments
+    - Changed ESXi and vSAN licensing to use ESXi version rather than vCenter version to match license keys
