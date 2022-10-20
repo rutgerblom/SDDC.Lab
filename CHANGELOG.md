@@ -1608,3 +1608,8 @@
   - In preparation for future playbooks, added the following variables to ```config_sample.yml``` file:
     - ```Common.Syslog.Level```
     - ```Common.Timezone```
+
+## Dev-v6.0.0 20-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Updated variable references in ```playbooks/DeployAlb.yml``` file.

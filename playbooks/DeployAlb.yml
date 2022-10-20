@@ -13,7 +13,7 @@
       controller: "{{ Nested_ALB.Component.Controller.FQDN }}"
       api_version: "{{ Deploy.Software.ALB.Version}}"
   tasks:
-    - name: DeployNsxAlb_Playbook
+    - name: DeployAlb_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
@@ -67,30 +67,31 @@
                                      Target.Datastore: {{ Target.Datastore }}
                                       Target.VMFolder: {{ Target.VMFolder }}
 
-                                       ALB Version: {{ Deploy.Software.ALB.Version }}
-                                          ALB FQDN: {{ Nested_ALB.FQDN }}
-                                        ALB VMName: {{ Nested_ALB.VMName }}
-                                    ALB Admin User: {{ Nested_ALB.Credential.admin.Name }}
-                                ALB Admin Password: {{ Nested_ALB.Credential.admin.Password }}
-                                     ALB Root User: {{ Nested_ALB.Credential.root.Name }}
-                                 ALB Root Password: {{ Nested_ALB.Credential.root.Password }}
+                                          ALB Version: {{ Deploy.Software.ALB.Version }}
+                                   ALB Controller VIP: {{ Nested_ALB.Component.Controller_VIP.FQDN }}
+                                  ALB Controller FQDN: {{ Nested_ALB.Component.Controller.FQDN }}
+                                ALB Controller VMName: {{ Nested_ALB.Component.Controller.VMName }}
+                                       ALB Admin User: {{ Nested_ALB.Credential.admin.Name }}
+                                   ALB Admin Password: {{ Nested_ALB.Credential.admin.Password }}
+                                        ALB Root User: {{ Nested_ALB.Credential.root.Name }}
+                                    ALB Root Password: {{ Nested_ALB.Credential.root.Password }}
 
                                                 OVF Variables
                                                 =============
 
                                     Network PortGroup: {{ Target.PortGroup.Management.Name }}
 
-                                 Network IPv4 Address: {{ Nested_ALB.Address.IPv4.Address }}
-                                      Network Netmask: {{ (Nested_ALB.Address.IPv4.Address + '/' + Nested_ALB.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
-                                      Network Gateway: {{ Nested_ALB.Address.IPv4.Gateway }}
+                                 Network IPv4 Address: {{ Nested_ALB.Component.Controller.Address.IPv4.Address }}
+                                      Network Netmask: {{ (Nested_ALB.Component.Controller.Address.IPv4.Address + '/' + Nested_ALB.Component.Controller.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
+                                      Network Gateway: {{ Nested_ALB.Component.Controller.Address.IPv4.Gateway }}
 
                                    Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                    Network DNS Domain: {{ Common.DNS.Domain }}
 
-                                 ALB Root Password: {{ Nested_ALB.Credential.root.Password }}
+                                    ALB Root Password: {{ Nested_ALB.Credential.root.Password }}
 
-                                    ALB Media Path: {{ Deploy.Software.ALB.Directory }}
-                                    ALB Media File: {{ Deploy.Software.ALB.File }}
+                                       ALB Media Path: {{ Deploy.Software.ALB.Directory }}
+                                       ALB Media File: {{ Deploy.Software.ALB.File }}
 
           =================================================================================================
       when:
