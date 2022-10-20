@@ -1613,3 +1613,10 @@
 
 ### Added by Luis Chanu
   - Updated variable references in ```playbooks/DeployAlb.yml``` file.
+
+## Dev-v6.0.0 20-OCTOBER-2022
+
+### Added by Rutger Blom
+  - Added new tasks to ```playbooks/DeployAlb.yml``` for ALB bootstrap, base configuration, and controller cluster configuration.
+  - Added new field ```Password``` to the ALB section in ```software_sample.yml``` and ```templates/Pod_Config.j2```. This is field contains a version specific default admin password and is required during ALB bootstrap.
+  - Be sure to update your ```software.yml``` file.
