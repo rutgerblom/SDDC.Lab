@@ -56,7 +56,7 @@
                                     Target.Deployment: {{ Target.Deployment }}
 
                            Deploy.Product.vRLI.Deploy: {{ Deploy.Product.vRLI.Deploy }}
-                                     Nested_vRLI.FQDN: {{ Nested_vRLI.FQDN }}
+               Nested_vRLI.Component.Cluster_VIP.FQDN: {{ Nested_vRLI.Component.Cluster_VIP.FQDN }}
 
                                          License File: {{ LOCAL_LicenseFile }}
 
@@ -125,7 +125,7 @@
 ##
     - name: Obtain a session ID from the vRLI API
       ansible.builtin.uri:
-        url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/sessions
+        url: https://{{ Nested_vRLI.Component.Cluster_VIP.FQDN }}:9543/api/v1/sessions
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         method: POST
         body:
@@ -139,7 +139,7 @@
 
     - name: Add all licenses to vRLI
       ansible.builtin.uri:
-        url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/licenses
+        url: https://{{ Nested_vRLI.Component.Cluster_VIP.FQDN }}:9543/api/v1/licenses
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         method: POST
         headers:

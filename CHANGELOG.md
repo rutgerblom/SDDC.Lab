@@ -1637,3 +1637,4 @@
   - Updated ```playbooks/UpdateDNS.yml``` to populate DNS with the new ```Nested_vRLI``` data structure.
   - Be sure to update your ```config.yml``` file.
   - Updated IP Address Assignment table in ```README.md``` file to show that vRLI VIP is now included as part of the default deployment.
+  - Update vRLI FQDN to use Cluster_VIP FQDN address in ```playbooks/License_vRLI.yml``` file.
