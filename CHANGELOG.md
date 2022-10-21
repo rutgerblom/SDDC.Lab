@@ -1646,3 +1646,9 @@
 ### Added by Luis Chanu
   - Renamed ```playbooks//ConfigureNsxCentralNodeConfigProfile.yml``` to ```playbooks/ConfigureNsxBasicConfiguration.yml```.
   - Enabled ```playbooks/ConfigureNsxBasicConfiguration.yml``` in ```Deploy.yml``` file.
+
+## Dev-v6.0.0 21-OCTOBER-2022
+
+### Added by Rutger Blom
+  - Moved ALB basic configuration tasks to a separate playbook ```playbooks/ConfigureAlbBasicConfiguration.yml```.
+  - Enabled ```playbooks/ConfigureAlbBasicConfiguration.yml``` in ```Deploy.yml``` file.
