@@ -1639,3 +1639,4 @@
   - Updated IP Address Assignment table in ```README.md``` file to show that vRLI VIP is now included as part of the default deployment.
   - Update vRLI FQDN to use Cluster_VIP FQDN address in ```playbooks/License_vRLI.yml``` file.
   - Added ```playbooks/ConfigureNsxCentralNodeConfigProfile.yml``` playbook to SDDC.Lab.  This playbook configures Syslog, NTP, and Timezone settings on all NSX components.
+  - Added ```playbooks/ConfigureNsxCentralNodeConfigProfile.yml``` playbook to ```Deploy.yml```.  Currently configured to NOT be run as part of a deployment.
