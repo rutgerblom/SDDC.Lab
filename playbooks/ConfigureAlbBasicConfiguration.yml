@@ -1,0 +1,139 @@
+##
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: playbooks/ConfigureAlbBasicConfiguration.yml
+##
+##  Description: This playbook sets the Admin user password, configures DNS and NTP on the ALB Controller node(s),
+##               and the ALB Controller Cluster VIP.
+##
+---
+- hosts: localhost
+  name: ConfigureAlbBasicConfiguration.yml
+  vars:
+    avi_credentials:
+      username: "{{ Nested_ALB.Credential.admin.Name }}"
+      password: "{{ Nested_ALB.Credential.admin.Password }}"
+      controller: "{{ Nested_ALB.Component.Controller.FQDN }}"
+      api_version: "{{ Deploy.Software.ALB.Version }}"
+  tasks:
+    - name: ConfigureAlbBasicConfiguration_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                           NTP Server: {{ Common.NTP.Server1.IPv4 }}
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+
+                                          ALB Version: {{ Deploy.Software.ALB.Version }}
+                                  ALB Controller FQDN: {{ Nested_ALB.Component.Controller.FQDN }}
+                              ALB Controller VIP FQDN: {{ Nested_ALB.Component.Controller_VIP.FQDN }}
+                                ALB Controller VMName: {{ Nested_ALB.Component.Controller.VMName }}
+                                       ALB Admin User: {{ Nested_ALB.Credential.admin.Name }}
+                                   ALB Admin Password: {{ Nested_ALB.Credential.admin.Password }}
+                                        ALB Root User: {{ Nested_ALB.Credential.root.Name }}
+                                    ALB Root Password: {{ Nested_ALB.Credential.root.Password }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+    - name: Update the admin user password
+      vmware.alb.avi_useraccount:
+        avi_credentials:
+          username: "{{ Nested_ALB.Credential.admin.Name }}"
+          password: "{{ Deploy.Software.ALB.Password }}"
+          controller: "{{ Nested_ALB.Component.Controller.FQDN }}"
+          api_version: "{{ Deploy.Software.ALB.Version }}"
+        old_password: "{{ Deploy.Software.ALB.Password }}"
+        password: "{{ Nested_ALB.Credential.admin.Password }}"
+        force_change: false
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Apply base configuration
+      vmware.alb.avi_systemconfiguration:
+        avi_credentials: "{{ avi_credentials }}"
+        state: present
+        welcome_workflow_complete: true
+        dns_configuration:
+          search_domain: "{{ Common.DNS.Domain }}"
+          server_list:
+            - type: V4
+              addr: "{{ Common.DNS.Server1.IPv4 }}"
+        email_configuration:
+          from_email: "{{ Nested_ALB.Credential.admin.Name }}@{{ Common.DNS.Domain }}"
+        ntp_configuration:
+          ntp_servers:
+            - server:
+                type: V4
+                addr: "{{ Common.NTP.Server1.IPv4 }}"
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Configure Controller Cluster
+      vmware.alb.avi_cluster:
+        avi_credentials: "{{ avi_credentials }}"
+        state: present
+        name: "{{ SiteCode }}-ALB-Controller-Cluster"
+        nodes:
+          - name: "{{ Nested_ALB.Component.Controller.VMName }}"
+            ip:
+              type: V4
+              addr: "{{ Nested_ALB.Component.Controller.Address.IPv4.Address }}"
+        virtual_ip:
+          type: V4
+          addr: "{{ Nested_ALB.Component.Controller_VIP.Address.IPv4.Address }}"
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Start checking if the ALB Web UI is available on VIP
+      ansible.builtin.uri:
+        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}
+        validate_certs: false
+        timeout: 5
+      register: alb_vip_webui_check
+      until: alb_vip_webui_check.status == 200
+      when:
+        - Deploy.Product.ALB.Deploy
+        - alb_check.status != 200
+      retries: 10
+      delay: 60
