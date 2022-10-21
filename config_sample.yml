@@ -631,8 +631,6 @@ Nested_Router:
 ##
 
 Nested_vRLI:
-  VMName: "{{ SiteCode }}-vRLI-1"
-  FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-vRLI-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.20{% endif %}"
   Credential:
     root:
       Name: root
@@ -640,18 +638,33 @@ Nested_vRLI:
     admin:
       Name: admin
       Password: "{{ Common.Password.Nested }}"
-  Deployment:
-    Size: small
-    AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
-  Address:
-    IPv4:
-      Address: "{{ Net.Management.IPv4.Network }}.20"
-      Prefix:  "{{ Net.Management.IPv4.Prefix }}"
-      Gateway: "{{ Net.Management.IPv4.Network }}.1"
-    IPv6:
-      Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(20) }}"
-      Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-
+  Component:
+    Cluster_VIP:
+      VMName: "{{ SiteCode }}-vRLI"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-vRLI.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.19{% endif %}"
+      Address:
+        IPv4:
+          Address: "{{ Net.Management.IPv4.Network }}.19"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+          Gateway: "{{ Net.Management.IPv4.Network }}.1"
+        IPv6:
+          Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(19) }}"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+    Node:
+      VMName: "{{ SiteCode }}-vRLI-1"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-vRLI-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.20{% endif %}"
+      Deployment:
+        Size: small
+        EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
+        AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
+      Address:
+        IPv4:
+          Address: "{{ Net.Management.IPv4.Network }}.20"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+          Gateway: "{{ Net.Management.IPv4.Network }}.1"
+        IPv6:
+          Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(20) }}"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
 
 
 
