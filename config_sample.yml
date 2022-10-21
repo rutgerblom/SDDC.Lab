@@ -684,6 +684,14 @@ Nested_ALB:
     admin:
       Name: admin
       Password: "{{ Common.Password.Nested }}"
+  BackupServer:
+    User: "{{ BackupServer.User }}"
+    Password: "{{ BackupServer.Password }}"
+    Passphrase: "{{ BackupServer.Passphrase }}"
+    Protocol: sftp
+    FQDN: "{{ BackupServer.SFTP.FQDN }}"
+    Path: "{{ BackupServer.SFTP.Path }}"
+    Port: "{{ BackupServer.SFTP.Port }}"
   Component:
     Controller_VIP:
       VMName: "{{ SiteCode }}-ALB-Controller"
