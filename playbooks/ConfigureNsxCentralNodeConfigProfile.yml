@@ -1,0 +1,206 @@
+##
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: playbooks/ConfigureNsxCentralNodeConfigProfile.yml
+##
+##  Description: This playbook configures the "All NSX Nodes" Node Profile.  This provide configures NTP, Timezone, Syslog, and SNMP on all NSX components.
+##
+##     Comments: Even though there is currently (as of v3.2) only a single NSX Node Config Profile entry, with id='00000000-0000-0000-0000-000000000001',
+##               this playbook is being written with the assumption that there could be additional entries in the future.  For that reason, a conscious
+##               decision was made to not just statically use the id of '00000000-0000-0000-0000-000000000001' in the REST API calls.  Rather, the id is
+##               obtained by looking for the entry that matches the name of "All NSX Nodes".  This may be more involved, but it ensures it will work going
+##               forward should additional entries be introduced, and the id of '00000000-0000-0000-0000-000000000001' change.
+##
+##         ToDO: 1) Add comment to Syslog Protocol on what the options are: TCP, UDP, LI (Default to UDP)
+##               2) Add 'Common.SNMP.Polling.v2c' section in config.yml
+##               3) Add 'Common.SNMP.Polling.v3' section in config.yml
+##               4) Add 'Common.SNMP.Trap.v2c' section in config.yml
+##               5) Add 'Common.SNMP.Trap.v3' section in config.yml
+##
+##               Configure Node Config Profile: https://vdc-repo.vmware.com/vmwb-repository/dcr-public/4e0249dc-f050-4e5f-8a47-bb247d9fa31f/96084528-a9f7-4e2b-866d-c5bbc1b090f7/api_includes/method_UpdateCentralNodeConfigProfile.html
+##               Syslog URL: https://vdc-repo.vmware.com/vmwb-repository/dcr-public/4e0249dc-f050-4e5f-8a47-bb247d9fa31f/96084528-a9f7-4e2b-866d-c5bbc1b090f7/api_includes/types_SyslogExporter.html
+##                 SNMP URL: https://vdc-repo.vmware.com/vmwb-repository/dcr-public/4e0249dc-f050-4e5f-8a47-bb247d9fa31f/96084528-a9f7-4e2b-866d-c5bbc1b090f7/api_includes/types_SnmpProperties.html
+##
+---
+- hosts: localhost
+  name: ConfigureNsxCentralNodeConfigProfile.yml
+  tasks:
+    - name: ConfigureNsxCentralNodeConfigProfile_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                             NSX-T Local Manager FQDN: {{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}
+                                           NTP Server: {{ Common.NTP.Server1.IPv4 }}
+                                        Syslog Server: {{ Common.Syslog.IPv4 }}
+                                          Syslog Port: {{ Common.Syslog.Port }}
+                                      Syslog Protocol: {{ Common.Syslog.Protocol }}
+                                 Syslog Logging Level: {{ Common.Syslog.Level }}
+                                             Timezone: {{ Common.Timezone }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+    - name: Get all NSX-T Node Profiles
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/configs/central-config/node-config-profiles
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: false
+        timeout: 5
+        force_basic_auth: true
+        method: GET
+        body_format: json
+        return_content: true
+        status_code: 200
+      register: result
+      until: result.status == 200
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy
+
+    - name: DEBUG -- Display NSX Node Config Profiles (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ==================== Display 'result' from NSX Node Config Profiles Query =======================
+
+          NSX Node Config Profile Quantity: {{ result.json.results | length }}
+
+          result:
+            {{ result | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+        - Deploy.Product.NSXT.LocalManager.Deploy
+
+##
+## Store 'id', current '_revision', and 'display_name' value in the dictionary for use below
+##
+    - name: Create dictionary of all NSX Node Config Profile entries with 'display_name' as the key
+      ansible.builtin.set_fact:
+        nsx_node_config_profile: "{{ nsx_node_config_profile | default({}) | combine({item.display_name: node_config_profile_entry}) }}"
+      vars:
+        node_config_profile_entry:
+          id: "{{ item.id }}"
+          revision: "{{ item._revision }}"
+          display_name: "{{ item.display_name }}"
+      loop: "{{ result.json.results | default([]) }}"
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy
+
+    - name: DEBUG -- Display 'nsx_node_config_profile' dictionary (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ======================== Display 'nsx_node_config_profile' Dictionary ===========================
+
+          nsx_node_config_profile:
+            {{ nsx_node_config_profile | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+        - Deploy.Product.NSXT.LocalManager.Deploy
+
+    - name: Update 'All NSX Nodes' Node Config Profile settings
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/configs/central-config/node-config-profiles/{{ nsx_node_config_profile['All NSX Nodes'].id }}
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: false
+        timeout: 15
+        force_basic_auth: true
+        method: PUT
+        body_format: json
+        body: |
+          {
+            "resource_type": "CentralNodeConfigProfile",
+            "id": "{{ nsx_node_config_profile['All NSX Nodes'].id }}",
+            "display_name": "{{ nsx_node_config_profile['All NSX Nodes'].display_name }}",
+            "tags": [],
+            "timezone": "{{ Common.Timezone }}",
+            "ntp": {
+              "servers" : [
+                "{{ Common.NTP.Server1.IPv4 }}"
+              ]
+            },
+            "syslog": {
+              "exporters": [
+                {
+                  "server": "{{ Common.Syslog.IPv4 }}",
+                  "port": "{{ Common.Syslog.Port }}",
+                  "max_log_level": "{{ Common.Syslog.Level|upper }}",
+                  "protocol": "{{ Common.Syslog.Protocol|upper }}"
+                }
+              ]
+            },
+            "_revision": "{{ nsx_node_config_profile['All NSX Nodes'].revision }}"
+          }
+        return_content: true
+        status_code: 200
+      register: result
+      until: result.status == 200
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy
+
+
+#            "snmp": {
+#              "v2c": {
+#                "communities": [{"access": "READ_ONLY", "community_name": "community1"}],
+#                "targets": [
+#                  {"server": "10.20.125.4", "port": 1162, "community_name": "community2"}
+#                ]
+#              },
+#              "v3": {
+#                "auth_protocol": "SHA1",
+#                "priv_protocol": "AES128",
+#                "targets": [
+#                  {"server": "10.20.125.4", "port": 1162, "user_id": "user1", "security_level": "AUTH_PRIV"},
+#                  {"server": "10.20.125.6", "port": 1162, "user_id": "user2", "security_level": "AUTH_PRIV"}
+#                ],
+#                "users": [
+#                  {"user_id": "user1", "access": "READ_ONLY", "security_level": "AUTH_PRIV"},
+#                  {"user_id": "user2", "access": "READ_ONLY", "security_level": "AUTH_PRIV"}
+#                ],
+#            },
