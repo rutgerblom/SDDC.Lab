@@ -1636,3 +1636,4 @@
   - Change NTP configuration within ```playbooks/DeployVrli.yml``` to use ```Cluster_VIP``` rather than Node IP address.
   - Updated ```playbooks/UpdateDNS.yml``` to populate DNS with the new ```Nested_vRLI``` data structure.
   - Be sure to update your ```config.yml``` file.
+  - Updated IP Address Assignment table in ```README.md``` file to show that vRLI VIP is now included as part of the default deployment.
