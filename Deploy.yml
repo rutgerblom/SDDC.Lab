@@ -64,9 +64,8 @@
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy
 
-- ansible.builtin.import_playbook: playbooks/ConfigureNsxCentralNodeConfigProfile.yml
+- ansible.builtin.import_playbook: playbooks/ConfigureNsxBasicConfiguration.yml
   when: 
-    - false
     - Deploy.Product.NSXT.LocalManager.Deploy
 
 - ansible.builtin.import_playbook: playbooks/ConfigureNsxFabricMTU.yml

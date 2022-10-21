@@ -1,9 +1,10 @@
 ##
 ##      Project: SDDC.Lab
 ##      Authors: Luis Chanu & Rutger Blom
-##     Filename: playbooks/ConfigureNsxCentralNodeConfigProfile.yml
+##     Filename: playbooks/ConfigureNsxBasicConfiguration.yml
 ##
-##  Description: This playbook configures the "All NSX Nodes" Node Profile.  This provide configures NTP, Timezone, Syslog, and SNMP on all NSX components.
+##  Description: This playbook configures the "All NSX Nodes" Node Profile.  The "All NSX Nodes" profile configures NTP, Timezone, Syslog, and SNMP on
+##               all NSX components.
 ##
 ##     Comments: Even though there is currently (as of v3.2) only a single NSX Node Config Profile entry, with id='00000000-0000-0000-0000-000000000001',
 ##               this playbook is being written with the assumption that there could be additional entries in the future.  For that reason, a conscious
@@ -23,9 +24,9 @@
 ##
 ---
 - hosts: localhost
-  name: ConfigureNsxCentralNodeConfigProfile.yml
+  name: ConfigureNsxBasicConfiguration.yml
   tasks:
-    - name: ConfigureNsxCentralNodeConfigProfile_Playbook
+    - name: ConfigureNsxBasicConfiguration_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
