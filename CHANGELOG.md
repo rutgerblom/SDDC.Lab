@@ -1629,3 +1629,10 @@
   - Added additional NSX Advanced Load Balancer versions to ```software_sample.yml``` file.
   - Updated ```SDDCLab.Version``` variable in ```templates/Pod_Config.j2``` from 5 to 6.
   - Updated ```playbooks/ValidateConfiguration.yml``` to accept version 6 configuration files.
+  - The following changes were made to ```config_sample.yml```:
+    - Modified ```Nested_vRLI``` data structure in to follow NSX-T and ALB data structures
+    - Added ```Cluster_VIP``` address
+  - Added ```Cluster_VIP``` configuration to ```playbooks/DeployVrli.yml``` file.
+  - Change NTP configuration within ```playbooks/DeployVrli.yml``` to use ```Cluster_VIP``` rather than Node IP address.
+  - Updated ```playbooks/UpdateDNS.yml``` to populate DNS with the new ```Nested_vRLI``` data structure.
+  - Be sure to update your ```config.yml``` file.

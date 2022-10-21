@@ -63,20 +63,21 @@
                                       Target.VMFolder: {{ Target.VMFolder }}
 
                                          vRLI Version: {{ Deploy.Software.vRLI.Version }}
-                                            vRLI FQDN: {{ Nested_vRLI.FQDN }}
-                                          vRLI VMName: {{ Nested_vRLI.VMName }}
+                                        vRLI VIP FQDN: {{ Nested_vRLI.Component.Cluster_VIP.FQDN }}
+                                       vRLI Node FQDN: {{ Nested_vRLI.Component.Node.FQDN }}
+                                     vRLI Node VMName: {{ Nested_vRLI.Component.Node.VMName }}
                                       vRLI Admin User: {{ Nested_vRLI.Credential.admin.Name }}
                                   vRLI Admin Password: {{ Nested_vRLI.Credential.admin.Password }}
 
                                                 OVF Variables
                                                 =============
 
-                                            vRLI Size: {{ Nested_vRLI.Deployment.Size }}
+                                            vRLI Size: {{ Nested_vRLI.Component.Node.Deployment.Size }}
                                     Network PortGroup: {{ Target.PortGroup.Management.Name }}
 
-                                 Network IPv4 Address: {{ Nested_vRLI.Address.IPv4.Address }}
-                                      Network Netmask: {{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
-                                      Network Gateway: {{ Nested_vRLI.Address.IPv4.Gateway }}
+                                 Network IPv4 Address: {{ Nested_vRLI.Component.Node.Address.IPv4.Address }}
+                                      Network Netmask: {{ (Nested_vRLI.Component.Node.Address.IPv4.Address + '/' + Nested_vRLI.Component.Node.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
+                                      Network Gateway: {{ Nested_vRLI.Component.Node.Address.IPv4.Gateway }}
 
                                    Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                    Network DNS Domain: {{ Common.DNS.Domain }}
@@ -92,7 +93,7 @@
 
     - name: Check if vRLI is already installed
       ansible.builtin.uri:
-        url: https://{{ Nested_vRLI.FQDN }}
+        url: https://{{ Nested_vRLI.Component.Node.FQDN }}
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
       register: vrli_check
@@ -113,9 +114,9 @@
                  {% else %}{{ Target.VMFolder }}{% endif %}"
         datacenter: "{{ Target.DataCenter }}"
         cluster: "{{ Target.Cluster }}"
-        name: "{{ Nested_vRLI.VMName }}"
+        name: "{{ Nested_vRLI.Component.Node.VMName }}"
         ovf: "{{ Deploy.Software.vRLI.Directory }}/{{ Deploy.Software.vRLI.File }}"
-        deployment_option: "{{ Nested_vRLI.Deployment.Size }}"
+        deployment_option: "{{ Nested_vRLI.Component.Node.Deployment.Size }}"
         networks:
           "Network 1": "{{ Target.PortGroup.Management.Name }}"
         disk_provisioning: "{{ Common.DiskProvisioning }}"
@@ -127,12 +128,12 @@
           vm.vmname: "{% if Target.Deployment == 'Host' %}VMware_vCenter_Log_Insight{% else %}{{ omit }}{% endif %}"
           preferipv6: "False"
           rootpw: "{{ Nested_vRLI.Credential.root.Password }}"
-          hostname: "{{ Nested_vRLI.FQDN }}"
+          hostname: "{{ Nested_vRLI.Component.Node.FQDN }}"
           vami.DNS.VMware_vCenter_Log_Insight: "{{ Common.DNS.Server1.IPv4 }}"
           vami.domain.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
-          vami.gateway.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Address.IPv4.Gateway }}"
-          vami.ip0.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Address.IPv4.Address }}"
-          vami.netmask0.VMware_vCenter_Log_Insight: "{{ (Nested_vRLI.Address.IPv4.Address + '/' + Nested_vRLI.Address.IPv4.Prefix) | \
+          vami.gateway.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Component.Node.Address.IPv4.Gateway }}"
+          vami.ip0.VMware_vCenter_Log_Insight: "{{ Nested_vRLI.Component.Node.Address.IPv4.Address }}"
+          vami.netmask0.VMware_vCenter_Log_Insight: "{{ (Nested_vRLI.Component.Node.Address.IPv4.Address + '/' + Nested_vRLI.Component.Node.Address.IPv4.Prefix) | \
                                                      ansible.utils.ipaddr('netmask') }}"
           vami.searchpath.VMware_vCenter_Log_Insight: "{{ Common.DNS.Domain }}"
       when:
@@ -141,7 +142,7 @@
 
     - name: Start checking if the vRLI Web UI is available
       ansible.builtin.uri:
-        url: https://{{ Nested_vRLI.FQDN }}
+        url: https://{{ Nested_vRLI.Component.Node.FQDN }}
         validate_certs: false
         timeout: 5
       register: vrli_webui_check
@@ -154,7 +155,7 @@
 
     - name: Perform vRLI bootstrap
       ansible.builtin.uri:
-        url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/deployment/new
+        url: https://{{ Nested_vRLI.Component.Node.FQDN }}:9543/api/v1/deployment/new
         validate_certs: false
         method: POST
         timeout: 240
@@ -170,7 +171,7 @@
 
     - name: Obtain a session ID from the vRLI API
       ansible.builtin.uri:
-        url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/sessions
+        url: https://{{ Nested_vRLI.Component.Node.FQDN }}:9543/api/v1/sessions
         validate_certs: false
         method: POST
         body:
@@ -183,9 +184,47 @@
         - Deploy.Product.vRLI.Deploy
         - vrli_check.status != 200
 
+
+##
+## Configure vRLI Cluster VIP
+##
+    - name: Configure vRLI Cluster VIP
+      ansible.builtin.uri:
+        url: https://{{ Nested_vRLI.Component.Node.FQDN }}:9543/api/v1/cluster/vips
+        validate_certs: false
+        method: POST
+        timeout: 240
+        headers:
+          Authorization: "Bearer {{ vrli_session.json.sessionId }}"
+        body:
+          ipAddress: "{{ Nested_vRLI.Component.Cluster_VIP.Address.IPv4.Address }}"
+          fqdn: "{{ Nested_vRLI.Component.Cluster_VIP.FQDN }}"
+        body_format: json
+        status_code: 200
+      when:
+        - Deploy.Product.vRLI.Deploy
+        - vrli_check.status != 200
+
+    - name: Start checking VIP to see if the vRLI Web UI is available
+      ansible.builtin.uri:
+        url: https://{{ Nested_vRLI.Component.Cluster_VIP.FQDN }}
+        validate_certs: false
+        timeout: 5
+      register: vrli_webui_check
+      until: vrli_webui_check.status == 200
+      when:
+        - Deploy.Product.vRLI.Deploy
+        - vrli_check.status != 200
+      retries: 10
+      delay: 60
+
+
+##
+## Configure remaining items using Cluster VIP
+##
     - name: Add vSphere to vRLI
       ansible.builtin.uri:
-        url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/vsphere
+        url: https://{{ Nested_vRLI.Component.Cluster_VIP.FQDN }}:9543/api/v1/vsphere
         validate_certs: false
         method: POST
         timeout: 240
@@ -199,7 +238,7 @@
           syslogProtocol: "tcp"
           configureNewEsxiHostsAutomatically: true
           vsphereEventsEnabled: true
-          target: "{{ Nested_vRLI.Address.IPv4.Address }}"
+          target: "{{ Nested_vRLI.Component.Cluster_VIP.FQDN }}"
         body_format: json
         status_code: 201
       when:
@@ -208,7 +247,7 @@
 
     - name: Configure NTP
       ansible.builtin.uri:
-        url: https://{{ Nested_vRLI.FQDN }}:9543/api/v1/time/config
+        url: https://{{ Nested_vRLI.Component.Cluster_VIP.FQDN }}:9543/api/v1/time/config
         validate_certs: false
         method: PUT
         timeout: 240
@@ -233,7 +272,7 @@
         cluster: "{{ Target.Cluster }}"
         datacenter: "{{ Target.DataCenter }}"
         folder: "{{ Target.VMFolder }}"
-        name: "{{ Nested_vRLI.VMName }}"
+        name: "{{ Nested_vRLI.Component.Node.VMName }}"
         annotation: |
                     {{ Common.Annotation }}
                     {{ Deploy.Software.vRLI.Vendor }} {{ Deploy.Software.vRLI.Product }} {{ Deploy.Software.vRLI.Version }}
