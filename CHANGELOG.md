@@ -1652,3 +1652,6 @@
 ### Added by Rutger Blom
   - Moved ALB basic configuration tasks to a separate playbook ```playbooks/ConfigureAlbBasicConfiguration.yml```.
   - Enabled ```playbooks/ConfigureAlbBasicConfiguration.yml``` in ```Deploy.yml``` file.
+  - Added ```BackupServer```section to ```Nested_ALB```in ```config_sample.yml```
+  - Added task in ```playbooks/ConfigureAlbBasicConfiguration.yml``` that configures the required backup passphrase and configuration backup.
+  - Be sure to update your ```config.yml``` file.
