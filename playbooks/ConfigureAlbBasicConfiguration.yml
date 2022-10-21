@@ -89,7 +89,7 @@
       when:
         - Deploy.Product.ALB.Deploy
 
-    - name: Apply base configuration
+    - name: Configure DNS, NTP, and E-mail
       vmware.alb.avi_systemconfiguration:
         avi_credentials: "{{ avi_credentials }}"
         state: present
@@ -108,6 +108,20 @@
                 addr: "{{ Common.NTP.Server1.IPv4 }}"
       when:
         - Deploy.Product.ALB.Deploy
+
+    - name: Configure Backup
+      vmware.alb.avi_backupconfiguration:
+        avi_credentials: "{{ avi_credentials }}"
+        state: present
+        name: Backup-Configuration
+        backup_passphrase: "{{ Nested_ALB.BackupServer.Passphrase }}"
+        remote_directory: "{{ Nested_ALB.BackupServer.Path }}"
+        remote_file_transfer_protocol: "{{ Nested_ALB.BackupServer.Protocol }}"
+        remote_hostname: "{{ Nested_ALB.BackupServer.FQDN }}"
+        backup_file_prefix: "{{ SiteCode }}-"
+        save_local: true
+        upload_to_remote_host: false
+        maximum_backups_stored: 4
 
     - name: Configure Controller Cluster
       vmware.alb.avi_cluster:
@@ -134,6 +148,5 @@
       until: alb_vip_webui_check.status == 200
       when:
         - Deploy.Product.ALB.Deploy
-        - alb_check.status != 200
-      retries: 10
+      retries: 20
       delay: 60
