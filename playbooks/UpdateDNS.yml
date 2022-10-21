@@ -100,8 +100,24 @@
       when:
         - DEBUG.DisplayVariables
 
+
+
 ##
-## Process Nested_Router
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ██████   ██████  ██    ██ ████████ ███████ ██████
+## ████   ██ ██      ██         ██    ██      ██   ██         ██   ██ ██    ██ ██    ██    ██    ██      ██   ██
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██████  ██    ██ ██    ██    ██    █████   ██████
+## ██  ██ ██ ██           ██    ██    ██      ██   ██         ██   ██ ██    ██ ██    ██    ██    ██      ██   ██
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████ ██   ██  ██████   ██████     ██    ███████ ██   ██
+##
+##
+
+##
+## ██ ██████  ██    ██ ██   ██
+## ██ ██   ██ ██    ██ ██   ██
+## ██ ██████  ██    ██ ███████
+## ██ ██       ██  ██       ██
+## ██ ██        ████        ██
 ##
     - name: DEBUG -- Display IPv4 'A' records for Nested_Router
       ansible.builtin.pause:
@@ -188,6 +204,14 @@
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv4
 
+
+##
+## ██ ██████  ██    ██  ██████
+## ██ ██   ██ ██    ██ ██
+## ██ ██████  ██    ██ ███████
+## ██ ██       ██  ██  ██    ██
+## ██ ██        ████    ██████
+##
     - name: DEBUG -- Display IPv6 'AAAA' records for Nested_Router
       ansible.builtin.pause:
         seconds: 1
@@ -223,7 +247,6 @@
       when:
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv6
-
 
     - name: DEBUG -- Display IPv6 'PTR' records for Nested_Router
       ansible.builtin.pause:
@@ -261,24 +284,41 @@
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv6
 
+
+
 ##
-## Process Nested_vRLI
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ██    ██ ██████  ██      ██
+## ████   ██ ██      ██         ██    ██      ██   ██         ██    ██ ██   ██ ██      ██
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██    ██ ██████  ██      ██
+## ██  ██ ██ ██           ██    ██    ██      ██   ██          ██  ██  ██   ██ ██      ██
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████   ████   ██   ██ ███████ ██
+##
+##
+
+##
+## ██ ██████  ██    ██ ██   ██
+## ██ ██   ██ ██    ██ ██   ██
+## ██ ██████  ██    ██ ███████
+## ██ ██       ██  ██       ██
+## ██ ██        ████        ██
 ##
     - name: DEBUG -- Display IPv4 'A' record for Nested_vRLI
       ansible.builtin.pause:
         seconds: 1
         prompt: |
-          ======================== Display Nested_vRLI DNS IPv4 "A" Record =============================
+          =========================== Display Nested_vRLI DNS IPv4 "A" Record =============================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                                  Zone: {{ Common.DNS.Domain }}
-                                               Record: {{ Nested_vRLI.VMName }}
-                                                Value: {{ Nested_vRLI.Address.IPv4.Address }}
+                                               Record: {{ item.value.VMName }}
+                                                Value: {{ item.value.Address.IPv4.Address }}
 
           =================================================================================================
+      loop: "{{ Nested_vRLI.Component | dict2items }}"
       when:
         - DEBUG.DisplayVariables_DNS
         - DEBUG.DisplayVariables
@@ -291,9 +331,10 @@
         type: A
         protocol: udp
         zone: "{{ Common.DNS.Domain }}"
-        record: "{{ Nested_vRLI.VMName }}"
-        value: "{{ Nested_vRLI.Address.IPv4.Address }}"
+        record: "{{ item.value.VMName }}"
+        value: "{{ item.value.Address.IPv4.Address }}"
         state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_vRLI.Component | dict2items }}"
       when:
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv4
@@ -302,17 +343,18 @@
       ansible.builtin.pause:
         seconds: 1
         prompt: |
-          ======================== Display Nested_vRLI DNS IPv4 "PTR" Record ===========================
+          =========================== Display Nested_vRLI DNS IPv4 "PTR" Record ===========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                                  Zone: {{ ipv4_reverse_zone }}
-                                               Record: {{ Nested_vRLI.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}
-                                                Value: {{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}.
+                                               Record: {{ item.value.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}
+                                                Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
+      loop: "{{ Nested_vRLI.Component | dict2items }}"
       when:
         - DEBUG.DisplayVariables_DNS
         - DEBUG.DisplayVariables
@@ -325,13 +367,22 @@
         type: PTR
         protocol: udp
         zone: "{{ ipv4_reverse_zone }}"
-        record: "{{ Nested_vRLI.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
-        value:  "{{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}."
+        record: "{{ item.value.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
+        value: "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_vRLI.Component | dict2items }}"
       when:
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv4
 
+
+##
+## ██ ██████  ██    ██  ██████
+## ██ ██   ██ ██    ██ ██
+## ██ ██████  ██    ██ ███████
+## ██ ██       ██  ██  ██    ██
+## ██ ██        ████    ██████
+##
     - name: DEBUG -- Display IPv6 'AAAA' record for Nested_vRLI
       ansible.builtin.pause:
         seconds: 1
@@ -343,16 +394,16 @@
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
                                                  Zone: {{ Common.DNS.Domain }}
-                                               Record: {{ Nested_vRLI.VMName }}
-                                                Value: {{ Nested_vRLI.Address.IPv6.Address }}
+                                               Record: {{ item.value.VMName }}
+                                                Value: {{ item.value.Address.IPv6.Address }}
 
           =================================================================================================
+      loop: "{{ Nested_vRLI.Component | dict2items }}"
       when:
         - DEBUG.DisplayVariables_DNS
         - DEBUG.DisplayVariables
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv6
-        - false
 
     - name: IPv6 'AAAA' records for Nested_vRLI
       community.general.net_tools.nsupdate:
@@ -360,52 +411,68 @@
         type: AAAA
         protocol: udp
         zone: "{{ Common.DNS.Domain }}"
-        record: "{{ Nested_vRLI.VMName }}"
-        value: "{{ Nested_vRLI.Address.IPv6.Address }}"
+        record: "{{ item.value.VMName }}"
+        value: "{{ item.value.Address.IPv6.Address }}"
         state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_vRLI.Component | dict2items }}"
       when:
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv6
-        - false
 
     - name: DEBUG -- Display IPv6 'PTR' record for Nested_vRLI
       ansible.builtin.pause:
         seconds: 1
         prompt: |
-          ======================== Display Nested_vRLI DNS IPv6 "PTR" Record ===========================
+          =========================== Display Nested_vRLI DNS IPv6 "PTR" Record ===========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
 
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
                                                  Zone: {{ ipv6_reverse_zone }}
-                                               Record: {{ Nested_vRLI.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}
-                                                Value: {{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}.
+                                               Record: {{ item.value.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}
+                                                Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
+      loop: "{{ Nested_vRLI.Component | dict2items }}"
       when:
         - DEBUG.DisplayVariables_DNS
         - DEBUG.DisplayVariables
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv6
-        - false
 
-    - name: IPv6 'PTR' records for Nested_vRLI
+    - name: IPv6 'PTR' records for Nested_vRLI--NEW
       community.general.net_tools.nsupdate:
         server: "{{ Common.DNS.Server1.IPv6 }}"
         type: PTR
         protocol: udp
         zone: "{{ ipv6_reverse_zone }}"
-        record: "{{ Nested_vRLI.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
-        value: "{{ Nested_vRLI.VMName }}.{{ Common.DNS.Domain }}."
+        record: "{{ item.value.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
+        value: "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
         state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_vRLI.Component | dict2items }}"
       when:
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv6
-        - false
+
+
 
 ##
-## Process Nested_ALB
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████           █████  ██      ██████
+## ████   ██ ██      ██         ██    ██      ██   ██         ██   ██ ██      ██   ██
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ███████ ██      ██████
+## ██  ██ ██ ██           ██    ██    ██      ██   ██         ██   ██ ██      ██   ██
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████ ██   ██ ███████ ██████
+##
+##
+
+##
+## ██ ██████  ██    ██ ██   ██
+## ██ ██   ██ ██    ██ ██   ██
+## ██ ██████  ██    ██ ███████
+## ██ ██       ██  ██       ██
+## ██ ██        ████        ██
 ##
     - name: DEBUG -- Display IPv4 'A' record for Nested_ALB
       ansible.builtin.pause:
@@ -479,6 +546,14 @@
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv4
 
+
+##
+## ██ ██████  ██    ██  ██████
+## ██ ██   ██ ██    ██ ██
+## ██ ██████  ██    ██ ███████
+## ██ ██       ██  ██  ██    ██
+## ██ ██        ████    ██████
+##
     - name: DEBUG -- Display IPv6 'AAAA' record for Nested_ALB
       ansible.builtin.pause:
         seconds: 1
@@ -555,8 +630,24 @@
         - Deploy.Setting.IPv6
         - false
 
+
+
 ##
-## Process Nested_ESXi Hosts
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ███████ ███████ ██   ██ ██
+## ████   ██ ██      ██         ██    ██      ██   ██         ██      ██       ██ ██  ██
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         █████   ███████   ███   ██
+## ██  ██ ██ ██           ██    ██    ██      ██   ██         ██           ██  ██ ██  ██
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████ ███████ ███████ ██   ██ ██
+##
+##
+
+##
+## ██ ██████  ██    ██ ██   ██
+## ██ ██   ██ ██    ██ ██   ██
+## ██ ██████  ██    ██ ███████
+## ██ ██       ██  ██       ██
+## ██ ██        ████        ██
 ##
     - name: DEBUG -- Display IPv4 'A' records for Nested_ESXi hosts
       ansible.builtin.pause:
@@ -630,6 +721,14 @@
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv4
 
+
+##
+## ██ ██████  ██    ██  ██████
+## ██ ██   ██ ██    ██ ██
+## ██ ██████  ██    ██ ███████
+## ██ ██       ██  ██  ██    ██
+## ██ ██        ████    ██████
+##
     - name: DEBUG -- Display IPv6 'AAAA' records for Nested_ESXi hosts
       ansible.builtin.pause:
         seconds: 1
@@ -706,8 +805,24 @@
         - Deploy.Setting.IPv6
         - false
 
+
+
 ##
-## Process Nested_vCenter
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ██    ██  ██████ ███████ ███    ██ ████████ ███████ ██████
+## ████   ██ ██      ██         ██    ██      ██   ██         ██    ██ ██      ██      ████   ██    ██    ██      ██   ██
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██    ██ ██      █████   ██ ██  ██    ██    █████   ██████
+## ██  ██ ██ ██           ██    ██    ██      ██   ██          ██  ██  ██      ██      ██  ██ ██    ██    ██      ██   ██
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████   ████    ██████ ███████ ██   ████    ██    ███████ ██   ██
+##
+##
+
+##
+## ██ ██████  ██    ██ ██   ██
+## ██ ██   ██ ██    ██ ██   ██
+## ██ ██████  ██    ██ ███████
+## ██ ██       ██  ██       ██
+## ██ ██        ████        ██
 ##
     - name: DEBUG -- Display IPv4 'A' record for Nested_vCenter
       ansible.builtin.pause:
@@ -777,6 +892,14 @@
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv4
 
+
+##
+## ██ ██████  ██    ██  ██████
+## ██ ██   ██ ██    ██ ██
+## ██ ██████  ██    ██ ███████
+## ██ ██       ██  ██  ██    ██
+## ██ ██        ████    ██████
+##
     - name: DEBUG -- Display IPv6 'AAAA' record for Nested_vCenter
       ansible.builtin.pause:
         seconds: 1
@@ -849,8 +972,24 @@
         - Deploy.Setting.IPv6
         - false
 
+
+
 ##
-## Process Remaining Nested_NSXT Items
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ███    ██ ███████ ██   ██ ████████
+## ████   ██ ██      ██         ██    ██      ██   ██         ████   ██ ██       ██ ██     ██
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██ ██  ██ ███████   ███      ██
+## ██  ██ ██ ██           ██    ██    ██      ██   ██         ██  ██ ██      ██  ██ ██     ██
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████ ██   ████ ███████ ██   ██    ██
+##
+##
+
+##
+## ██ ██████  ██    ██ ██   ██
+## ██ ██   ██ ██    ██ ██   ██
+## ██ ██████  ██    ██ ███████
+## ██ ██       ██  ██       ██
+## ██ ██        ████        ██
 ##
     - name: DEBUG -- Display IPv4 'A' records for Nested_NSXT Components
       ansible.builtin.pause:
@@ -889,8 +1028,6 @@
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv4
         - '"GlobalManager" not in item.key or ("GlobalManager" in item.key and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)'
-
-
 
     - name: DEBUG -- Display IPv4 'PTR' records for Nested_NSXT Components
       ansible.builtin.pause:
@@ -1002,6 +1139,14 @@
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv4
 
+
+##
+## ██ ██████  ██    ██  ██████
+## ██ ██   ██ ██    ██ ██
+## ██ ██████  ██    ██ ███████
+## ██ ██       ██  ██  ██    ██
+## ██ ██        ████    ██████
+##
     - name: DEBUG -- Display IPv6 'AAAA' records for Nested_NSXT Components
       ansible.builtin.pause:
         seconds: 1
