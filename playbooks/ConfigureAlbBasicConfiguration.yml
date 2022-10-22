@@ -89,11 +89,13 @@
       when:
         - Deploy.Product.ALB.Deploy
 
-    - name: Configure DNS, NTP, and Email
+    - name: Configure basic settings
       vmware.alb.avi_systemconfiguration:
         avi_credentials: "{{ avi_credentials }}"
         state: present
         welcome_workflow_complete: true
+        portal_configuration:
+          allow_basic_authentication: true
         dns_configuration:
           search_domain: "{{ Common.DNS.Domain }}"
           server_list:
