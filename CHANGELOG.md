@@ -1672,5 +1672,5 @@
 
 ### Added by Rutger Blom
   - Updated task in ```playbooks/ConfigureAlbBasicConfiguration.yml``` so that the ALB API accepts Basic Authentication.
-  - Added new playbook ```playbooks/ConfigureAlbClouds.yml```that configures Clouds in ALB. For now the Pod's vSphere environment is added as an ALB Cloud.
-  
+  - Added new playbook ```playbooks/ConfigureAlbClouds.yml``` that configures Clouds in ALB. For now the Pod's vSphere environment is added as an ALB Cloud.
+  - Updated ```Deploy.yml``` so that ```playbooks/ConfigureAlbClouds.yml``` is included.
