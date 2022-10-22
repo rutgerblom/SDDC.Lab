@@ -1644,7 +1644,7 @@
 ## Dev-v6.0.0 21-OCTOBER-2022
 
 ### Added by Luis Chanu
-  - Renamed ```playbooks//ConfigureNsxCentralNodeConfigProfile.yml``` to ```playbooks/ConfigureNsxBasicConfiguration.yml```.
+  - Renamed ```playbooks/ConfigureNsxCentralNodeConfigProfile.yml``` to ```playbooks/ConfigureNsxBasicConfiguration.yml```.
   - Enabled ```playbooks/ConfigureNsxBasicConfiguration.yml``` in ```Deploy.yml``` file.
 
 ## Dev-v6.0.0 21-OCTOBER-2022
@@ -1665,3 +1665,4 @@
   - Updated ```playbooks/ConfigureNsxBackup.yml``` playbook to use ```Nested_NSXT.Backup```.
   - Updated ```Nested_ALB.BackupServer``` values to use updated ```BackupServer``` values.
   - Be sure to update your ```config.yml``` file.
+  - Added vSphere Replication Appliance to the IP Address Assignment table in ```README.md```.
