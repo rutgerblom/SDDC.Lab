@@ -246,6 +246,7 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 22 | vRLI-3 | vRealize Log Insight Appliance Node 3 | Pod-240-vRLI-3 | No |
 | 23 | vRNI Platform | vRealize Network Insight Platform Appliance | Pod-240-vRNI | No |
 | 24 | vRNI Collector | vRealize Network Insight Collector Node | Pod-240-vRNI-Collector | No |
+| 25 | Replication Appliance | vSphere Replication Appliance | Pod-240-Replication | No |
 | Thru 100 | Reserved | Reserved for Future Management VMs/Services | | |
 | 101 | Mgmt-1 | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-1 | No |
 | 102 | Mgmt-2 | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-2 | No |

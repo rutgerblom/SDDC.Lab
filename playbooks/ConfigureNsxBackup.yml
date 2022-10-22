@@ -65,11 +65,11 @@
                          NSX-T Local Manager Username: {{ Nested_NSXT.Credential.admin.Name }}
                          NSX-T Local Manager Password: {{ Nested_NSXT.Credential.admin.Password }}
 
-                               Backup Server Protocol: {{ Nested_NSXT.BackupServer.Protocol }}
-                                   Backup Server Port: {{ Nested_NSXT.BackupServer.Port }}
-                                   Backup Server FQDN: {{ Nested_NSXT.BackupServer.FQDN }}
-                                   Backup Server Path: {{ Nested_NSXT.BackupServer.Path }}
-                                   Backup Server User: {{ Nested_NSXT.BackupServer.User }}
+                               Backup Server Protocol: {{ Nested_NSXT.Backup.Protocol }}
+                                   Backup Server User: {{ Nested_NSXT.Backup.Credential.User }}
+                                   Backup Server Port: {{ BackupServer[Nested_NSXT.Backup.Protocol].Port }}
+                                   Backup Server FQDN: {{ BackupServer[Nested_NSXT.Backup.Protocol].FQDN }}
+                                   Backup Server Path: {{ BackupServer[Nested_NSXT.Backup.Protocol].Path }}
 
           =================================================================================================
       when:
@@ -92,8 +92,8 @@
           Accept: application/json
         body: >
           {
-            "server":"{{ Nested_NSXT.BackupServer.FQDN }}",
-            "port":{{ Nested_NSXT.BackupServer.Port }}
+            "server":"{{ BackupServer[Nested_NSXT.Backup.Protocol].FQDN }}",
+            "port":{{ BackupServer[Nested_NSXT.Backup.Protocol].Port }}
           }
         timeout: 5
       register: result
@@ -138,20 +138,20 @@
                 "minute_of_day": 0
             },
             "remote_file_server": {
-                "server": "{{ Nested_NSXT.BackupServer.FQDN }}",
-                "port": {{ Nested_NSXT.BackupServer.Port }},
+                "server": "{{ BackupServer[Nested_NSXT.Backup.Protocol].FQDN }}",
+                "port": {{ BackupServer[Nested_NSXT.Backup.Protocol].Port }},
                 "protocol": {
-                  "protocol_name": "{{ Nested_NSXT.BackupServer.Protocol }}",
+                  "protocol_name": "{{  Nested_NSXT.Backup.Protocol|lower  }}",
                   "ssh_fingerprint": "{{ ssh_fingerprint }}",
                   "authentication_scheme": {
                       "scheme_name": "PASSWORD",
-                      "username": "{{ Nested_NSXT.BackupServer.User }}",
-                      "password": "{{ Nested_NSXT.BackupServer.Password }}"
+                      "username": "{{ Nested_NSXT.Backup.Credential.User }}",
+                      "password": "{{ Nested_NSXT.Backup.Credential.Password }}"
                   }
                 },
-                "directory_path": "{{ Nested_NSXT.BackupServer.Path }}"
+                "directory_path": "{{ BackupServer[Nested_NSXT.Backup.Protocol].Path }}"
             },
-            "passphrase": "{{ Nested_NSXT.BackupServer.Passphrase }}",
+            "passphrase": "{{ Nested_NSXT.Backup.Credential.Passphrase }}",
             "inventory_summary_interval": 300
           }
         timeout: 5
@@ -177,8 +177,8 @@
           Accept: application/json
         body: >
           {
-            "server": "{{ Nested_NSXT.BackupServer.FQDN }}",
-            "port": {{ Nested_NSXT.BackupServer.Port }}
+            "server": "{{ BackupServer[Nested_NSXT.Backup.Protocol].FQDN }}",
+            "port": {{ BackupServer[Nested_NSXT.Backup.Protocol].Port }}
           }
         timeout: 5
       register: result
@@ -230,20 +230,20 @@
                 "minute_of_day": 0
             },
             "remote_file_server": {
-                "server": "{{ Nested_NSXT.BackupServer.FQDN }}",
-                "port": {{ Nested_NSXT.BackupServer.Port }},
+                "server": "{{ BackupServer[Nested_NSXT.Backup.Protocol].FQDN }}",
+                "port": {{ BackupServer[Nested_NSXT.Backup.Protocol].Port }},
                 "protocol": {
-                  "protocol_name": "{{ Nested_NSXT.BackupServer.Protocol }}",
+                  "protocol_name": "{{ Nested_NSXT.Backup.Protocol|lower }}",
                   "ssh_fingerprint": "{{ ssh_fingerprint }}",
                   "authentication_scheme": {
                       "scheme_name": "PASSWORD",
-                      "username": "{{ Nested_NSXT.BackupServer.User }}",
-                      "password": "{{ Nested_NSXT.BackupServer.Password }}"
+                      "username": "{{ Nested_NSXT.Backup.Credential.User }}",
+                      "password": "{{ Nested_NSXT.Backup.Credential.Password }}"
                   }
                 },
-                "directory_path": "{{ Nested_NSXT.BackupServer.Path }}"
+                "directory_path": "{{ BackupServer[Nested_NSXT.Backup.Protocol].Path }}"
             },
-            "passphrase": "{{ Nested_NSXT.BackupServer.Passphrase }}",
+            "passphrase": "{{ Nested_NSXT.Backup.Credential.Passphrase }}",
             "inventory_summary_interval": 300
           }
         timeout: 5

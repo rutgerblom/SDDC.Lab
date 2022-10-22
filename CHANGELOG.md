@@ -1644,7 +1644,7 @@
 ## Dev-v6.0.0 21-OCTOBER-2022
 
 ### Added by Luis Chanu
-  - Renamed ```playbooks//ConfigureNsxCentralNodeConfigProfile.yml``` to ```playbooks/ConfigureNsxBasicConfiguration.yml```.
+  - Renamed ```playbooks/ConfigureNsxCentralNodeConfigProfile.yml``` to ```playbooks/ConfigureNsxBasicConfiguration.yml```.
   - Enabled ```playbooks/ConfigureNsxBasicConfiguration.yml``` in ```Deploy.yml``` file.
 
 ## Dev-v6.0.0 21-OCTOBER-2022
@@ -1655,3 +1655,14 @@
   - Added ```BackupServer```section to ```Nested_ALB```in ```config_sample.yml```
   - Added task in ```playbooks/ConfigureAlbBasicConfiguration.yml``` that configures the required backup passphrase and configuration backup.
   - Be sure to update your ```config.yml``` file.
+
+## Dev-v6.0.0 21-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Renamed ```Nested_NSXT.BackupServer``` dictionary to ```Nested_NSXT.Backup``` in ```config_sample.yml``` file.
+  - Updated ```Nested_NSXT.Backup``` structure to follow new backup structure.
+  - Moved credential information within ```BackupServer``` dictionary below a new key called ```Credential``` within ```config_sample.yml`` file.
+  - Updated ```playbooks/ConfigureNsxBackup.yml``` playbook to use ```Nested_NSXT.Backup```.
+  - Updated ```Nested_ALB.BackupServer``` values to use updated ```BackupServer``` values.
+  - Be sure to update your ```config.yml``` file.
+  - Added vSphere Replication Appliance to the IP Address Assignment table in ```README.md```.
