@@ -218,9 +218,10 @@ Common:
 ## Unable to put BackupServer in Common due to circular reference.  Must be stand-alone
 ##
 BackupServer:
-  User: "{{ Nested_DNSServer.OS.Credential.User }}"                           # DNS server is default SFTP server, so use that credential
-  Password: "{{ Nested_DNSServer.OS.Credential.Password }}"
-  Passphrase: "{{ Common.Password.Nested }}"                                  # Passphrase used to secure backups
+  Credential:
+    User: "{{ Nested_DNSServer.OS.Credential.User }}"                         # DNS server is default SFTP server, so use that credential
+    Password: "{{ Nested_DNSServer.OS.Credential.Password }}"
+    Passphrase: "{{ Common.Password.Nested }}"                                # Passphrase used to secure backups
   SFTP:
     Port: 22                                                                  # Protocol Port Number
     FQDN: "{{ Nested_DNSServer.FQDN }}"                                       # Server FQDN
@@ -685,10 +686,10 @@ Nested_ALB:
       Name: admin
       Password: "{{ Common.Password.Nested }}"
   BackupServer:
-    User: "{{ BackupServer.User }}"
-    Password: "{{ BackupServer.Password }}"
-    Passphrase: "{{ BackupServer.Passphrase }}"
-    Protocol: sftp
+    User: "{{ BackupServer.Credential.User }}"
+    Password: "{{ BackupServer.Credential.Password }}"
+    Passphrase: "{{ BackupServer.Credential.Passphrase }}"
+    Protocol: SFTP
     FQDN: "{{ BackupServer.SFTP.FQDN }}"
     Path: "{{ BackupServer.SFTP.Path }}"
     Port: "{{ BackupServer.SFTP.Port }}"
@@ -2019,14 +2020,12 @@ Nested_NSXT:
     audit:
       Name: audit
       Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-  BackupServer:
-    User: "{{ BackupServer.User }}"
-    Password: "{{ BackupServer.Password }}"
-    Passphrase: "{{ BackupServer.Passphrase }}"
-    Protocol: sftp
-    FQDN: "{{ BackupServer.SFTP.FQDN }}"
-    Path: "{{ BackupServer.SFTP.Path }}"
-    Port: "{{ BackupServer.SFTP.Port }}"
+  Backup:
+    Credential:
+      User: "{{ BackupServer.Credential.User }}"
+      Password: "{{ BackupServer.Credential.Password }}"
+      Passphrase: "{{ BackupServer.Credential.Passphrase }}"
+    Protocol: SFTP                                                                     # Protocol must be in UPPER CASE, and must be defined within the BackupServer dictionary
   Component:
     GlobalManager_VIP:
       VMName: "{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-NSXT-GM"
