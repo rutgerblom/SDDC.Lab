@@ -1,0 +1,249 @@
+##
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: playbooks/ConfigureAlbClouds.yml
+##
+##  Description: This playbook sets the Admin user password, configures DNS and NTP on the ALB Controller node(s),
+##               and the ALB Controller Cluster VIP.
+##
+---
+- hosts: localhost
+  name: ConfigureAlbClouds.yml
+  vars:
+    avi_credentials:
+      username: "{{ Nested_ALB.Credential.admin.Name }}"
+      password: "{{ Nested_ALB.Credential.admin.Password }}"
+      controller: "{{ Nested_ALB.Component.Controller_VIP.FQDN }}"
+      api_version: "{{ Deploy.Software.ALB.Version }}"
+  tasks:
+    - name: ConfigureAlbClouds_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                          ALB Version: {{ Deploy.Software.ALB.Version }}
+                              ALB Controller VIP FQDN: {{ Nested_ALB.Component.Controller_VIP.FQDN }}
+                                       ALB Admin User: {{ Nested_ALB.Credential.admin.Name }}
+                                   ALB Admin Password: {{ Nested_ALB.Credential.admin.Password }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+##
+## Create ALB User Credentials
+##
+    - name: Configure vCenter User Credentials
+      vmware.alb.avi_cloudconnectoruser:
+        avi_credentials: "{{ avi_credentials }}"
+        state: present
+        name: "{{ SiteCode }} vCenter"
+        vcenter_credentials:
+          username: "{{ Nested_vCenter.User }}"
+          password: "{{ Nested_vCenter.Password }}"
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Configure NSX-T User Credentials
+      vmware.alb.avi_cloudconnectoruser:
+        avi_credentials: "{{ avi_credentials }}"
+        state: present
+        name: "{{ SiteCode }} NSX-T"
+        nsxt_credentials:
+          username: "{{ Nested_NSXT.Credential.admin.Name }}"
+          password: "{{ Nested_NSXT.Credential.admin.Password }}"
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Deploy.Product.NSXT.LocalManager.Deploy
+
+
+##
+## Get and store Pod Management vSphere Port Group
+##
+    - name: Fetch vCenter Network information through ALB API
+      ansible.builtin.uri:
+        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/vimgrnwruntime?name={{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}&fields=url
+        validate_certs: false
+        timeout: 15
+        force_basic_auth: true
+        url_username: "{{ Nested_ALB.Credential.admin.Name }}"
+        url_password: "{{ Nested_ALB.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: true
+        status_code: 200
+      register: vimgrnwruntime
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Save the vimgrnwruntime URL of the Pod Management Port Group for later use.
+      ansible.builtin.set_fact:
+        mgmt_portgroup_url: "{{ vimgrnwruntime | community.general.json_query(query) }}"
+      vars:
+        query: "json.results[*].url|[0]"
+      when:
+        - Deploy.Product.ALB.Deploy
+
+
+##
+## Get and store vSphere Content Library ID
+##
+    - name: Get list of all vSphere Content Library IDs
+      community.vmware.vmware_content_library_info:
+        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+      register: result
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Get details on each of the vSphere Content Libraries
+      community.vmware.vmware_content_library_info:
+        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        library_id: "{{ loop_var }}"
+      register: content_libraries
+      loop: "{{ result.content_libs }}"
+      loop_control:
+        loop_var: loop_var
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Query Content Library list for the vSphere Content Library we want to use
+      ansible.builtin.set_fact:
+        content_library: "{{ content_libraries | community.general.json_query(query) }}"
+      vars:
+        query: "results[*].content_lib_details[?library_name=='{{ Nested_vCenter.ContentLibrary.Local.Name }}'].library_id|[0]|[0]"
+      when:
+        - Deploy.Product.ALB.Deploy
+
+
+##
+## Configure ALB Clouds
+##
+    - name: Configure vSphere Cloud
+      vmware.alb.avi_cloud:
+        avi_credentials: "{{ avi_credentials }}"
+        state: present
+        name: "{{ SiteCode }} vSphere"
+        obj_name_prefix: "{{ SiteCode }}-vSphere"
+        vcenter_configuration:
+          datacenter: "{{ Nested_vCenter.DataCenter }}"
+          management_network: "{{ mgmt_portgroup_url }}"
+          management_ip_subnet:
+            ip_addr:
+              addr: "{{ Net.Management.IPv4.Network }}.0"
+              type: V4
+            mask: "{{ Net.Management.IPv4.Prefix }}"
+          username: "{{ Nested_vCenter.User }}"
+          password: "{{ Nested_vCenter.Password }}"
+          vcenter_url: "{{ Nested_vCenter.FQDN }}"
+          use_content_lib: true
+          content_lib:
+            name: "{{ Nested_vCenter.ContentLibrary.Local.Name }}"
+            id: "{{ content_library }}"
+          privilege: WRITE_ACCESS
+        vtype: CLOUD_VCENTER
+      register: vsphere_cloud
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
+
+
+##
+## Create ALB SE Groups
+##
+    - name: Create Service Engine Group for vSphere Cloud through ALB API
+      ansible.builtin.uri:
+        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/serviceenginegroup
+        validate_certs: false
+        timeout: 15
+        force_basic_auth: true
+        url_username: "{{ Nested_ALB.Credential.admin.Name }}"
+        url_password: "{{ Nested_ALB.Credential.admin.Password }}"
+        method: POST
+        body_format: json
+        body: |
+          {
+            "cloud_ref": "{{ vsphere_cloud.obj.url }}",
+            "name": "{{ SiteCode }}-vSphere-SE-Group"
+          }
+        return_content: true
+        status_code: 201
+      register: se_group_vsphere
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
+
+
+##
+## Configure SE Group on ALB Clouds
+##
+    - name: Configure SE Group on vSphere Cloud
+      vmware.alb.avi_cloud:
+        avi_credentials: "{{ avi_credentials }}"
+        state: present
+        name: "{{ SiteCode }} vSphere"
+        obj_name_prefix: "{{ SiteCode }}-vSphere"
+        se_group_template_ref: "{{ se_group_vsphere.json.url }}"
+        vcenter_configuration:
+          datacenter: "{{ Nested_vCenter.DataCenter }}"
+          management_network: "{{ mgmt_portgroup_url }}"
+          management_ip_subnet:
+            ip_addr:
+              addr: "{{ Net.Management.IPv4.Network }}.0"
+              type: V4
+            mask: "{{ Net.Management.IPv4.Prefix }}"
+          username: "{{ Nested_vCenter.User }}"
+          password: "{{ Nested_vCenter.Password }}"
+          vcenter_url: "{{ Nested_vCenter.FQDN }}"
+          use_content_lib: true
+          content_lib:
+            name: "{{ Nested_vCenter.ContentLibrary.Local.Name }}"
+            id: "{{ content_library }}"
+          privilege: WRITE_ACCESS
+        vtype: CLOUD_VCENTER
+      when:
+        - Deploy.Product.ALB.Deploy

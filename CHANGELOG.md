@@ -1666,4 +1666,18 @@
   - Updated ```Nested_ALB.BackupServer``` values to use updated ```BackupServer``` values.
   - Be sure to update your ```config.yml``` file.
   - Added vSphere Replication Appliance to the IP Address Assignment table in ```README.md```.
-  - Added ```Replication``` key to ```software_sample.yml``` file.
+
+
+## Dev-v6.0.0 22-OCTOBER-2022
+
+### Added by Rutger Blom
+  - Updated task in ```playbooks/ConfigureAlbBasicConfiguration.yml``` so that the ALB API accepts Basic Authentication.
+  - Added new playbook ```playbooks/ConfigureAlbClouds.yml``` that configures Clouds in ALB. For now the Pod's vSphere environment is added as an ALB Cloud.
+  - Updated ```Deploy.yml``` so that ```playbooks/ConfigureAlbClouds.yml``` is included.
+
+## Dev-v6.0.0 23-OCTOBER-2022
+
+### Added by Rutger Blom
+  - Updated the ```Nested_ALB``` section in ```config_sample.yml``` to include a first piece of data structure for ALB Clouds configuration. This is work in progress.
+  - Added conditionals to tasks in ```playbooks/ConfigureAlbClouds.yml``` maing use of the new piece of data structure.
+  - Be sure to update your ```config.yml``` file.
