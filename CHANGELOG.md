@@ -1696,3 +1696,8 @@
 
 ### Added by Rutger Blom
   - Miscellaneous updates to ```playbooks/ConfigureAlbClouds.yml``` so that a vSphere Cloud is now successfully added.
+
+## Dev-v6.0.0 26-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Added ```playbooks/DeployReplication.yml``` playbook to ```Deploy.yml``` file.
