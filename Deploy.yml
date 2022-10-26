@@ -178,6 +178,11 @@
   when: 
     - Deploy.Product.ALB.Deploy
 
+# Deploy vSphere Replication
+- ansible.builtin.import_playbook: playbooks/DeployReplication.yml
+  when: 
+    - Deploy.Product.Replication.Deploy
+
 # Deploy Tanzu
 - ansible.builtin.import_playbook: playbooks/EnableWorkloadManagement.yml
   when: 
