@@ -1702,3 +1702,4 @@
 ### Added by Luis Chanu
   - Added ```playbooks/DeployReplication.yml``` playbook to ```Deploy.yml``` file.
   - Updated ```Common.Syslog``` IPv4 and IPv6 addresses to point to vRLI VIP rather than the physical appliance.
+  - Changed case of ```NONE``` version entries to lower case in ```playbooks/CreatePodConfig.yml``` file to aid in readability.
