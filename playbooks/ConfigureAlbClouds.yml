@@ -217,7 +217,7 @@
       when:
         - Deploy.Product.ALB.Deploy
 
-    - name: Save the vimgrnwruntime URL of the Pod Management Port Group for later use.
+    - name: Save the vimgrnwruntime URL of the Pod ServiceVMs Port Group for later use.
       ansible.builtin.set_fact:
         mgmt_portgroup_url: "{{ vimgrnwruntime | community.general.json_query(query) }}"
       vars:
@@ -225,7 +225,7 @@
       when:
         - Deploy.Product.ALB.Deploy
 
-    - name: Configure vSphere Cloud
+    - name: Configure the ServiceVMs Port Group as Management Network on vSphere Cloud
       vmware.alb.avi_cloud:
         avi_credentials: "{{ avi_credentials }}"
         state: present
@@ -244,7 +244,6 @@
             id: "{{ content_library }}"
           privilege: WRITE_ACCESS
         vtype: CLOUD_VCENTER
-      register: vsphere_cloud
       when:
         - Deploy.Product.ALB.Deploy
         - Nested_ALB.Infrastructure.Cloud.vSphere.Configure

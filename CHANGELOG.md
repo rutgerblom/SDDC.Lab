@@ -1691,3 +1691,8 @@
   - Added ```Nested_Replication``` section to ```config_sample.yml``` file.
   - Moved ```Deploy.Product.ALB``` up in the configuration file to ease reading due to ```NSXT``` indentations.
   - Added vRealize Log Insight v8.10.0 to the ```software_sample.yml``` file. (UNTESTED)
+
+## Dev-v6.0.0 26-OCTOBER-2022
+
+### Added by Rutger Blom
+  - Miscellaneous updates to ```playbooks/ConfigureAlbClouds.yml``` so that a vSphere Cloud is now successfully added.
