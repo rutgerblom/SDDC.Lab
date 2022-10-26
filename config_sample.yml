@@ -68,8 +68,12 @@ Deploy:
       Deploy: true                                        # Router - Deploy a Pod-Router as part of the Pod deployment (recommended).
     vRLI:
       Deploy: true                                        # vRLI - Deploy vRealize Log Insight as part of the Pod deployment.
+    ALB:
+      Deploy: false                                       # NSX - Deploy NSX Advanced Load Balancer as part of the Pod deployment.
     DNSServer:
       Deploy: false                                       # DNSServer - Deploy a pre-configured DNS/NTP server as part of the Pod deployment. This DNS/NTP server is not Pod specific and can serve multiple Pods.
+    Replication:
+      Deploy: false                                       # Replication - Deploy a vSphere Replication Appliance as part of the Pod deployment.
     NSXT:
       Federation:
         Enable: false                                     # Indicates if Federation should be configured as part of the deployment.
@@ -80,8 +84,6 @@ Deploy:
         PodNumber: "{{ Pod.Number }}"                     # If not deploying Global Manager to this site as part of this deployment, change to indicate the Pod Number (i.e. 30) of the Pod in which the Global Manager is being deployed to.  When Federation is deployed, this is used to determine the proper eBGP Peering ASN to use on the Pod Router.
       Edge:
         Deploy: true                                      # Edge - Deploy NSX-T Edge Transport Nodes as part of the Pod deployment.
-    ALB:
-      Deploy: false                                       # NSX - Deploy NSX Advanced Load Balancer as part of the Pod deployment.
   WorkloadVMs:
     Deploy: false                                         # Controls whether Guest Workload VMs are deployed from the Content Library after the Pod deployment is completed
     Cluster: ComputeA                                     # Default vSphere Cluster to place the Workload VMs in
@@ -146,6 +148,13 @@ Deploy:
       Patch:   false
       Config:  "{{ SiteCode }}-AVI-Controller-1"
       Installer: "{{ SiteCode }}-AVI-Controller-1"
+    Replication:                                          # Label used for selection of which template to use during deployment (templates.yml)
+      Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
+      Product: Replication                                # Indicates software product you want to deploy from the software repository (software.yml)
+      Version: '8.6.0'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
+      Patch:   false
+      Config:  "{{ SiteCode }}-Replication"
+      Installer: "{{ SiteCode }}-Replication"
 
 
 
@@ -726,6 +735,43 @@ Nested_ALB:
         Configure: true
       NSXT:
         Configure: true
+
+
+
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ██████  ███████ ██████  ██      ██  ██████  █████  ████████ ██  ██████  ███    ██
+## ████   ██ ██      ██         ██    ██      ██   ██         ██   ██ ██      ██   ██ ██      ██ ██      ██   ██    ██    ██ ██    ██ ████   ██
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██████  █████   ██████  ██      ██ ██      ███████    ██    ██ ██    ██ ██ ██  ██
+## ██  ██ ██ ██           ██    ██    ██      ██   ██         ██   ██ ██      ██      ██      ██ ██      ██   ██    ██    ██ ██    ██ ██  ██ ██
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████ ██   ██ ███████ ██      ███████ ██  ██████ ██   ██    ██    ██  ██████  ██   ████
+##
+
+Nested_Replication:
+  Credential:
+    root:
+      Name: root
+      Password: "{{ Common.Password.Nested }}"
+    admin:
+      Name: admin
+      Password: "{{ Common.Password.Nested }}"
+  Component:
+    Appliance:
+      VMName: "{{ SiteCode }}-Replication-Appliance"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Replication-Appliance.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.25{% endif %}"
+      Deployment:
+        EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
+        AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
+        Cluster:                                                                       # Specifying a Cluster will over-ride the default functionality of automatically selecting one from the deployed vSphere clusters
+        CPU: 2                                                                         # Valid options are 2 or 4
+        EnableFileIntegrity: false
+      Address:
+        IPv4:
+          Address: "{{ Net.Management.IPv4.Network }}.25"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+          Gateway: "{{ Net.Management.IPv4.Network }}.1"
+        IPv6:
+          Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(25) }}"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
 
 
 ##

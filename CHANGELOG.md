@@ -1681,3 +1681,13 @@
   - Updated the ```Nested_ALB``` section in ```config_sample.yml``` to include a first piece of data structure for ALB Clouds configuration. This is work in progress.
   - Added conditionals to tasks in ```playbooks/ConfigureAlbClouds.yml``` maing use of the new piece of data structure.
   - Be sure to update your ```config.yml``` file.
+
+## Dev-v6.0.0 25-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Merged ```repl``` branch into ```dev_v6``` branch.  This code is not yet complete.
+  - Added ```playbooks/DeployReplication.yml``` playbook to SDDC.Lab project to deploy vSphere Replication Appliance onto a nested vSphere cluster.
+  - Added ```Deploy.Software.Replication``` section to ```config_sample.yml``` and ```templates/Pod_Config.j2``` files.
+  - Added ```Nested_Replication``` section to ```config_sample.yml``` file.
+  - Moved ```Deploy.Product.ALB``` up in the configuration file to ease reading due to ```NSXT``` indentations.
+  - Added vRealize Log Insight v8.10.0 to the ```software_sample.yml``` file. (UNTESTED)
