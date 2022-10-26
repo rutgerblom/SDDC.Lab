@@ -70,9 +70,9 @@
         - DEBUG.DisplayVariables
 
 ##
-## Create ALB User Credentials
+## Create ALB Cloud User Credentials
 ##
-    - name: Configure vCenter User Credentials
+    - name: Add vCenter User Credentials
       vmware.alb.avi_cloudconnectoruser:
         avi_credentials: "{{ avi_credentials }}"
         state: present
@@ -80,10 +80,11 @@
         vcenter_credentials:
           username: "{{ Nested_vCenter.User }}"
           password: "{{ Nested_vCenter.Password }}"
+      register: vcenter_user
       when:
         - Deploy.Product.ALB.Deploy
 
-    - name: Configure NSX-T User Credentials
+    - name: Add NSX-T User Credentials
       vmware.alb.avi_cloudconnectoruser:
         avi_credentials: "{{ avi_credentials }}"
         state: present
@@ -94,34 +95,6 @@
       when:
         - Deploy.Product.ALB.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
-
-
-##
-## Get and store Pod Management vSphere Port Group
-##
-    - name: Fetch vCenter Network information through ALB API
-      ansible.builtin.uri:
-        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/vimgrnwruntime?name={{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}&fields=url
-        validate_certs: false
-        timeout: 15
-        force_basic_auth: true
-        url_username: "{{ Nested_ALB.Credential.admin.Name }}"
-        url_password: "{{ Nested_ALB.Credential.admin.Password }}"
-        method: GET
-        body_format: json
-        return_content: true
-        status_code: 200
-      register: vimgrnwruntime
-      when:
-        - Deploy.Product.ALB.Deploy
-
-    - name: Save the vimgrnwruntime URL of the Pod Management Port Group for later use.
-      ansible.builtin.set_fact:
-        mgmt_portgroup_url: "{{ vimgrnwruntime | community.general.json_query(query) }}"
-      vars:
-        query: "json.results[*].url|[0]"
-      when:
-        - Deploy.Product.ALB.Deploy
 
 
 ##
@@ -161,17 +134,50 @@
 
 
 ##
-## Configure ALB Clouds
+## Add vCenter Server to ALB
 ##
-    - name: Configure vSphere Cloud
+    - name: Add vCenter Server via ALB API
+      ansible.builtin.uri:
+        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/vcenterserver
+        validate_certs: false
+        timeout: 15
+        force_basic_auth: true
+        url_username: "{{ Nested_ALB.Credential.admin.Name }}"
+        url_password: "{{ Nested_ALB.Credential.admin.Password }}"
+        headers:
+          X-Avi-Version: "{{ Deploy.Software.ALB.Version }}"
+        method: POST
+        body_format: json
+        body: |
+          {
+            "cloud_ref": "https://pod-210-alb-controller.sddc.lab/api/cloud/cloud-62d07d91-8157-4646-bed8-30d5096fb994",
+            "content_lib": {
+              "id": "{{ content_library }}",
+              "name": "{{ Nested_vCenter.ContentLibrary.Local.Name }}"
+            },
+            "name": "{{ SiteCode }} vCenter",
+            "vcenter_credentials_ref": "{{ vcenter_user.obj.url }}",
+            "vcenter_url": "{{ Nested_vCenter.FQDN }}"
+          }
+        return_content: true
+        status_code: [201, 409]
+      register: vcenter
+      when:
+        - Deploy.Product.ALB.Deploy
+
+
+##
+## Add and Configure ALB Clouds
+##
+    - name: Add vSphere Cloud
       vmware.alb.avi_cloud:
         avi_credentials: "{{ avi_credentials }}"
         state: present
         name: "{{ SiteCode }} vSphere"
         obj_name_prefix: "{{ SiteCode }}-vSphere"
+        dhcp_enabled: true
         vcenter_configuration:
           datacenter: "{{ Nested_vCenter.DataCenter }}"
-          management_network: "{{ mgmt_portgroup_url }}"
           management_ip_subnet:
             ip_addr:
               addr: "{{ Net.Management.IPv4.Network }}.0"
@@ -191,51 +197,54 @@
         - Deploy.Product.ALB.Deploy
         - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
 
+    - name: Add delay to allow ALB API to process new vSphere Cloud
+      ansible.builtin.pause:
+        seconds: 10
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
 
-##
-## Create ALB SE Groups
-##
-    - name: Create Service Engine Group for vSphere Cloud through ALB API
+    - name: Fetch vCenter Network information through ALB API
       ansible.builtin.uri:
-        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/serviceenginegroup
+        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/vimgrnwruntime?name={{ Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.Name }}&fields=url
         validate_certs: false
         timeout: 15
         force_basic_auth: true
         url_username: "{{ Nested_ALB.Credential.admin.Name }}"
         url_password: "{{ Nested_ALB.Credential.admin.Password }}"
-        method: POST
+        headers:
+          X-Avi-Version: "{{ Deploy.Software.ALB.Version }}"
+        method: GET
         body_format: json
-        body: |
-          {
-            "cloud_ref": "{{ vsphere_cloud.obj.url }}",
-            "name": "{{ SiteCode }}-vSphere-SE-Group"
-          }
         return_content: true
-        status_code: 201
-      register: se_group_vsphere
+        status_code: 200
+      register: vimgrnwruntime
       when:
         - Deploy.Product.ALB.Deploy
-        - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
 
+    - name: Save the vimgrnwruntime URL of the Pod Management Port Group for later use.
+      ansible.builtin.set_fact:
+        mgmt_portgroup_url: "{{ vimgrnwruntime | community.general.json_query(query) }}"
+      vars:
+        query: "json.results[*].url|[0]"
+      when:
+        - Deploy.Product.ALB.Deploy
 
-##
-## Configure SE Group on ALB Clouds
-##
-    - name: Configure SE Group on vSphere Cloud
+    - name: Configure vSphere Cloud
       vmware.alb.avi_cloud:
         avi_credentials: "{{ avi_credentials }}"
         state: present
         name: "{{ SiteCode }} vSphere"
         obj_name_prefix: "{{ SiteCode }}-vSphere"
-        se_group_template_ref: "{{ se_group_vsphere.json.url }}"
+        dhcp_enabled: true
         vcenter_configuration:
           datacenter: "{{ Nested_vCenter.DataCenter }}"
           management_network: "{{ mgmt_portgroup_url }}"
           management_ip_subnet:
             ip_addr:
-              addr: "{{ Net.Management.IPv4.Network }}.0"
+              addr: "{{ Net.ServiceVM.IPv4.Network }}.0"
               type: V4
-            mask: "{{ Net.Management.IPv4.Prefix }}"
+            mask: "{{ Net.ServiceVM.IPv4.Prefix }}"
           username: "{{ Nested_vCenter.User }}"
           password: "{{ Nested_vCenter.Password }}"
           vcenter_url: "{{ Nested_vCenter.FQDN }}"
@@ -245,5 +254,7 @@
             id: "{{ content_library }}"
           privilege: WRITE_ACCESS
         vtype: CLOUD_VCENTER
+      register: vsphere_cloud
       when:
         - Deploy.Product.ALB.Deploy
+        - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
