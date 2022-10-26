@@ -178,11 +178,6 @@
         dhcp_enabled: true
         vcenter_configuration:
           datacenter: "{{ Nested_vCenter.DataCenter }}"
-          management_ip_subnet:
-            ip_addr:
-              addr: "{{ Net.ServiceVM.IPv4.Network }}.0"
-              type: V4
-            mask: "{{ Net.ServiceVM.IPv4.Prefix }}"
           username: "{{ Nested_vCenter.User }}"
           password: "{{ Nested_vCenter.Password }}"
           vcenter_url: "{{ Nested_vCenter.FQDN }}"
@@ -240,11 +235,6 @@
         vcenter_configuration:
           datacenter: "{{ Nested_vCenter.DataCenter }}"
           management_network: "{{ mgmt_portgroup_url }}"
-          management_ip_subnet:
-            ip_addr:
-              addr: "{{ Net.ServiceVM.IPv4.Network }}.0"
-              type: V4
-            mask: "{{ Net.ServiceVM.IPv4.Prefix }}"
           username: "{{ Nested_vCenter.User }}"
           password: "{{ Nested_vCenter.Password }}"
           vcenter_url: "{{ Nested_vCenter.FQDN }}"
