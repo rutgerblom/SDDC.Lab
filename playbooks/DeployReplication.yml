@@ -1,0 +1,276 @@
+##
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: playbooks/DeployReplication.yml
+##  Description: This playbook deploys vSphere Replication.
+##
+---
+- hosts: localhost
+  name: DeployReplication.yml
+  vars:
+    isoextractpoint: "{{ Target.TempFolder }}/isos/{{ Deploy.Software.Replication.Vendor }}_{{ Deploy.Software.Replication.Product }}_{{ Deploy.Software.Replication.Version }}"
+    cluster_list: []
+  tasks:
+    - name: DeployReplication_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+                                    Target.TempFolder: {{ Target.TempFolder }}
+
+                             ISO Extraction Directory: {{ isoextractpoint }}
+
+                          vSphere Replication Version: {{ Deploy.Software.Replication.Version }}
+                             vSphere Replication FQDN: {{ Nested_Replication.Component.Appliance.FQDN }}
+                           vSphere Replication VMName: {{ Nested_Replication.Component.Appliance.VMName }}
+                       vSphere Replication admin User: {{ Nested_Replication.Credential.admin.Name }}
+                   vSphere Replication admin Password: {{ Nested_Replication.Credential.admin.Password }}
+
+                                                OVF Variables
+                                                =============
+
+                                    Network PortGroup: {{ Target.PortGroup.Management.Name }}
+
+                                 Network IPv4 Address: {{ Nested_Replication.Component.Appliance.Address.IPv4.Address }}
+                                      Network Netmask: {{ (Nested_Replication.Component.Appliance.Address.IPv4.Address + '/' + Nested_Replication.Component.Appliance.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
+                                      Network Gateway: {{ Nested_Replication.Component.Appliance.Address.IPv4.Gateway }}
+
+                                   Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                   Network DNS Domain: {{ Common.DNS.Domain }}
+
+                                      'root' Password: {{ Nested_Replication.Credential.root.Password }}
+                                     'admin' Password: {{ Nested_Replication.Credential.admin.Password }}
+
+                       vSphere Replication Media Path: {{ Deploy.Software.Replication.Directory }}
+                       vSphere Replication Media File: {{ Deploy.Software.Replication.File }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+    - name: Check if vSphere Replication Appliance is already installed
+      ansible.builtin.uri:
+        url: https://{{ Nested_Replication.Component.Appliance.FQDN }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+      register: appliance_check
+      failed_when: false
+      when:
+        - Deploy.Product.Replication.Deploy
+
+
+##
+## Extract files from vSphere Replication ISO
+##
+    - name: Create temp directory
+      ansible.builtin.file:
+        path: "{{ Target.TempFolder }}"
+        state: directory
+        mode: "755"
+      when:
+        - appliance_check.status != 200
+
+    - name: Check if vSphere Replication ISO file exists locally in the software repository
+      ansible.builtin.stat:
+        path: "{{ Deploy.Software.Replication.Directory }}/{{ Deploy.Software.Replication.File }}"
+      register: InstallerFileCheck 
+      when:
+        - appliance_check.status != 200
+        - Deploy.Product.Replication.Deploy
+
+    - name: Extract vSphere Replication ISO
+      ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.Replication.Directory }}/{{ Deploy.Software.Replication.File }} \
+                                -extract / {{ isoextractpoint }}"
+      changed_when: false
+      when:
+        - appliance_check.status != 200
+        - Deploy.Product.Replication.Deploy
+
+    - name: Add write permission to extracted files
+      ansible.builtin.file:
+        path: "{{ isoextractpoint }}"
+        state: directory
+        recurse: true
+        mode: u+w
+
+
+##
+## Determine which Nested vSphere Cluster to deploy vSphere Replication onto
+##
+    - name: Get list of vSphere Clusters with deployed hosts
+      ansible.builtin.set_fact:
+        cluster_list: "{{ cluster_list + [item.key] }}"
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when:
+        - appliance_check.status != 200
+        - item.value.DeployHosts
+
+    - name: If more than 1 vSphere cluster is available, remove 'Edge' vSphere Cluster from the list
+      ansible.builtin.set_fact:
+        cluster_options: "{{ cluster_list | difference(['Edge']) }}"
+      when:
+        - appliance_check.status != 200
+        - (cluster_list|length) > 1
+
+    - name: If only 1 vSphere cluster is avaialble, then use it
+      ansible.builtin.set_fact:
+        cluster_options: "{{ cluster_list }}"
+      when:
+        - appliance_check.status != 200
+        - (cluster_list | length) == 1
+
+    - name: If vSphere Cluster is not specified, select the first vSphere Cluster from the available cluster options
+      ansible.builtin.set_fact:
+        cluster_to_use: "{{ cluster_options[0] }}"
+      when:
+        - appliance_check.status != 200
+        - Nested_Replication.Component.Appliance.Deployment.Cluster == None
+
+    - name: If vSphere Cluster Datastore is specified in config file, use it
+      ansible.builtin.set_fact:
+        cluster_to_use: "{{ Nested_Replication.Component.Appliance.Deployment.Cluster }}"
+      when:
+        - appliance_check.status != 200
+        - Nested_Replication.Component.Appliance.Deployment.Cluster != None
+
+    - name: DEBUG -- Display vSphere cluster to be used by vSphere Replication (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ============================== Display 'cluster_to_use' Variable ================================
+
+          cluster_to_use: {{ cluster_to_use }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+        - appliance_check.status != 200
+
+
+##
+## Deploy vSphere Replication from 'vSphere_Replication_OVF10.ovf' file
+##
+    - name: Deploy vSphere Replication Appliance to Nested_vCenter
+      community.vmware.vmware_deploy_ovf:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datastore: "{{ Nested_Cluster[cluster_to_use].vsanDatastore }}"
+        allow_duplicates: false
+        datacenter: "{{ Nested_vCenter.DataCenter }}"
+        cluster: "{{ cluster_to_use }}"
+        name: "{{ Nested_Replication.Component.Appliance.VMName }}"
+        ovf: "{{ isoextractpoint }}/bin/vSphere_Replication_OVF10.ovf"
+        networks:
+          "Network 1": "Management"
+        disk_provisioning: "{{ Common.DiskProvisioning }}"
+        power_on: true
+        wait_for_ip_address: true
+        inject_ovf_env: true
+        properties:
+          vami.hostname: "{{ Nested_Replication.Component.Appliance.FQDN }}"
+          enable_sshd: "{{ Nested_Replication.Component.Appliance.Deployment.EnableSSH }}"
+          varoot-password: "{{ Nested_Replication.Credential.root.Password }}"
+          vaadmin-password:  "{{ Nested_Replication.Credential.admin.Password }}"
+          ntpserver: "{{ Common.NTP.Server1.IPv4 }}"
+          enableFileIntegrity: "{{ Nested_Replication.Component.Appliance.Deployment.EnableFileIntegrity }}"
+          network.netmode.vSphere_Replication_Appliance: "static"
+          network.addrfamily.vSphere_Replication_Appliance: "ipv4"
+          network.ip0.vSphere_Replication_Appliance: "{{ Nested_Replication.Component.Appliance.Address.IPv4.Address }}"
+          network.netprefix0.vSphere_Replication_Appliance: "{{ Nested_Replication.Component.Appliance.Address.IPv4.Prefix }}"
+          network.gateway.vSphere_Replication_Appliance: "{{ Nested_Replication.Component.Appliance.Address.IPv4.Gateway }}"
+          network.DNS.vSphere_Replication_Appliance: "{{ Common.DNS.Server1.IPv4 }}"
+          network.domain.vSphere_Replication_Appliance: "{{ Common.DNS.Domain }}"
+          network.searchpath.vSphere_Replication_Appliance: "{{ Common.DNS.Domain }}"
+      when:
+        - appliance_check.status != 200
+        - Deploy.Product.Replication.Deploy
+
+    - name: Start checking if the vSphere Replication Applience Web UI is available
+      ansible.builtin.uri:
+        url: https://{{ Nested_Replication.Component.Appliance.FQDN }}
+        validate_certs: false
+        timeout: 5
+      register: node_webui_check
+      retries: 10
+      delay: 60
+      until: node_webui_check.status == 200
+      when:
+        - false
+        - appliance_check.status != 200
+        - Deploy.Product.Replication.Deploy
+
+    - name: Write annotation on the vSphere Replication Appliance VM
+      community.vmware.vmware_guest:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        cluster: "{{ cluster_to_use }}"
+        datacenter: "{{ Nested_vCenter.DataCenter }}"
+        name: "{{ Nested_Replication.Component.Appliance.VMName }}"
+        annotation: |
+                    {{ Common.Annotation }}
+                    {{ Deploy.Software.Replication.Vendor }} {{ Deploy.Software.Replication.Product }} {{ Deploy.Software.Replication.Version }}
+                    Admin Username: {{ Nested_Replication.Credential.admin.Name }}
+                    Admin Password: {{ Nested_Replication.Credential.admin.Password }}
+                    Root Username: {{ Nested_Replication.Credential.root.Name }}
+                    Root Password: {{ Nested_Replication.Credential.root.Password }}
+      when:
+        - false
+        - appliance_check.status != 200
+        - Deploy.Product.Replication.Deploy
+
+
+##
+## Delete Extracted ISO files
+##

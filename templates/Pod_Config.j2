@@ -57,6 +57,8 @@ Deploy:
       Deploy: {{ Deploy.Product.ALB.Deploy }}
     DNSServer:
       Deploy: {{ Deploy.Product.DNSServer.Deploy }}
+    Replication:
+      Deploy: {{ Deploy.Product.Replication.Deploy }}
     NSXT:
       Federation:
         Enable: {{ Deploy.Product.NSXT.Federation.Enable }}
@@ -165,6 +167,16 @@ Deploy:
       Directory: "{{ Software[Deploy.Software.ALB.Vendor][Deploy.Software.ALB.Product]['Installers'][Deploy.Software.ALB.Version]['Location'].Local }}"
       File:      "{{ Software[Deploy.Software.ALB.Vendor][Deploy.Software.ALB.Product]['Installers'][Deploy.Software.ALB.Version].File }}"
       FileExt:   "{{ Software[Deploy.Software.ALB.Vendor][Deploy.Software.ALB.Product]['Installers'][Deploy.Software.ALB.Version].FileExt }}"
+    Replication:
+      Vendor:    "{{ Deploy.Software.Replication.Vendor }}"
+      Product:   "{{ Deploy.Software.Replication.Product }}"
+      Version:   "{{ Deploy.Software.Replication.Version }}"
+      Patch:     {{ Deploy.Software.Replication.Patch }}
+      Config:    "{{ Deploy.Software.Replication.Config }}"
+      Installer: "{{ Deploy.Software.Replication.Installer }}"
+      Directory: "{{ Software[Deploy.Software.Replication.Vendor][Deploy.Software.Replication.Product]['Installers'][Deploy.Software.Replication.Version]['Location'].Local }}"
+      File:      "{{ Software[Deploy.Software.Replication.Vendor][Deploy.Software.Replication.Product]['Installers'][Deploy.Software.Replication.Version].File }}"
+      FileExt:   "{{ Software[Deploy.Software.Replication.Vendor][Deploy.Software.Replication.Product]['Installers'][Deploy.Software.Replication.Version].FileExt }}"
 
 
 
@@ -190,6 +202,10 @@ Nested_Router:
 
 Nested_vRLI:
   {{ Nested_vRLI | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+
+Nested_Replication:
+  {{ Nested_Replication | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
 
 Nested_ALB:
