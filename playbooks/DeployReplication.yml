@@ -249,6 +249,12 @@
         - appliance_check.status != 200
         - Deploy.Product.Replication.Deploy
 
+    - name: Delete extracted vSphere Replication ISO directory
+      ansible.builtin.file:
+        path: "{{ isoextractpoint }}"
+        state: absent
+      when: not DEBUG.KeepInstallerFiles
+
     - name: Write annotation on the vSphere Replication Appliance VM
       community.vmware.vmware_guest:
         hostname: "{{ Nested_vCenter.FQDN }}"
@@ -269,16 +275,3 @@
         - appliance_check.status != 200
         - Deploy.Product.Replication.Deploy
 
-
-##
-## Delete Extracted ISO files
-##
-    - name: REMINDER -- Added delete ISO (Pause)
-      ansible.builtin.pause:
-        seconds: 60
-        prompt: |
-          =================================================================================================
-
-                Reminder to add task to clean-up ISO files after vSphere Replication deployment
-
-          =================================================================================================
