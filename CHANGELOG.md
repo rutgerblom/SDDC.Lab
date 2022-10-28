@@ -1723,6 +1723,9 @@
 ### Added by Rutger Blom
   - Replaced a static value in the ```playbooks/ConfigureAlbClouds.yml``` playbook.
   - Renamed playbook to ```playbooks/ConfigureAlbBasicConfig.yml```
+  - Added tasks to the ```playbooks/ConfigureAlbClouds.yml``` playbook so that the Service Engine "Default-Group" is configured.
+  - Added task that sets the Service Engine "Default-Group" as the Template Service Engine Group on the vSphere Cloud.
+  - Creation of a "dummy" Virtual Service with VS VIP and Pool on the Pod's VMNetwork VLAN is successful. Two SEs are deployed from the Pod's Content Library into the nested "ComputeA" vSphere Cluster and have their vNICs connected to the ServiceVMs (for management) and VMNetwork (for data) Port Groups.
 
 ## Dev-v6.0.0 28-OCTOBER-2022
 
