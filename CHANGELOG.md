@@ -1713,3 +1713,5 @@
   - Added ```playbooks/ConfigureReplicationBasicConfig.yml``` to configure basic services for vSphere Replication. (TESTED)
   - Added ```playbooks/ConfigureReplicationBasicConfig.yml``` to ```Deploy.yml``` file.
   - Be sure to update your ```config.yml``` file.
+  - Renamed ```playbooks/ConfigureNsxBasicConfiguration.yml``` to ```playbooks/ConfigureNsxBasicConfig.yml```.
+  - Updated ```Deploy.yml``` to use new ```playbooks/ConfigureNsxBasicConfig.yml``` file.
