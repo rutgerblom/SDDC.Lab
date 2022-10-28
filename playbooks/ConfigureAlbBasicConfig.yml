@@ -1,14 +1,14 @@
 ##
 ##      Project: SDDC.Lab
 ##      Authors: Luis Chanu & Rutger Blom
-##     Filename: playbooks/ConfigureAlbBasicConfiguration.yml
+##     Filename: playbooks/ConfigureAlbBasicConfig.yml
 ##
 ##  Description: This playbook sets the Admin user password, configures DNS and NTP on the ALB Controller node(s),
 ##               and the ALB Controller Cluster VIP.
 ##
 ---
 - hosts: localhost
-  name: ConfigureAlbBasicConfiguration.yml
+  name: ConfigureAlbBasicConfig.yml
   vars:
     avi_credentials:
       username: "{{ Nested_ALB.Credential.admin.Name }}"
@@ -16,7 +16,7 @@
       controller: "{{ Nested_ALB.Component.Controller.FQDN }}"
       api_version: "{{ Deploy.Software.ALB.Version }}"
   tasks:
-    - name: ConfigureAlbBasicConfiguration_Playbook
+    - name: ConfigureAlbBasicConfig_Playbook
       ansible.builtin.debug:
         msg: "Starting playbook: {{ ansible_play_name }}"
 
