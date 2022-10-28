@@ -799,7 +799,7 @@
 ########################################################################################################################
 ##
 
-    - name: Prepare for deployment by deleting directory
+    - name: Prepare for deployment by deleting temporary directory for {{ SiteCode }}
       ansible.builtin.file:
-        path: "{{ lookup('env', 'HOME') }}/SDDC.Lab/{{ SiteCode }}"
+        path: "{{ Target.TempFolder }}"
         state: absent

@@ -1715,4 +1715,5 @@
   - Be sure to update your ```config.yml``` file.
   - Renamed ```playbooks/ConfigureNsxBasicConfiguration.yml``` to ```playbooks/ConfigureNsxBasicConfig.yml```.
   - Updated ```Deploy.yml``` to use new ```playbooks/ConfigureNsxBasicConfig.yml``` file.
-  - Added task in ```playbooks/DeployReplication.yml``` to deleted vSphere Replication extracted ISO files.
+  - Added task in ```playbooks/DeployReplication.yml``` to deleted vSphere Replication extracted ISO files. (TESTED)
+  - For consistency, updated the Pod's temporary directory deletion task in ```playbooks/ValidateConfiguration.yml``` to use the ```Target.TempFolder``` variable that is used by each of the various playbooks throughout SDDC.Lab.  (TESTED)
