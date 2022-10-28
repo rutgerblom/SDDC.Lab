@@ -1710,4 +1710,6 @@
   - Added deployment size option to OVF deployment of vSphere Replication.
   - Renamed ```Nested_Replication.Component.Appliance.Deployment.CPU``` key to ```Nested_Replication.Component.Appliance.Deployment.Size``` within ```config_sample.yml```, and changed options to ```light``` and ```standard``` for 2 or 4 CPU deployment, respectively.
   - Updated ```playbooks/DeployReplication.yml``` to use updated variable.
+  - Added ```playbooks/ConfigureReplicationBasicConfig.yml``` to configure basic services for vSphere Replication. (TESTED)
+  - Added ```playbooks/ConfigureReplicationBasicConfig.yml``` to ```Deploy.yml``` file.
   - Be sure to update your ```config.yml``` file.

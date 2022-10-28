@@ -156,7 +156,7 @@
   when: 
     - Deploy.Product.NSXT.Federation.Enable
 
-# Deploy vRealize products
+# Deploy vRealize Log Insight
 - ansible.builtin.import_playbook: playbooks/DeployVrli.yml
   when: 
     - Deploy.Product.vRLI.Deploy
@@ -178,8 +178,12 @@
   when: 
     - Deploy.Product.ALB.Deploy
 
-# Deploy vSphere Replication
+# Deploy vSphere Replication (Nested)
 - ansible.builtin.import_playbook: playbooks/DeployReplication.yml
+  when: 
+    - Deploy.Product.Replication.Deploy
+
+- ansible.builtin.import_playbook: playbooks/ConfigureReplicationBasicConfig.yml
   when: 
     - Deploy.Product.Replication.Deploy
 
