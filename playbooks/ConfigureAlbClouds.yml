@@ -136,7 +136,7 @@
 ##
 ## Get and store ALB Default Cloud cloud_ref
 ##
-    - name: Get Default Cloud cloud_ref
+    - name: Fetch Default-Cloud information via ALB API
       ansible.builtin.uri:
         url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/cloud
         validate_certs: false
@@ -154,13 +154,14 @@
       when:
         - Deploy.Product.ALB.Deploy
 
-    - name: Store Default Cloud cloud_ref for later use
+    - name: Save Default-Cloud cloud_ref for later use
       ansible.builtin.set_fact:
         default_cloud_ref: "{{ cloud_ref | community.general.json_query(query) }}"
       vars:
         query: "json.results[?name=='Default-Cloud'].url|[0]"
       when:
         - Deploy.Product.ALB.Deploy
+
 
 ##
 ## Add vCenter Server to ALB
@@ -228,7 +229,41 @@
         - Deploy.Product.ALB.Deploy
         - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
 
-    - name: Fetch vCenter Network information through ALB API
+    - name: Fetch Service Engine Default-Group information via ALB API
+      ansible.builtin.uri:
+        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/serviceenginegroup?fields=url&cloud_ref.name={{ SiteCode }}%20vSphere
+        validate_certs: false
+        timeout: 15
+        force_basic_auth: true
+        url_username: "{{ Nested_ALB.Credential.admin.Name }}"
+        url_password: "{{ Nested_ALB.Credential.admin.Password }}"
+        headers:
+          X-Avi-Version: "{{ Deploy.Software.ALB.Version }}"
+        method: GET
+        body_format: json
+        return_content: true
+        status_code: 200
+      register: serviceenginegroup
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Save Service Engine Default-Group URL for later use
+      ansible.builtin.set_fact:
+        serviceenginegroup_url: "{{ serviceenginegroup | community.general.json_query(query) }}"
+      vars:
+        query: "json.results[*].url|[0]"
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Save Service Engine Default-Group UUID for later use
+      ansible.builtin.set_fact:
+        serviceenginegroup_uuid: "{{ serviceenginegroup | community.general.json_query(query) }}"
+      vars:
+        query: "json.results[*].uuid|[0]"
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Fetch ServiceVMs Port Group information via ALB API
       ansible.builtin.uri:
         url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/vimgrnwruntime?name={{ Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.Name }}&fields=url
         validate_certs: false
@@ -246,7 +281,7 @@
       when:
         - Deploy.Product.ALB.Deploy
 
-    - name: Save the vimgrnwruntime URL of the Pod ServiceVMs Port Group for later use.
+    - name: Save the ServiceVMs Port Group URL for later use
       ansible.builtin.set_fact:
         mgmt_portgroup_url: "{{ vimgrnwruntime | community.general.json_query(query) }}"
       vars:
@@ -260,6 +295,84 @@
         state: present
         name: "{{ SiteCode }} vSphere"
         obj_name_prefix: "{{ SiteCode }}-vSphere"
+        dhcp_enabled: true
+        vcenter_configuration:
+          datacenter: "{{ Nested_vCenter.DataCenter }}"
+          management_network: "{{ mgmt_portgroup_url }}"
+          username: "{{ Nested_vCenter.User }}"
+          password: "{{ Nested_vCenter.Password }}"
+          vcenter_url: "{{ Nested_vCenter.FQDN }}"
+          use_content_lib: true
+          content_lib:
+            name: "{{ Nested_vCenter.ContentLibrary.Local.Name }}"
+            id: "{{ content_library }}"
+          privilege: WRITE_ACCESS
+        vtype: CLOUD_VCENTER
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
+
+    - name: Fetch vSphere Edge Cluster information via ALB API
+      ansible.builtin.uri:
+        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/vimgrclusterruntime?name=Edge&fields=url
+        validate_certs: false
+        timeout: 15
+        force_basic_auth: true
+        url_username: "{{ Nested_ALB.Credential.admin.Name }}"
+        url_password: "{{ Nested_ALB.Credential.admin.Password }}"
+        headers:
+          X-Avi-Version: "{{ Deploy.Software.ALB.Version }}"
+        method: GET
+        body_format: json
+        return_content: true
+        status_code: 200
+      register: vimgrclusterruntime
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Save vSphere Edge Cluster URL for later use
+      ansible.builtin.set_fact:
+        edge_cluster_url: "{{ vimgrclusterruntime | community.general.json_query(query) }}"
+      vars:
+        query: "json.results[*].url|[0]"
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Update Service Engine Default-Group Settings via ALB API
+      ansible.builtin.uri:
+        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/serviceenginegroup/{{ serviceenginegroup_uuid }}
+        validate_certs: false
+        timeout: 15
+        force_basic_auth: true
+        url_username: "{{ Nested_ALB.Credential.admin.Name }}"
+        url_password: "{{ Nested_ALB.Credential.admin.Password }}"
+        method: PATCH
+        body_format: json
+        body: |
+          {
+              "add": {
+                  "mem_reserve": false,
+                  "vcenter_clusters": {
+                      "cluster_refs": [
+                          "{{ edge_cluster_url }}"
+                      ],
+                      "include": false
+                  },
+              }
+          }
+        return_content: true
+        status_code: 200
+      register: se_group_vsphere
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Set the Service Engine Default-Group on vSphere Cloud
+      vmware.alb.avi_cloud:
+        avi_credentials: "{{ avi_credentials }}"
+        state: present
+        name: "{{ SiteCode }} vSphere"
+        obj_name_prefix: "{{ SiteCode }}-vSphere"
+        se_group_template_ref: "{{ se_group_vsphere.json.url }}"
         dhcp_enabled: true
         vcenter_configuration:
           datacenter: "{{ Nested_vCenter.DataCenter }}"
