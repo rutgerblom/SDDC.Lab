@@ -210,6 +210,7 @@
         cluster: "{{ cluster_to_use }}"
         name: "{{ Nested_Replication.Component.Appliance.VMName }}"
         ovf: "{{ isoextractpoint }}/bin/vSphere_Replication_OVF10.ovf"
+        deployment_option: "{{ Nested_Replication.Component.Appliance.Deployment.Size }}"
         networks:
           "Network 1": "Management"
         disk_provisioning: "{{ Common.DiskProvisioning }}"
@@ -231,6 +232,7 @@
           network.DNS.vSphere_Replication_Appliance: "{{ Common.DNS.Server1.IPv4 }}"
           network.domain.vSphere_Replication_Appliance: "{{ Common.DNS.Domain }}"
           network.searchpath.vSphere_Replication_Appliance: "{{ Common.DNS.Domain }}"
+#          cisp.deploymentOption: light
       when:
         - appliance_check.status != 200
         - Deploy.Product.Replication.Deploy
