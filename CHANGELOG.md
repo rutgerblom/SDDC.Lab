@@ -1703,3 +1703,11 @@
   - Added ```playbooks/DeployReplication.yml``` playbook to ```Deploy.yml``` file.
   - Updated ```Common.Syslog``` IPv4 and IPv6 addresses to point to vRLI VIP rather than the physical appliance.
   - Changed case of ```NONE``` version entries to lower case in ```playbooks/CreatePodConfig.yml``` file to aid in readability.
+
+## Dev-v6.0.0 27-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Added deployment size option to OVF deployment of vSphere Replication.
+  - Renamed ```Nested_Replication.Component.Appliance.Deployment.CPU``` key to ```Nested_Replication.Component.Appliance.Deployment.Size``` within ```config_sample.yml```, and changed options to ```light``` and ```standard``` for 2 or 4 CPU deployment, respectively.
+  - Updated ```playbooks/DeployReplication.yml``` to use updated variable.
+  - Be sure to update your ```config.yml``` file.
