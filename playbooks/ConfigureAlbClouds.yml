@@ -134,6 +134,35 @@
 
 
 ##
+## Get and store ALB Default Cloud cloud_ref
+##
+    - name: Get Default Cloud cloud_ref
+      ansible.builtin.uri:
+        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/cloud
+        validate_certs: false
+        timeout: 15
+        force_basic_auth: true
+        url_username: "{{ Nested_ALB.Credential.admin.Name }}"
+        url_password: "{{ Nested_ALB.Credential.admin.Password }}"
+        headers:
+          X-Avi-Version: "{{ Deploy.Software.ALB.Version }}"
+        method: GET
+        body_format: json
+        return_content: true
+        status_code: 200
+      register: cloud_ref
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Store Default Cloud cloud_ref for later use
+      ansible.builtin.set_fact:
+        default_cloud_ref: "{{ cloud_ref | community.general.json_query(query) }}"
+      vars:
+        query: "json.results[?name=='Default-Cloud'].url|[0]"
+      when:
+        - Deploy.Product.ALB.Deploy
+
+##
 ## Add vCenter Server to ALB
 ##
     - name: Add vCenter Server via ALB API
@@ -150,7 +179,7 @@
         body_format: json
         body: |
           {
-            "cloud_ref": "https://pod-210-alb-controller.sddc.lab/api/cloud/cloud-62d07d91-8157-4646-bed8-30d5096fb994",
+            "cloud_ref": "{{ default_cloud_ref }}",
             "content_lib": {
               "id": "{{ content_library }}",
               "name": "{{ Nested_vCenter.ContentLibrary.Local.Name }}"
