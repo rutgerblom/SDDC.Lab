@@ -1,0 +1,135 @@
+##
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: playbooks/ConfigureReplicationBasicConfig.yml
+##  Description: This playbook performs basic post-deployment configuration of services on the vSphere Replication Appliance.
+##               As DNS and NTP are configured in DeployReplication.yml via OVA properties, the only service configured by this playbook is Syslog.
+##
+---
+- hosts: localhost
+  name: ConfigureReplicationBasicConfig.yml
+  tasks:
+    - name: ConfigureReplicationBasicConfig_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                             vSphere Replication FQDN: {{ Nested_Replication.Component.Appliance.FQDN }}
+                           vSphere Replication VMName: {{ Nested_Replication.Component.Appliance.VMName }}
+                          vSphere Replication Version: {{ Deploy.Software.Replication.Version }}
+                       vSphere Replication admin User: {{ Nested_Replication.Credential.admin.Name }}
+                   vSphere Replication admin Password: {{ Nested_Replication.Credential.admin.Password }}
+
+                                        Syslog Server: {{ Common.Syslog.IPv4 }}
+                                      Syslog Protocol: {{ Common.Syslog.Protocol }}
+                                          Syslog Port: {{ Common.Syslog.Port }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+    - name: Verify vSphere Replication Appliance Web UI is available
+      ansible.builtin.uri:
+        url: https://{{ Nested_Replication.Component.Appliance.FQDN }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 10
+      register: appliance_check
+      retries: 18
+      delay: 10
+      until: appliance_check.status == 200
+      when:
+        - Deploy.Product.Replication.Deploy
+
+    - name: Login to vSphere Replication Appliance to obtain Session ID
+      ansible.builtin.uri:
+        url: https://{{ Nested_Replication.Component.Appliance.FQDN }}/api/rest/configure/v1/session
+        user: "{{ Nested_Replication.Credential.admin.Name }}"
+        password: "{{ Nested_Replication.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        force_basic_auth: true
+        method: POST
+        timeout: 10
+        status_code: 200
+      register: result
+      when:
+        - Deploy.Product.Replication.Deploy
+        - appliance_check.status == 200
+
+    - name: Store vSphere Replication Session ID for later use
+      ansible.builtin.set_fact:
+        session_id: "{{ result.json.session_id }}"
+      when:
+        - Deploy.Product.Replication.Deploy
+        - appliance_check.status == 200
+
+    - name: Configure Syslog server
+      ansible.builtin.uri:
+        url: https://{{ Nested_Replication.Component.Appliance.FQDN }}/api/rest/configure/v1/appliance/settings/syslog-servers
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 10
+        method: PUT
+        headers:
+          "x-dr-session": "{{ session_id }}"
+        body:
+          - host: "{{ Common.Syslog.IPv4 }}"
+            port: "{{ Common.Syslog.Port }}"
+            protocol: "{{ Common.Syslog.Protocol | upper }}"
+        body_format: json
+        status_code: 204
+      when:
+        - Deploy.Product.Replication.Deploy
+        - appliance_check.status == 200
+
+    - name: Logout of vSphere Replication Appliance
+      ansible.builtin.uri:
+        url: https://{{ Nested_Replication.Component.Appliance.FQDN }}/api/rest/configure/v1/session
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        headers:
+          "x-dr-session": "{{ session_id }}"
+        method: DELETE
+        timeout: 10
+        status_code: 204
+      when:
+        - Deploy.Product.Replication.Deploy
+        - appliance_check.status == 200

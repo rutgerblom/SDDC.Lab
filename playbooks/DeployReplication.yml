@@ -68,9 +68,9 @@
 
                              ISO Extraction Directory: {{ isoextractpoint }}
 
-                          vSphere Replication Version: {{ Deploy.Software.Replication.Version }}
                              vSphere Replication FQDN: {{ Nested_Replication.Component.Appliance.FQDN }}
                            vSphere Replication VMName: {{ Nested_Replication.Component.Appliance.VMName }}
+                          vSphere Replication Version: {{ Deploy.Software.Replication.Version }}
                        vSphere Replication admin User: {{ Nested_Replication.Credential.admin.Name }}
                    vSphere Replication admin Password: {{ Nested_Replication.Credential.admin.Password }}
 
@@ -221,7 +221,7 @@
           vami.hostname: "{{ Nested_Replication.Component.Appliance.FQDN }}"
           enable_sshd: "{{ Nested_Replication.Component.Appliance.Deployment.EnableSSH }}"
           varoot-password: "{{ Nested_Replication.Credential.root.Password }}"
-          vaadmin-password:  "{{ Nested_Replication.Credential.admin.Password }}"
+          vaadmin-password: "{{ Nested_Replication.Credential.admin.Password }}"
           ntpserver: "{{ Common.NTP.Server1.IPv4 }}"
           enableFileIntegrity: "{{ Nested_Replication.Component.Appliance.Deployment.EnableFileIntegrity }}"
           network.netmode.vSphere_Replication_Appliance: "static"
@@ -232,24 +232,28 @@
           network.DNS.vSphere_Replication_Appliance: "{{ Common.DNS.Server1.IPv4 }}"
           network.domain.vSphere_Replication_Appliance: "{{ Common.DNS.Domain }}"
           network.searchpath.vSphere_Replication_Appliance: "{{ Common.DNS.Domain }}"
-#          cisp.deploymentOption: light
       when:
         - appliance_check.status != 200
         - Deploy.Product.Replication.Deploy
 
-    - name: Start checking if the vSphere Replication Applience Web UI is available
+    - name: Start checking if the vSphere Replication Appliance Web UI is available
       ansible.builtin.uri:
         url: https://{{ Nested_Replication.Component.Appliance.FQDN }}
         validate_certs: false
         timeout: 5
-      register: node_webui_check
+      register: appliance_webui_check
       retries: 10
       delay: 60
-      until: node_webui_check.status == 200
+      until: appliance_webui_check.status == 200
       when:
-        - false
         - appliance_check.status != 200
         - Deploy.Product.Replication.Deploy
+
+    - name: Delete extracted vSphere Replication ISO directory
+      ansible.builtin.file:
+        path: "{{ isoextractpoint }}"
+        state: absent
+      when: not DEBUG.KeepInstallerFiles
 
     - name: Write annotation on the vSphere Replication Appliance VM
       community.vmware.vmware_guest:
@@ -268,11 +272,6 @@
                     Root Username: {{ Nested_Replication.Credential.root.Name }}
                     Root Password: {{ Nested_Replication.Credential.root.Password }}
       when:
-        - false
         - appliance_check.status != 200
         - Deploy.Product.Replication.Deploy
 
-
-##
-## Delete Extracted ISO files
-##
