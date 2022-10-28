@@ -1723,3 +1723,9 @@
 ### Added by Rutger Blom
   - Replaced a static value in the ```playbooks/ConfigureAlbClouds.yml``` playbook.
   - Renamed playbook to ```playbooks/ConfigureAlbBasicConfig.yml```
+
+## Dev-v6.0.0 28-OCTOBER-2022
+
+### Added by Luis Chanu
+  - Corrected ```Nested_vRLI``` variable references in ```UpdateDNS.yml```, ```CleanupDNS.yml```, and ```Undeploy.yml``` files. (TESTED)
+  - Added vSphere Replication to ```UpdateDNS.yml``` and ```CleanupDNS.yml``` files. (TESTED)
