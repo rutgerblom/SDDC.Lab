@@ -1717,3 +1717,9 @@
   - Updated ```Deploy.yml``` to use new ```playbooks/ConfigureNsxBasicConfig.yml``` file.
   - Added task in ```playbooks/DeployReplication.yml``` to deleted vSphere Replication extracted ISO files. (TESTED)
   - For consistency, updated the Pod's temporary directory deletion task in ```playbooks/ValidateConfiguration.yml``` to use the ```Target.TempFolder``` variable that is used by each of the various playbooks throughout SDDC.Lab.  (TESTED)
+
+## Dev-v6.0.0 28-OCTOBER-2022
+
+### Added by Rutger Blom
+  - Replaced a static value in the ```playbooks/ConfigureAlbClouds.yml``` playbook.
+  - Renamed playbook to ```playbooks/ConfigureAlbBasicConfig.yml```
