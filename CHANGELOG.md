@@ -1732,3 +1732,9 @@
 ### Added by Luis Chanu
   - Corrected ```Nested_vRLI``` variable references in ```UpdateDNS.yml```, ```CleanupDNS.yml```, and ```Undeploy.yml``` files. (TESTED)
   - Added vSphere Replication to ```UpdateDNS.yml``` and ```CleanupDNS.yml``` files. (TESTED)
+
+## Dev-v6.0.0 29-OCTOBER-2022
+
+### Added by Rutger Blom
+  - Added DHCP service to the "ServiceVM" VLAN in the VyOS configuration.
+  - Changed DHCP IP range for the "VMNetwork" and "ServiceVM" VLAN to 200-254 in the VyOS configuration. 
