@@ -143,7 +143,7 @@
       when:
         - Deploy.Product.ALB.Deploy
 
-    - name: Start checking if the ALB Web UI is available on VIP
+    - name: Start checking if the ALB Web UI is available on Cluster VIP
       ansible.builtin.uri:
         url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}
         validate_certs: false
