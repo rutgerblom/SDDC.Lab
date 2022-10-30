@@ -178,6 +178,10 @@
   when: 
     - Deploy.Product.ALB.Deploy
 
+- ansible.builtin.import_playbook: playbooks/ConfigureAlbClouds.yml
+  when: 
+    - Deploy.Product.ALB.Deploy
+
 # Deploy vSphere Replication (Nested)
 - ansible.builtin.import_playbook: playbooks/DeployReplication.yml
   when: 
