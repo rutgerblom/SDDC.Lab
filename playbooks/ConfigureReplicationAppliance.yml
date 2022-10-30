@@ -1,0 +1,350 @@
+##
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: playbooks/ConfigureReplicationAppliance.yml
+##  Description: This playbook performs the initial vSphere Replication Appliance Configuration, which includes:
+##                 a) Registering with vCenter Server
+##                 b) Specifying the Site Name
+##                 c) Specifying the Administrators E-Mail Address
+##                 d) Specifying the Local Host FQDN
+##
+##  vReplication REST API Explorer: <vSphereReplicationApplianceFQDN>/api/rest
+##
+---
+- hosts: localhost
+  name: ConfigureReplicationAppliance.yml
+  tasks:
+    - name: ConfigureReplicationAppliance_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                  vCenter Server FQDN: {{ Nested_vCenter.FQDN }}
+                             vSphere Replication FQDN: {{ Nested_Replication.Component.Appliance.FQDN }}
+
+                                       vSphere Replication Configuration
+                                       ---------------------------------
+                                            Site Name: {{ Nested_Replication.Configuration.SiteName }}
+                       Administrator's E-Mail Address: {{ Nested_Replication.Configuration.Email }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+    - name: Verify vSphere Replication Appliance Web UI is available
+      ansible.builtin.uri:
+        url: https://{{ Nested_Replication.Component.Appliance.FQDN }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 10
+      register: appliance_check
+      retries: 18
+      delay: 10
+      until: appliance_check.status == 200
+      when:
+        - Deploy.Product.Replication.Deploy
+
+    - name: Login to vSphere Replication Appliance to obtain Session ID
+      ansible.builtin.uri:
+        url: https://{{ Nested_Replication.Component.Appliance.FQDN }}/api/rest/configure/v1/session
+        user: "{{ Nested_Replication.Credential.admin.Name }}"
+        password: "{{ Nested_Replication.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        force_basic_auth: true
+        method: POST
+        timeout: 10
+        status_code: 200
+      register: result
+      when:
+        - Deploy.Product.Replication.Deploy
+        - appliance_check.status == 200
+
+    - name: Store vSphere Replication Session ID for later use
+      ansible.builtin.set_fact:
+        session_id: "{{ result.json.session_id }}"
+      when:
+        - Deploy.Product.Replication.Deploy
+        - appliance_check.status == 200
+
+
+##
+## Obtain SSL Thumbprint of PSC & vCenter Servers (Same in SDDC.Lab)
+##
+    - name: Obtain SSL Certificate from vCenter Server
+      community.crypto.get_certificate:
+        host: "{{ Nested_vCenter.FQDN }}"
+        port: 443
+      register: ssl_cert
+
+    - name: Obtain Information about the SSL Certificate
+      community.crypto.x509_certificate_info:
+        content: "{{ ssl_cert.cert }}"
+      register: ssl_cert_info
+
+    - name: Store SSL Certificate SHA256 Thumbprint (WITH colons) for easier use
+      ansible.builtin.set_fact:
+        ssl_thumbprint: "{{ ssl_cert_info.fingerprints['sha256'] }}"
+
+    - name: DEBUG -- Display vCenter Server SSL Certificate Thumbprint (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================== Display 'ssl_thumbprint' ====================================
+
+          SSL Certificate Thumbprint: {{ ssl_thumbprint | default(None) }}
+
+          SSL Certificate Info:
+            {{ ssl_cert_info | to_nice_json(indent=2) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+
+
+
+
+
+    - name: Obtain vCenter Info
+      ansible.builtin.uri:
+        url: https://{{ Nested_Replication.Component.Appliance.FQDN }}/api/rest/configure/v1/appliance/configuration-manager/actions/list-vc-services
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 10
+        method: POST
+        headers:
+          "x-dr-session": "{{ session_id }}"
+        body:
+          {
+            "psc_thumbprint": "{{ ssl_thumbprint }}",
+            "psc_uri": "https://{{ Nested_vCenter.FQDN }}",
+            "service_id": ""
+          }
+        body_format: json
+        status_code: 200
+      register: result
+      when:
+        - false
+        - Deploy.Product.Replication.Deploy
+        - appliance_check.status == 200
+
+
+
+
+
+    - name: DEBUG -- Show Result
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================== Display 'result' ====================================
+
+          result:
+            {{ result | to_nice_json(indent=2) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - false
+        - DEBUG.DisplayVariables
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    - name: Start task to register vSphere Replication Appliance with vCenter Server
+      ansible.builtin.uri:
+        url: https://{{ Nested_Replication.Component.Appliance.FQDN }}/api/rest/configure/v1/appliance/configuration-manager/configuration
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 10
+        method: PUT
+        headers:
+          "x-dr-session": "{{ session_id }}"
+        body:
+          admin_email: "{{ Nested_Replication.Configuration.Email }}"
+          clock_tolerance_seconds: "{{ Nested_Replication.Configuration.ClockToleranceSeconds }}"
+          connection:
+            psc_thumbprint: "{{ ssl_thumbprint }}"
+            psc_uri: "{{ Nested_vCenter.FQDN }}"
+# Unable to obtain read vCenter Server instance ID, so using dummy value.  Both real and dummy end in same result.  Empty causes failure.
+            vc_instance_id: "eebd1d6f-8a77-4ac6-b0bd-3e355bfbd107"
+#            vc_instance_id: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+            vc_thumbprint: "{{ ssl_thumbprint }}"
+          credentials:
+            admin_user: "{{ Nested_vCenter.User }}"
+            admin_password: "{{ Nested_vCenter.Password }}"
+          description: "vSphere Replication plugin for Site {{ Nested_Replication.Configuration.SiteName }}"
+          extension_key: "com.vmware.vcHms"
+          host_name: "{{ Nested_Replication.Component.Appliance.FQDN }}"
+#          local_server_uuid: ''
+          organization: "SDDC.Lab"
+          site_name: "{{ Nested_Replication.Configuration.SiteName }}"
+        body_format: json
+        status_code: 202
+      register: result
+      when:
+        - Deploy.Product.Replication.Deploy
+        - appliance_check.status == 200
+
+
+
+
+
+
+
+
+    - name: DEBUG -- Show Result
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================== Display 'result' ====================================
+
+          result:
+            {{ result | to_nice_json(indent=2) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+
+
+
+
+    - name: Store Task ID
+      ansible.builtin.set_fact:
+        task_id: "{{ result.json.id }}"
+      when:
+        - Deploy.Product.Replication.Deploy
+        - appliance_check.status == 200
+
+
+
+
+
+    - name: DEBUG -- Show task id
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =================================== Display 'task_id' ====================================
+
+          task_id:
+            {{ task_id | to_nice_json(indent=2) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    - name: Get Task ID Status
+      ansible.builtin.uri:
+        url: https://{{ Nested_Replication.Component.Appliance.FQDN }}/api/rest/configure/v1/tasks/{{ task_id }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 10
+        method: GET
+        headers:
+          "x-dr-session": "{{ session_id }}"
+        body_format: json
+        status_code: 200
+      retries: 500
+      delay: 5
+      until: false
+      register: result
+      when:
+        - Deploy.Product.Replication.Deploy
+        - appliance_check.status == 200
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    - name: Logout of vSphere Replication Appliance
+      ansible.builtin.uri:
+        url: https://{{ Nested_Replication.Component.Appliance.FQDN }}/api/rest/configure/v1/session
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        headers:
+          "x-dr-session": "{{ session_id }}"
+        method: DELETE
+        timeout: 10
+        status_code: 204
+      when:
+        - false
+        - Deploy.Product.Replication.Deploy
+        - appliance_check.status == 200
