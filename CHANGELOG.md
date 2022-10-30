@@ -1738,3 +1738,16 @@
 ### Added by Rutger Blom
   - Added DHCP service to the "ServiceVM" VLAN in the VyOS configuration.
   - Changed DHCP IP range for the "VMNetwork" and "ServiceVM" VLAN to 200-254 in the VyOS configuration. 
+
+## Dev-v6.0.0 30-OCTOBER-2022
+
+### Added by Rutger Blom
+  - Added new items to the ```Nested_ALB``` data structure in ```config_sample.yml```.
+  - Added tasks to ```playbooks/ConfigureAlbClouds.yml``` that add and configure an NSX-T Cloud in ALB.
+  - Automated ALB deployment is still work in progress and many items still need to be done. Currently we have code that:
+    - Deploys an ALB Controller, 
+    - Applies basic configuration to this ALB Controller (DNS, NTP, Backup, etc) 
+    - Configures a vSphere Cloud utilizing the ```ServiceVMs``` Port Group for Service Engine Management traffic and the ```Pod-xxx Local Content Library``` for storing and deploying Service Engine images.
+    - Configures an NSX-T Cloud utilizing overlay segments ```SEG-ALB-SE-Management``` for Service Engine Management Traffic and  ```SEG-ALB-SE-Data``` for Service Engine Data traffic. Both these segments attach to the ```T1-Gateway-ALB``` Tier-1 Gateway. ```Pod-xxx Local Content Library``` is used for storing and deploying Service Engines images.
+  - Be sure to update your ```config.yml``` file.
+  
