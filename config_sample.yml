@@ -678,6 +678,7 @@ Nested_vRLI:
 
 
 
+
 ##
 ## ███    ██ ███████ ███████ ████████ ███████ ██████           █████  ██      ██████
 ## ████   ██ ██      ██         ██    ██      ██   ██         ██   ██ ██      ██   ██
@@ -735,6 +736,24 @@ Nested_ALB:
         Configure: true
       NSXT:
         Configure: true
+    CloudResource:
+      ServiceEngineGroup:
+        Cloud:
+          vSphere:
+            BasicSetting:
+              MemoryReserve: false
+            AdvancedSetting:
+              ServiceEngineNamePrefix: Alb          # The name prefix for the Service Engine VMs
+              ServiceEngineFolder: AlbSeFolder      # The nested VM Folder in which the Service Engine VMs will be deployed
+              Cluster: ComputeA                     # The nested vSphere Cluster in which the Service Engine VMs will be deployed
+          NSXT:
+            BasicSetting:
+              MemoryReserve: false
+            AdvancedSetting:
+              ServiceEngineNamePrefix: Alb          # The name prefix for the Service Engine VMs
+              ServiceEngineFolder: AlbSeFolder      # The nested VM Folder in which the SE VMs will be deployed
+              Cluster: ComputeA                     # The nested vSphere Cluster in which the SE VMs will be deployed
+
 
 
 
@@ -2327,6 +2346,31 @@ Nested_NSXT:
                   Types:                                                                        # Types include TIER0_STATIC, TIER0_CONNECTED, TIER0_EXTERNAL_INTERFACE, TIER0_LOOPBACK_INTERFACE, TIER0_SEGMENT, TIER0_ROUTER_LINK, TIER0_SERVICE_INTERFACE, TIER0_DNS_FORWARDER_IP, TIER0_IPSEC_LOCAL_IP, TIER0_NAT, TIER0_EVPN_TEP_IP, TIER1_STATIC, TIER1_NAT, TIER1_LB_VIP, TIER1_LB_SNAT, TIER1_DNS_FORWARDER_IP, TIER1_CONNECTED, TIER1_SERVICE_INTERFACE, TIER1_SEGMENT, TIER1_IPSEC_LOCAL_ENDPOINT
                     - TIER1_CONNECTED
                     - TIER1_SEGMENT
+      - Name:           T1-Gateway-ALB
+        Description:    Tier-1 Gateway for Advanced Load Balancer in SDDC.Lab
+        FailoverMode:   NON_PREEMPTIVE                                                          # Options are "NON_PREEMPTIVE" or "PREEMPTIVE"
+        Tier0Gateway:   T0-Gateway-01
+        PoolAllocation: ROUTING
+        Tags:
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
+        RouteAdvertisementTypes:
+          - TIER1_CONNECTED
+        LocaleServices:
+          - Name:        T1-Gateway-ALB_Locale_Services
+            Description: T1-Gateway-ALB Locale Services Description
+            Tags:
+              - Tag: Auto-Created
+                Scope: SDDC.Lab
+            EdgeCluster:
+              Name: ""
+            RouteRedistributionConfig:
+              BGP_Enabled: true
+              Rules:
+                - Name: Redistribute Connected
+                  Types:                                                                        # Types include TIER0_STATIC, TIER0_CONNECTED, TIER0_EXTERNAL_INTERFACE, TIER0_LOOPBACK_INTERFACE, TIER0_SEGMENT, TIER0_ROUTER_LINK, TIER0_SERVICE_INTERFACE, TIER0_DNS_FORWARDER_IP, TIER0_IPSEC_LOCAL_IP, TIER0_NAT, TIER0_EVPN_TEP_IP, TIER1_STATIC, TIER1_NAT, TIER1_LB_VIP, TIER1_LB_SNAT, TIER1_DNS_FORWARDER_IP, TIER1_CONNECTED, TIER1_SERVICE_INTERFACE, TIER1_SEGMENT, TIER1_IPSEC_LOCAL_ENDPOINT
+                    - TIER1_CONNECTED
+                    - TIER1_SEGMENT
 
     DHCPProfiles:
       - Name: DHCP-Server-Profile                                                               # The first profile is used by the DHCP Local Server to provide IP's to all Overlay Segments
@@ -2493,6 +2537,34 @@ Nested_NSXT:
             Scope: SDDC.Lab
           - Tag: Donald
             Scope: Disney
+      - Name: SEG-ALB-SE-Management
+        AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
+        Description: ALB SE Management Segment
+        TransportZone: TZ-Overlay
+        ReplicationMode: MTEP                                                                   # ReplicationMode can be "MTEP" or "SOURCE"
+        UplinkTeamingPolicy: ""
+        ConnectedTo:
+          Tier: 1
+          GatewayName: T1-Gateway-ALB
+        Subnets:                                                                                # If no subnets are listed below the "Subnets:" entry, then they will be automatically assigned.  Include subnets over-ride automatic assignment.
+        VLANS:
+        Tags:
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
+      - Name: SEG-ALB-SE-Data
+        AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
+        Description: ALB SE Data Segment
+        TransportZone: TZ-Overlay
+        ReplicationMode: MTEP                                                                   # ReplicationMode can be "MTEP" or "SOURCE"
+        UplinkTeamingPolicy: ""
+        ConnectedTo:
+          Tier: 1
+          GatewayName: T1-Gateway-ALB
+        Subnets:                                                                                # If no subnets are listed below the "Subnets:" entry, then they will be automatically assigned.  Include subnets over-ride automatic assignment.
+        VLANS:
+        Tags:
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
 
   System:
     Fabric:
