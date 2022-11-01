@@ -1750,4 +1750,8 @@
     - Configures a vSphere Cloud utilizing the ```ServiceVMs``` Port Group for Service Engine Management traffic and the ```Pod-xxx Local Content Library``` for storing and deploying Service Engine images.
     - Configures an NSX-T Cloud utilizing overlay segments ```SEG-ALB-SE-Management``` for Service Engine Management Traffic and  ```SEG-ALB-SE-Data``` for Service Engine Data traffic. Both these segments attach to the ```T1-Gateway-ALB``` Tier-1 Gateway. ```Pod-xxx Local Content Library``` is used for storing and deploying Service Engines images.
   - Be sure to update your ```config.yml``` file.
-  
+
+## Dev-v6.0.0 01-November-2022
+
+### Added by Rutger Blom
+  - Added tasks to ```playbooks/ConfigureAlbClouds.yml``` that add an IP subnet definition to the ```SEG-ALB-SE-Data``` Network in ALB. Networks in ALB must have a subnet definition before VIPs that should connect to these networks can be created. In the case of the ```SEG-ALB-SE-Data``` Network, IP subnet information is obtained from the NSX-T API which owns and controls the IP subnet configuration of the underlying overlay segment.
