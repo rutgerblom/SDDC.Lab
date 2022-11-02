@@ -229,6 +229,7 @@
             id: "{{ content_library_id }}"
           privilege: WRITE_ACCESS
         vtype: CLOUD_VCENTER
+      register: vsphere_cloud
       when:
         - Deploy.Product.ALB.Deploy
         - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
@@ -290,6 +291,68 @@
         return_content: true
         status_code: 200
       register: se_group_vsphere
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
+
+    - name: Get information on the VMNetwork Port Group via ALB API - vSphere Cloud
+      ansible.builtin.uri:
+        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/network?name=VMNetwork&cloud_uuid={{ vsphere_cloud.obj.uuid }}&fields=uuid
+        validate_certs: false
+        timeout: 15
+        force_basic_auth: true
+        url_username: "{{ Nested_ALB.Credential.admin.Name }}"
+        url_password: "{{ Nested_ALB.Credential.admin.Password }}"
+        headers:
+          X-Avi-Version: "{{ Deploy.Software.ALB.Version }}"
+        method: GET
+        body_format: json
+        return_content: true
+        status_code: 200
+      register: alb_vmnetwork
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
+
+    - name: Save UUID of the VMNetwork Port Group for later use - vSphere Cloud
+      ansible.builtin.set_fact:
+        alb_vmnetwork_uuid: "{{ alb_vmnetwork | community.general.json_query(query) }}"
+      vars:
+        query: "json.results[*].uuid|[0]"
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
+
+    - name: Add Subnet to VMNetwork network via ALB API - vSphere Cloud
+      ansible.builtin.uri:
+        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/network/{{ alb_vmnetwork_uuid }}
+        validate_certs: false
+        timeout: 15
+        force_basic_auth: true
+        url_username: "{{ Nested_ALB.Credential.admin.Name }}"
+        url_password: "{{ Nested_ALB.Credential.admin.Password }}"
+        headers:
+          X-Avi-Version: "{{ Deploy.Software.ALB.Version }}"
+        method: PATCH
+        body_format: json
+        body: |
+          {
+              "add": {
+                  "configured_subnets": [
+                      {
+                          "prefix": {
+                              "ip_addr": {
+                                  "addr": "{{ Net.VMNetwork.IPv4.Network }}.0",
+                                  "type": "V4"
+                              },
+                              "mask": "{{ Net.VMNetwork.IPv4.Prefix }}"
+                          }
+                      }
+                  ]
+              }
+          }
+        return_content: true
+        status_code: 200
       when:
         - Deploy.Product.ALB.Deploy
         - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
@@ -649,7 +712,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Add Subnet to Network "SEG-ALB-SE-Data" via ALB API - NSX-T Cloud
+    - name: Add Subnet to SEG-ALB-SE-Data network via ALB API - NSX-T Cloud
       ansible.builtin.uri:
         url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/network/{{ alb_data_segment_uuid }}
         validate_certs: false
