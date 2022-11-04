@@ -1760,3 +1760,8 @@
 
 ### Added by Rutger Blom
   - Added tasks to ```playbooks/ConfigureAlbClouds.yml``` that add an IP subnet definition to the ```VMNetwork``` Network in ALB. Networks in ALB must have a subnet definition before VIPs that should connect to these networks can be created. In the case of the ```VMNetwork``` Network, IP subnet information is obtained from the Pod configuration which contains IP subnet information of the underlying VLAN.
+
+## Dev-v6.0.0 04-November-2022
+
+### Added by Rutger Blom
+  - Added ALB to ```Undeploy.yml```.
