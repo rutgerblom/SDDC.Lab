@@ -162,13 +162,6 @@
         - Deploy.Product.ALB.Deploy
         - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
 
-    - name: Add delay to allow ALB API to process - vSphere Cloud
-      ansible.builtin.pause:
-        seconds: 10
-      when:
-        - Deploy.Product.ALB.Deploy
-        - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
-
     - name: Get information on Service Engine "Default-Group" via ALB API - vSphere Cloud
       ansible.builtin.uri:
         url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/serviceenginegroup?fields=url&cloud_ref.name={{ SiteCode }}%20vSphere
