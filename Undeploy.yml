@@ -94,6 +94,17 @@
         state: absent
       failed_when: false
 
+    - name: Remove ALB VM
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_ALB.Component.Controller.VMName }}"
+        force: true
+        state: absent
+      failed_when: false
+
     - name: Remove ESXi VMs
       community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
