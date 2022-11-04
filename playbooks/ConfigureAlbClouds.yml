@@ -158,6 +158,29 @@
             id: "{{ content_library_id }}"
           privilege: WRITE_ACCESS
         vtype: CLOUD_VCENTER
+      register: vsphere_cloud
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
+
+    - name: Wait until the ALB API reports that the Cloud is out of the IN_PROGRESS state
+      ansible.builtin.uri:
+        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/cloud/{{ vsphere_cloud.obj.uuid }}/status/
+        validate_certs: false
+        timeout: 15
+        force_basic_auth: true
+        url_username: "{{ Nested_ALB.Credential.admin.Name }}"
+        url_password: "{{ Nested_ALB.Credential.admin.Password }}"
+        headers:
+          X-Avi-Version: "{{ Deploy.Software.ALB.Version }}"
+        method: GET
+        body_format: json
+        return_content: true
+        status_code: 200
+      register: result
+      until: (result.json.state != 'CLOUD_STATE_PLACEMENT_IN_PROGRESS')
+      retries: 6
+      delay: 10
       when:
         - Deploy.Product.ALB.Deploy
         - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
@@ -486,6 +509,28 @@
       when:
         - Deploy.Product.ALB.Deploy
         - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
+
+    - name: Wait until the ALB API reports that the Cloud is in READY state
+      ansible.builtin.uri:
+        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/cloud/{{ nsxt_cloud.obj.uuid }}/status/
+        validate_certs: false
+        timeout: 15
+        force_basic_auth: true
+        url_username: "{{ Nested_ALB.Credential.admin.Name }}"
+        url_password: "{{ Nested_ALB.Credential.admin.Password }}"
+        headers:
+          X-Avi-Version: "{{ Deploy.Software.ALB.Version }}"
+        method: GET
+        body_format: json
+        return_content: true
+        status_code: 200
+      register: result
+      until: (result.json.state == 'CLOUD_STATE_PLACEMENT_READY')
+      retries: 6
+      delay: 10
+      when:
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
