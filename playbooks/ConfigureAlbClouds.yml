@@ -433,7 +433,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Get information on NSX-T Overlay TZ - NSX-T Cloud
+    - name: Get information on NSX-T Transport Zones - NSX-T Cloud
       vmware.ansible_for_nsxt.nsxt_transport_zones_facts:
         hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -446,7 +446,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Save NSX-T Overlay TZ ID for later use - NSX-T Cloud
+    - name: Save NSX-T Overlay Transport Zone ID for later use - NSX-T Cloud
       ansible.builtin.set_fact:
         nsxt_overlaytz_id: "{{ nsxt_tz | community.general.json_query(query) }}"
       vars:
@@ -515,7 +515,7 @@
               "vcenter_url": "{{ Nested_vCenter.FQDN }}"
           }
         return_content: true
-        status_code: [201, 409]
+        status_code: 201
       when:
         - Deploy.Product.ALB.Deploy
         - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
