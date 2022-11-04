@@ -1765,3 +1765,5 @@
 
 ### Added by Rutger Blom
   - Added ALB to ```Undeploy.yml```.
+  - Added ALB API "polling" tasks replacing static delay tasks in ```playbooks/ConfigureAlbClouds.yml```.
+  - Added ASCI art headers to ```playbooks/ConfigureAlbClouds.yml``` to improve readability.
