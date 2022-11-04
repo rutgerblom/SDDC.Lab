@@ -84,9 +84,13 @@
       when:
         - DEBUG.DisplayVariables
 
-##
-## Get vSphere Content Library for ALB
-##
+
+##  ██████  ██       ██████  ██████   █████  ██
+## ██       ██      ██    ██ ██   ██ ██   ██ ██
+## ██   ███ ██      ██    ██ ██████  ███████ ██
+## ██    ██ ██      ██    ██ ██   ██ ██   ██ ██
+##  ██████  ███████  ██████  ██████  ██   ██ ███████
+
 
     - name: Get list of all vSphere Content Library IDs
       community.vmware.vmware_content_library_info:
@@ -121,9 +125,12 @@
         - Deploy.Product.ALB.Deploy
 
 
-##
-## Add and Configure vSphere Cloud in ALB
-##
+## ██    ██ ███████ ██████  ██   ██ ███████ ██████  ███████      ██████ ██       ██████  ██    ██ ██████
+## ██    ██ ██      ██   ██ ██   ██ ██      ██   ██ ██          ██      ██      ██    ██ ██    ██ ██   ██
+## ██    ██ ███████ ██████  ███████ █████   ██████  █████       ██      ██      ██    ██ ██    ██ ██   ██
+##  ██  ██       ██ ██      ██   ██ ██      ██   ██ ██          ██      ██      ██    ██ ██    ██ ██   ██
+##   ████   ███████ ██      ██   ██ ███████ ██   ██ ███████      ██████ ███████  ██████   ██████  ██████
+
 
     - name: Create VM Folder for Service Engines - vSphere Cloud
       community.vmware.vcenter_folder:
@@ -140,7 +147,7 @@
         - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
         - Deploy.Product.NSXT.LocalManager.Deploy
 
-    - name: Add a vSphere Cloud
+    - name: Add a vSphere Cloud - vSphere Cloud
       vmware.alb.avi_cloud:
         avi_credentials: "{{ avi_credentials }}"
         state: present
@@ -163,7 +170,7 @@
         - Deploy.Product.ALB.Deploy
         - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
 
-    - name: Wait until the ALB API reports that the Cloud is out of the IN_PROGRESS state
+    - name: Wait until the ALB API reports that the Cloud is out of the IN_PROGRESS state - vSphere Cloud
       ansible.builtin.uri:
         url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/cloud/{{ vsphere_cloud.obj.uuid }}/status/
         validate_certs: false
@@ -389,9 +396,12 @@
         - Nested_ALB.Infrastructure.Cloud.vSphere.Configure
 
 
-##
-## Add and Configure NSX-T Cloud in ALB
-##
+## ███    ██ ███████ ██   ██       ████████      ██████ ██       ██████  ██    ██ ██████
+## ████   ██ ██       ██ ██           ██        ██      ██      ██    ██ ██    ██ ██   ██
+## ██ ██  ██ ███████   ███   █████    ██        ██      ██      ██    ██ ██    ██ ██   ██
+## ██  ██ ██      ██  ██ ██           ██        ██      ██      ██    ██ ██    ██ ██   ██
+## ██   ████ ███████ ██   ██          ██         ██████ ███████  ██████   ██████  ██████
+
 
     - name: Add vCenter User Credentials - NSX-T Cloud
       vmware.alb.avi_cloudconnectoruser:
@@ -447,7 +457,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Add NSX-T Cloud
+    - name: Add NSX-T Cloud - NSX-T Cloud
       vmware.alb.avi_cloud:
         avi_credentials: "{{ avi_credentials }}"
         state: present
@@ -512,7 +522,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Wait until the ALB API reports that the Cloud is in READY state
+    - name: Wait until the ALB API reports that the Cloud is in READY state - NSX-T Cloud
       ansible.builtin.uri:
         url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/cloud/{{ nsxt_cloud.obj.uuid }}/status/
         validate_certs: false
