@@ -58,13 +58,28 @@
         prompt: |
           ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
-                                     Ansible Playbook: {{ ansible_play_name }}
+                                                       Ansible Playbook: {{ ansible_play_name }}
 
-                                          ALB Version: {{ Deploy.Software.ALB.Version }}
-                              ALB Controller VIP FQDN: {{ Nested_ALB.Component.Controller_VIP.FQDN }}
-                                       ALB Admin User: {{ Nested_ALB.Credential.admin.Name }}
-                                   ALB Admin Password: {{ Nested_ALB.Credential.admin.Password }}
+                                                            ALB Version: {{ Deploy.Software.ALB.Version }}
+                                                ALB Controller VIP FQDN: {{ Nested_ALB.Component.Controller_VIP.FQDN }}
+                                                         ALB Admin User: {{ Nested_ALB.Credential.admin.Name }}
+                                                     ALB Admin Password: {{ Nested_ALB.Credential.admin.Password }}
 
+                                                    Nested vCenter FQDN: {{ Nested_vCenter.FQDN | lower }}
+                                         Content Library for ALB SE VMs: {{ Nested_vCenter.ContentLibrary.Local.Name }}
+                         vSphere Cluster for ALB SE VMs (vSphere Cloud): {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.vSphere.AdvancedSetting.Cluster }}
+                               VM Folder for ALB SE VMs (vSphere Cloud): {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.vSphere.AdvancedSetting.ServiceEngineFolder }}
+                       Management Port Group ALB SE VMs (vSphere Cloud): {{ Nested_vCenter.Networking.vSwitch.PortGroup.ServiceVMs.Name }}
+                                  ALB SE VM Name Prefix (vSphere Cloud): {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.vSphere.AdvancedSetting.ServiceEngineNamePrefix }}
+                               ALB SE VM Memory Reserve (vSphere Cloud): {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.vSphere.BasicSetting.MemoryReserve }}
+
+                           vSphere Cluster for ALB SE VMs (NSX-T Cloud): {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.Cluster }}
+                                 VM Folder for ALB SE VMs (NSX-T Cloud): {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.ServiceEngineFolder }}
+                             Management Port Group ALB SE (NSX-T Cloud): SEG-ALB-SE-Management
+                                   Data Port Group ALB SE (NSX-T Cloud): SEG-ALB-SE-Data
+                       Tier-1 Gateway ALB: T1-Gateway-ALB (NSX-T Cloud): T1-Gateway-ALB
+                                     ALB SE VM Name Prefix (NSXT Cloud): {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.ServiceEngineNamePrefix }}
+                                  ALB SE VM Memory Reserve (NSXT Cloud): {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.BasicSetting.MemoryReserve }}
           =================================================================================================
       when:
         - DEBUG.DisplayVariables
