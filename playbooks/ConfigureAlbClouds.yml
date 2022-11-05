@@ -491,7 +491,28 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Add vCenter Server via ALB API - NSX-T Cloud
+    - name: Check if a vCenter Server is already configured via ALB API - NSX-T Cloud
+      ansible.builtin.uri:
+        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/vcenterserver
+        validate_certs: false
+        timeout: 15
+        force_basic_auth: true
+        url_username: "{{ Nested_ALB.Credential.admin.Name }}"
+        url_password: "{{ Nested_ALB.Credential.admin.Password }}"
+        headers:
+          X-Avi-Version: "{{ Deploy.Software.ALB.Version }}"
+        method: GET
+        body_format: json
+        return_content: true
+        status_code: 200
+      register: vcenter_config_status
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
+
+    - name: Add vCenter Server if via ALB API - NSX-T Cloud
       ansible.builtin.uri:
         url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/vcenterserver
         validate_certs: false
@@ -517,6 +538,7 @@
         return_content: true
         status_code: 201
       when:
+        - (vcenter_config_status.json.count | default(1)) == 0
         - Deploy.Product.ALB.Deploy
         - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
         - Deploy.Product.NSXT.LocalManager.Deploy
