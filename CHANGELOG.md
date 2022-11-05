@@ -1767,3 +1767,8 @@
   - Added ALB to ```Undeploy.yml```.
   - Added ALB API "polling" tasks replacing static delay tasks in ```playbooks/ConfigureAlbClouds.yml```.
   - Added ASCI art headers to ```playbooks/ConfigureAlbClouds.yml``` to improve readability.
+
+## Dev-v6.0.0 05-November-2022
+
+### Added by Rutger Blom
+  - Added a task to ```playbooks/ConfigureAlbClouds.yml``` that checks whether a vCenter Server is already configured for the NSX-T Cloud. The result is used as a conditional on the task that configures the vCenter Server for the NSX-T Cloud. This "check" task is needed to keep the playbook idempotent.
