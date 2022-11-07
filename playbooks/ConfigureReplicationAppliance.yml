@@ -72,6 +72,22 @@
       when:
         - DEBUG.DisplayVariables
 
+
+
+
+    - name: NOTICE -- Not Production Ready (Pause)
+      ansible.builtin.pause:
+        seconds: 30
+        prompt: |
+          ============================================ NOTICE ============================================
+
+            This playbook is still being developed.  It is not ready for use in the deployment of a lab.
+
+          =================================================================================================
+
+
+
+
     - name: Verify vSphere Replication Appliance Web UI is available
       ansible.builtin.uri:
         url: https://{{ Nested_Replication.Component.Appliance.FQDN }}
@@ -156,20 +172,14 @@
         body:
           {
             "psc_thumbprint": "{{ ssl_thumbprint }}",
-            "psc_uri": "https://{{ Nested_vCenter.FQDN }}",
-            "service_id": ""
+            "psc_uri": "{{ Nested_vCenter.FQDN }}"
           }
         body_format: json
         status_code: 200
       register: result
       when:
-        - false
         - Deploy.Product.Replication.Deploy
         - appliance_check.status == 200
-
-
-
-
 
     - name: DEBUG -- Show Result
       ansible.builtin.pause:
@@ -182,8 +192,46 @@
 
           =================================================================================================
       when:
-        - false
         - DEBUG.DisplayVariables
+
+
+##
+## 'result' above does include the service_id...  Need to use json query to extract the correct one for our Pod.
+##
+
+# result:
+#   {
+#     "json": 
+#       "list": [
+#         {
+#           "node_id": "9e25cbe1-af89-47f8-bb0c-3b4edbdc9370",
+#           "product_version": "7.0",
+#           "service_id": "eebd1d6f-8a77-4ac6-b0bd-3e355bfbd107",
+#           "url": "https://Pod-010-vCenter.SDDC.Lab:443/sdk"
+#         },
+#         {
+#           "node_id": "a1599eac-11a9-4634-8eda-f86b32ccd9cb",
+#           "product_version": "7.0",
+#           "service_id": "a09c19b5-b7d9-4a08-810f-3a95e5fca6f2",
+#           "url": "https://Pod-020-vCenter.SDDC.Lab:443/sdk"
+#         }
+#       ]
+#     },
+#     "msg": "OK (587 bytes)",
+#     "redirected": false,
+#     "server": "envoy",
+#     "status": 200,
+#     "strict_transport_security": "max-age=31536000;includeSubDomains",
+#     "url": "https://Pod-010-Replication-Appliance.SDDC.Lab/api/rest/configure/v1/appliance/configuration-manager/actions/list-vc-services",
+#     "x_content_type_options": "nosniff",
+#     "x_dr_opid": "224bb085-7a95-430c-a2fa-fb3343c8ef71",
+#     "x_envoy_upstream_service_time": "123",
+#     "x_frame_options": "DENY",
+#     "x_xss_protection": "1; mode=block"
+#   }
+
+
+
 
 
 
