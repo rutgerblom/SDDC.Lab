@@ -84,7 +84,7 @@
 
     - name: Get all NSX-T Node Profiles
       ansible.builtin.uri:
-        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/configs/central-config/node-config-profiles
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/configs/central-config/node-config-profiles/
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
         validate_certs: false
