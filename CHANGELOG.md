@@ -1772,3 +1772,10 @@
 
 ### Added by Rutger Blom
   - Added a task to ```playbooks/ConfigureAlbClouds.yml``` that checks whether a vCenter Server is already configured for the NSX-T Cloud. The result is used as a conditional on the task that configures the vCenter Server for the NSX-T Cloud. This "check" task is needed to keep the playbook idempotent.
+
+## Dev-v6.0.0 25-November-2022
+
+### Added by Rutger Blom
+  - Removed tasks from ```playbooks/ConfigureAlbClouds.yml``` that add an IP subnet definition to the ```SEG-ALB-SE-Data``` Network in ALB. NSX-T Overlay networks in ALB do not require a subnet definition.
+  - Updated defaults for ```ServiceEngineNamePrefix``` and ```ServiceEngineFolder``` in ```config_sample.yml```.
+  - Be sure to update your ```config.yml``` file.
