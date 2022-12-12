@@ -1779,3 +1779,8 @@
   - Removed tasks from ```playbooks/ConfigureAlbClouds.yml``` that add an IP subnet definition to the ```SEG-ALB-SE-Data``` Network in ALB. NSX-T Overlay networks in ALB do not require a subnet definition.
   - Updated defaults for ```ServiceEngineNamePrefix``` and ```ServiceEngineFolder``` in ```config_sample.yml```.
   - Be sure to update your ```config.yml``` file.
+
+## Dev-v6.0.0 12-December-2022
+
+### Added by Luis Chanu
+  - Added vCenter Server v7.0 Update 3I to ```software_sample.yml``` and ```templates_sample.yml``` files.  (NOT TESTED)
