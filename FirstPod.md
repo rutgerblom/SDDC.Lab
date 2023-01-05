@@ -20,6 +20,7 @@
 * [Create your software library](#create-your-software-library)
 * [Generate your Pod configuration](#generate-your-pod-configuration)
 * [Start your Pod deployment](#start-your-pod-deployment)
+* [Import SDDC.Lab default credentials](#import-sddclab-default-credentials)
 * [Access your Pod's components](#access-your-pods-components)
 
 ## Configure your physical network
@@ -307,6 +308,9 @@ Finally, it's time to deploy the newly created static configuration file.  In or
 
 * ```cd ~/git/SDDC.Lab```
 * ```ansible-playbook -e "@~/Pod-<SiteCode>-Config_VCSAv<Version>_ESXIv<Version>_NSXTv<Version>_Fed-N.yml" Deploy.yml```
+
+## Import SDDC.Lab default credentials
+To expedite and simplify access to your Pod, it's suggested that you import the SDDC.Lab default credentials into your browser.  For instructions on how to accomplish this, please see the ```SDDC.Lab Default Credentials``` section in the [README.md](README.md) file.
 
 ## Access your Pod's components
 

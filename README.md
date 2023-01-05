@@ -16,6 +16,7 @@
 * [Upgrade Considerations](#upgrade-considerations)
 * [Networking](#networking)
 * [IP Address Assignments](#ip-address-assignments)
+* [SDDC.Lab Default Credentials](#sddclab-default-credentials)
 * [Usage](#usage)
 * [Project Features](#project-features)
   * [NSX-T Federation](#nsx-t-federation-v4)
@@ -293,6 +294,13 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 253 | EdgeVM-02 | NSX-T Tier-0 Edge Transport Node 2 | Pod-240-T0-EdgeVM-02 | Yes |
 | 254 | EdgeVM-01 | NSX-T Tier-0 Edge Transport Node 1 | Pod-240-T0-EdgeVM-01 | Yes |
 
+## SDDC.Lab Default Credentials
+To expedite and simplify the login process to the various products within a Pod, we have put together a CSV file with all the default credentials for each of the products supported.  The CSV file can be used to populate the "memorized" username/password fields, and are browser specific.
+
+### Mozilla Firefox
+By default, the importing of passwords into Firefox is disabled, so you must enable this functionality before Firefox will present you with an ```Import from file...``` option.  Detailed instructions on how to enable this functionality can be found in [this blog post by Wolfgang Sommergut](https://4sysops.com/archives/export-and-import-passwords-in-firefox/).  After importing the CSV file, don't forget to go back and disable this functionality.
+
+The Mozilla Firefox specific CSV file is [SDDCLab_Credentials_for_Firefox.csv](misc/SDDCLab_Credentials_for_Firefox.csv).
 
 ## Usage
 
