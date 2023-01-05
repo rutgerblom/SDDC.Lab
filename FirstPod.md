@@ -10,19 +10,19 @@
 # Deploying your first SDDC.Lab Pod
 
 ## Table of Contents
-* [Configure your physical network](#Configure-your-physical-network)
-* [Configure your physical ESXi host](#Configure-your-physical-ESXi-host)
-* [Install your Ansible Controller](#Install-your-Ansible-Controller)
-* [Prepare your Pod configuration files](#Prepare-your-Pod-configuration-files)
+* [Configure your physical network](#configure-your-physical-network)
+* [Configure your physical ESXi host](#configure-your-physical-esxi-hosts)
+* [Install your Ansible Controller](#install-your-ansible-controller)
+* [Prepare your Pod configuration files](#prepare-your-pod-configuration-files)
   * [config.yml](#configyml)
   * [licenses.yml](#licensesyml)
   * [software.yml](#softwareyml)
-* [Create your software library](#Create-your-software-library)
-* [Generate your Pod configuration](#Generate-your-Pod-configuration)
-* [Start your Pod deployment](#Start-your-Pod-deployment)
-* [Access your Pod's components](#Access-your-Pod's-components)
+* [Create your software library](#create-your-software-library)
+* [Generate your Pod configuration](#generate-your-pod-configuration)
+* [Start your Pod deployment](#start-your-pod-deployment)
+* [Access your Pod's components](#access-your-pods-components)
 
-## Configure your network
+## Configure your physical network
 For detailed information regarding the Pod networking, please see the [README](README.md) file.
 
 As setting up the physical networking is one area where many of our users run into issues, we are providing a sample configuration from a working environment.  The configuration is provided "as-is", without any support, warranty, or guarantees.  The configuration may require additional modifications for your environment.
