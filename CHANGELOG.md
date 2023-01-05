@@ -1790,3 +1790,4 @@
 ### Added by Luis Chanu
   - To simplify authentication to SDDC.Lab Pods, added ```SDDCLab_Credentials_for_Firefox.csv``` file to ```misc``` folder.  This file contains the default URLs, usernames, and passwords for the various components that are deployed with each lab.  This file is for Firefox, and other browsers may be added in the future.  Import this file into Firefox to populate the Passwords within Firefox.
   - Added instructions to ```README.md``` and ```FirstPod.md``` files.
+  - Added vCenter Server versions 7.0U3J and 8.00a to ```software_sample.yml``` and ```templates_sample.yml``` files.  (NOT TESTED)
