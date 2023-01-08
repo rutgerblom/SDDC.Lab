@@ -1796,3 +1796,8 @@
 
 ### Added by Luis Chanu
   - Updated ALB ```Config``` and ```Installer``` variables in ```config_sample.yml``` to reference ALB instead of AVI within it's filename.
+
+## Dev-v6.0.0 08-January-2023
+
+### Added by Luis Chanu
+  - Removed duplicate ```playbooks/ConfigureAlbClouds.yml``` entry from Deploy.yml.
