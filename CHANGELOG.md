@@ -1801,3 +1801,8 @@
 
 ### Added by Luis Chanu
   - Removed duplicate ```playbooks/ConfigureAlbClouds.yml``` entry from Deploy.yml.
+
+## Dev-v6.0.0 09-January-2023
+
+### Added by Luis Chanu
+  - Corrected ALB password entries in ```misc/SDDCLab_Credentials_for_Firefox.csv``` file.
