@@ -1,3 +1,15 @@
+Example on how to delegate "gslb.sddc.lab" domain to DNS servers 10.203.19.12 and 10.203.29.12 using 'nsupdate':
+
+# nsupdate
+> server 10.203.0.5
+> update add gslb.sddc.lab. 3600 NS 10.203.19.12
+> send
+> update add gslb.sddc.lab. 3600 NS 10.203.29.12
+> send
+> quit
+
+
+
 Example on how to add 'A' and 'PTR' records to DNS using 'nsupdate':
 
 # nsupdate
