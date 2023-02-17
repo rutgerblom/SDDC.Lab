@@ -1806,3 +1806,13 @@
 
 ### Added by Luis Chanu
   - Corrected ALB password entries in ```misc/SDDCLab_Credentials_for_Firefox.csv``` file.
+
+## Dev-v6.0.0 17-February-2023
+
+### Added by Luis Chanu
+  - All newly added software has NOT yet been tested.
+  - Added the following updates to the software repository:
+    - ESXi v8.00B
+    - vCenter Server v8.00B
+    - vRealize Log Insight v8.10.2
+  - Updated ```software_sample.yml``` and ```templates_sample.yml``` with updated ESXi and vCenter references.  (NOT TESTED)
