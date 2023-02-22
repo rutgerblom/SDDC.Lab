@@ -1816,3 +1816,8 @@
     - vCenter Server v8.00B
     - vRealize Log Insight v8.10.2
   - Updated ```software_sample.yml``` and ```templates_sample.yml``` with updated ESXi and vCenter references.  (NOT TESTED)
+
+## Dev-v6.0.0 22-February-2023
+
+### Added by Luis Chanu
+  - Added YYYYMMDD date to prepared/static Pod configuration filename.
