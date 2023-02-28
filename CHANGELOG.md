@@ -1821,3 +1821,9 @@
 
 ### Added by Luis Chanu
   - Added YYYYMMDD date to prepared/static Pod configuration filename.
+
+## Dev-v6.0.0 27-February-2023
+
+### Added by Luis Chanu
+  - Added vSphere Replication v8.6.0.1 to ```software_sample.yml```.
+  - vSphere Replication is still NOT functional/supported by SDDC.Lab.
