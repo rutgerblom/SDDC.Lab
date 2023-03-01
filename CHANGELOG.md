@@ -1831,4 +1831,5 @@
 ## Dev-v6.0.0 28-February-2023
 
 ### Added by Luis Chanu
-  - Added NSX v4.1.0.0 to ```software_sample.yml```. (UNTESTED)
+  - Added NSX v4.1.0.0 to ```software_sample.yml```. (TESTED)
+  - NSX Federation now works with NSX v4.1.0.0, so updated Federation section of the ```README.md```.
