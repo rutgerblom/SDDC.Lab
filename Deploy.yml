@@ -205,3 +205,6 @@
     - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable
     - not Deploy.Product.NSXT.Federation.Enable or (Deploy.Product.NSXT.Federation.Enable and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
     - Deploy.Product.NSXT.LocalManager.Deploy
+
+# Create DRS VM-VM Affinity Rule for deployed Pod VMs (This should be the last playbook within deploy.yml)
+- ansible.builtin.import_playbook: playbooks/CreateDrsVmRules.yml
