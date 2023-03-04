@@ -1840,3 +1840,16 @@
   - Updated the ```README.md``` file
     - Updated the *temp* path in the documentation to use the correct path, as it was updated since the documentaton was originally written.
     - Added "Known Items" entry regarding licensing when Enhanced Link Mode (ELM) is configured.
+
+## Dev-v6.0.0 4-March-2023
+
+### Added by Luis Chanu
+  - Created new ```CreateDrsVmRules.yml``` playbook which creates a DRS VM-VM Rule at the end of the Pod deployment.
+  - Added ```CreateDrsVmRules.yml``` playbook to the end of ```Deploy.yml``` playbook
+  - Added task in ```Undeploy.yml``` playbook to delete DRS VM-VM rule
+  - The following changes were made to ```config_sample.yml```:
+    - Added ```Deploy.DRS```section to support new DRS VM Rule functionality
+    - Updated ```Nested_Replication``` section
+    - Changed default software versions of ESXi, vCenter Server, NSX, and vRLI to latest tested versions
+  - Added new ```Deploy.DRS``` variables to ```templates/Pod_Config.j2```
+  - Be sure to update your ```config.yml``` file(s).

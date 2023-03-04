@@ -264,6 +264,21 @@
         - Target.Deployment == "vCenter"
 
 ##
+## Delete DRS VM-VM Affinity Rule
+##
+    - name: Delete DRS VM-VM affinity rule
+      community.vmware.vmware_vm_vm_drs_rule:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        cluster_name: "{{ Target.Cluster }}"
+        drs_rule_name: "{{ Deploy.DRS.VMRules.Name }}"
+        validate_certs: false
+        state: absent
+
+
+
+##
 ## Cleanup Ansible Control Station
 ##
 

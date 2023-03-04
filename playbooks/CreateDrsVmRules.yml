@@ -1,0 +1,139 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/CreateDrsVmRules.yml
+##    Purpose: This Ansbile playbook creates a DRS VM-VM Affinity Rule containing the Pod's VMs on the physical
+##             vCenter Server.  The purpose of creating this rule is to keep the Pod VMs together on the same
+##             ESXi host in a vSphere cluster which has multiple ESXi hosts.  Doing this maximizes performance
+##             by keeping all intra-Pod VM-to-VM communication within a single physical ESXi host.
+##
+---
+- hosts: localhost
+  name: CreateDrsVmRules.yml
+  tasks:
+    - name: CreateDrsVmRules_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+
+                            Deploy.DRS.VMRules.Enable: {{ Deploy.DRS.VMRules.Enable }}
+                              Deploy.DRS.VMRules.Name: {{ Deploy.DRS.VMRules.Name }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+
+    - name: Obtain Pod VMs in a VMFolder
+      community.vmware.vmware_vm_info:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        folder: "/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}"
+        vm_type: "vm"
+        validate_certs: false
+      register: result
+      when: Deploy.DRS.VMRules.Enable
+
+    - name: DEBUG -- Display VMs in VMFolder (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ======= Display VMs in VMFolder: /{{ Target.DataCenter }}/vm/{{ Target.VMFolder }} ============
+          result:
+            {{ result | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+        - Deploy.DRS.VMRules.Enable
+
+    - name: Create list containing only Pod VM names
+      ansible.builtin.set_fact:
+        pod_vms: "{{ (pod_vms | default([])) + [item.guest_name] }}"
+      loop: "{{ result.virtual_machines | default([]) }}"
+      when: Deploy.DRS.VMRules.Enable
+
+    - name: DEBUG -- Display 'pod_vms' (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ==================================== Display List Of Pod VMs ====================================
+          pod_vms:
+            {{ pod_vms | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+        - Deploy.DRS.VMRules.Enable
+
+    - name: Delete existing DRS VM-VM affinity rule
+      community.vmware.vmware_vm_vm_drs_rule:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        cluster_name: "{{ Target.Cluster }}"
+        drs_rule_name: "{{ Deploy.DRS.VMRules.Name }}"
+        validate_certs: false
+        state: absent
+      when: Deploy.DRS.VMRules.Enable
+
+    - name: Create DRS VM-VM affinity rule
+      community.vmware.vmware_vm_vm_drs_rule:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        cluster_name: "{{ Target.Cluster }}"
+        drs_rule_name: "{{ Deploy.DRS.VMRules.Name }}"
+        vms: "{{ pod_vms }}"
+        affinity_rule: true
+        enabled: true
+        validate_certs: false
+        state: present
+      when: Deploy.DRS.VMRules.Enable
