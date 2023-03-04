@@ -1833,3 +1833,10 @@
 ### Added by Luis Chanu
   - Added NSX v4.1.0.0 to ```software_sample.yml```. (TESTED)
   - NSX Federation now works with NSX v4.1.0.0, so updated Federation section of the ```README.md```.
+
+## Dev-v6.0.0 3-March-2023
+
+### Added by Luis Chanu
+  - Updated the ```README.md``` file
+    - Updated the *temp* path in the documentation to use the correct path, as it was updated since the documentaton was originally written.
+    - Added "Known Items" entry regarding licensing when Enhanced Link Mode (ELM) is configured.
