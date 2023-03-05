@@ -1,0 +1,29 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: tests/TestNone.yml
+##
+---
+- hosts: localhost
+  vars:
+    - Replication:
+
+  tasks:
+    - name: Output Replication value
+      debug:
+        var: Replication
+
+    - name: Check if Replication is TRUE
+      debug:
+        msg: "Replication is TRUE"
+      when: Replication == true
+
+    - name: Check if Replication is FALSE
+      debug:
+        msg: "Replication is FALSE"
+      when: Replication == false
+
+    - name: Check if Replication is None
+      debug:
+        msg: "Replication is None"
+      when: Replication == None

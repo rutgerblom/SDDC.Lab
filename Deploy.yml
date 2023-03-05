@@ -40,7 +40,7 @@
 - name: Verify Replication Partner vCenter Server is ready
   ansible.builtin.import_playbook: playbooks/CheckVcReplicationPartner.yml
   when:
-    - Nested_vCenter.SSO.ReplicationPartner != ""
+    - Nested_vCenter.SSO.ReplicationPartner != None
 
 - ansible.builtin.import_playbook: playbooks/DeployVc.yml
 - ansible.builtin.import_playbook: playbooks/ConfigureNestedEsxi.yml

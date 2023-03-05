@@ -91,7 +91,7 @@
       retries: 120
       delay: 60
       when:
-        - Nested_vCenter.SSO.ReplicationPartner != ""
+        - Nested_vCenter.SSO.ReplicationPartner != None
 
     - name: DEBUG -- Display result from Replication Partner vCenter Server authentication
       ansible.builtin.pause:
@@ -107,13 +107,13 @@
       when:
         - DEBUG.DisplayVariables
         - vcenter_auth_result is defined
-        - Nested_vCenter.SSO.ReplicationPartner != ""
+        - Nested_vCenter.SSO.ReplicationPartner != None
 
     - name: Store Replication Partner vCenter Session ID for later use
       ansible.builtin.set_fact:
         vcenter_sessionid: "{{ vcenter_auth_result.json.value | default(None) }}"
       when:
-        - Nested_vCenter.SSO.ReplicationPartner != ""
+        - Nested_vCenter.SSO.ReplicationPartner != None
 
     - name: DEBUG -- Display Replication Partner vcenter_sessionid
       ansible.builtin.pause:
@@ -129,7 +129,7 @@
       when:
         - DEBUG.DisplayVariables
         - vcenter_sessionid is defined
-        - Nested_vCenter.SSO.ReplicationPartner != ""
+        - Nested_vCenter.SSO.ReplicationPartner != None
 
 ##
 ## Get Add vSphere Cluster's Member Servers to the vDS
@@ -154,7 +154,7 @@
       delay: 60
       when:
         - vcenter_sessionid is defined
-        - Nested_vCenter.SSO.ReplicationPartner != ""
+        - Nested_vCenter.SSO.ReplicationPartner != None
 
     - name: DEBUG -- Display Replication Partner vCenter Server health information
       ansible.builtin.pause:
@@ -170,7 +170,7 @@
       when:
         - DEBUG.DisplayVariables
         - health_result is defined
-        - Nested_vCenter.SSO.ReplicationPartner != ""
+        - Nested_vCenter.SSO.ReplicationPartner != None
 
 
 ##
@@ -187,4 +187,4 @@
         status_code: 200
       when:
         - vcenter_sessionid is defined
-        - Nested_vCenter.SSO.ReplicationPartner != ""
+        - Nested_vCenter.SSO.ReplicationPartner != None

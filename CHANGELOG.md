@@ -1853,3 +1853,11 @@
     - Changed default software versions of ESXi, vCenter Server, NSX, and vRLI to latest tested versions
   - Added new ```Deploy.DRS``` variables to ```templates/Pod_Config.j2```
   - Be sure to update your ```config.yml``` file(s).
+
+## Dev-v6.0.0 5-March-2023
+
+### Added by Luis Chanu
+  - Aligned Target variable with other variables
+  - Modified ```Nested_vCenter.SSO.ReplicationPartner``` variable in ```config_sample.yml``` from "" (empty quotes) to undefined if no replication partner is being used.
+  - Modified several playbooks to support the ```Nested_vCenter.SSO.ReplicationPartner``` change.
+  - Be sure to update your ```config.yml``` file(s).
