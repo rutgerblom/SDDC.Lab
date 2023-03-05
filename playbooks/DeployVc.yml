@@ -102,7 +102,7 @@
       when:
         - vcenter_check.status != 200
         - Target.Deployment == "Host"
-        - Nested_vCenter.SSO.ReplicationPartner == ""
+        - Nested_vCenter.SSO.ReplicationPartner == None
 
     - name: Create vCenter with embedded PSC installation template (Target=vCenter) - No Replication Partner
       ansible.builtin.template:
@@ -112,7 +112,7 @@
       when:
         - vcenter_check.status != 200
         - Target.Deployment == "vCenter"
-        - Nested_vCenter.SSO.ReplicationPartner == ""
+        - Nested_vCenter.SSO.ReplicationPartner == None
 
     - name: Create vCenter with embedded PSC installation template (Target=Host) - With Replication Partner
       ansible.builtin.template:
@@ -122,7 +122,7 @@
       when:
         - vcenter_check.status != 200
         - Target.Deployment == "Host"
-        - Nested_vCenter.SSO.ReplicationPartner != ""
+        - Nested_vCenter.SSO.ReplicationPartner != None
 
     - name: Create vCenter with embedded PSC installation template (Target=vCenter) - With Replication Partner
       ansible.builtin.template:
@@ -132,7 +132,7 @@
       when:
         - vcenter_check.status != 200
         - Target.Deployment == "vCenter"
-        - Nested_vCenter.SSO.ReplicationPartner != ""
+        - Nested_vCenter.SSO.ReplicationPartner != None
 
     - name: Extract vCenter ISO
       ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.vCenter.Directory }}/{{ Deploy.Software.vCenter.File }} -extract / \

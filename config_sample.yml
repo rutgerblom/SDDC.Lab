@@ -328,7 +328,7 @@ Target:
   TempFolder:     "{{ TargetConfig[TargetConfig.Deployment].TempFolder }}"
   TemplateFolder: "{{ TargetConfig[TargetConfig.Deployment].TemplateFolder }}"
   PortGroup:
-    Uplink: "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].Uplink }}"
+    Uplink:       "{{ TargetConfig[TargetConfig.Deployment]['PortGroup'].Uplink }}"
     Management:
       Name:       "{{ TargetConfig[TargetConfig.Deployment]['PortGroup']['Management'].Name }}"
       VLAN:       "{{ TargetConfig[TargetConfig.Deployment]['PortGroup']['Management'].VLAN }}"
@@ -1865,7 +1865,7 @@ Nested_vCenter:
   SSO:
     Domain: vsphere.local
     Site: "{{ SiteCode }}-Site"
-    ReplicationPartner: ""                                                              # If replication partner FQDN is provided, the Replication template will be used to configure vCenter.  Else, field should be left as an empty string ("").
+    ReplicationPartner:                                                                 # If replication partner FQDN is provided, the Replication template will be used to configure vCenter.  Else, if no replication partner, field must be left empty.
   DataCenter: "{{ SiteCode }}-DataCenter"
   ContentLibrary:
     Local:
