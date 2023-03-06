@@ -398,7 +398,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-      failed_when: false
+      ignore_errors: true
       register: host_facts
       when:
         - Target.Deployment == "Host"
@@ -435,7 +435,7 @@
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-      failed_when: false
+      ignore_errors: true
       register: vcenter_facts
       when:
         - Target.Deployment == "vCenter"

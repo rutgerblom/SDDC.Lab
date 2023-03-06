@@ -158,8 +158,8 @@
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         license: "{{ item.KeyCode }}"
         state: present
-      loop: "{{ License.VMware.Tanzu.Licenses }}"
-      failed_when: false # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
+      loop: "{{ License.VMware.Tanzu.Licenses | default([]) }}"
+      ignore_errors: true                                       # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
       no_log: true
       when:
         - tanzu_supervisor is defined

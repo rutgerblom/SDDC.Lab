@@ -130,7 +130,7 @@
         license_key: "{{ item.KeyCode }}"
         state: present
       loop: "{{ License.VMware.NSXT.Licenses | default([]) }}"
-      failed_when: false    # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
+      ignore_errors: true                                       # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
       no_log: true
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy

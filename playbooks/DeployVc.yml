@@ -92,7 +92,7 @@
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
       register: vcenter_check
-      failed_when: false
+      ignore_errors: true
 
     - name: Create vCenter with embedded PSC installation template (Target=Host) - No Replication Partner
       ansible.builtin.template:

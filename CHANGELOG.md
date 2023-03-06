@@ -1863,3 +1863,9 @@
   - Modified ```License_vSphere.yml``` playbook to install all ESXi and vSAN licenses in vCenter Server when a Pod has ```Nested_vCenter.SSO.ReplicationPartner``` configured.
   - Updated ```README.md``` file to explain how all ESXi and vSAN licenses are added to vCenter Server when ```Nested_vCenter.SSO.ReplicationPartner``` (Enhanced Link MOde) is configured.
   - Be sure to update your ```config.yml``` file(s).
+
+## Dev-v6.0.0 6-March-2023
+
+### Added by Luis Chanu
+  - Reverted lint changes back to original settings by changing all ```failed_when: false``` references to ```ignore_errors: true```.
+  - Removed duplicate ```ignore_errors: true``` entries.

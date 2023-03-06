@@ -134,7 +134,7 @@
         license: "{{ item.KeyCode }}"
         state: present
       loop: "{{ License.VMware.vCenter.Licenses | default([]) }}"
-      failed_when: false                          # If license in use or not applicable, it will result in 'failure', so need to continue by ignoring the error
+      ignore_errors: true                                       # If license in use or not applicable, it will result in 'failure', so need to continue by ignoring the error
       no_log: true
       when:
         - Deploy.Software.vCenter.Version is match( item.Version )
@@ -202,7 +202,7 @@
         license: "{{ item.KeyCode | default('00000-00000-00000-00000-00000') }}"       # Include default KeyCode to handle insufficient socket qty in licenses
         state: present
       loop: "{{ hoststolicense }}"
-      failed_when: false                          # If license in use or not applicable, it will result in 'failure', so need to continue by ignoring the error
+      ignore_errors: true                                       # If license in use or not applicable, it will result in 'failure', so need to continue by ignoring the error
       no_log: true
       when:
         - licenseproducts
@@ -217,7 +217,7 @@
         license: "{{ item.KeyCode }}"
         state: present
       loop: "{{ License.VMware.ESXi.Licenses | default([]) }}"
-      failed_when: false                          # If license in use or not applicable, it will result in 'failure', so need to continue by ignoring the error
+      ignore_errors: true                                       # If license in use or not applicable, it will result in 'failure', so need to continue by ignoring the error
       no_log: true
       when:
         - Nested_vCenter.SSO.ReplicationPartner != None
@@ -305,7 +305,7 @@
         license: "{{ item.KeyCode | default('00000-00000-00000-00000-00000') }}"       # Include default KeyCode to handle insufficient socket qty in licenses
         state: present
       loop: "{{ clusterstolicense }}"
-      failed_when: false                          # If license in use or not applicable, it will result in 'failure', so need to continue by ignoring the error
+      ignore_errors: true                                       # If license in use or not applicable, it will result in 'failure', so need to continue by ignoring the error
       no_log: true
       when:
         - licenseproducts
@@ -320,7 +320,7 @@
         license: "{{ item.KeyCode }}"
         state: present
       loop: "{{ License.VMware.vSAN.Licenses | default([]) }}"
-      failed_when: false                          # If license in use or not applicable, it will result in 'failure', so need to continue by ignoring the error
+      ignore_errors: true                                       # If license in use or not applicable, it will result in 'failure', so need to continue by ignoring the error
       no_log: true
       when:
         - Nested_vCenter.SSO.ReplicationPartner != None
