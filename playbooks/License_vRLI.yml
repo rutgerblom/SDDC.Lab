@@ -148,8 +148,8 @@
           key: "{{ item.KeyCode }}"
         body_format: json
         status_code: 201
-      loop: "{{ License.VMware.vRLI.Licenses }}"
-      failed_when: false # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
+      loop: "{{ License.VMware.vRLI.Licenses | default([]) }}"
+      ignore_errors: true                                       # If license in already in use or not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
       no_log: true
       when:
         - Deploy.Product.vRLI.Deploy

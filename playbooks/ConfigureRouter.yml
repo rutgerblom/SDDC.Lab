@@ -135,7 +135,7 @@
           host: "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
         src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
         save: true
-      failed_when: false
+      ignore_errors: true
       when:
         - Deploy.Product.Router.Deploy
         - Deploy.Software.Router.Vendor == "VyOS"

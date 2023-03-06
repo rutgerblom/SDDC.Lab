@@ -96,7 +96,7 @@
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
       register: alb_check
-      failed_when: false
+      ignore_errors: true
       when:
         - Deploy.Product.ALB.Deploy
 

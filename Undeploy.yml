@@ -81,7 +81,7 @@
         name: "{{ Nested_Router.Name }}"
         force: true
         state: absent
-      failed_when: false
+      ignore_errors: true
 
     - name: Remove vRLI VM
       community.vmware.vmware_guest:
@@ -92,7 +92,7 @@
         name: "{{ Nested_vRLI.Component.Node.VMName }}"
         force: true
         state: absent
-      failed_when: false
+      ignore_errors: true
 
     - name: Remove ALB VM
       community.vmware.vmware_guest:
@@ -103,7 +103,7 @@
         name: "{{ Nested_ALB.Component.Controller.VMName }}"
         force: true
         state: absent
-      failed_when: false
+      ignore_errors: true
 
     - name: Remove ESXi VMs
       community.vmware.vmware_guest:
@@ -117,7 +117,7 @@
       async: 7200
       poll: 0
       loop: "{{ Nested_ESXi.Host | dict2items }}"
-      failed_when: false
+      ignore_errors: true
 
     - name: Remove vCenter VM
       community.vmware.vmware_guest:
@@ -128,7 +128,7 @@
         name: "{{ Nested_vCenter.VMName }}"
         force: true
         state: absent
-      failed_when: false
+      ignore_errors: true
 
     - name: Remove NSX Local Manager VM
       community.vmware.vmware_guest:
@@ -139,7 +139,7 @@
         name: "{{ Nested_NSXT.Component.LocalManager.VMName }}"
         force: true
         state: absent
-      failed_when: false
+      ignore_errors: true
 
     - name: Remove NSX Global Manager VM
       community.vmware.vmware_guest:
@@ -150,7 +150,7 @@
         name: "{{ Nested_NSXT.Component.GlobalManager.VMName }}"
         force: true
         state: absent
-      failed_when: false
+      ignore_errors: true
 
 ##
 ## Remove Networking - Host Deployment
@@ -166,7 +166,7 @@
         switch_name: "{{ Target.vSwitch }}"
         portgroup_name: "{{ Target.PortGroup.Trunk.Name }}"
         state: absent
-      failed_when: false
+      ignore_errors: true
       when:
         - Target.Deployment == "Host"
 
@@ -180,7 +180,7 @@
         switch_name: "{{ Target.vSwitch }}"
         portgroup_name: "{{ Target.PortGroup.Management.Name }}"
         state: absent
-      failed_when: false
+      ignore_errors: true
       when:
         - Target.Deployment == "Host"
 
@@ -195,7 +195,7 @@
         state: absent
       async: 7200
       poll: 0
-      failed_when: false
+      ignore_errors: true
       when:
         - Target.Deployment == "Host"
 
@@ -220,7 +220,7 @@
           promiscuous: true
           forged_transmits: true
           mac_changes: false
-      failed_when: false
+      ignore_errors: true
       when: Target.Deployment == "vCenter"
 
     - name: Remove a Trunk Distributed Port-Group in vCenter
@@ -240,7 +240,7 @@
           promiscuous: true
           forged_transmits: true
           mac_changes: false
-      failed_when: false
+      ignore_errors: true
       when: Target.Deployment == "vCenter"
 
 ##
@@ -259,7 +259,7 @@
         parent_folder: "{{ Target.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}"                     # Extract parent folder from VMFolder full path
         folder_name: "{{ Target.VMFolder | regex_replace('^.*/(.*)$', '\\1') }}"                     # Extract remaining folder name
         state: absent
-      failed_when: false
+      ignore_errors: true
       when:
         - Target.Deployment == "vCenter"
 
@@ -287,7 +287,7 @@
       args:
         chdir: /bin/
       register: iproute
-      failed_when: false
+      ignore_errors: true
       changed_when: false
       when:
         - Deploy.Product.Router.Deploy
