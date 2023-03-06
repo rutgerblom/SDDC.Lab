@@ -208,6 +208,24 @@
         - licenseproducts
         - esxi_license_exists
 
+    - name: If Pod has replication partner configured, add all ESXi licenses to vCenter Server
+      community.vmware.vcenter_license:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        license: "{{ item.KeyCode }}"
+        state: present
+      loop: "{{ License.VMware.ESXi.Licenses | default([]) }}"
+      failed_when: false                          # If license in use or not applicable, it will result in 'failure', so need to continue by ignoring the error
+      no_log: true
+      when:
+        - Nested_vCenter.SSO.ReplicationPartner != None
+        - Deploy.Software.ESXi.Version is match( item.Version )
+        - licenseproducts
+        - item.KeyCode != "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+
+
 
 ##
 ## License vSAN
@@ -292,3 +310,20 @@
       when:
         - licenseproducts
         - vsan_license_exists
+
+    - name: If Pod has replication partner configured, add all vSAN licenses to vCenter Server
+      community.vmware.vcenter_license:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        license: "{{ item.KeyCode }}"
+        state: present
+      loop: "{{ License.VMware.vSAN.Licenses | default([]) }}"
+      failed_when: false                          # If license in use or not applicable, it will result in 'failure', so need to continue by ignoring the error
+      no_log: true
+      when:
+        - Nested_vCenter.SSO.ReplicationPartner != None
+        - Deploy.Software.ESXi.Version is match( item.Version )
+        - licenseproducts
+        - item.KeyCode != "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"

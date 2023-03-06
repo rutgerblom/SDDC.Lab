@@ -1860,4 +1860,6 @@
   - Aligned Target variable with other variables
   - Modified ```Nested_vCenter.SSO.ReplicationPartner``` variable in ```config_sample.yml``` from "" (empty quotes) to undefined if no replication partner is being used.
   - Modified several playbooks to support the ```Nested_vCenter.SSO.ReplicationPartner``` change.
+  - Modified ```License_vSphere.yml``` playbook to install all ESXi and vSAN licenses in vCenter Server when a Pod has ```Nested_vCenter.SSO.ReplicationPartner``` configured.
+  - Updated ```README.md``` file to explain how all ESXi and vSAN licenses are added to vCenter Server when ```Nested_vCenter.SSO.ReplicationPartner``` (Enhanced Link MOde) is configured.
   - Be sure to update your ```config.yml``` file(s).
