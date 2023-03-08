@@ -1869,3 +1869,9 @@
 ### Added by Luis Chanu
   - Reverted lint changes back to original settings by changing all ```failed_when: false``` references to ```ignore_errors: true```.
   - Removed duplicate ```ignore_errors: true``` entries.
+
+## Dev-v6.0.0 8-March-2023
+
+### Added by Luis Chanu
+  - Added NSX-T v3.2.2 to ```software_sample.yml``` file.
+  - Be sure to update you ```software.yml``` file.
