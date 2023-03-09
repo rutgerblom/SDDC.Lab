@@ -1875,3 +1875,8 @@
 ### Added by Luis Chanu
   - Added NSX-T v3.2.2 to ```software_sample.yml``` file.
   - Be sure to update you ```software.yml``` file.
+
+## Dev-v6.0.0 9-March-2023
+
+### Added by Luis Chanu
+  - Updated all ```community.general.net_tools.nsupdate``` references to ```community.general.nsupdate``` to address deprecation message.
