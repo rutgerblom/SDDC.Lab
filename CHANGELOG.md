@@ -1883,3 +1883,6 @@
   - Changes made to VyOS Pod-Router configuration
     - Corrected PING issue in newer VyOS ISO image by moving PING after configuration mode is exited.
     - Added additional ```exit``` commands logout of the VyOS router on the console after deployment is complete.
+  - Issue found with VyOS v1.4 not supporting CLI configuration commands for NTP.
+  - NTP CLI commands commented in ```templates/vyos_router.j2``` template.
+  - Added ```utils/Util_GeneratePodRouterConfig.yml``` file.
