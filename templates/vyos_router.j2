@@ -214,14 +214,19 @@ set system time-zone 'UTC'
 ##
 ## System - NTP (IPv4 & IPv6)
 ##
-delete system ntp server
-set system ntp listen-address {{ Nested_Router.Interface.Management.IPv4.Address }}
+#
+# NTP CLI configuration commands are not included in VyOS v1.4 release.  For 
+# this reason, all NTP CLI configuration commands have been commented until this
+# is corrected by VyOS.
+#
+#delete system ntp server
+#set system ntp listen-address {{ Nested_Router.Interface.Management.IPv4.Address }}
 {% for NTPServer in Nested_Router.NTP.Servers -%}
 {% if Deploy.Setting.IPv4 -%}
-set system ntp server {{ NTPServer.IPv4.Address }}
+#set system ntp server {{ NTPServer.IPv4.Address }}
 {% endif -%}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 -%}
-set system ntp server {{ NTPServer.IPv6.Address }}
+#set system ntp server {{ NTPServer.IPv6.Address }}
 {% endif -%}{# Deploy.Setting.IPv6 #}
 {% endfor -%}{# NTPServer #}
 

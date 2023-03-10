@@ -733,6 +733,38 @@
         - Deploy.Product.Router.Deploy
         - status is failed
 
+    - name: Exit out of VyOS router configuration mode (Send 'EXIT' command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_Router.Name }}"
+        string_send: "exit"
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Wait 5 seconds
+      ansible.builtin.pause:
+        seconds: 5
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Exit out of VyOS router configuration mode (Send 'ENTER' after EXIT command)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
     - name: PING Lab-Router to populate ARP tables (Send 'PING' command)
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
@@ -761,6 +793,13 @@
         name: "{{ Nested_Router.Name }}"
         keys_send:
           - ENTER
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Wait for PINGs to complete (10 Seconds)
+      ansible.builtin.pause:
+        seconds: 10
       when:
         - Deploy.Product.Router.Deploy
         - status is failed
