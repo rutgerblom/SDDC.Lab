@@ -1880,3 +1880,6 @@
 
 ### Added by Luis Chanu
   - Updated all ```community.general.net_tools.nsupdate``` references to ```community.general.nsupdate``` to address deprecation message.
+  - Changes made to VyOS Pod-Router configuration
+    - Corrected PING issue in newer VyOS ISO image by moving PING after configuration mode is exited.
+    - Added additional ```exit``` commands logout of the VyOS router on the console after deployment is complete.
