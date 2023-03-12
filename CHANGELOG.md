@@ -1874,7 +1874,7 @@
 
 ### Added by Luis Chanu
   - Added NSX-T v3.2.2 to ```software_sample.yml``` file.
-  - Be sure to update you ```software.yml``` file.
+  - Be sure to update your ```software.yml``` file.
 
 ## Dev-v6.0.0 9-March-2023
 
@@ -1886,3 +1886,10 @@
   - Issue found with VyOS v1.4 not supporting CLI configuration commands for NTP.
   - NTP CLI commands commented in ```templates/vyos_router.j2``` template.
   - Added ```utils/Util_GeneratePodRouterConfig.yml``` file.
+
+## Dev-v6.0.0 11-March-2023
+
+### Added by Luis Chanu
+  - Updated outdated Ubuntu URLs in ```software_sample.yml```.
+  - Tested download for each Ubuntu server version.
+  - Be sure to update your ```software.yml``` file.
