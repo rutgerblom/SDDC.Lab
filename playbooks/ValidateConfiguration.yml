@@ -26,30 +26,26 @@
 ##
 ## Verify SDDCLab.Version
 ##
-    - name: Verifying SDDCLab.Version is 4, 5, or 6
+    - name: Verifying SDDCLab.Version is 6
       ansible.builtin.pause:
         seconds: 5
         prompt: |
           =================================== Configuration Issue Found ====================================
 
-                        Issue: The Pod configuration file being used is not for SDDC.Lab version 4, 5, or 6.
-                               Please update the configuration file to match 'config_sample.yml', and then
-                               run the CreatePodConfig.yml playbook against it.
+                        Issue: The Pod configuration file being used is not for SDDC.Lab version 6.
+                               Please update the configuration file to match the current 'config_sample.yml', 
+                               and then run the CreatePodConfig.yml playbook against it.
 
                Detected Value: {{ SDDCLab.Version }}
 
           ==================================================================================================
       when:
-        - SDDCLab.Version != 4
-        - SDDCLab.Version != 5
         - SDDCLab.Version != 6
 
     - name: Set flag if issue found with SDDCLab.Version
       ansible.builtin.set_fact:
         issuefound: true
       when:
-        - SDDCLab.Version != 4
-        - SDDCLab.Version != 5
         - SDDCLab.Version != 6
 
 

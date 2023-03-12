@@ -1890,6 +1890,7 @@
 ## Dev-v6.0.0 11-March-2023
 
 ### Added by Luis Chanu
+  - Updated ```ValidateConfiguration.yml``` playbook to only accept SDDC.Lab version 6 configuration files.
   - Updated outdated Ubuntu URLs in ```software_sample.yml```.
   - Tested download for each Ubuntu server version.
   - Be sure to update your ```software.yml``` file.
