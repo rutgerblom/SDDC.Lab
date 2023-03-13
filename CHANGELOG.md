@@ -1894,3 +1894,8 @@
   - Updated outdated Ubuntu URLs in ```software_sample.yml```.
   - Tested download for each Ubuntu server version.
   - Be sure to update your ```software.yml``` file.
+
+## Dev-v6.0.0 12-March-2023
+
+### Added by Luis Chanu
+  - Updated ```var_UbuntuConfiguration``` variable references in Ubuntu templates to match case of variable definition in ```DeployDNSServer.yml``` playbook.
