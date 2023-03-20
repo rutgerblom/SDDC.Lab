@@ -1899,3 +1899,9 @@
 
 ### Added by Luis Chanu
   - Updated ```var_UbuntuConfiguration``` variable references in Ubuntu templates to match case of variable definition in ```DeployDNSServer.yml``` playbook.
+
+## Dev-v6.0.0 20-March-2023
+
+### Added by Luis Chanu
+  - Added entry for Ubuntu v22.04.1 to ```templates_sample.yml``` file.
+  - Be sure to update your ```templates.yml``` file.
