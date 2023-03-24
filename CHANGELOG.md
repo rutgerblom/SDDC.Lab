@@ -1905,3 +1905,8 @@
 ### Added by Luis Chanu
   - Added entry for Ubuntu v22.04.1 to ```templates_sample.yml``` file.
   - Be sure to update your ```templates.yml``` file.
+
+## Dev-v6.0.0 23-March-2023
+
+### Added by Luis Chanu
+  - Modified ansible installation within ```pip3_requirements.txt``` to install Ansible v6.4.0 rather than the latest v7.x version.  Ansible v7.x causes ```CreatePodConfig.yml``` playbook to take 30+ minutes to generate a static configuration, while Ansible v6.4.0 and process that same configuration in 3+ minutes.
