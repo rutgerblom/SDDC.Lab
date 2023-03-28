@@ -1910,3 +1910,8 @@
 
 ### Added by Luis Chanu
   - Modified ansible installation within ```pip3_requirements.txt``` to install Ansible v6.4.0 rather than the latest v7.x version.  Ansible v7.x causes ```CreatePodConfig.yml``` playbook to take 30+ minutes to generate a static configuration, while Ansible v6.4.0 and process that same configuration in 3+ minutes.
+
+## Dev-v6.0.0 27-March-2023
+
+### Added by Luis Chanu
+  - Issues identified with Ubuntu v22.04.1 deployment.  Upon further digging, appears some folder structures have changed in the ISO.  Additional discovery needed.  For now, use v20.04.x for all DNSServer deployments, then upgrade to v22.04.1 post-deployment if v22.04.x is required/desired.
