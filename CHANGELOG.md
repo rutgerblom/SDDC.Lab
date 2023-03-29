@@ -1915,3 +1915,8 @@
 
 ### Added by Luis Chanu
   - Issues identified with Ubuntu v22.04.1 deployment.  Upon further digging, appears some folder structures have changed in the ISO.  Additional discovery needed.  For now, use v20.04.x for all DNSServer deployments, then upgrade to v22.04.1 post-deployment if v22.04.x is required/desired.
+
+## Dev-v6.0.0 29-March-2023
+
+### Added by Luis Chanu
+  - Updated verbiage in NSX-T Federation section of ```README.md``` file.
