@@ -1920,3 +1920,10 @@
 
 ### Added by Luis Chanu
   - Updated verbiage in NSX-T Federation section of ```README.md``` file.
+
+## Dev-v6.0.0 4-April-2023
+
+### Added by Luis Chanu
+  - Created new utility to display various X.509 certificate thumbprints for a given website.
+  - The new utility is ```utils/Util_GetCertFingerprints.sh```.
+  - Documentation on how to use the new utility can be found within the file.
