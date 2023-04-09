@@ -1927,3 +1927,11 @@
   - Created new utility to display various X.509 certificate thumbprints for a given website.
   - The new utility is ```utils/Util_GetCertFingerprints.sh```.
   - Documentation on how to use the new utility can be found within the file.
+
+## Dev-v6.0.0 5-April-2023
+
+### Added by Luis Chanu
+  - All newly added software has NOT yet been tested.
+  - Added the following updates to the software repository:
+    - vCenter Server v8.00C
+  - Updated ```software_sample.yml``` and ```templates_sample.yml``` with updated vCenter references.  (NOT TESTED)
