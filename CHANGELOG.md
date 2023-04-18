@@ -1935,3 +1935,14 @@
   - Added the following updates to the software repository:
     - vCenter Server v8.00C
   - Updated ```software_sample.yml``` and ```templates_sample.yml``` with updated vCenter references.  (NOT TESTED)
+
+## Dev-v6.0.0 18-April-2023
+
+### Added by Luis Chanu
+  - All newly added software has NOT yet been tested.
+  - Added the following updates to the software repository:
+    - ESXi v8.00U1
+    - vCenter Server v8.00U1
+    - NSX v3.2.2.1
+    - vSphere Replication v8.7.0
+  - Updated ```software_sample.yml``` and ```templates_sample.yml``` with updated vCenter references.  (NOT TESTED)
