@@ -1941,8 +1941,11 @@
 ### Added by Luis Chanu
   - All newly added software has NOT yet been tested.
   - Added the following updates to the software repository:
-    - ESXi v8.00U1
-    - vCenter Server v8.00U1
+    - ESXi v7.00 Update 3L
+    - vCenter Server v7.00 Update 3L
+    - ESXi v8.00 Update 1
+    - vCenter Server v8.00 Update 1
     - NSX v3.2.2.1
     - vSphere Replication v8.7.0
   - Updated ```software_sample.yml``` and ```templates_sample.yml``` with updated vCenter references.  (NOT TESTED)
+  - Be sure to update your ```software.yml``` and ```templates.yml``` files.
