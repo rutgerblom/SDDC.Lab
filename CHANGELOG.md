@@ -1949,3 +1949,10 @@
     - vSphere Replication v8.7.0
   - Updated ```software_sample.yml``` and ```templates_sample.yml``` with updated vCenter references.  (NOT TESTED)
   - Be sure to update your ```software.yml``` and ```templates.yml``` files.
+
+## Dev-v6.0.0 26-April-2023
+
+### Added by Luis Chanu
+  - Updated ```README.md``` file
+    - Corrected minor gramatical type-O's
+    - Added information about DHCP support when automatic deployment of workloads is enabled with Federation.
