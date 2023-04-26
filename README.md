@@ -153,8 +153,8 @@ Consider the following when upgrading SDDC.Lab to a newer version.
   * [IP Address Assignments](#ip-address-assignments) have changed from previous versions.  Please take a moment to become familiar with the updated [IP Address Assignments](#ip-address-assignments).
 
   * Please review the [Project Features](#project-features) section, as many entries have been updated with additional functionality introduced in this release.  In particular:
-    1. Additional functionaly was added to [vSphere Content Libraries](#vsphere-content-libraries).  Not only are multiple Content Libraries now supported, but you can now also subscribe to Internet-based content libraries (i.e. TKG).
-    2. Overlay Segments now support automatic IP subnet address assignment for both IPv4 and IPv6.  For more information, see [NSX-T Segment IP Subnet Auto-Allocation](#nsx-t-segment-ip-subnet-auto-allocation).
+    1. Additional functionaly was added to [vSphere Content Libraries](#vsphere-content-libraries-v4--updated-in-v5).  Not only are multiple Content Libraries now supported, but you can now also subscribe to Internet-based content libraries (i.e. TKG).
+    2. Overlay Segments now support automatic IP subnet address assignment for both IPv4 and IPv6.  For more information, see [NSX-T Segment IP Subnet Auto-Allocation](#nsx-t-segment-ip-subnet-auto-allocation-v5).
 
 
 ## Networking
@@ -349,7 +349,7 @@ When deploying NSX-T Federation, keep the following in mind:
   a) Deploy Federation using NSX-T v3.1.3.7, then manually upgrade the Pods to NSX-T v3.2.x.\
   b) Use NSX v4.1.0.0, as Federation issues are resolved in that release.
 
-11. Automatic [Deployment of Test Workloads](#deploy-test-workloads) is supported with Federation.  Just keep in mind that although the workloads can be deployed, the DHCP Server functionality is not supported on Federated stretched NSX segments, so you will need to manually assign static IPv4/IPv6 addresses to the workloads after they are deployed.
+11. Automatic [Deployment of Test Workloads](#deploy-test-workloads-v4) is supported with Federation.  Just keep in mind that although the workloads can be deployed, the DHCP Server functionality is not supported on Federated stretched NSX segments, so you will need to manually assign static IPv4/IPv6 addresses to the workloads after they are deployed.
 
 ### vSphere Content Libraries (v4 & updated in v5)
 SDDC.Lab now supports both local and subscribed vSphere Content Libraries, which can be very helpful in a lab environment by centralizing workload ISOs and VMs (i.e. On the physical vCenter Server or a stand-alone Content Library target), then accessing them via the deployed Pods.  There are a few things to keep in mind with Content Libraries:
@@ -434,6 +434,8 @@ Here are some known items to be aware of:
 
 7. When Enhanced Link Mode (ELM) is enabled, which is accomplished by configuring ```Nested_vCenter.SSO.ReplicationPartner``` in the ```config.yml``` file, you may notice that some entites are not permanently licensed and are instead using the evaluation license.  The reason is because every Pod which is deployed is licensed using the same licenses from the ```licenses.yml``` file.  Independently, the Pods each have sufficient licenses, but when linked, because the same license key is used in each Pod, there aren't sufficient licenses.  This is the case even if there are extra license available in the ```licenses.yml``` file as those extra licenses were not needed, and thus not applied, during each Pod deployment.  To aid in resolving this, when Enhanced Link Mode (ELM) is enabled, all ESXi and vSAN licenses in the ```licenses.yml``` file are added to that Pod's vCenter Server, but not applied/associated with any assets.  It's then up to the user to manually license each unlicensed asset within vCenter Server.
 
+8. If you use SDDC.Lab to deploy your SDDC.Lab DNS server, not all versions of Ubuntu are supported.  Ubuntu Server versions 20.04.3 and 20.04.4 work fine, but newer 22.04.x versions do not.  If you must run version 22.04.x, then first install onto 20.04.3 or 20.04.4, then upgrade Ubuntu to version 22.04.x.
+
 
 ## Issues With Various Software Versions
 As we use SDDC.Lab in our labs, every now-and-then we notice some issues/problems.  As we come across those, we'll try to very briefly document the versions and issue(s) below.  We do not test every software version combination, so by no means should this be taken as a comprehensive list of what works and what doesn't.  This is just a "best effort" from us, to you, in the hope that it saves you time and frustration.  Versions listed below match up with the software version used in config_sample.yml and the version "label" used in Software.yml.  Blank fields mean we believe they aren't relavent to the issue found, and thus, don't matter.
@@ -447,6 +449,8 @@ As we use SDDC.Lab in our labs, every now-and-then we notice some issues/problem
 | 12-AUG-2022 |         |         |  4.0.0.1  | There is a bug with NSX Federation onboarding such that imported local objects are not properly migrated to global objects.  Because of this bug, you are unable to connect a VM's vNIC to imported stretched NSX Segments. | Luis Chanu |
 | 11-OCT-2022 | 8.0.0 (Build  20519528) | 8.0.0 (Build 20513097) | 4.0.0.1 | Although v8.0.0 of vCenter Server and ESXi deploy successfully using SDDC.Lab, NSX fails when it attempts to apply the Transport Node Profile to the vSphere cluster.  It fails with the following error message, "```NSX cannot be enabled on the cluster because it contains host 6e6954ea-2f6a-491a-a3d4-34ea27078709:host-14 of unsupported version.```"  So, it appears the next version of NSX is required in order to support vSphere 8.0.0 (GA). | Luis Chanu |
 | 14-OCT-2022 | 8.0.0 (Build  20519528) | 8.0.0 (Build 20513097) | 4.0.1.1 | NSX-T Federation deployment is not supported due to a Federation onboarding bug with NSX where the Segment paths are not correct within vCenter Server. | Luis Chanu |
+| 26-APR-2023 | 7.0.0U3L | 7.0.0U3L | 3.2.2.1 | NSX-T Federation deployment is not supported due to a Federation onboarding bug with NSX where the Segment paths are not correct within vCenter Server.  This is the same issue discovered with NSX v4.0.1.1.  | Luis Chanu |
+
 
 
 ## More Information

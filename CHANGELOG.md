@@ -1956,3 +1956,6 @@
   - Updated ```README.md``` file
     - Corrected minor gramatical type-O's
     - Added information about DHCP support when automatic deployment of workloads is enabled with Federation.
+    - Updated various outdated and non-functional hyperlinks.
+    - Added Federation onboarding issue with NSX v3.2.2.1 to the "Issues With Various Software Versions" table.
+    - Added additional information around Ubuntu version to use for SDDC.Lab DNS server deployment.
