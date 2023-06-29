@@ -1973,3 +1973,12 @@
   - Removed NSX v4.1.0.0 from software repository
   - Updated ```software_sample.yml``` and ```templates_sample.yml``` with updated vCenter references.  (NOT TESTED)
   - Be sure to update your ```software.yml``` and ```templates.yml``` files.
+
+## Dev-v6.0.0 29-June-2023
+
+### Added by Luis Chanu
+  - Corrected output file name in comments of ```utils\Util_GeneratePodRouterConfig.yml``` playbook.
+  - Configuration of Pod-Router failed due to two VyOS commands which the current nightly-build of VyOS no longer supports.  Issue is with the ```protocol`` argument.
+  - Commented the following two command from the ```templates\vyos_router.j2``` Jinja2 template:
+    - ```set system syslog global facility protocols level debug```
+    - ```set system syslog host 10.203.120.19 facility all protocol udp```
