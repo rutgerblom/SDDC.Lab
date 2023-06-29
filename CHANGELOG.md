@@ -1959,3 +1959,17 @@
     - Updated various outdated and non-functional hyperlinks.
     - Added Federation onboarding issue with NSX v3.2.2.1 to the "Issues With Various Software Versions" table.
     - Added additional information around Ubuntu version to use for SDDC.Lab DNS server deployment.
+
+## Dev-v6.0.0 28-June-2023
+
+### Added by Luis Chanu
+  - All newly added software has NOT yet been tested.
+  - Added the following updates to the software repository:
+    - ESXi v8.00 Update 1A
+    - vCenter Server v8.00 Update 1A
+    - vCenter Server v8.00 Update 1B
+    - NSX v4.1.0.2
+    - vRealize Log Insight v8.12.0
+  - Removed NSX v4.1.0.0 from software repository
+  - Updated ```software_sample.yml``` and ```templates_sample.yml``` with updated vCenter references.  (NOT TESTED)
+  - Be sure to update your ```software.yml``` and ```templates.yml``` files.
