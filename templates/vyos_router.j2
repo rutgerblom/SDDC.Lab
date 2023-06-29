@@ -236,14 +236,14 @@ set system time-zone 'UTC'
 ## System - Syslog (IPv4 & IPv6)
 ##
 set system syslog global facility all level notice
-set system syslog global facility protocols level debug
+# set system syslog global facility protocols level debug
 {% if Deploy.Setting.IPv4 -%}
 set system syslog host {{ Common.Syslog.IPv4 }} facility all level notice
-set system syslog host {{ Common.Syslog.IPv4 }} facility all protocol {{ Common.Syslog.Protocol }}
+# set system syslog host {{ Common.Syslog.IPv4 }} facility all protocol {{ Common.Syslog.Protocol }}
 {% endif -%}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 -%}
 set system syslog host {{ Common.Syslog.IPv6 }} facility all level notice
-set system syslog host {{ Common.Syslog.IPv6 }} facility all protocol {{ Common.Syslog.Protocol }}
+# set system syslog host {{ Common.Syslog.IPv6 }} facility all protocol {{ Common.Syslog.Protocol }}
 {% endif -%}{# Deploy.Setting.IPv6 #}
 
 
