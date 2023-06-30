@@ -1987,3 +1987,4 @@
     - Updated comments at top of playbook
     - Converted playbook to use ```ansible.netcommon.network_cli``` as VyOS module deprecated use of ```provider``` section in its tasks
   - Added note in ```pip3_requirements.txt``` file regarding ```ansible-pylibssh```
+  - Added vRLI v8.12.0 filename to ```software_sample.yml```
