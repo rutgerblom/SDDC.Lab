@@ -1991,3 +1991,4 @@
   - Added vCenter Server v7.0 Update 3M to the software repository:
   - Added vCetner Server v7.0 Update 3M to ```software_sample.yml``` and ```templates_sample.yml``` files (NOT TESTED)
   - Be sure to update your ```software.yml``` and ```templates.yml``` files.
+  - Updated user message in ```CreatePodConfig.yml``` to indicate more accurate time of how long it takes to generate the static configuration file
