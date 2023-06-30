@@ -1978,7 +1978,7 @@
 
 ### Added by Luis Chanu
   - Corrected output file name in comments of ```utils\Util_GeneratePodRouterConfig.yml``` playbook.
-  - Configuration of Pod-Router failed due to two VyOS commands which the current nightly-build of VyOS no longer supports.  Issue is with the ```protocol`` argument.
+  - Configuration of Pod-Router failed due to two VyOS commands which the current nightly-build of VyOS no longer supports.  Issue is with the ```facility all``` before the ```protocol`` argument.
   - Commented the following two command from the ```templates\vyos_router.j2``` Jinja2 template:
     - ```set system syslog global facility protocols level debug```
     - ```set system syslog host 10.203.120.19 facility all protocol udp```
