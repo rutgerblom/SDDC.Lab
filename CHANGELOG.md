@@ -1998,3 +1998,4 @@
 
 ### Added by Luis Chanu
   - Added ```utils/Util_GetLabInfo.sh``` script to collect lab environment information.
+  - Revert ```playbooks/CreateVds.yml``` back to original configuration by removing the conditional check that was added on 29-JUNE-2023.
