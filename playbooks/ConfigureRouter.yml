@@ -3,13 +3,12 @@
 ##    Authors: Luis Chanu & Rutger Blom
 ##   Filename: playbooks/ConfigureRouter.yml
 ##
-## ToDo Items: 1) Convert vyos module to use ansible.netcommon.network_cli
-##             2) Move away from use of "Provider" in the vyos_config play below
-##             3) The "Apply {{ Nested_Router.Name }} VyOS Baseline Router Configuration" task has an "ignore_errors: true" on it so that it can be re-run.
+## ToDo Items: 1) The "Apply VyOS Baseline Router Configuration to {{ Nested_Router.Name }}" task has an "ignore_errors: true" on it so that it can be re-run.
 ##                This is a work-around.  Need to add logic which sets the password to use if the 'vyos' password fails. (Luis)
 ##
-##   Comments: The purpose of this module is to configure an already deployed router that is configured with
-##             an IP address, and is reachable via SSH.
+##   Comments: 1) The purpose of this module is to configure an already deployed router that is configured with
+##                an IP address, and is reachable via SSH on it's eth0 interface.
+##             2) Attempted using 'ansible-pylibssh', but applying configuration would timeout.  So, using Paramiko.
 ##
 ##
 ---
@@ -66,6 +65,7 @@
 
                                     Target.Deployment: {{ Target.Deployment }}
 
+                                    Router IP Address: {{ Nested_Router.Interface.Uplink.IPv4.Address }}
                Router Baseline Configuration Template: {{ Target.TemplateFolder }}/{{ Deploy.Software.Router.Template }}
                    Router User Configuration Template: {{ Nested_Router.UserConfig.Directory }}/{{ Nested_Router.UserConfig.Template }}
 
@@ -128,13 +128,14 @@
 
     - name: Apply VyOS Baseline Router Configuration to {{ Nested_Router.Name }}
       vyos.vyos.vyos_config:
-        provider:
-          username: vyos
-          password: vyos
-          timeout: 20
-          host: "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
         src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
         save: true
+      vars:
+        - ansible_connection: ansible.netcommon.network_cli
+        - ansible_host: "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
+        - ansible_user: vyos
+        - ansible_password: vyos
+        - ansible_network_os: vyos.vyos.vyos
       ignore_errors: true
       when:
         - Deploy.Product.Router.Deploy
@@ -191,13 +192,14 @@
 
     - name: Apply VyOS router UserConfig configuration to {{ Nested_Router.Name }}
       vyos.vyos.vyos_config:
-        provider:
-          username: vyos
-          password: "{{ Common.Password.Nested }}"
-          timeout: 20
-          host: "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
         src: "{{ Target.TempFolder }}/{{ LOCAL_UserConfigTempFile }}"
         save: true
+      vars:
+        - ansible_connection: ansible.netcommon.network_cli
+        - ansible_host: "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
+        - ansible_user: vyos
+        - ansible_password: "{{ Common.Password.Nested }}"
+        - ansible_network_os: vyos.vyos.vyos
       when:
         - Deploy.Product.Router.Deploy
         - Deploy.Software.Router.Vendor == "VyOS"
