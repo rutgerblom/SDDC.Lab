@@ -1987,3 +1987,9 @@
     - Updated comments at top of playbook
     - Converted playbook to use ```ansible.netcommon.network_cli``` as VyOS module deprecated use of ```provider``` section in its tasks
   - Added note in ```pip3_requirements.txt``` file regarding ```ansible-pylibssh```
+  - Added vRLI v8.12.0 filename to ```software_sample.yml```
+  - Added vCenter Server v7.0 Update 3M to the software repository:
+  - Added vCetner Server v7.0 Update 3M to ```software_sample.yml``` and ```templates_sample.yml``` files (NOT TESTED)
+  - Be sure to update your ```software.yml``` and ```templates.yml``` files.
+  - Updated user message in ```CreatePodConfig.yml``` to indicate more accurate time of how long it takes to generate the static configuration file
+  - Added conditional check of ```network_policy.inherited``` in ```Create Port Groups``` play in ```playbooks/CreateVds.yml``` to omit if ```Target.Deployment == Host``` as there are no vDS's when deploying directly to an ESXi host.
