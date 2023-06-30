@@ -1992,3 +1992,4 @@
   - Added vCetner Server v7.0 Update 3M to ```software_sample.yml``` and ```templates_sample.yml``` files (NOT TESTED)
   - Be sure to update your ```software.yml``` and ```templates.yml``` files.
   - Updated user message in ```CreatePodConfig.yml``` to indicate more accurate time of how long it takes to generate the static configuration file
+  - Added conditional check of ```network_policy.inherited``` in ```Create Port Groups``` play in ```playbooks/CreateVds.yml``` to omit if ```Target.Deployment == Host``` as there are no vDS's when deploying directly to an ESXi host.
