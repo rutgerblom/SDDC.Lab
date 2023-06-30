@@ -1751,63 +1751,63 @@
     - Configures an NSX-T Cloud utilizing overlay segments ```SEG-ALB-SE-Management``` for Service Engine Management Traffic and  ```SEG-ALB-SE-Data``` for Service Engine Data traffic. Both these segments attach to the ```T1-Gateway-ALB``` Tier-1 Gateway. ```Pod-xxx Local Content Library``` is used for storing and deploying Service Engines images.
   - Be sure to update your ```config.yml``` file.
 
-## Dev-v6.0.0 01-November-2022
+## Dev-v6.0.0 01-NOVEMBER-2022
 
 ### Added by Rutger Blom
   - Added tasks to ```playbooks/ConfigureAlbClouds.yml``` that add an IP subnet definition to the ```SEG-ALB-SE-Data``` Network in ALB. Networks in ALB must have a subnet definition before VIPs that should connect to these networks can be created. In the case of the ```SEG-ALB-SE-Data``` Network, IP subnet information is obtained from the NSX-T API which owns and controls the IP subnet configuration of the underlying overlay segment.
 
-## Dev-v6.0.0 02-November-2022
+## Dev-v6.0.0 02-NOVEMBER-2022
 
 ### Added by Rutger Blom
   - Added tasks to ```playbooks/ConfigureAlbClouds.yml``` that add an IP subnet definition to the ```VMNetwork``` Network in ALB. Networks in ALB must have a subnet definition before VIPs that should connect to these networks can be created. In the case of the ```VMNetwork``` Network, IP subnet information is obtained from the Pod configuration which contains IP subnet information of the underlying VLAN.
 
-## Dev-v6.0.0 04-November-2022
+## Dev-v6.0.0 04-NOVEMBER-2022
 
 ### Added by Rutger Blom
   - Added ALB to ```Undeploy.yml```.
   - Added ALB API "polling" tasks replacing static delay tasks in ```playbooks/ConfigureAlbClouds.yml```.
   - Added ASCI art headers to ```playbooks/ConfigureAlbClouds.yml``` to improve readability.
 
-## Dev-v6.0.0 05-November-2022
+## Dev-v6.0.0 05-NOVEMBER-2022
 
 ### Added by Rutger Blom
   - Added a task to ```playbooks/ConfigureAlbClouds.yml``` that checks whether a vCenter Server is already configured for the NSX-T Cloud. The result is used as a conditional on the task that configures the vCenter Server for the NSX-T Cloud. This "check" task is needed to keep the playbook idempotent.
 
-## Dev-v6.0.0 25-November-2022
+## Dev-v6.0.0 25-NOVEMBER-2022
 
 ### Added by Rutger Blom
   - Removed tasks from ```playbooks/ConfigureAlbClouds.yml``` that add an IP subnet definition to the ```SEG-ALB-SE-Data``` Network in ALB. NSX-T Overlay networks in ALB do not require a subnet definition.
   - Updated defaults for ```ServiceEngineNamePrefix``` and ```ServiceEngineFolder``` in ```config_sample.yml```.
   - Be sure to update your ```config.yml``` file.
 
-## Dev-v6.0.0 12-December-2022
+## Dev-v6.0.0 12-DECEMBER-2022
 
 ### Added by Luis Chanu
   - Added vCenter Server v7.0 Update 3I to ```software_sample.yml``` and ```templates_sample.yml``` files.  (NOT TESTED)
 
-## Dev-v6.0.0 05-January-2023
+## Dev-v6.0.0 05-JANUARY-2023
 
 ### Added by Luis Chanu
   - To simplify authentication to SDDC.Lab Pods, added ```SDDCLab_Credentials_for_Firefox.csv``` file to ```misc``` folder.  This file contains the default URLs, usernames, and passwords for the various components that are deployed with each lab.  This file is for Firefox, and other browsers may be added in the future.  Import this file into Firefox to populate the Passwords within Firefox.
   - Added instructions to ```README.md``` and ```FirstPod.md``` files.
   - Added vCenter Server versions 7.0U3J and 8.00a to ```software_sample.yml``` and ```templates_sample.yml``` files.  (NOT TESTED)
 
-## Dev-v6.0.0 06-January-2023
+## Dev-v6.0.0 06-JANUARY-2023
 
 ### Added by Luis Chanu
   - Updated ALB ```Config``` and ```Installer``` variables in ```config_sample.yml``` to reference ALB instead of AVI within it's filename.
 
-## Dev-v6.0.0 08-January-2023
+## Dev-v6.0.0 08-JANUARY-2023
 
 ### Added by Luis Chanu
   - Removed duplicate ```playbooks/ConfigureAlbClouds.yml``` entry from Deploy.yml.
 
-## Dev-v6.0.0 09-January-2023
+## Dev-v6.0.0 09-JANUARY-2023
 
 ### Added by Luis Chanu
   - Corrected ALB password entries in ```misc/SDDCLab_Credentials_for_Firefox.csv``` file.
 
-## Dev-v6.0.0 17-February-2023
+## Dev-v6.0.0 17-FEBRUARY-2023
 
 ### Added by Luis Chanu
   - All newly added software has NOT yet been tested.
@@ -1817,31 +1817,31 @@
     - vRealize Log Insight v8.10.2
   - Updated ```software_sample.yml``` and ```templates_sample.yml``` with updated ESXi and vCenter references.  (NOT TESTED)
 
-## Dev-v6.0.0 22-February-2023
+## Dev-v6.0.0 22-FEBRUARY-2023
 
 ### Added by Luis Chanu
   - Added YYYYMMDD date to prepared/static Pod configuration filename.
 
-## Dev-v6.0.0 27-February-2023
+## Dev-v6.0.0 27-FEBRUARY-2023
 
 ### Added by Luis Chanu
   - Added vSphere Replication v8.6.0.1 to ```software_sample.yml```.
   - vSphere Replication is still NOT functional/supported by SDDC.Lab.
 
-## Dev-v6.0.0 28-February-2023
+## Dev-v6.0.0 28-FEBRUARY-2023
 
 ### Added by Luis Chanu
   - Added NSX v4.1.0.0 to ```software_sample.yml```. (TESTED)
   - NSX Federation now works with NSX v4.1.0.0, so updated Federation section of the ```README.md```.
 
-## Dev-v6.0.0 3-March-2023
+## Dev-v6.0.0 3-MARCH-2023
 
 ### Added by Luis Chanu
   - Updated the ```README.md``` file
     - Updated the *temp* path in the documentation to use the correct path, as it was updated since the documentaton was originally written.
     - Added "Known Items" entry regarding licensing when Enhanced Link Mode (ELM) is configured.
 
-## Dev-v6.0.0 4-March-2023
+## Dev-v6.0.0 4-MARCH-2023
 
 ### Added by Luis Chanu
   - Created new ```CreateDrsVmRules.yml``` playbook which creates a DRS VM-VM Rule at the end of the Pod deployment.
@@ -1854,7 +1854,7 @@
   - Added new ```Deploy.DRS``` variables to ```templates/Pod_Config.j2```
   - Be sure to update your ```config.yml``` file(s).
 
-## Dev-v6.0.0 5-March-2023
+## Dev-v6.0.0 5-MARCH-2023
 
 ### Added by Luis Chanu
   - Aligned Target variable with other variables
@@ -1864,19 +1864,19 @@
   - Updated ```README.md``` file to explain how all ESXi and vSAN licenses are added to vCenter Server when ```Nested_vCenter.SSO.ReplicationPartner``` (Enhanced Link MOde) is configured.
   - Be sure to update your ```config.yml``` file(s).
 
-## Dev-v6.0.0 6-March-2023
+## Dev-v6.0.0 6-MARCH-2023
 
 ### Added by Luis Chanu
   - Reverted lint changes back to original settings by changing all ```failed_when: false``` references to ```ignore_errors: true```.
   - Removed duplicate ```ignore_errors: true``` entries.
 
-## Dev-v6.0.0 8-March-2023
+## Dev-v6.0.0 8-MARCH-2023
 
 ### Added by Luis Chanu
   - Added NSX-T v3.2.2 to ```software_sample.yml``` file.
   - Be sure to update your ```software.yml``` file.
 
-## Dev-v6.0.0 9-March-2023
+## Dev-v6.0.0 9-MARCH-2023
 
 ### Added by Luis Chanu
   - Updated all ```community.general.net_tools.nsupdate``` references to ```community.general.nsupdate``` to address deprecation message.
@@ -1887,7 +1887,7 @@
   - NTP CLI commands commented in ```templates/vyos_router.j2``` template.
   - Added ```utils/Util_GeneratePodRouterConfig.yml``` file.
 
-## Dev-v6.0.0 11-March-2023
+## Dev-v6.0.0 11-MARCH-2023
 
 ### Added by Luis Chanu
   - Updated ```ValidateConfiguration.yml``` playbook to only accept SDDC.Lab version 6 configuration files.
@@ -1895,40 +1895,40 @@
   - Tested download for each Ubuntu server version.
   - Be sure to update your ```software.yml``` file.
 
-## Dev-v6.0.0 12-March-2023
+## Dev-v6.0.0 12-MARCH-2023
 
 ### Added by Luis Chanu
   - Updated ```var_UbuntuConfiguration``` variable references in Ubuntu templates to match case of variable definition in ```DeployDNSServer.yml``` playbook.
 
-## Dev-v6.0.0 20-March-2023
+## Dev-v6.0.0 20-MARCH-2023
 
 ### Added by Luis Chanu
   - Added entry for Ubuntu v22.04.1 to ```templates_sample.yml``` file.
   - Be sure to update your ```templates.yml``` file.
 
-## Dev-v6.0.0 23-March-2023
+## Dev-v6.0.0 23-MARCH-2023
 
 ### Added by Luis Chanu
   - Modified ansible installation within ```pip3_requirements.txt``` to install Ansible v6.4.0 rather than the latest v7.x version.  Ansible v7.x causes ```CreatePodConfig.yml``` playbook to take 30+ minutes to generate a static configuration, while Ansible v6.4.0 and process that same configuration in 3+ minutes.
 
-## Dev-v6.0.0 27-March-2023
+## Dev-v6.0.0 27-MARCH-2023
 
 ### Added by Luis Chanu
   - Issues identified with Ubuntu v22.04.1 deployment.  Upon further digging, appears some folder structures have changed in the ISO.  Additional discovery needed.  For now, use v20.04.x for all DNSServer deployments, then upgrade to v22.04.1 post-deployment if v22.04.x is required/desired.
 
-## Dev-v6.0.0 29-March-2023
+## Dev-v6.0.0 29-MARCH-2023
 
 ### Added by Luis Chanu
   - Updated verbiage in NSX-T Federation section of ```README.md``` file.
 
-## Dev-v6.0.0 4-April-2023
+## Dev-v6.0.0 4-APRIL-2023
 
 ### Added by Luis Chanu
   - Created new utility to display various X.509 certificate thumbprints for a given website.
   - The new utility is ```utils/Util_GetCertFingerprints.sh```.
   - Documentation on how to use the new utility can be found within the file.
 
-## Dev-v6.0.0 5-April-2023
+## Dev-v6.0.0 5-APRIL-2023
 
 ### Added by Luis Chanu
   - All newly added software has NOT yet been tested.
@@ -1936,7 +1936,7 @@
     - vCenter Server v8.00C
   - Updated ```software_sample.yml``` and ```templates_sample.yml``` with updated vCenter references.  (NOT TESTED)
 
-## Dev-v6.0.0 18-April-2023
+## Dev-v6.0.0 18-APRIL-2023
 
 ### Added by Luis Chanu
   - All newly added software has NOT yet been tested.
@@ -1950,7 +1950,7 @@
   - Updated ```software_sample.yml``` and ```templates_sample.yml``` with updated vCenter references.  (NOT TESTED)
   - Be sure to update your ```software.yml``` and ```templates.yml``` files.
 
-## Dev-v6.0.0 26-April-2023
+## Dev-v6.0.0 26-APRIL-2023
 
 ### Added by Luis Chanu
   - Updated ```README.md``` file
@@ -1960,7 +1960,7 @@
     - Added Federation onboarding issue with NSX v3.2.2.1 to the "Issues With Various Software Versions" table.
     - Added additional information around Ubuntu version to use for SDDC.Lab DNS server deployment.
 
-## Dev-v6.0.0 28-June-2023
+## Dev-v6.0.0 28-JUNE-2023
 
 ### Added by Luis Chanu
   - All newly added software has NOT yet been tested.
@@ -1974,7 +1974,7 @@
   - Updated ```software_sample.yml``` and ```templates_sample.yml``` with updated vCenter references.  (NOT TESTED)
   - Be sure to update your ```software.yml``` and ```templates.yml``` files.
 
-## Dev-v6.0.0 29-June-2023
+## Dev-v6.0.0 29-JUNE-2023
 
 ### Added by Luis Chanu
   - Corrected output file name in comments of ```utils\Util_GeneratePodRouterConfig.yml``` playbook.
@@ -1993,3 +1993,8 @@
   - Be sure to update your ```software.yml``` and ```templates.yml``` files.
   - Updated user message in ```CreatePodConfig.yml``` to indicate more accurate time of how long it takes to generate the static configuration file
   - Added conditional check of ```network_policy.inherited``` in ```Create Port Groups``` play in ```playbooks/CreateVds.yml``` to omit if ```Target.Deployment == Host``` as there are no vDS's when deploying directly to an ESXi host.
+
+## Dev-v6.0.0 30-JUNE-2023
+
+### Added by Luis Chanu
+  - Added ```utils/Util_GetLabInfo.sh``` script to collect lab environment information.
