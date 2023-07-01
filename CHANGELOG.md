@@ -2005,3 +2005,4 @@
 
 ### Added by Luis Chanu
   - Increased ```ansible.builtin.uri``` timeouts from 15 to 20 seconds in ```DeployNsxLocalManager.yml``` to address timeouts on busy systems
+  - In ```Undeploy.yml``` playbook, added condition to ```Delete DRS VM-VM Affinity Rule``` task to only run when deploying to vCenter
