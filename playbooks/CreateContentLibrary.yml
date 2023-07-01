@@ -90,6 +90,10 @@
       loop: "{{ Nested_vCenter.ContentLibrary | dict2items }}"
       when:
         - item.key != "TKG"
+        - item.value.Enable
+          # Target.Deployment == 'Host' and Subscribed.Type == 'vCenter' are mutually exclusive,
+          # and can not both be set.
+        - not ( Target.Deployment == "Host" and item.value.Type == "subscribed" and item.value.Subscribed.Type == "vCenter")
 
     - name: Create TKG Content Library
       ansible.builtin.include_tasks:
@@ -97,3 +101,7 @@
       loop: "{{ Nested_vCenter.ContentLibrary | dict2items }}"
       when:
         - item.key == "TKG"
+        - item.value.Enable
+          # Target.Deployment == 'Host' and Subscribed.Type == 'vCenter' are mutually exclusive,
+          # and can not both be set.
+        - not ( Target.Deployment == "Host" and item.value.Type == "subscribed" and item.value.Subscribed.Type == "vCenter")
