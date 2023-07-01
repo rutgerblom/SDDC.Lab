@@ -2000,3 +2000,8 @@
   - Added ```utils/Util_GetLabInfo.sh``` script to collect lab environment information.
   - Revert ```playbooks/CreateVds.yml``` back to original configuration by removing the conditional check that was added on 29-JUNE-2023.
   - Issue found when ```Target.Deployment == 'Host'``` and subscribed content library is type 'vCenter', as no vCenter exists to subscrube to.  To mitigate the issue, added conditions to ```ansible.builtin.include_tasks``` within ```playbooks/CreateContentLibrary.yml``` to skip the creation of any content libraries when that condition exists.
+
+## Dev-v6.0.0 1-JULY-2023
+
+### Added by Luis Chanu
+  - Increased ```ansible.builtin.uri``` timeouts from 15 to 20 seconds in ```DeployNsxLocalManager.yml``` to address timeouts on busy systems
