@@ -2007,3 +2007,9 @@
   - Increased ```ansible.builtin.uri``` timeouts from 15 to 20 seconds in ```DeployNsxLocalManager.yml``` to address timeouts on busy systems
   - In ```Undeploy.yml``` playbook, added condition to ```Delete DRS VM-VM Affinity Rule``` task to only run when deploying to vCenter
   - Added conditions to ```CreateDrsVmRules.yml``` playbook tasks to only execute when ```Target.Deployment == 'vCenter'```
+
+## Dev-v6.0.0 2-JULY-2023
+
+### Added by Luis Chanu
+  - Tested ```Deploy.yml``` and ```Undeploy.yml``` playbooks with updated ```community.vmware``` ansible module v3.7.0.
+  - Updated ```community.vmware``` install version from v3.0.0 to v3.7.0 in ```requirements.yml``` file.
