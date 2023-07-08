@@ -81,7 +81,9 @@
         vm_type: "vm"
         validate_certs: false
       register: result
-      when: Deploy.DRS.VMRules.Enable
+      when:
+        - Deploy.DRS.VMRules.Enable
+        - Target.Deployment == "vCenter"
 
     - name: DEBUG -- Display VMs in VMFolder (Pause)
       ansible.builtin.pause:
@@ -94,12 +96,15 @@
       when:
         - DEBUG.DisplayVariables
         - Deploy.DRS.VMRules.Enable
+        - Target.Deployment == "vCenter"
 
     - name: Create list containing only Pod VM names
       ansible.builtin.set_fact:
         pod_vms: "{{ (pod_vms | default([])) + [item.guest_name] }}"
       loop: "{{ result.virtual_machines | default([]) }}"
-      when: Deploy.DRS.VMRules.Enable
+      when:
+        - Deploy.DRS.VMRules.Enable
+        - Target.Deployment == "vCenter"
 
     - name: DEBUG -- Display 'pod_vms' (Pause)
       ansible.builtin.pause:
@@ -112,6 +117,7 @@
       when:
         - DEBUG.DisplayVariables
         - Deploy.DRS.VMRules.Enable
+        - Target.Deployment == "vCenter"
 
     - name: Delete existing DRS VM-VM affinity rule
       community.vmware.vmware_vm_vm_drs_rule:
@@ -122,7 +128,9 @@
         drs_rule_name: "{{ Deploy.DRS.VMRules.Name }}"
         validate_certs: false
         state: absent
-      when: Deploy.DRS.VMRules.Enable
+      when:
+        - Deploy.DRS.VMRules.Enable
+        - Target.Deployment == "vCenter"
 
     - name: Create DRS VM-VM affinity rule
       community.vmware.vmware_vm_vm_drs_rule:
@@ -136,4 +144,6 @@
         enabled: true
         validate_certs: false
         state: present
-      when: Deploy.DRS.VMRules.Enable
+      when:
+        - Deploy.DRS.VMRules.Enable
+        - Target.Deployment == "vCenter"
