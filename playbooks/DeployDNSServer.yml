@@ -139,7 +139,6 @@
         path: "{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}"
       register: InstallerFileCheck 
       when:
-        - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
 
     - name: Update Ubuntu ISO file in the local software repository (overwrite if exists)
