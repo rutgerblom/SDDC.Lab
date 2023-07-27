@@ -2013,3 +2013,8 @@
 ### Added by Luis Chanu
   - Tested ```Deploy.yml``` and ```Undeploy.yml``` playbooks with updated ```community.vmware``` ansible module v3.7.0.
   - Updated ```community.vmware``` install version from v3.0.0 to v3.7.0 in ```requirements.yml``` file.
+
+## Dev-v6.0.0 27-JULY-2023
+
+### Added by Rutger Blom
+  - Updated ```pip3_requirements.txt``` to ensure that version 38.0.4 of cryptography is installed. This to avoid the "module 'lib' has no attribute 'OpenSSL_add_all_algorithms" error when connecting to the physical vCenter. 
