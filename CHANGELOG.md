@@ -2018,3 +2018,9 @@
 
 ### Added by Rutger Blom
   - Updated ```pip3_requirements.txt``` to ensure that version 38.0.4 of cryptography is installed. This to avoid the "module 'lib' has no attribute 'OpenSSL_add_all_algorithms" error when connecting to the physical vCenter. 
+
+## Dev-v6.0.0 28-JULY-2023
+
+### Added by Rutger Blom
+
+  - Updated ```licenses_sample.yml``` so it has an example entry for vSAN version 8.
