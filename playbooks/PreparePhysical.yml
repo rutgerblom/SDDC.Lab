@@ -217,7 +217,7 @@
 
     - name: Store vSphere Cluster Object ID (MoREF) for later use
       ansible.builtin.set_fact:
-        cluster_id: "{{ cluster_info.json.value[0].cluster | default(None) }}"
+        Cluster_ID: "{{ cluster_info.json.value[0].cluster | default(None) }}"
       when:
         - Target.Deployment == "vCenter"
         - vds_result.result == "DVS created"
