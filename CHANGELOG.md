@@ -2024,3 +2024,10 @@
 ### Added by Rutger Blom
 
   - Updated ```licenses_sample.yml``` so it has an example entry for vSAN version 8.
+
+  ## Dev-v6.0.0 28-JULY-2023
+
+### Added by Rutger Blom
+
+  - Updated ```templates/vsan_silence.rb.j2``` so the "vumconfig" healtch check is silenced. This so that the user is not faced with a warning on the vSAN
+  build recommendation engine which noe needs additional configuration.
