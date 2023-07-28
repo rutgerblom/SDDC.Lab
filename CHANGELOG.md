@@ -2032,3 +2032,4 @@
   - Updated ```templates/vsan_silence.rb.j2``` so the "vumconfig" healtch check is silenced. This so that the user is not faced with a warning on the vSAN
   build recommendation engine which noe needs additional configuration.
   - Updated ```requirements.yml``` so that community.vmware 3.8.0 can be used.
+  - Added vCenter Server v8.00 Update 1C to ```software_sample.yml```.
