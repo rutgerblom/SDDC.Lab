@@ -2033,3 +2033,8 @@
   build recommendation engine which noe needs additional configuration.
   - Updated ```requirements.yml``` so that community.vmware 3.8.0 can be used.
   - Added vCenter Server v8.00 Update 1C to ```software_sample.yml```.
+
+## Dev-v6.0.0 02-AUGUSTI-2023
+
+### Added by Rutger Blom
+  - Added NSX Advanced Load Balancer v22.1.3 and v22.1.4to ```software_sample.yml```.
