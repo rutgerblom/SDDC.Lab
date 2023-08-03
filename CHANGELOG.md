@@ -2029,12 +2029,17 @@
 
 ### Added by Rutger Blom
 
-  - Updated ```templates/vsan_silence.rb.j2``` so the "vumconfig" healtch check is silenced. This so that the user is not faced with a warning on the vSAN
-  build recommendation engine which noe needs additional configuration.
+  - Updated ```templates/vsan_silence.rb.j2``` so the "vumconfig" health check is silenced. This so that the user is not faced with a warning on the vSAN
+  build recommendation engine which now needs additional configuration.
   - Updated ```requirements.yml``` so that community.vmware 3.8.0 can be used.
   - Added vCenter Server v8.00 Update 1C to ```software_sample.yml```.
 
-## Dev-v6.0.0 02-AUGUSTI-2023
+## Dev-v6.0.0 02-AUGUST-2023
 
 ### Added by Rutger Blom
-  - Added NSX Advanced Load Balancer v22.1.3 and v22.1.4to ```software_sample.yml```.
+  - Added NSX Advanced Load Balancer v22.1.3 and v22.1.4 to ```software_sample.yml```.
+
+## Dev-v6.0.0 03-AUGUST-2023
+
+### Added by Luis Chanu
+  - Fixed type-O's in ```CHANGELOG.md``` file.
