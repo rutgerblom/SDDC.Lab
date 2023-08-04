@@ -2043,3 +2043,4 @@
 
 ### Added by Luis Chanu
   - Fixed type-O's in ```CHANGELOG.md``` file.
+  - Created ```utils\Util_AddIPv4DNSRecord.sh``` which simplifies the manual creation of a single IPv4 DNS record
