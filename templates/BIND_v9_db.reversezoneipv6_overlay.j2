@@ -1,0 +1,11 @@
+$TTL 604800     ; 1 week
+c.f.ip6.arpa.  IN SOA  dns.{{ Common.DNS.Domain | lower }}. admin.{{ Common.DNS.Domain | lower }}. (
+                1          ; serial
+                604800     ; refresh (1 week)
+                86400      ; retry (1 day)
+                2419200    ; expire (4 weeks)
+                604800     ; minimum (1 week)
+                )
+
+            IN    NS      dns.{{ Common.DNS.Domain | lower }}.
+$ORIGIN c.f.ip6.arpa.

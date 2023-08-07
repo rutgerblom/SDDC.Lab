@@ -2050,3 +2050,4 @@
 ### Added by Luis Chanu
   - Created ```utils/Util_GenerateDNSZoneFiles.yml`` to test and troubleshoot DNS Jinja2 templates.
   - Added ```templates/BIND_v9_db.reversezoneipv4_overlay.j2``` to provide Reverse DNS for IPv4 overlay network space.
+  - Added ```templates/BIND_v9_db.reversezoneipv6_overlay.j2``` to provide Reverse DNS for IPv6 overlay network space.  Note that the addres space used for IPv6 overlay is hard coded within this Jinja2 template.
