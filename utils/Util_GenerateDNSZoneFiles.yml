@@ -1,0 +1,27 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: utils/Util_GenerateDNSZoneFiles.yml
+##
+##
+## This playbook utility applies the supplied configuration to a specified template(s), and writes the output to /tmp/ZoneFile_for_xxxxx.j2.
+## Although the output file ends in .j2, it is only to indicate which Jinja2 template was rendered, but it's contents contain the rendered output.
+##
+## The command syntax to run this script is the same as is used to deploy a SDDC Lab, except you execut this script.  That command looks like this:
+##
+##              ansible-playbook  -e "@~/Pod-XXX-Config.yml" utils/Util_GenerateDNSZoneFiles.yml
+##
+---
+- hosts: localhost
+  gather_facts: false
+  vars:
+    - Templates:
+      - BIND_v9_db.reversezoneipv4_overlay.j2
+
+  tasks:
+    - name: Generating DNS zone files from DNS templates
+      ansible.builtin.template: 
+        src:  "../templates/{{ item }}"
+        dest: "/tmp/ZoneFile_for_{{ item }}"
+        force: yes
+      loop: "{{ Templates }}"
