@@ -2043,9 +2043,10 @@
 
 ### Added by Luis Chanu
   - Fixed type-O's in ```CHANGELOG.md``` file.
-  - Created ```utils\Util_AddIPv4DNSRecord.sh``` which simplifies the manual creation of a single IPv4 DNS record
+  - Created ```utils/Util_AddIPv4DNSRecord.sh``` which simplifies the manual creation of a single IPv4 DNS record
 
 ## Dev-v6.0.0 06-AUGUST-2023
 
 ### Added by Luis Chanu
-  - Created ```utils\Util_GenerateDNSZoneFiles.yml`` to test and troubleshoot DNS Jinja2 templates.
+  - Created ```utils/Util_GenerateDNSZoneFiles.yml`` to test and troubleshoot DNS Jinja2 templates.
+  - Added ```templates/BIND_v9_db.reversezoneipv4_overlay.j2``` to provide Reverse DNS for IPv4 overlay network space.
