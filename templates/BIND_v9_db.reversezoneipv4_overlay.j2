@@ -1,0 +1,20 @@
+$TTL 604800
+{{ Pod.BaseOverlay.IPv4.Network | ansible.utils.ipaddr('revdns') | regex_replace('^.{4}(.*)$', '\\1') }}  IN SOA dns.{{ Common.DNS.Domain | lower }}. admin.{{ Common.DNS.Domain | lower }}. (
+           1   ; Serial
+      604800   ; Refresh
+       86400   ; Retry
+     2419200   ; Expire
+      604800 ) ; Negative Cache TTL
+;
+
+; Name servers
+               NS   dns.{{ Common.DNS.Domain | lower }}.
+
+; A records for name servers
+dns            IN   A    {{ Nested_DNSServer.OS.Network.IPv4.Address }}
+
+;Define origin
+$ORIGIN {{ Pod.BaseOverlay.IPv4.Network | ansible.utils.ipaddr('revdns') | regex_replace('^.{4}(.*)$', '\\1') }}
+
+; PTR records
+{{ Nested_DNSServer.OS.Network.IPv4.Address | ansible.utils.ipaddr('revdns') | regex_replace('(^[0-9]+.[0-9]+)..+$', '\\1') }}    IN   PTR  dns.{{ Common.DNS.Domain | lower }}.
