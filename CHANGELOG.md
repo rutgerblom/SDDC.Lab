@@ -2052,3 +2052,8 @@
   - Added ```templates/BIND_v9_db.reversezoneipv4_overlay.j2``` to provide Reverse DNS for IPv4 overlay network space.
   - Added ```templates/BIND_v9_db.reversezoneipv6_overlay.j2``` to provide Reverse DNS for IPv6 overlay network space.  Note that the addres space used for IPv6 overlay is hard coded within this Jinja2 template.
   - Added vCenter v7.00 Update 3M to ```templates_sample.yml``` file.
+
+## Dev-v6.0.0 07-AUGUST-2023
+
+### Added by Luis Chanu
+  - Increased delays from 5 seconds to 10 seconds in dialogs 4-7 of ```DeployRouter.yml``` playbook to accomodate busy servers with slow disk performance.
