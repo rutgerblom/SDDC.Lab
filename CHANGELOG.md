@@ -2057,3 +2057,4 @@
 
 ### Added by Luis Chanu
   - Increased delays from 5 seconds to 10 seconds in dialogs 4-7 of ```DeployRouter.yml``` playbook to accomodate busy servers with slow disk performance.
+  - Created ```utils/Util_GetLatestVyosISO.sh``` script to download the latest VyOS ISO file.
