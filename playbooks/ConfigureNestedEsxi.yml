@@ -116,6 +116,22 @@
         - Nested_Cluster[item.value.Cluster]['DeployHosts']
         - Deploy.Setting.UseNFS
 
+    - name: Disconnect CDROM from nested ESXi hosts
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ item.value.VMName }}"
+        cdrom:
+          - controller_number: 0
+            unit_number: 0
+            type: none
+            state: present
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      when:
+        - Nested_Cluster[item.value.Cluster]['DeployHosts']
+
     - name: Delete custom ESXi ISO image used for Pod ESXi deployment from the datastore
       community.vmware.vsphere_file:
         host: "{{ Target.FQDN }}"

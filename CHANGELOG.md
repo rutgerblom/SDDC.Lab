@@ -2066,3 +2066,8 @@
     - NSX-T v3.2.3
     - NSX-T v3.2.3.1
     - vSphere Replication v8.7.0.2
+
+## Dev-v6.0.0 09-AUGUST-2023
+
+### Added by Luis Chanu
+  - Modified ```ConfigureNestedEsxi.yml``` playbook to "eject" the mounted custom ESXi ISO/CD from the Guest VM's CD-ROM drive by setting CD-ROM type to ```none```.
