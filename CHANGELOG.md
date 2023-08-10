@@ -2071,3 +2071,8 @@
 
 ### Added by Luis Chanu
   - Modified ```ConfigureNestedEsxi.yml``` playbook to "eject" the mounted custom ESXi ISO/CD from the Guest VM's CD-ROM drive by setting CD-ROM type to ```none```.
+
+## Dev-v6.0.0 10-AUGUST-2023
+
+  ### Added by Rutger
+  - Modified ```config_sample.yml``` to correct the values for the DNS server keyboard layout and variant in accordance with ```/usr/share/X11/xkb/rules/xorg.lst```
