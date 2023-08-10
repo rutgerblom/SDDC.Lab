@@ -159,6 +159,23 @@
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
+        - Deploy.Software.DNSServer.Version is match("20.*")
+
+    - name: Extract Ubuntu ISO (Ubuntu 22.04)
+      ansible.builtin.command: "7z -y x {{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }} -o{{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}"
+      changed_when: false
+      when:
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy
+        - Deploy.Software.DNSServer.Version is match("22.*")
+
+    - name: Move [BOOT] out of ISO extraction directory (Ubuntu 22.04)
+      ansible.builtin.command: "mv {{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}/'[BOOT]' {{ Target.TempFolder }}/isos/BOOT"
+      changed_when: false
+      when:
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy
+        - Deploy.Software.DNSServer.Version is match("22.*")
 
     - name: Add write permission to extracted files 
  ## Using chmod as Ansible (Python) can't handle the recursion depth on the Ubuntu ISO
@@ -167,6 +184,7 @@
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
+        - Deploy.Software.DNSServer.Version is match("20.*")
 
 
 ## Start workaround issue with Ubuntu autoinstall
@@ -179,6 +197,7 @@
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
+        - Deploy.Software.DNSServer.Version is match("20.*")
 
 ## End workaround issue with Ubuntu autoinstall
 
@@ -191,6 +210,7 @@
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
+        - Deploy.Software.DNSServer.Version is match("20.*")
 
     - name: Edit txt.cfg to enable autoinstaller 
       ansible.builtin.replace:
@@ -200,6 +220,7 @@
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
+        - Deploy.Software.DNSServer.Version is match("20.*")
 
     - name: Create directory to store user-data and meta-data
       ansible.builtin.file:
@@ -230,6 +251,33 @@
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
+        - Deploy.Software.DNSServer.Version is match("20.*")
+
+    - name: Create custom Ubuntu ISO (Ubuntu 22.04)
+      ansible.builtin.command: "xorriso -as mkisofs -r \
+                                -V 'Ubuntu 22.04 LTS AUTO (EFIBIOS)' \
+                                -o {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }} \
+                                --grub2-mbr {{ Target.TempFolder }}/isos/BOOT/1-Boot-NoEmul.img  \
+                                -partition_offset 16 \
+                                --mbr-force-bootable \
+                                -append_partition 2 28732ac11ff8d211ba4b00a0c93ec93b {{ Target.TempFolder }}/isos/BOOT/2-Boot-NoEmul.img \
+                                -appended_part_as_gpt \
+                                -iso_mbr_part_type a2a0d0ebe5b9334487c068b6b72699c7 \
+                                -c '/boot.catalog' \
+                                -b '/boot/grub/i386-pc/eltorito.img' \
+                                  -no-emul-boot -boot-load-size 4 -boot-info-table --grub2-boot-info \
+                                -eltorito-alt-boot \
+                                -e '--interval:appended_partition_2:::' \
+                                -no-emul-boot \
+                                {{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}/ \
+                                {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
+      args:
+        chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
+      changed_when: false
+      when:
+        - ubuntu_status is failed
+        - Deploy.Product.DNSServer.Deploy
+        - Deploy.Software.DNSServer.Version is match("22.*")
 
     - name: Upload the custom Ubuntu ISO to the datastore
       community.vmware.vsphere_copy: 
