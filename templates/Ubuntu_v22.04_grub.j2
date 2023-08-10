@@ -7,7 +7,7 @@ set menu_color_highlight=black/light-gray
 
 menuentry "Autoinstall Ubuntu Server" {
     set gfxpayload=keep
-    linux   /casper/vmlinuz quiet autoinstall ds=nocloud\;s=/cdrom/server/  ---
+    linux   /casper/vmlinuz quiet autoinstall ds=nocloud\;s=/cdrom/{{ Common.DNS.Domain }}/  ---
     initrd  /casper/initrd
 }
 menuentry "Try or Install Ubuntu Server" {
