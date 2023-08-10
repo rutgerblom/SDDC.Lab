@@ -2079,3 +2079,6 @@
   - Be sure to update your ```config.yml``` file(s).
   - Update the OS NIC name in ```templates/Ubuntu_v22.04.1_user-data.j2``` to ```ens33``` as that seems what it's called in an Ubuntu 22.04 VM.
   - Added back an updated entry for Ubuntu 22.04 in ```software_sample.yml```
+  - 7z required for correct extraction of the Ubuntu 22.04 ISO. Updated README.md with this requirement.
+  - Renamed template files and updates ```templates_sample.yml```
+  - Be sure to update your ```templates.yml``` file.
