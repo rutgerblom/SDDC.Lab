@@ -2078,3 +2078,4 @@
   - Modified ```config_sample.yml``` to correct the values for the DNS server keyboard layout and variant in accordance with ```/usr/share/X11/xkb/rules/xorg.lst```
   - Be sure to update your ```config.yml``` file(s).
   - Update the OS NIC name in ```templates/Ubuntu_v22.04.1_user-data.j2``` to ```ens33``` as that seems what it's called in an Ubuntu 22.04 VM.
+  - Added back an updated entry for Ubuntu 22.04 in ```software_sample.yml```
