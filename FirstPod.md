@@ -54,7 +54,7 @@ version 2.12.x.
 ```sudo apt update```
 
 2. Python, pip, xorriso, and git:\
-```sudo apt install python3 python3-pip python-is-python3 xorriso git```
+```sudo apt install python3 python3-pip python-is-python3 xorriso p7zip-full git```
 
 3. The SDDC.Lab repository cloned to an appropriate location on your Ubuntu machine (e.g. $HOME/git/SDDC.Lab) with:\
 ```git clone https://github.com/rutgerblom/SDDC.Lab.git ~/git/SDDC.Lab```

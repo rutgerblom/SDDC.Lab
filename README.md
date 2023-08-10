@@ -94,7 +94,7 @@ The following are recommendations based on our experience with deploying Pods:
 
 * Install the required software on your Ansible controller:
   * ```sudo apt update```
-  * ```sudo apt install python3 python3-pip python-is-python3 xorriso git```
+  * ```sudo apt install python3 python3-pip python-is-python3 xorriso p7zip-full git```
   * ```git clone https://github.com/rutgerblom/SDDC.Lab.git ~/git/SDDC.Lab```
   * ```pip3 install --upgrade -r ~/git/SDDC.Lab/pip3_requirements.txt```
 
