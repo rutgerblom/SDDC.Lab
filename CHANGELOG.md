@@ -2076,3 +2076,4 @@
 
   ### Added by Rutger
   - Modified ```config_sample.yml``` to correct the values for the DNS server keyboard layout and variant in accordance with ```/usr/share/X11/xkb/rules/xorg.lst```
+  - Be sure to update your ```config.yml``` file(s).
