@@ -153,74 +153,18 @@
         - Deploy.Product.DNSServer.Deploy
 
     - name: Extract Ubuntu ISO
-      ansible.builtin.command: "xorriso -osirrox on -indev {{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }} -extract / \
-                                {{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}"
-      changed_when: false
-      when:
-        - ubuntu_status is failed
-        - Deploy.Product.DNSServer.Deploy
-        - Deploy.Software.DNSServer.Version is match("20.*")
-
-    - name: Extract Ubuntu ISO (Ubuntu 22.04)
       ansible.builtin.command: "7z -y x {{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }} -o{{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}"
       changed_when: false
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
-        - Deploy.Software.DNSServer.Version is match("22.*")
 
-    - name: Move [BOOT] out of ISO extraction directory (Ubuntu 22.04)
+    - name: Move [BOOT] out of ISO extraction directory
       ansible.builtin.command: "mv {{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}/'[BOOT]' {{ Target.TempFolder }}/isos/BOOT"
       changed_when: false
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
-        - Deploy.Software.DNSServer.Version is match("22.*")
-
-    - name: Add write permission to extracted files 
- ## Using chmod as Ansible (Python) can't handle the recursion depth on the Ubuntu ISO
-      ansible.builtin.command: "chmod -R +w {{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}"
-      changed_when: false
-      when:
-        - ubuntu_status is failed
-        - Deploy.Product.DNSServer.Deploy
-        - Deploy.Software.DNSServer.Version is match("20.*")
-
-
-## Start workaround issue with Ubuntu autoinstall
-## Details of the issue and the workaround: https://askubuntu.com/questions/1394441/ubuntu-20-04-3-autoinstall-with-embedded-user-data-crashing-i-got-workaround
-
-    - name: Extract the Packages.gz file on Ubuntu ISO
-      ansible.builtin.command: "gunzip {{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}\
-                                /dists/focal/main/binary-amd64/Packages.gz --keep"
-      changed_when: false
-      when:
-        - ubuntu_status is failed
-        - Deploy.Product.DNSServer.Deploy
-        - Deploy.Software.DNSServer.Version is match("20.*")
-
-## End workaround issue with Ubuntu autoinstall
-
-
-    - name: Copy txt.cfg from Ubuntu ISO
-      ansible.builtin.copy: 
-        src: "{{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}/isolinux/txt.cfg"
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/isolinux/"
-        mode: "666"
-      when:
-        - ubuntu_status is failed
-        - Deploy.Product.DNSServer.Deploy
-        - Deploy.Software.DNSServer.Version is match("20.*")
-
-    - name: Edit txt.cfg to enable autoinstaller 
-      ansible.builtin.replace:
-        path: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/isolinux/txt.cfg"
-        regexp: 'append   initrd=/casper/initrd quiet  ---'
-        replace: 'append   initrd=/casper/initrd quiet --- autoinstall ds=nocloud;s=/cdrom/{{ Common.DNS.Domain }}/'
-      when:
-        - ubuntu_status is failed
-        - Deploy.Product.DNSServer.Deploy
-        - Deploy.Software.DNSServer.Version is match("20.*")
 
     - name: Create directory to store user-data and meta-data
       ansible.builtin.file:
@@ -241,19 +185,6 @@
         - Deploy.Product.DNSServer.Deploy
 
     - name: Create custom Ubuntu ISO
-      ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }} \
-                                -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table  \
-                                {{ Target.TempFolder }}/isos/{{ Deploy.Software.DNSServer.Vendor }}_{{ Deploy.Software.DNSServer.Product }}_{{ Deploy.Software.DNSServer.Version }}/ \
-                                {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
-      args:
-        chdir: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.Installer }}/"
-      changed_when: false
-      when:
-        - ubuntu_status is failed
-        - Deploy.Product.DNSServer.Deploy
-        - Deploy.Software.DNSServer.Version is match("20.*")
-
-    - name: Create custom Ubuntu ISO (Ubuntu 22.04)
       ansible.builtin.command: "xorriso -as mkisofs -r \
                                 -V 'Ubuntu 22.04 LTS AUTO (EFIBIOS)' \
                                 -o {{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }} \
@@ -277,7 +208,6 @@
       when:
         - ubuntu_status is failed
         - Deploy.Product.DNSServer.Deploy
-        - Deploy.Software.DNSServer.Version is match("22.*")
 
     - name: Upload the custom Ubuntu ISO to the datastore
       community.vmware.vsphere_copy: 
