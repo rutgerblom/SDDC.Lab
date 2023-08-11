@@ -2082,3 +2082,9 @@
   - 7z required for correct extraction of the Ubuntu 22.04 ISO. Updated README.md with this requirement.
   - Renamed template files and updates ```templates_sample.yml```
   - Be sure to update your ```templates.yml``` file.
+
+## Dev-v6.0.0 10-AUGUST-2023
+
+  ### Added by Rutger
+    - Consolidated the Ubuntu versions for the DNS server. Version 22.04 is now the required and only supported version. The DNS server deployment script will automaticallly download the correct ISO from 
+
