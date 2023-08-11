@@ -2083,8 +2083,9 @@
   - Renamed template files and updates ```templates_sample.yml```
   - Be sure to update your ```templates.yml``` file.
 
-## Dev-v6.0.0 10-AUGUST-2023
+## Dev-v6.0.0 11-AUGUST-2023
 
   ### Added by Rutger
-    - Consolidated the Ubuntu versions for the DNS server. Version 22.04 is now the required and only supported version. The DNS server deployment script will automaticallly download the correct ISO from 
+    - Consolidated the Ubuntu versions for the DNS server. Version 22.04 is now the required and only supported version. The DNS server deployment script will automaticallly download the correct ISO file (https://cdimage.ubuntu.com/ubuntu-server/jammy/daily-live/current/jammy-live-server-amd64.iso) when this ISO file does not exist in the local software library (e.g. /Software/Ubuntu/Server/v22.04/jammy-live-server-amd64.iso)
+
 
