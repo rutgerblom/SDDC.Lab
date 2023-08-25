@@ -2090,6 +2090,8 @@
   - Be sure to update your ```templates.yml``` file.
   - Be sure to update your ```software.yml``` file.
   - Be sure to update your ```config.yml``` file(s).
-  
 
+## Dev-v6.0.0 23-AUGUST-2023
 
+  ### Added by Luis Chanu
+  - Added NSX v4.1.1 to ```software_sample.yml``` file. (UNTESTED)
