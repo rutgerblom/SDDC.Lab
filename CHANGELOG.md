@@ -2102,3 +2102,4 @@
   - Updated ```config_sample.yml``` as follows:
     - Updated software versions to latest releases
     - Added ```DeploymentSetting``` to ```Common``` and most ```Nested_xxx``` sections to prepare for future functionality.
+  - Be sure to update your ```config.yml``` file(s).
