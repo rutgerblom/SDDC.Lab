@@ -2095,3 +2095,10 @@
 
   ### Added by Luis Chanu
   - Added NSX v4.1.1 to ```software_sample.yml``` file. (UNTESTED)
+
+## Dev-v6.0.0 26-AUGUST-2023
+
+  ### Added by Luis Chanu
+  - Updated ```config_sample.yml``` as follows:
+    - Updated software versions to latest releases
+    - Added ```DeploymentSetting``` to ```Common``` and most ```Nested_xxx``` sections to prepare for future functionality.
