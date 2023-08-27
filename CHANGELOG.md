@@ -2106,3 +2106,6 @@
   - Modified ```DeployNestedEsxi.yml``` playbook to support ```DeploymentSetting``` items on nested ESXi VMs:
     - Reserve all guest memory (All locked)
     - Memory Shares
+  - Modified ```DeployRouter.yml``` playbook to support ```DeploymentSetting``` items on VyOS router VM:
+    - Reserve all guest memory (All locked)
+    - Memory Shares

@@ -198,6 +198,8 @@
           num_cpus: "1"
           num_cpu_cores_per_socket: "1"
           scsi: paravirtual
+          mem_shares_level: "{{ Nested_Router.DeploymentSetting.Hardware.Memory.Shares }}"
+          memory_reservation_lock: "{{ Nested_Router.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"
         networks:
           - name: "{{ Nested_Router.Interface.Uplink.PortGroup }}"
             device_type: vmxnet3
