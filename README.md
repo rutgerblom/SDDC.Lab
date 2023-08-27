@@ -425,6 +425,12 @@ Here are the important settings to understand in order to utilize this feature:
   a) ```DeploymentSetting.Hardware.Memory.Shares```\
   b) ```DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory```
 
+Finally, there are two items to be aware of:
+
+1. Pod components that are deployed from OVA files don't have their memory reservation or share settings set as part of the initial deployment, so those settings are configured AFTER the VM is deployed.  As such, those memory settings will not be effective until the given VM is stopped and restarted.
+
+2. Pod components that are deployed from ISO files, which include Pod-Router and nested ESX hosts, do have their memory reservation and share settings configured as part of their initial deployment.  As such, those memory settings are effective immediately, without the need to stop or restart them.
+
 
 ## Known Items
 Here are some known items to be aware of:
