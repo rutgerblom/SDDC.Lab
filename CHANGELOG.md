@@ -2074,7 +2074,7 @@
 
 ## Dev-v6.0.0 10-AUGUST-2023
 
-  ### Added by Rutger
+### Added by Rutger
   - Modified ```config_sample.yml``` to correct the values for the DNS server keyboard layout and variant in accordance with ```/usr/share/X11/xkb/rules/xorg.lst```
   - Be sure to update your ```config.yml``` file(s).
   - Update the OS NIC name in ```templates/Ubuntu_v22.04.1_user-data.j2``` to ```ens33``` as that seems what it's called in an Ubuntu 22.04 VM.
@@ -2085,7 +2085,7 @@
 
 ## Dev-v6.0.0 11-AUGUST-2023
 
-  ### Added by Rutger
+### Added by Rutger
   - Consolidated the Ubuntu versions for the DNS server. Version 22.04 is now the required and only supported version. The DNS server deployment script will automaticallly download the correct ISO file (https://cdimage.ubuntu.com/ubuntu-server/jammy/daily-live/current/jammy-live-server-amd64.iso) when this ISO file does not exist in the local software library (e.g. /Software/Ubuntu/Server/v22.04/jammy-live-server-amd64.iso)
   - Be sure to update your ```templates.yml``` file.
   - Be sure to update your ```software.yml``` file.
@@ -2093,12 +2093,12 @@
 
 ## Dev-v6.0.0 23-AUGUST-2023
 
-  ### Added by Luis Chanu
+### Added by Luis Chanu
   - Added NSX v4.1.1 to ```software_sample.yml``` file. (UNTESTED)
 
 ## Dev-v6.0.0 26-AUGUST-2023
 
-  ### Added by Luis Chanu
+### Added by Luis Chanu
   - Updated ```config_sample.yml``` as follows:
     - Updated software versions to latest releases
     - Added ```DeploymentSetting``` to ```Common``` and most ```Nested_xxx``` sections to prepare for future functionality.
@@ -2112,5 +2112,10 @@
     
 ## Dev-v6.0.0 27-AUGUST-2023
 
-  ### Added by Rutger Blom
+### Added by Rutger Blom
   - Created ```utils/Util_ShutdownPod.yml``` playbook that performs graceful shutdown of a Pod.
+
+## Dev-v6.0.0 27-AUGUST-2023
+
+### Added by Luis Chanu
+  - Added information about new memory reservation & shares functionality to the ```README.md``` file.
