@@ -2096,7 +2096,4 @@
   ### Added by Luis Chanu
   - Added NSX v4.1.1 to ```software_sample.yml``` file. (UNTESTED)
 
-## Dev-v6.0.0 27-AUGUST-2023
 
-  ### Added by Rutger Blom
-  - Created ```utils/Util_ShutdownPod.yml``` playbook that performs graceful shutdown of a Pod.

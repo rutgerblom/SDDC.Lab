@@ -106,21 +106,21 @@ Deploy:
     vCenter:                                              # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: vCenter                                    # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '8.00B'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '8.00U1C'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-vCenter.conf"
       Installer: "{{ SiteCode }}-Installer-vCenter"
     ESXi:                                                 # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: ESXi                                       # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '8.00B'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '8.00U1A'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "KS.CFG"
       Installer: "{{ SiteCode }}-Installer-ESXi"
     NSXT:                                                 # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: NSXT                                       # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '4.1.0.0'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '4.1.1'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-NSXT.conf"
       Installer: "{{ SiteCode }}-Installer-NSXT"
@@ -134,7 +134,7 @@ Deploy:
     vRLI:                                                 # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: vRLI                                       # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '8.10.2'                                   # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '8.12.0'                                   # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-vRLI-1.conf"
       Installer: "{{ SiteCode }}-Installer-vRLI-1"
@@ -148,14 +148,14 @@ Deploy:
     ALB:                                                  # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: ALB                                        # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '22.1.2'                                   # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '22.1.4'                                   # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-ALB-Controller-1"
       Installer: "{{ SiteCode }}-ALB-Controller-1"
     Replication:                                          # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: Replication                                # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '8.6.0'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '8.7.0.2'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-Replication"
       Installer: "{{ SiteCode }}-Replication"
@@ -214,6 +214,11 @@ Common:
   PKI:
     ValidateCerts: false                                                      # This indicates if PKI Certificates should be validated.  By default, self-signed certificates are used, so ValidateCerts should be set to 'false'
   DiskProvisioning: thin
+  DeploymentSetting:                                                          # Default deployment settings for various Nested VM deployment options.  Settings can be over-written within each 'Nested_xxx' component configuration section.
+    Hardware:
+      Memory:
+        Shares: normal                                                        # Allocation of memory share resources for nested VMs.  Valid options are 'low', 'normal', and 'high'.
+        ReserveAllGuestMemory: false                                          # This determines if all nested components should have all of their memory reserved.  Make sure your physical host has sufficient memory before setting to 'true'.
   Annotation: '*** Auto-Deployed by SDDC.Lab ***'
 
 
@@ -486,6 +491,11 @@ Nested_Router:
   UserConfig:                                                         # Optional user specific Pod-Router configuration commands to send to router after SDDC.Lab configuration
     Directory: "~"                                                    # Must specify either '~' for home directory, a '.' for current directory, or an absolute directory path (without a '/' at the end)
     Template: "{{ SiteCode }}-Router-UserConfig.j2"                   # Filename where users place their Pod-Router configuration commands.  For VyOS, these should be 'SET' or 'DELETE' commands.  There is no syntax or command checking performed, so it is up to the user to ensure the commands are correct.
+  DeploymentSetting:                                                  # Control various deployment settings for the 'Nested_xxx' VM.
+    Hardware:
+      Memory:
+        Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"                                 # Allocation of memory share resources.  Valid options are 'low', 'normal', 'high', or inherit from 'Common'.
+        ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"   # Reserve guest VM memory.  Valid options are 'false', 'true', or inherit from 'Common'.
   Protocol: BOTH                                                      # Protocol - Options are "Static", "BGP", "OSPF" or "BOTH" (OSPF and BGP)
   Interface:
     Uplink:
@@ -652,6 +662,11 @@ Nested_vRLI:
     admin:
       Name: admin
       Password: "{{ Common.Password.Nested }}"
+  DeploymentSetting:                                                  # Control various deployment settings for the 'Nested_xxx' VM.
+    Hardware:
+      Memory:
+        Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"                                 # Allocation of memory share resources.  Valid options are 'low', 'normal', 'high', or inherit from 'Common'.
+        ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"   # Reserve guest VM memory.  Valid options are 'false', 'true', or inherit from 'Common'.
   Component:
     Cluster_VIP:
       VMName: "{{ SiteCode }}-vRLI"
@@ -707,6 +722,11 @@ Nested_ALB:
     FQDN: "{{ BackupServer.SFTP.FQDN }}"
     Path: "{{ BackupServer.SFTP.Path }}"
     Port: "{{ BackupServer.SFTP.Port }}"
+  DeploymentSetting:                                                  # Control various deployment settings for the 'Nested_xxx' VM.
+    Hardware:
+      Memory:
+        Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"                                 # Allocation of memory share resources.  Valid options are 'low', 'normal', 'high', or inherit from 'Common'.
+        ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"   # Reserve guest VM memory.  Valid options are 'false', 'true', or inherit from 'Common'.
   Component:
     Controller_VIP:
       VMName: "{{ SiteCode }}-ALB-Controller"
@@ -780,7 +800,12 @@ Nested_Replication:
   Configuration:
     SiteName: "{{ SiteCode }}"
     Email: "admin@{{ SiteCode }}.{{ Common.DNS.Domain }}"
-    ClockToleranceSeconds: 3                                                           # Maximum time tolerance between vSphere Replication and vCenter Server.  Default is 3 seconds.
+    ClockToleranceSeconds: 3                                # Maximum time tolerance between vSphere Replication and vCenter Server.  Default is 3 seconds.
+  DeploymentSetting:                                        # Control various deployment settings for the 'Nested_xxx' VM.
+    Hardware:
+      Memory:
+        Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"                                 # Allocation of memory share resources.  Valid options are 'low', 'normal', 'high', or inherit from 'Common'.
+        ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"   # Reserve guest VM memory.  Valid options are 'false', 'true', or inherit from 'Common'.
   Component:
     Appliance:
       VMName: "{{ SiteCode }}-Replication-Appliance"
@@ -789,8 +814,8 @@ Nested_Replication:
         EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
         AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
         EnableFileIntegrity: false
-        Cluster:                                                                       # Specifying a Cluster will over-ride the default functionality of automatically selecting one from the deployed vSphere clusters
-        Size: light                                                                    # Only valid options are 'light' or 'standard'.  'light' is a 2 CPU deployment, while 'standard' is a 4 CPU deployment
+        Cluster:                                            # Specifying a Cluster will over-ride the default functionality of automatically selecting one from the deployed vSphere clusters
+        Size: light                                         # Only valid options are 'light' or 'standard'.  'light' is a 2 CPU deployment, while 'standard' is a 4 CPU deployment
       Address:
         IPv4:
           Address: "{{ Net.Management.IPv4.Network }}.25"
@@ -859,6 +884,11 @@ Nested_DNSServer:
 Nested_Cluster:
   Management:
     DeployHosts: false                                                                  # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
+    DeploymentSetting:                                                                  # Control various deployment settings for the 'Nested_xxx' VM.
+      Hardware:
+        Memory:
+          Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"                                 # Allocation of memory share resources.  Valid options are 'low', 'normal', 'high', or inherit from 'Common'.
+          ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"   # Reserve guest VM memory.  Valid options are 'false', 'true', or inherit from 'Common'.
     DRS: true
     HA:
       Enable: false
@@ -894,6 +924,11 @@ Nested_Cluster:
               Prefix: 28
   ComputeA:
     DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
+    DeploymentSetting:                                                                  # Control various deployment settings for the 'Nested_xxx' VM.
+      Hardware:
+        Memory:
+          Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"                                 # Allocation of memory share resources.  Valid options are 'low', 'normal', 'high', or inherit from 'Common'.
+          ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"   # Reserve guest VM memory.  Valid options are 'false', 'true', or inherit from 'Common'.
     DRS: true
     HA:
       Enable: true
@@ -929,6 +964,11 @@ Nested_Cluster:
               Prefix: 28
   ComputeB:
     DeployHosts: false                                                                  # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
+    DeploymentSetting:                                                                  # Control various deployment settings for the 'Nested_xxx' VM.
+      Hardware:
+        Memory:
+          Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"                                 # Allocation of memory share resources.  Valid options are 'low', 'normal', 'high', or inherit from 'Common'.
+          ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"   # Reserve guest VM memory.  Valid options are 'false', 'true', or inherit from 'Common'.
     DRS: true
     HA:
       Enable: true
@@ -964,6 +1004,11 @@ Nested_Cluster:
               Prefix: 28
   Edge:                                                                                 # 'Edge' is where NSX-T ETN's are deployed.  HIGHLY suggest you always have an 'Edge' cluster.
     DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
+    DeploymentSetting:                                                                  # Control various deployment settings for the 'Nested_xxx' VM.
+      Hardware:
+        Memory:
+          Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"                                 # Allocation of memory share resources.  Valid options are 'low', 'normal', 'high', or inherit from 'Common'.
+          ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"   # Reserve guest VM memory.  Valid options are 'false', 'true', or inherit from 'Common'.
     DRS: true
     HA:
       Enable: false
@@ -1862,6 +1907,11 @@ Nested_vCenter:
     IPv6:
       Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(5) }}"
       Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+  DeploymentSetting:                                                                    # Control various deployment settings for the 'Nested_xxx' VM.
+    Hardware:
+      Memory:
+        Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"                                 # Allocation of memory share resources.  Valid options are 'low', 'normal', 'high', or inherit from 'Common'.
+        ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"   # Reserve guest VM memory.  Valid options are 'false', 'true', or inherit from 'Common'.
   SSO:
     Domain: vsphere.local
     Site: "{{ SiteCode }}-Site"
@@ -2106,6 +2156,11 @@ Nested_NSXT:
       Password: "{{ BackupServer.Credential.Password }}"
       Passphrase: "{{ BackupServer.Credential.Passphrase }}"
     Protocol: SFTP                                                                     # Protocol must be in UPPER CASE, and must be defined within the BackupServer dictionary
+  DeploymentSetting:                                                                   # Control various deployment settings for the 'Nested_xxx' VM.
+    Hardware:
+      Memory:
+        Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"                                 # Allocation of memory share resources.  Valid options are 'low', 'normal', 'high', or inherit from 'Common'.
+        ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"   # Reserve guest VM memory.  Valid options are 'false', 'true', or inherit from 'Common'.
   Component:
     GlobalManager_VIP:
       VMName: "{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-NSXT-GM"
