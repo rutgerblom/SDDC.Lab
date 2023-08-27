@@ -2103,3 +2103,6 @@
     - Updated software versions to latest releases
     - Added ```DeploymentSetting``` to ```Common``` and most ```Nested_xxx``` sections to prepare for future functionality.
   - Be sure to update your ```config.yml``` file(s).
+  - Modified ```DeployNestedEsxi.yml``` playbook to support ```DeploymentSetting``` items on nested ESXi VMs:
+    - Reserve all guest memory (All locked)
+    - Memory Shares

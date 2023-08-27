@@ -91,10 +91,12 @@
             datastore: "{{ Target.Datastore }}"
         hardware:
           nested_virt: true
+          scsi: paravirtual
           memory_mb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['Memory'] }}"
           num_cpus: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['CPU'] }}"
           num_cpu_cores_per_socket: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['CoresPerSocket'] }}"
-          scsi: paravirtual
+          mem_shares_level: "{{ Nested_Cluster[item.value.Cluster]['DeploymentSetting']['Hardware']['Memory']['Shares'] }}"
+          memory_reservation_lock: "{{ Nested_Cluster[item.value.Cluster]['DeploymentSetting']['Hardware']['Memory']['ReserveAllGuestMemory'] }}"
         networks:
           - name: "{{ Target.PortGroup.Trunk.Name }}"
             device_type: vmxnet3
