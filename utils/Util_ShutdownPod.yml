@@ -1,13 +1,12 @@
 ##
-##    Project: SDDC.Lab
-##    Authors: Luis Chanu & Rutger Blom
-##    Filename: util_ShutdownPod.yml
+##     Project: SDDC.Lab
+##     Authors: Luis Chanu & Rutger Blom
+##    Filename: Util_ShutdownPod.yml
 ##
-##    Purpose:
-##    Graceful shutdown of a Pod.
+##     Purpose: Graceful shutdown of a Pod.  This playbook supports both vCenter and Host Pod deployments.
 ##
-##   Example: Perform a shutdown of Pod 240:
-##   ansible-playbook -e "@/home/ubuntu/Pod-240-Config.yml" Utils/Util_ShutdownPod.yml
+##     Example: Perform a shutdown of Pod 240:
+##                  ansible-playbook -e "@~/Pod-240-Config.yml" utils/Util_ShutdownPod.yml
 ##
 ##
 ---
@@ -55,6 +54,8 @@
           ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
+
+                                             SiteCode: {{ SiteCode }}
 
                                     Target.Deployment: {{ Target.Deployment }}
 
@@ -116,17 +117,19 @@
       when:
         - Nested_Cluster[item.value.Cluster]['DeployHosts']
 
-    - name: Gather info about virtual machines in physical vCenter's inventory
+    - name: Gather info about virtual machines in physical vCenter/Host inventory
       community.vmware.vmware_vm_info:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        folder: "/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}"
+        # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
+        folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}\
+                 {% else %}{{ Target.VMFolder }}{% endif %}"
       register: vminfo_physical_vcenter
       ignore_errors: true
 
-    - name: Shutdown all VMs in the physical vCenter
+    - name: Shutdown all VMs in the physical vCenter/Host that start with {{ SiteCode }}
       community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -134,5 +137,7 @@
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         name: "{{ item.guest_name }}"
         state: shutdownguest
-      loop: "{{ vminfo_physical_vcenter.virtual_machines }}"
+      loop: "{{ vminfo_physical_vcenter.virtual_machines | community.general.json_query(query) }}"
+      vars:
+        query: "[?starts_with(guest_name,'{{ SiteCode }}')]"
       ignore_errors: true
