@@ -1,0 +1,138 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##    Filename: util_ShutdownPod.yml
+##
+##    Purpose:
+##    Graceful shutdown of a Pod.
+##
+##   Example: Perform a shutdown of Pod 240:
+##   ansible-playbook -e "@/home/ubuntu/Pod-240-Config.yml" Utils/Util_ShutdownPod.yml
+##
+##
+---
+- hosts: localhost
+  name: Util_ShutdownPod.yml
+  tasks:
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+
+                                  Nested_vCenter.FQDN: {{ Nested_vCenter.FQDN }}
+                                  Nested_vCenter.User: {{ Nested_vCenter.User }}
+                              Nested_vCenter.Password: {{ Nested_vCenter.Password }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+    - name: Gather info about virtual machines in nested vCenter
+      community.vmware.vmware_vm_info:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+      register: vminfo
+      ignore_errors: true
+
+    - name: Shutdown all VMs in the nested vCenter's inventory
+      community.vmware.vmware_guest:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ item.guest_name }}"
+        state: shutdownguest
+      loop: "{{ vminfo.virtual_machines }}"
+      ignore_errors: true
+
+    - name: Place nested ESXi hosts in Maintenance Mode
+      community.vmware.vmware_maintenancemode:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        esxi_hostname: "{{ item.value.FQDN | lower }}"
+        vsan: noAction
+        state: present
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      ignore_errors: true
+      when:
+        - Nested_Cluster[item.value.Cluster]['DeployHosts']
+
+    - name: Shutdown nested ESXi hosts
+      community.vmware.vmware_host_powerstate:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        esxi_hostname: "{{ item.value.FQDN | lower }}"
+      loop: "{{ Nested_ESXi.Host | dict2items }}"
+      ignore_errors: true
+      when:
+        - Nested_Cluster[item.value.Cluster]['DeployHosts']
+
+    - name: Gather info about virtual machines in physical vCenter's inventory
+      community.vmware.vmware_vm_info:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        folder: "/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}"
+      register: vminfo_physical_vcenter
+      ignore_errors: true
+
+    - name: Shutdown all VMs in the physical vCenter
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ item.guest_name }}"
+        state: shutdownguest
+      loop: "{{ vminfo_physical_vcenter.virtual_machines }}"
+      ignore_errors: true
