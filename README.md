@@ -24,6 +24,7 @@
   * [Deploy Test Workloads](#deploy-test-workloads-v4)
   * [Workload Management](#workload-management-v4)
   * [NSX-T Segment IP Subnet Auto-Allocation](#nsx-t-segment-ip-subnet-auto-allocation-v5)
+  * [Memory Reservation & Shares](#memory-reservation--shares-v6)
 * [Known Items](#known-items)
 * [Issues With Various Software Versions](#issues-with-various-software-versions)
 * [More Information](#more-information)
@@ -410,6 +411,19 @@ Here are the important settings to understand in order to properly utilize this 
   b) If ```Deploy.Setting.IPv6: True```, then an IPv6 subnet will be allocated.
 
 5. The ```Pod.BaseOverlay.<IPVersion>.RangePrefix``` setting specifies the CIDR setting used by the DHCP Scope to create it's range of addresses from.  The IP addresses comprised within this CIDR range is always the highest network within the provisioned IP subnet.  For example, if the IP subnet that is provisioned is ```10.204.60.0/24```, and if the ```Pod.BaseOverlay.IPv4.RangePrefix``` setting is set to ```28```, the IPv4 range configured on the DHCP Scope will be ```10.204.60.241-10.204.60.254```.  DHCP ranges are created for both IPv4 and IPv6 subnets.
+
+### Memory Reservation & Shares (v6)
+SDDC.Lab now helps you optimize your SDDC.Lab performance by allowing you to configure memory Reservation and Share settings for your Pod VMs.  Of course, you will need sufficient available memory to take advantage of this.
+
+Here are the important settings to understand in order to utilize this feature:
+
+1. The ```Common.DeploymentSetting``` data structure within the ```config.yml``` functions as the central location to define the default settings that you want to use for the entire Pod being deployed.
+
+2. Most of the included ```Nested_xxx``` entries in the ```config.yml``` file include ```DeploymentSetting``` within it.  By default, these all get their settings from the ```Common.DeploymentSetting``` values.  However, if you want to over-ride the default settings for a particular nested component, you can do so by just filling in the ```DeploymentSetting``` structure for that given component.
+
+3. The two items that can be configured are:\
+  a) ```DeploymentSetting.Hardware.Memory.Shares```\
+  b) ```DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory```
 
 
 ## Known Items
