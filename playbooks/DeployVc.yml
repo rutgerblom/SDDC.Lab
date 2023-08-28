@@ -164,6 +164,21 @@
       register: vcdeploy
       when: vcenter_check.status != 200
 
+    - name: Apply Memory Reservation and Share Settings
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_vCenter.VMName }}"
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
+        hardware:
+          mem_shares_level: "{{ Nested_vCenter.DeploymentSetting.Hardware.Memory.Shares }}"
+          memory_reservation_lock: "{{ Nested_vCenter.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"
+      when: vcenter_check.status != 200
+
     - name: Delete local ISO extraction directory
       ansible.builtin.file:
         path: "{{ Target.TempFolder }}/isos/{{ Deploy.Software.vCenter.Vendor }}_{{ Deploy.Software.vCenter.Product }}_{{ Deploy.Software.vCenter.Version }}"
