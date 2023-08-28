@@ -2119,3 +2119,5 @@
 
 ### Added by Luis Chanu
   - Added information about new memory reservation & shares functionality to the ```README.md``` file.
+  - Added additional information about the new memory reservation and shares functionality to the ```README.md``` file.
+  - Modified ```utils/Util_ShutdownPod.yml``` playbook to support both vCenter and Host based deployments. (UNTESTED)
