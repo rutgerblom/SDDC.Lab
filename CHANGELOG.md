@@ -2121,3 +2121,5 @@
   - Added information about new memory reservation & shares functionality to the ```README.md``` file.
   - Added additional information about the new memory reservation and shares functionality to the ```README.md``` file.
   - Modified ```utils/Util_ShutdownPod.yml``` playbook to support both vCenter and Host based deployments. (UNTESTED)
+  - Removed ```DeploymentSetting``` data structure from ```Nested_Replication``` section within ```config_sample.yml``` file because the replication appliance VM is deployed within the nexted vSphere cluster.
+  - Be sure to update your ```config.yml``` file(s).

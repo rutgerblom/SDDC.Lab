@@ -801,11 +801,6 @@ Nested_Replication:
     SiteName: "{{ SiteCode }}"
     Email: "admin@{{ SiteCode }}.{{ Common.DNS.Domain }}"
     ClockToleranceSeconds: 3                                # Maximum time tolerance between vSphere Replication and vCenter Server.  Default is 3 seconds.
-  DeploymentSetting:                                        # Control various deployment settings for the 'Nested_xxx' VM.
-    Hardware:
-      Memory:
-        Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"                                 # Allocation of memory share resources.  Valid options are 'low', 'normal', 'high', or inherit from 'Common'.
-        ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"   # Reserve guest VM memory.  Valid options are 'false', 'true', or inherit from 'Common'.
   Component:
     Appliance:
       VMName: "{{ SiteCode }}-Replication-Appliance"
