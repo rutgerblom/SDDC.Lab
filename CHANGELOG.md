@@ -2129,3 +2129,4 @@
     - ```DeployNsxLocalManager.yml```
     - ```DeployVc.yml```
     - ```DeployVrli.yml```
+  - Added task to ```DeployVc.yml``` to disable password expiration on Nested vCenter Server
