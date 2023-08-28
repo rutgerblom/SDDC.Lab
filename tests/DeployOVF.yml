@@ -1,0 +1,52 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: tests/DeployOVF.yml
+##
+---
+- hosts: localhost
+  name: DeployOVF.yml
+  vars:
+    - OVF_FILE_PATH: /Software/TinyVM/v2.7.0
+    - OVF_FILE_NAME: TinyVM.ova
+    - VM_NAME: Pod-120-TinyVM
+    - NET_PORTGROUP: Pod-120-Mgmt
+
+  tasks:
+    - name: Deploy {{ OVF_FILE_NAME }}
+      community.vmware.vmware_deploy_ovf:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datastore: "{{ Target.Datastore }}"
+        allow_duplicates: false
+        # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
+        folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}\
+                 {% else %}{{ Target.VMFolder }}{% endif %}"
+        datacenter: "{{ Target.DataCenter }}"
+        cluster: "{{ Target.Cluster }}"
+        name: "{{ VM_NAME }}"
+        ovf: "{{ OVF_FILE_PATH }}/{{ OVF_FILE_NAME }}"
+        networks:
+          "dvportgroup-64": "{{ Target.PortGroup.Management.Name }}"
+        disk_provisioning: "{{ Common.DiskProvisioning }}"
+        power_on: true
+        fail_on_spec_warnings: true
+        wait: true
+        wait_for_ip_address: true
+        inject_ovf_env: false
+
+    - name: Apply Memory Reservation and Share Settings
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ VM_NAME }}"
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
+        hardware:
+          mem_shares_level: "low"
+          memory_reservation_lock: "True"

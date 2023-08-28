@@ -263,6 +263,23 @@
         - Deploy.Product.vRLI.Deploy
         - vrli_check.status != 200
 
+    - name: Apply Memory Reservation and Share Settings
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_vRLI.Component.Node.VMName }}"
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
+        hardware:
+          mem_shares_level: "{{ Nested_vRLI.DeploymentSetting.Hardware.Memory.Shares }}"
+          memory_reservation_lock: "{{ Nested_vRLI.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"
+      when:
+        - Deploy.Product.vRLI.Deploy
+        - vrli_check.status != 200
+
     - name: Write annotation on the vRLI VM
       community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"

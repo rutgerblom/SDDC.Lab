@@ -164,6 +164,21 @@
       register: vcdeploy
       when: vcenter_check.status != 200
 
+    - name: Apply Memory Reservation and Share Settings
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_vCenter.VMName }}"
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
+        hardware:
+          mem_shares_level: "{{ Nested_vCenter.DeploymentSetting.Hardware.Memory.Shares }}"
+          memory_reservation_lock: "{{ Nested_vCenter.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"
+      when: vcenter_check.status != 200
+
     - name: Delete local ISO extraction directory
       ansible.builtin.file:
         path: "{{ Target.TempFolder }}/isos/{{ Deploy.Software.vCenter.Vendor }}_{{ Deploy.Software.vCenter.Product }}_{{ Deploy.Software.vCenter.Version }}"
@@ -177,6 +192,21 @@
       when:
         - vcenter_check.status != 200
         - not DEBUG.KeepConfigFiles
+
+    - name: Disable password expiration on nested vCenter Server
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        cluster:  "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ Nested_vCenter.VMName }}"
+        vm_username: "root"
+        vm_password: "{{ Nested_vCenter.Password }}"
+        vm_shell: /usr/bin/bash
+        vm_shell_args: -lic "/usr/bin/chage -M -1 root; echo '' > /etc/security/opasswd"
 
     - name: Write annotation on the vCenter VM
       community.vmware.vmware_guest:

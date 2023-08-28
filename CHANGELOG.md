@@ -2121,3 +2121,12 @@
   - Added information about new memory reservation & shares functionality to the ```README.md``` file.
   - Added additional information about the new memory reservation and shares functionality to the ```README.md``` file.
   - Modified ```utils/Util_ShutdownPod.yml``` playbook to support both vCenter and Host based deployments. (UNTESTED)
+  - Removed ```DeploymentSetting``` data structure from ```Nested_Replication``` section within ```config_sample.yml``` file because the replication appliance VM is deployed within the nexted vSphere cluster.
+  - Be sure to update your ```config.yml``` file(s).
+  - Added memory resource & share support to the following playbooks:
+    - ```DeployAlb.yml```
+    - ```DeployNsxGlobalManager.yml```
+    - ```DeployNsxLocalManager.yml```
+    - ```DeployVc.yml```
+    - ```DeployVrli.yml```
+  - Added task to ```DeployVc.yml``` to disable password expiration on Nested vCenter Server

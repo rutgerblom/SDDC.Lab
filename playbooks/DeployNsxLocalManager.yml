@@ -229,6 +229,22 @@
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy
 
+    - name: Apply Memory Reservation and Share Settings
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_NSXT.Component.LocalManager.VMName }}"
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
+        hardware:
+          mem_shares_level: "{{ Nested_NSXT.DeploymentSetting.Hardware.Memory.Shares }}"
+          memory_reservation_lock: "{{ Nested_NSXT.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy
+
     - name: Write annotation on the NSX-T Local Manager VM
       community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
