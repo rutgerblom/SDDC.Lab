@@ -72,6 +72,30 @@
         path: "{{ Target.TempFolder }}"
         state: directory
 
+# The "community.vmware.vsan_health_silent_checks" module requires the vSAN Management SDK which is not publicly available 
+#
+#    - name: Silence certain vSAN health checks
+#      community.vmware.vsan_health_silent_checks:
+#        hostname: "{{ Nested_vCenter.FQDN }}"
+#        username: "{{ Nested_vCenter.User }}"
+#        password: "{{ Nested_vCenter.Password }}"
+#        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+#        checks: 
+#          - controllerdiskmode
+#          - controllerdriver
+#          - controllerfirmware
+#          - controllerreleasesupport
+#          - controlleronhcl
+#          - perfsvcstatus
+#          - smalldiskstest
+#          - vsanenablesupportinsight
+#          - vumconfig
+#        cluster_name: "{{ item.key }}"
+#      loop: "{{ Nested_Cluster | dict2items }}"
+#      when:
+#        - item.value.vSAN == true
+#        - item.value.DeployHosts == true
+
     - name: Create Ruby script for silencing vSAN warnings
       ansible.builtin.template: 
         src: "../templates/vsan_silence.rb.j2"
