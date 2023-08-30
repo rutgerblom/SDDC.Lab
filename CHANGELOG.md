@@ -2130,3 +2130,8 @@
     - ```DeployVc.yml```
     - ```DeployVrli.yml```
   - Added task to ```DeployVc.yml``` to disable password expiration on Nested vCenter Server
+
+## Dev-v6.0.0 29-AUGUST-2023
+
+### Added by Luis Chanu
+  - In an effort to catch issues early in the Pod deployment process, Pod-Router reachability tests were added to both ```DeployRouter.yml``` and ```ConfigureRouter.yml``` playbooks. (TESTED)

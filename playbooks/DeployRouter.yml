@@ -6,6 +6,7 @@
 ---
 - hosts: localhost
   name: DeployRouter.yml
+  connection: ansible.netcommon.network_cli
   tasks:
     - name: DeployRouter_Playbook
       ansible.builtin.debug:
@@ -887,3 +888,53 @@
         - Deploy.Product.Router.Deploy
         - status is failed
         - not DEBUG.KeepInstallerFiles
+
+##
+## Verify deployment
+##
+
+    - name: Try to ping the Pod-Router uplink interface
+      shell: "ping -c 1 {{ Nested_Router.Interface.Uplink.IPv4.Address }}"
+      ignore_errors: true
+      register: result
+      retries: 5
+      delay: 1
+      # The space before '0% packet loss' is to ensure it doesn't match '100% packet loss'
+      until: '" 0% packet loss" in result.stdout'
+
+    - name: Notify user if unable to ping Pod-Router uplink interface
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          ================================ Pod Connectivity Issue ================================
+
+            Issue: Unable to ping Pod-Router's uplink interface from the Ansible Controller.
+                   This is usually caused by the Pod-Router deployment not completing successfully.
+
+            The address we attempted to ping was {{ Nested_Router.Interface.Uplink.IPv4.Address }}.
+
+          ========================================================================================
+      when: '" 0% packet loss" not in result.stdout'
+
+    - name: Issue found, so tell user to quit and investigate the issue
+      ansible.builtin.pause:
+        seconds: 99999
+        prompt: |
+          =====================================================================================================
+          =========================================  ISSUE(S) FOUND  ==========================================
+          =====================================================================================================
+
+             *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*
+
+          In the Pod's current state, the deployment of vCenter Server WILL FAIL after about 30+ minutes.
+          For that reason, please abort this deployment by
+
+                                    PRESSING CONTROL-C, FOLLOWED BY THE LETTER "A"
+
+          Once the script has aborted, investigate why there isn't reachability to the Pod-Router's uplink
+          interface.  The likely cause for this failure is that VyOS Pod-Router did not properly deploy.
+
+             *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*
+
+          =====================================================================================================
+      when: '" 0% packet loss" not in result.stdout'
