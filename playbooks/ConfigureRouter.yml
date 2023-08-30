@@ -225,3 +225,59 @@
         - Deploy.Product.Router.Deploy
         - not DEBUG.KeepConfigFiles
         - userconfigtemplate.stat.exists
+
+##
+## Verify configuration was properly applied by testing reachability to management interface
+##
+
+    - name: Verify Pod reachability by pinging Pod-Router management interface
+      shell: "ping -c 1 {{ Nested_Router.Interface.Management.IPv4.Address }}"
+      ignore_errors: true
+      register: result
+      # Large number of retries allows for a slow conversion of routing protocols
+      retries: 20
+      delay: 1
+      # The space before '0% packet loss' is to ensure it doesn't match '100% packet loss'
+      until: '" 0% packet loss" in result.stdout'
+
+    - name: Notify user if unable to ping Pod-Router management interface
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          ================================ Pod Connectivity Issue ================================
+
+            Issue: Unable to ping Pod-Router's management interface from the Ansible Controller.
+                   This is usually caused by the Pod-Router not having been properly configured.
+
+            The address we attempted to ping was {{ Nested_Router.Interface.Management.IPv4.Address }}.
+
+          ========================================================================================
+      when: '" 0% packet loss" not in result.stdout'
+
+    - name: Issue found, so tell user to quit and investigate the issue
+      ansible.builtin.pause:
+        seconds: 99999
+        prompt: |
+          =====================================================================================================
+          =========================================  ISSUE(S) FOUND  ==========================================
+          =====================================================================================================
+
+             *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*
+
+          In the Pod's current state, the deployment of vCenter Server WILL FAIL after about 30+ minutes.
+          For that reason, please abort this deployment by
+
+                                    PRESSING CONTROL-C, FOLLOWED BY THE LETTER "A"
+
+          Once the script has aborted, investigate why there isn't reachability to the Pod-Router's management
+          interface.  The three likely causes are:
+            1) The VyOS Pod-Router did not deploy propertly.
+            2) The Pod-Router did not get properly configured.  In the past, we have seen this been caused
+               by VyOS releasing a new version of the VyOS ISO that doesn't process all of the commands.
+            3) Dynamic routing protocol(s) did not establish neighbor relationships, and as such, the
+               Pod-Router's management interface didn't get advertised to the physical Layer-3 switch.
+
+             *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*   *STOP*
+
+          =====================================================================================================
+      when: '" 0% packet loss" not in result.stdout'
