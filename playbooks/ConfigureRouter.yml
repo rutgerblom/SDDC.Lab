@@ -16,7 +16,7 @@
   name: ConfigureRouter.yml
   connection: ansible.netcommon.network_cli
   vars:
-    - LOCAL_UserConfigTempFile: "{{ Nested_Router.UserConfig.Template | regex_replace('^(.*).j2$', '\\1', ignorecase=True) }}.conf"
+    LOCAL_UserConfigTempFile: "{{ Nested_Router.UserConfig.Template | regex_replace('^(.*).j2$', '\\1', ignorecase=True) }}.conf"
   tasks:
     - name: ConfigureRouter_Playbook
       ansible.builtin.debug:
@@ -131,11 +131,11 @@
         src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
         save: true
       vars:
-        - ansible_connection: ansible.netcommon.network_cli
-        - ansible_host: "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
-        - ansible_user: vyos
-        - ansible_password: vyos
-        - ansible_network_os: vyos.vyos.vyos
+        ansible_connection: ansible.netcommon.network_cli
+        ansible_host: "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
+        ansible_user: vyos
+        ansible_password: vyos
+        ansible_network_os: vyos.vyos.vyos
       ignore_errors: true
       when:
         - Deploy.Product.Router.Deploy
@@ -195,11 +195,11 @@
         src: "{{ Target.TempFolder }}/{{ LOCAL_UserConfigTempFile }}"
         save: true
       vars:
-        - ansible_connection: ansible.netcommon.network_cli
-        - ansible_host: "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
-        - ansible_user: vyos
-        - ansible_password: "{{ Common.Password.Nested }}"
-        - ansible_network_os: vyos.vyos.vyos
+        ansible_connection: ansible.netcommon.network_cli
+        ansible_host: "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
+        ansible_user: vyos
+        ansible_password: "{{ Common.Password.Nested }}"
+        ansible_network_os: vyos.vyos.vyos
       when:
         - Deploy.Product.Router.Deploy
         - Deploy.Software.Router.Vendor == "VyOS"
