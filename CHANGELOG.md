@@ -2135,3 +2135,8 @@
 
 ### Added by Luis Chanu
   - In an effort to catch issues early in the Pod deployment process, Pod-Router reachability tests were added to both ```DeployRouter.yml``` and ```ConfigureRouter.yml``` playbooks. (TESTED)
+
+## Dev-v6.0.0 30-AUGUST-2023
+
+### Added by Luis Chanu
+  - Removed '-' from ```vars:``` declaration in tasks within ```ConfigureRouter.yml``` playbook.
