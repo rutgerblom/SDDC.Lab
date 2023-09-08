@@ -2143,5 +2143,5 @@
 
 ## Dev-v6.0.0 08-SEPTEMBER-2023
 
-### Added by RUTGER
+### Added by Rutger Blom
   - Increased number of retries to ```60``` on the ```Verify Pod reachability by pinging Pod-Router management interface``` task in ```playbooks/ConfigureRouter.yml```.
