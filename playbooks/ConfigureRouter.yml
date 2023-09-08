@@ -235,7 +235,7 @@
       ignore_errors: true
       register: result
       # Large number of retries allows for a slow conversion of routing protocols
-      retries: 20
+      retries: 60
       delay: 1
       # The space before '0% packet loss' is to ensure it doesn't match '100% packet loss'
       until: '" 0% packet loss" in result.stdout'
