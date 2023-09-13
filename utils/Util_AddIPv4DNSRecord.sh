@@ -44,3 +44,16 @@ nsupdate -v /tmp/$FILENAME
 
 # Cleanup
 rm /tmp/$FILENAME
+
+##
+## Verify record by querying for it
+##
+
+echo
+echo "###############################################"
+echo "  Perform nslooup to verify DNS FQDN resolves"
+echo "###############################################"
+echo
+
+sleep 1
+nslookup $1
