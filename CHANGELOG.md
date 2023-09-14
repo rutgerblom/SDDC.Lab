@@ -2145,3 +2145,8 @@
 
 ### Added by Rutger Blom
   - Increased number of retries to ```60``` on the ```Verify Pod reachability by pinging Pod-Router management interface``` task in ```playbooks/ConfigureRouter.yml```.
+
+## Dev-v6.0.0 13-SEPTEMBER-2023
+
+### Added by Luis Chanu
+  - Added ```nslookup``` verification test to end of ```utils/Util_AddIPv4DNSRecord.sh``` script.
