@@ -184,9 +184,12 @@ Common:
     LeaseTime: 3600                                                           # DHCP Lease Time (in seconds) for Overlay Segments
   DNS:
     Domain: SDDC.Lab                                                          # Domain - Default DNS Domain used by all nested components.
+    ForwarderIPv4: 8.8.8.8                                                    # Forwarder - Default DNS forwarding address used by nested routers.
+    ForwarderIPv6: 2001:4860:4860::8888                                       # Forwarderv6 - Default DNS IPv6 forwarding address used by nested routers.    
     Server1:
       IPv4: "{{ Net.Uplink.IPv4.Network }}.5"                                 # Replace this IP if using a different DNS server than the suggested .5  server in the Router Uplink segment (MUST support Dynamic DNS Updates)
       IPv6: "{{ Net.Uplink.IPv6.Network }}::{{ '%04x'|format(5) }}"           # Replace this IP if using a different DNS server than the suggested ::5 server in the Router Uplink segment (MUST support Dynamic DNS Updates)
+      Protocol: udp                                                           # Select protocol to be used when adding/updating dns records for pods on the nested DNS server
     Server2:
       IPv4: 
       IPv6: 
@@ -850,11 +853,11 @@ Nested_DNSServer:
         Address: "{{ Net.Uplink.IPv4.Network }}.5" 
         Prefix:  "{{ Net.Uplink.IPv4.Prefix }}"
         Gateway: "{{ Net.Uplink.IPv4.Network }}.1"
-        DNS: 8.8.8.8                                                                    # DNS server reachable by OS to resolve names.  Update as required for your environment.
+        DNS: "{{ Common.DNS.ForwarderIPv4 }}"                                                                   # DNS server reachable by OS to resolve names.  Update as required for your environment.
       IPv6:
         Address: "{{ Net.Uplink.IPv6.Network }}::{{ '%04x'|format(5) }}" 
         Prefix:  "{{ Net.Uplink.IPv6.Prefix }}"
-        DNS: 2001:4860:4860::8888
+        DNS: "{{ Common.DNS.ForwarderIPv6 }}"
     Locale: en_US
     Keyboard:
       Layout: us
@@ -862,8 +865,8 @@ Nested_DNSServer:
     Packages:
       BIND:
         Forwarder:
-          IPv4: 8.8.8.8                                                                 # DNS forwarders used by BIND.  Update as required for your environment.
-          IPv6: 2001:4860:4860::8888
+          IPv4: "{{ Common.DNS.ForwarderIPv4 }}"                                                                 # DNS forwarders used by BIND.  Update as required for your environment.
+          IPv6: "{{ Common.DNS.ForwarderIPv6 }}"
 
 
 
