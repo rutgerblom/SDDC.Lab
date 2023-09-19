@@ -1042,7 +1042,7 @@ Software:
           File: vyos-rolling-latest.iso
           Location: 
             Local: "{{ RootDirectory }}/VyOS/Router/Latest"
-            URL:   "https://s3.amazonaws.com/s3-us.vyos.io/rolling/current"
+            URL:   "{{ lookup('url', 'https://api.github.com/repos/vyos/vyos-rolling-nightly-builds/releases/latest', split_lines=false) | regex_search('browser_download_url.*(https://(.*?).iso)', '\\1') | first }}"
           Version: "0.0"
           FileExt: iso
         Test:
