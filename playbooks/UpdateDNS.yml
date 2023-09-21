@@ -87,7 +87,7 @@
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                     LOCAL_RecordState: {{ LOCAL_RecordState }}
                                     Common.DNS.Domain: {{ Common.DNS.Domain }}
-                                  Common.DNS.Protocol: {{ Common.DNS.Protocol }}
+                                  Common.DNS.protocol: "{{ Common.DNS.Protocol }}"
                             Common.DNS.Forwarder.IPv4: {{ Common.DNS.Forwarder.IPv4}}
                             Common.DNS.Forwarder.IPv6: {{ Common.DNS.Forwarder.IPv6}}
                               Common.DNS.Server1.IPv4: {{ Common.DNS.Server1.IPv4 }}
@@ -148,7 +148,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: A
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
         record: "{{ Nested_Router.Name }}-{{ item.key }}"
         value: "{{ item.value.IPv4.Address }}"
@@ -162,7 +162,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: CNAME
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
         record: "{{ Nested_Router.Name }}"
         value: "{{ Nested_Router.Name }}-Uplink"
@@ -197,7 +197,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: PTR
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ ipv4_reverse_zone }}"
         record: "{{ item.value.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
         value: "{{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}."
@@ -241,7 +241,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv6 }}"
         type: AAAA
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
         record: "{{ Nested_Router.Name }}-{{ item.key }}"
         value: "{{ item.value.IPv6.Address }}"
@@ -277,7 +277,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv6 }}"
         type: PTR
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ ipv6_reverse_zone }}"
         record: "{{ item.value.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
         value: "{{ Nested_Router.Name }}-{{ item.key }}.{{ Common.DNS.Domain }}."
@@ -332,7 +332,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: A
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
         record: "{{ item.value.VMName }}"
         value: "{{ item.value.Address.IPv4.Address }}"
@@ -368,7 +368,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: PTR
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ ipv4_reverse_zone }}"
         record: "{{ item.value.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
         value: "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
@@ -412,7 +412,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv6 }}"
         type: AAAA
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
         record: "{{ item.value.VMName }}"
         value: "{{ item.value.Address.IPv6.Address }}"
@@ -448,7 +448,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv6 }}"
         type: PTR
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ ipv6_reverse_zone }}"
         record: "{{ item.value.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
         value: "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
@@ -503,7 +503,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: A
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
         record: "{{ item.value.VMName }}"
         value: "{{ item.value.Address.IPv4.Address }}"
@@ -539,7 +539,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: PTR
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ ipv4_reverse_zone }}"
         record: "{{ item.value.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
         value: "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
@@ -584,7 +584,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv6 }}"
         type: AAAA
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
         record: "{{ item.value.VMName }}"
         value: "{{ item.value.Address.IPv6.Address }}"
@@ -622,7 +622,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv6 }}"
         type: PTR
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ ipv6_reverse_zone }}"
         record: "{{ item.value.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
         value: "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
@@ -678,7 +678,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: A
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
         record: "{{ item.value.VMName }}"
         value: "{{ item.value.Address.IPv4.Address }}"
@@ -714,7 +714,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: PTR
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ ipv4_reverse_zone }}"
         record: "{{ item.value.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
         value: "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
@@ -758,7 +758,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv6 }}"
         type: AAAA
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
         record: "{{ item.value.VMName }}"
         value: "{{ item.value.Address.IPv6.Address }}"
@@ -794,7 +794,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv6 }}"
         type: PTR
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ ipv6_reverse_zone }}"
         record: "{{ item.value.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
         value: "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
@@ -849,7 +849,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: A
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
         record: "{{ item.value.VMName }}"
         value: "{{ item.value.vmk.vmk0.Address.IPv4.Address }}"
@@ -885,7 +885,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: PTR
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ ipv4_reverse_zone }}"
         record: "{{ item.value.vmk.vmk0.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
         value: "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
@@ -930,7 +930,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv6 }}"
         type: AAAA
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
         record: "{{ item.value.VMName }}"
         value: "{{ item.value.vmk.vmk0.Address.IPv6.Address }}"
@@ -968,7 +968,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv6 }}"
         type: PTR
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ ipv6_reverse_zone }}"
         record: "{{ item.value.vmk.vmk0.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
         value: "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
@@ -1023,7 +1023,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: A
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
         record: "{{ Nested_vCenter.VMName }}"
         value: "{{ Nested_vCenter.Address.IPv4.Address }}"
@@ -1057,7 +1057,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: PTR
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ ipv4_reverse_zone }}"
         record: "{{ Nested_vCenter.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
         value: "{{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}."
@@ -1100,7 +1100,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv6 }}"
         type: AAAA
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
         record: "{{ Nested_vCenter.VMName }}"
         value: "{{ Nested_vCenter.Address.IPv6.Address }}"
@@ -1136,7 +1136,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv6 }}"
         type: PTR
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ ipv6_reverse_zone }}"
         record: "{{ Nested_vCenter.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
         value: "{{ Nested_vCenter.VMName }}.{{ Common.DNS.Domain }}."
@@ -1192,7 +1192,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: A
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
         record: "{{ item.value.VMName }}"
         value: "{{ item.value.Address.IPv4.Address }}"
@@ -1230,7 +1230,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: PTR
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ ipv4_reverse_zone }}"
         record: "{{ item.value.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
         value: "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
@@ -1267,7 +1267,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: A
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
         record: "{{ item.Name }}"
         value: "{{ item.Deployment.ManagementIPAddress }}"
@@ -1303,7 +1303,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: PTR
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ ipv4_reverse_zone }}"
         record: "{{ item.Deployment.ManagementIPAddress | ansible.utils.ipaddr('revdns') }}"
         value: "{{ item.Name }}.{{ Common.DNS.Domain }}."
@@ -1348,7 +1348,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv6 }}"
         type: AAAA
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
         record: "{{ item.value.VMName }}"
         value: "{{ item.value.Address.IPv6.Address }}"
@@ -1386,7 +1386,7 @@
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv6 }}"
         type: PTR
-        protocol: {{ Common.DNS.Protocol }}
+        protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ ipv6_reverse_zone }}"
         record: "{{ item.value.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
         value: "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
