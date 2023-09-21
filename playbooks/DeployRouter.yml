@@ -128,7 +128,7 @@
 
     - name: Download VyOS installation media (overwrite if exists)
       ansible.builtin.get_url:
-        url: "{{ Deploy.Software.Router.URL }}/{{ Deploy.Software.Router.File }}"
+        url: "{{ Deploy.Software.Router.URL }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         force: true
         mode: "755"
@@ -195,7 +195,7 @@
             type: "{{ Common.DiskProvisioning }}"
             datastore: "{{ Target.Datastore }}"
         hardware:
-          memory_mb: "512"
+          memory_mb: "1024"
           num_cpus: "1"
           num_cpu_cores_per_socket: "1"
           scsi: paravirtual

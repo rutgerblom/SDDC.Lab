@@ -130,12 +130,17 @@
       vyos.vyos.vyos_config:
         src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
         save: true
+      retries: 5
+      delay: 30
+      register: routerconfig
+      until: routerup.failed == false
       vars:
         ansible_connection: ansible.netcommon.network_cli
         ansible_host: "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
         ansible_user: vyos
         ansible_password: vyos
         ansible_network_os: vyos.vyos.vyos
+        ansible_command_timeout: 60
       ignore_errors: true
       when:
         - Deploy.Product.Router.Deploy
