@@ -133,7 +133,7 @@
       retries: 5
       delay: 30
       register: routerconfig
-      until: routerup.failed == false
+      until: routerconfig.failed == false
       vars:
         ansible_connection: ansible.netcommon.network_cli
         ansible_host: "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
