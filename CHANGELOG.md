@@ -2160,3 +2160,8 @@
   - Updated ```playbooks/UpdateDNS.yml``` to consume new common DNS vars including selectable protocol for DNS updates
   - Added retry and increased command timeout when applying pod router config in ```playbooks/ConfigureRouter.yml```  Could be enviromental, could be newer builds, if yours is faster it won't matter.
   - Updated ```templates/Ubuntu_v22.04_Netplan.j2``` with new syntax for default route in netplan.
+
+## Dev-v6.0.0 24-SEPTEMBER-2023
+
+### Added by Luis Chanu
+  - Removed extra spaces from ```config_sample.yml``` as part of cleanup.  No need to rebuild static configurations, as this is purely cosmetic.
