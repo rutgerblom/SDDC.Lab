@@ -1,10 +1,12 @@
 network:
   ethernets:
-    ens33:
+    ens192:
       addresses:
         - {{ Nested_DNSServer.OS.Network.IPv4.Address }}/{{ Nested_DNSServer.OS.Network.IPv4.Prefix }}
         - "{{ Nested_DNSServer.OS.Network.IPv6.Address }}/{{ Nested_DNSServer.OS.Network.IPv6.Prefix }}"
-      gateway4: {{ Nested_DNSServer.OS.Network.IPv4.Gateway }}
+      routes:
+	    - to: default
+		  via: {{ Nested_DNSServer.OS.Network.IPv4.Gateway }}
       nameservers:
         addresses:
           - {{ Nested_DNSServer.OS.Network.IPv4.DNS }}

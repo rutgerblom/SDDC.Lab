@@ -2150,3 +2150,13 @@
 
 ### Added by Luis Chanu
   - Added ```nslookup``` verification test to end of ```utils/Util_AddIPv4DNSRecord.sh``` script.
+  
+## Dev-v6.0.0 21-SEPTEMBER-2023
+
+### Added by Aaron Ellis
+  - **CONFIG FILE UPDATE**  Updated ```config_sample.yml``` to add DNS protocol and forwarders to common variable section
+  - Updated ```software_sample.yml``` VyOS download URL to account for move to Github Releases  NOTE: keeping the generic filename, will only pull if local Software repo is empty
+  - Updated memory on pod routers to 1gb from 512 in ```playbooks/DeployRouter.yml``` VyOS increased minimum HW specs around version 1.4.  Pushing config to a 1.5 instance was running it out of memory.
+  - Updated ```playbooks/UpdateDNS.yml``` to consume new common DNS vars including selectable protocol for DNS updates
+  - Added retry and increased command timeout when applying pod router config in ```playbooks/ConfigureRouter.yml```  Could be enviromental, could be newer builds, if yours is faster it won't matter.
+  - Updated ```templates/Ubuntu_v22.04_Netplan.j2``` with new syntax for default route in netplan.
