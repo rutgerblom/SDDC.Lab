@@ -2165,3 +2165,6 @@
 
 ### Added by Luis Chanu
   - Removed extra spaces from ```config_sample.yml``` as part of cleanup.  No need to rebuild static configurations, as this is purely cosmetic.
+  - Added vCenter Server and ESXi v8.00 Update 2 to Software repository (UNTESTED).
+  - Updated ```software_sample.yml``` and ```templates_sample.yml``` to support v8.00 Update 2.
+  - Be sure to update your ```software.yml``` and ```templates.yml``` files.
