@@ -2168,4 +2168,3 @@
   - Added vCenter Server and ESXi v8.00 Update 2 to Software repository (UNTESTED).
   - Updated ```software_sample.yml``` and ```templates_sample.yml``` to support v8.00 Update 2.
   - Be sure to update your ```software.yml``` and ```templates.yml``` files.
-

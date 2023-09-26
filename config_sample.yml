@@ -106,14 +106,14 @@ Deploy:
     vCenter:                                              # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: vCenter                                    # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '8.00U1C'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '8.00U2'                                   # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-vCenter.conf"
       Installer: "{{ SiteCode }}-Installer-vCenter"
     ESXi:                                                 # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: ESXi                                       # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '8.00U1A'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '8.00U2'                                   # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "KS.CFG"
       Installer: "{{ SiteCode }}-Installer-ESXi"
@@ -1065,7 +1065,7 @@ Nested_ESXi:
     ComputeA:
       CPU: 8
       CoresPerSocket: 8
-      Memory: 20480
+      Memory: 24576
       BootDiskSize: 16
       vSAN:
         CacheSize: 20                                                                   # CacheSize and CapacitySize MUST be different values.  Normally, CacheSize is smaller than CapacitySize.
@@ -1073,7 +1073,7 @@ Nested_ESXi:
     ComputeB:
       CPU: 8
       CoresPerSocket: 8
-      Memory: 20480
+      Memory: 24576
       BootDiskSize: 16
       vSAN:
         CacheSize: 20                                                                   # CacheSize and CapacitySize MUST be different values.  Normally, CacheSize is smaller than CapacitySize.
