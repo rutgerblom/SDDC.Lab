@@ -2168,3 +2168,9 @@
   - Added vCenter Server and ESXi v8.00 Update 2 to Software repository (UNTESTED).
   - Updated ```software_sample.yml``` and ```templates_sample.yml``` to support v8.00 Update 2.
   - Be sure to update your ```software.yml``` and ```templates.yml``` files.
+
+## Dev-v6.0.0 25-SEPTEMBER-2023
+
+### Added by Aaron Ellis
+  - Updated ```requirements.yml``` for community.vmware collection version 3.9.0, 3.8.0 intriduced a bug in vmware_deploy_ovf https://github.com/ansible-collections/community.vmware/issues/1808
+  - Updated ```playbooks/DeployDNSServer.yml``` to correct some errors in dubug output
