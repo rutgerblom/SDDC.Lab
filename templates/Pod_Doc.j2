@@ -256,12 +256,12 @@ tr:nth-child(even) {
   <tr>
     <td>{{ Deploy.Software.vRLI.Product }}</td>
     <td>{{ Deploy.Software.vRLI.Version }}</td>
-    <td><a href="https://{{ Nested_vRLI.FQDN }}">https://{{ Nested_vRLI.FQDN }}</a></td>
+    <td><a href="https://{{ Nested_vRLI.Component.Node.FQDN }}">https://{{ Nested_vRLI.Component.Node.FQDN }}</a></td>
 {% if Deploy.Setting.IPv4 %}
-    <td><a href="https://{{ Nested_vRLI.Address.IPv4.Address }}">https://{{ Nested_vRLI.Address.IPv4.Address }}</a></td>
+    <td><a href="https://{{ Nested_vRLI.Component.Node.Address.IPv4.Address }}">https://{{ Nested_vRLI.Component.Node.Address.IPv4.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 %}
-    <td><a href="https://{{ Nested_vRLI.Address.IPv6.Address }}">https://{{ Nested_vRLI.Address.IPv6.Address }}</a></td>
+    <td><a href="https://{{ Nested_vRLI.Component.Node.Address.IPv6.Address }}">https://{{ Nested_vRLI.Component.Node.Address.IPv6.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
 {% endif %}{# Deploy.Product.vRLI.Deploy #}
