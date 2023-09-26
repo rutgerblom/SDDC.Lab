@@ -2168,3 +2168,4 @@
   - Added vCenter Server and ESXi v8.00 Update 2 to Software repository (UNTESTED).
   - Updated ```software_sample.yml``` and ```templates_sample.yml``` to support v8.00 Update 2.
   - Be sure to update your ```software.yml``` and ```templates.yml``` files.
+  - Corrected ```Nested_vRLI``` variable reference to ```FQDN``` in ```templates/Pod_Doc.j2``` file.
