@@ -2169,3 +2169,13 @@
   - Updated ```software_sample.yml``` and ```templates_sample.yml``` to support v8.00 Update 2.
   - Be sure to update your ```software.yml``` and ```templates.yml``` files.
   - Corrected ```Nested_vRLI``` variable reference to ```FQDN``` in ```templates/Pod_Doc.j2``` file.
+
+## Dev-v6.0.0 25-SEPTEMBER-2023
+
+### Added by Luis Chanu
+  - Updated software versions in ```config_sample.yml``` to the following versions:
+    - vCenter Server: ```8.00U2```
+    - ESXi: ```8.00U2```
+    - NSXT: ```4.1.1```
+  - Updated ```config_sample.yml``` by increasing memory for NSX prepared clusters in ```Nested_ESXi``` from 20G to 24G.  This was done to resolve NSX host prep failing during certain deployment scenarios.
+  - Be sure to update your ```config.yml``` files.
