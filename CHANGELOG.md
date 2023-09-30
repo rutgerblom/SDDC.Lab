@@ -2184,3 +2184,13 @@
     - NSXT: ```4.1.1```
   - Updated ```config_sample.yml``` by increasing memory for NSX prepared clusters in ```Nested_ESXi``` from 20G to 24G.  This was done to resolve NSX host prep failing during certain deployment scenarios.
   - Be sure to update your ```config.yml``` files.
+  
+## Dev-v6.0.0 25-SEPTEMBER-2023
+
+### Added by Luis Chanu
+  - Updated ```software_sample.yml``` and ```templates_sample.yml``` to support v8.00 Update 2.
+    - vCenter Server: ```7.0U3N```
+	- vCenter Server: ```7.0U3O```
+    - ESXi: ```7.00U3N```
+    - ALB: ```30.1.1```
+  
