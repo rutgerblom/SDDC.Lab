@@ -2188,7 +2188,7 @@
 ## Dev-v6.0.0 29-SEPTEMBER-2023
 
 ### Added by Aaron Ellis
-  - Updated ```software_sample.yml``` and ```templates_sample.yml``` to support v8.00 Update 2.
+  - Updated ```software_sample.yml``` and ```templates_sample.yml```
     - vCenter Server: ```7.0U3N```
 	- vCenter Server: ```7.0U3O```
     - ESXi: ```7.00U3N```
