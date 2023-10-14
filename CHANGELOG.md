@@ -2188,4 +2188,6 @@
 ## Dev-v6.0.0 14-OCTOBER-2024
 
 ### Added by Rutger Blom
-  - Added validations tasks for NSX ALB to ```playbooks/ValidateConfiguration.yml```
+  - Added validation tasks for NSX ALB to ```playbooks/ValidateConfiguration.yml```
+  - Added NSX ALB version 22.1.5 and 30.1.1 to ```software_sample.yml```
+  - Be sure to update your ```software.yml``` file.
