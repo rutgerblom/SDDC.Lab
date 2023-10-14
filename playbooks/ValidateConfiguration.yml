@@ -33,7 +33,7 @@
           =================================== Configuration Issue Found ====================================
 
                         Issue: The Pod configuration file being used is not for SDDC.Lab version 6.
-                               Please update the configuration file to match the current 'config_sample.yml', 
+                               Please update the configuration file to match the current 'config_sample.yml',
                                and then run the CreatePodConfig.yml playbook against it.
 
                Detected Value: {{ SDDCLab.Version }}
@@ -663,6 +663,7 @@
       when:
         - esxi_template.stat.isreg is not defined or not esxi_template.stat.isreg
 
+
 ##
 ## Verify vSphere cluster for NSX-T Edge nodes will be deployed
 ##
@@ -688,6 +689,8 @@
       when:
         - Deploy.Product.NSXT.Edge.Deploy
         - not Nested_Cluster.Edge.DeployHosts
+
+
 ##
 ## Verify NSX-T installation files exist
 ##
@@ -758,6 +761,69 @@
       when:
         - Deploy.Product.vRLI.Deploy
         - vrli_installer.stat.isreg is not defined or not vrli_installer.stat.isreg
+
+
+##
+## Verify Pod local content library will be created if NSX ALB is to be deployed
+##
+    - name: Verify local content library for NSX ALB
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+            Issue: NSX Advanced Load Balancer can not be deployed. Pod local content library is required.
+
+                                Deploy NSX ALB: {{ Deploy.Product.ALB.Deploy }}
+                  Create local content library: {{ Nested_vCenter.ContentLibrary.Local.Enable }}
+
+          =================================================================================================
+      when:
+        - Deploy.Product.ALB.Deploy
+        - not Nested_vCenter.ContentLibrary.Local.Enable
+
+    - name: Set flag if NSX ALB cannot be deployed
+      ansible.builtin.set_fact:
+        issuefound: true
+      when:
+        - Deploy.Product.ALB.Deploy
+        - not Nested_vCenter.ContentLibrary.Local.Enable
+
+
+##
+## Verify NSX ALB installation files exist
+##
+    - name: Check if NSX ALB Installer file exists
+      ansible.builtin.stat:
+        path: "{{ Deploy.Software.ALB.Directory }}/{{ Deploy.Software.ALB.File }}"
+        get_checksum: false
+        get_attributes: false
+        get_mime: false
+        follow: false
+      register: alb_installer
+      when: Deploy.Product.ALB.Deploy
+
+    - name: Verify NSX ALB Installer exists
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: NSX ALB installer file could not be found at specified path
+
+            Full Path To File: {{ Deploy.Software.ALB.Directory }}/{{ Deploy.Software.ALB.File }}
+
+          =================================================================================================
+      when:
+        - Deploy.Product.ALB.Deploy
+        - alb_installer.stat.isreg is not defined or not alb_installer.stat.isreg
+
+    - name: Set flag if issue found locating NSX ALB installer file
+      ansible.builtin.set_fact:
+        issuefound: true
+      when:
+        - Deploy.Product.ALB.Deploy
+        - alb_installer.stat.isreg is not defined or not alb_installer.stat.isreg
 
 
 ##
