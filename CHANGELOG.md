@@ -2184,3 +2184,8 @@
     - NSXT: ```4.1.1```
   - Updated ```config_sample.yml``` by increasing memory for NSX prepared clusters in ```Nested_ESXi``` from 20G to 24G.  This was done to resolve NSX host prep failing during certain deployment scenarios.
   - Be sure to update your ```config.yml``` files.
+
+## Dev-v6.0.0 14-OCTOBER-2024
+
+### Added by Rutger Blom
+  - Added validations tasks for NSX ALB to ```playbooks/ValidateConfiguration.yml```
