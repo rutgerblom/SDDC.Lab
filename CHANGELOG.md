@@ -2191,3 +2191,8 @@
   - Added validation tasks for NSX ALB to ```playbooks/ValidateConfiguration.yml```
   - Added NSX ALB version 22.1.5 and 30.1.1 to ```software_sample.yml```
   - Be sure to update your ```software.yml``` file.
+
+## Dev-v6.0.0 17-OCTOBER-2023
+
+### Added by Luis Chanu
+  - Updated ```templates/vyos_router.j2``` file to correct DHCP issue with VMNetwork getting served the wrong IP addresses.  This change should now ensure that ServiceVM and VMNetwork workloads get addresses from their respective DHCP ranges.
