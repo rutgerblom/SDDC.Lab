@@ -2196,3 +2196,9 @@
 
 ### Added by Luis Chanu
   - Updated ```templates/vyos_router.j2``` file to correct DHCP issue with VMNetwork getting served the wrong IP addresses.  This change should now ensure that ServiceVM and VMNetwork workloads get addresses from their respective DHCP ranges.
+
+## Dev-v6.0.0 19-OCTOBER-2023
+
+### Added by Rutger Blom
+  - Added NSX 4.1.2 to Software repository (UNTESTED).
+  - Be sure to update your ```software.yml``` file.
