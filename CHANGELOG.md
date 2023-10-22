@@ -2202,3 +2202,9 @@
 ### Added by Rutger Blom
   - Added NSX 4.1.2 to Software repository (UNTESTED).
   - Be sure to update your ```software.yml``` file.
+
+## Dev-v6.0.0 22-OCTOBER-2023
+
+### Added by Luis Chanu
+  - Added vSphere Replication v8.7.0.3 to ```software_sample.yml``` file. (UNTESTED)
+  - Be sure to update your ```software.yml``` file.
