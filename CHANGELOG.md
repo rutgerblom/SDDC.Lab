@@ -2202,3 +2202,18 @@
 ### Added by Rutger Blom
   - Added NSX 4.1.2 to Software repository (UNTESTED).
   - Be sure to update your ```software.yml``` file.
+
+## Dev-v6.0.0 22-OCTOBER-2023
+
+### Added by Luis Chanu
+  - Added vSphere Replication v8.7.0.3 to ```software_sample.yml``` file. (UNTESTED)
+  - Be sure to update your ```software.yml``` file.
+
+## Dev-v6.0.0 23-OCTOBER-2023
+
+### Added by Luis Chanu
+  - Changed ```Deploy.Product.NSXT.Federation.Enable``` reference to ```Deploy.Product.NSXT.Federation.Deploy``` in ```README.md``` file.
+  - Changed ```Deploy.Product.NSXT.Federation.Enable``` references to ```Deploy.Product.NSXT.Federation.Deploy``` in ```config_sample.yml``` file to maintain consistency across all deployment products.
+  - Changed ```Deploy.Product.NSXT.Federation.Enable``` references to ```Deploy.Product.NSXT.Federation.Deploy``` in all playbooks, templates, and tests.
+  - Added additional check in ```playbooks/ValidateConfiguration.yml``` which verifies ```Deploy.Product.NSXT.LocalManager.Deploy``` must be ```True``` if ```Deploy.Product.NSXT.Federation.Deploy``` is set to ```True```.  This ensures GMs are not deployed without LMs also being deployed.
+  - Be sure to update your ```config.yml``` file(s).

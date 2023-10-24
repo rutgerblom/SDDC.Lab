@@ -86,14 +86,14 @@
       retries: 10
       delay: 10
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: Store Local Manager Cluster Certificate ID into variable for easier use
       ansible.builtin.set_fact:
         lm_cluster_cert_id: "{{ result.json.certificate_id }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
         - result.status == 200
 
@@ -111,14 +111,14 @@
         status_code: 200
       register: result
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: Store Local Manager Cluster Certificate (PEM format) into variable for easier use
       ansible.builtin.set_fact:
         lm_cluster_cert_pem: "{{ result.json.pem_encoded }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
         - result.status == 200
 
@@ -127,7 +127,7 @@
         content: "{{ lm_cluster_cert_pem }}"
       register: lm_cluster_cert_info
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
         - result.status == 200
 
@@ -135,7 +135,7 @@
       ansible.builtin.set_fact:
         lm_cluster_api_cert_thumbprint: "{{ lm_cluster_cert_info.fingerprints['sha256'].replace(':','') | lower }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
         - result.status == 200
 
@@ -172,14 +172,14 @@
       retries: 10
       delay: 10
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: Store NSX-T Local Manager backup_id for later use
       ansible.builtin.set_fact:
         lm_backup_id: "{{ result.json.cluster_backup_statuses[0].backup_id | default('{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}-Backup') }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
         - result.status == 200
 
@@ -217,7 +217,7 @@
       retries: 120
       delay: 60
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
 
     - name: Verify NSX-T Local Manager is compatible with NSX-T Global Manager
       nsxt_local_managers_compatibility:
@@ -232,7 +232,7 @@
           thumbprint: "{{ lm_cluster_api_cert_thumbprint }}"
       register: result
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
 
     - name: DEBUG -- Display "nsxt_local_managers_compatibility" result (Pause)
       ansible.builtin.pause:
@@ -245,7 +245,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
 
 #
 # A Race condition exists where the following "nsxt_local_manager_registration" module will return a FAILURE 
@@ -277,7 +277,7 @@
       retries: 60
       delay: 30
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - result.version_compatible
 
 
@@ -288,7 +288,7 @@
       ansible.builtin.set_fact:
         ignore_import: false
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
 #        - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
 #
@@ -296,7 +296,7 @@
 #      ansible.builtin.set_fact:
 #        ignore_import: true
 #      when:
-#        - Deploy.Product.NSXT.Federation.Enable
+#        - Deploy.Product.NSXT.Federation.Deploy
 #        - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
 #
 
@@ -325,7 +325,7 @@
       retries: 60
       delay: 10
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
 
 
@@ -349,7 +349,7 @@
       retries: 60
       delay: 10
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: Keep checking status of newly added site until it reaches "ALLOWED" status
@@ -369,7 +369,7 @@
       retries: 60
       delay: 30
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: Check for on-boarding conflicts of importing objects
@@ -394,7 +394,7 @@
       retries: 60
       delay: 10
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: On-board the NSX-T Local Manager site objects into NSX-T Global Manager (One Site At A Time So High Retry Number)
@@ -421,7 +421,7 @@
       retries: 120
       delay: 60
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: Continue to check the status of the newly added site until it reaches "SUCCESS"
@@ -441,5 +441,5 @@
       retries: 60
       delay: 10
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy

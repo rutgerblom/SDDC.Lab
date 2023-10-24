@@ -53,7 +53,8 @@
 # Deploy NSX-T
 - ansible.builtin.import_playbook: playbooks/DeployNsxGlobalManager.yml
   when: 
-    - Deploy.Product.NSXT.Federation.Enable
+    - Deploy.Product.NSXT.Federation.Deploy
+    - Deploy.Product.NSXT.LocalManager.Deploy
     - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
 - ansible.builtin.import_playbook: playbooks/DeployNsxLocalManager.yml
@@ -116,23 +117,23 @@
 
 - ansible.builtin.import_playbook: playbooks/CreateNsxDhcpProfiles.yml
   when:
-    - Deploy.Product.NSXT.Federation.Enable == false
+    - Deploy.Product.NSXT.Federation.Deploy == false
 
 - ansible.builtin.import_playbook: playbooks/CreateNsxT0Gateway.yml
   when: 
-    - Deploy.Product.NSXT.Federation.Enable == false or (Deploy.Product.NSXT.Federation.Enable and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
+    - Deploy.Product.NSXT.Federation.Deploy == false or (Deploy.Product.NSXT.Federation.Deploy and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
     - Deploy.Product.NSXT.LocalManager.Deploy
     - Deploy.Product.NSXT.Edge.Deploy
 
 - ansible.builtin.import_playbook: playbooks/CreateNsxT1Gateway.yml
   when: 
-    - Deploy.Product.NSXT.Federation.Enable == false or (Deploy.Product.NSXT.Federation.Enable and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
+    - Deploy.Product.NSXT.Federation.Deploy == false or (Deploy.Product.NSXT.Federation.Deploy and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
     - Deploy.Product.NSXT.LocalManager.Deploy
     - Deploy.Product.NSXT.Edge.Deploy
 
 - ansible.builtin.import_playbook: playbooks/CreateNsxOverlaySegments.yml
   when: 
-    - Deploy.Product.NSXT.Federation.Enable == false or (Deploy.Product.NSXT.Federation.Enable and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
+    - Deploy.Product.NSXT.Federation.Deploy == false or (Deploy.Product.NSXT.Federation.Deploy and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
     - Deploy.Product.NSXT.LocalManager.Deploy
     - Deploy.Product.NSXT.Edge.Deploy
 
@@ -142,19 +143,19 @@
 
 - ansible.builtin.import_playbook: playbooks/FederateNsxLocalManager.yml
   when: 
-    - Deploy.Product.NSXT.Federation.Enable
+    - Deploy.Product.NSXT.Federation.Deploy
 
 - ansible.builtin.import_playbook: playbooks/FederateNsxEdgeNodes.yml
   when: 
-    - Deploy.Product.NSXT.Federation.Enable
+    - Deploy.Product.NSXT.Federation.Deploy
 
 - ansible.builtin.import_playbook: playbooks/FederateNsxT0RouteReDist.yml
   when: 
-    - Deploy.Product.NSXT.Federation.Enable
+    - Deploy.Product.NSXT.Federation.Deploy
 
 - ansible.builtin.import_playbook: playbooks/FederateNsxT0BGPNeighbors.yml
   when: 
-    - Deploy.Product.NSXT.Federation.Enable
+    - Deploy.Product.NSXT.Federation.Deploy
 
 # Deploy vRealize Log Insight
 - ansible.builtin.import_playbook: playbooks/DeployVrli.yml
@@ -203,7 +204,7 @@
   when: 
     - Deploy.WorkloadVMs.Deploy
     - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable
-    - not Deploy.Product.NSXT.Federation.Enable or (Deploy.Product.NSXT.Federation.Enable and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
+    - not Deploy.Product.NSXT.Federation.Deploy or (Deploy.Product.NSXT.Federation.Deploy and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
     - Deploy.Product.NSXT.LocalManager.Deploy
 
 # Create DRS VM-VM Affinity Rule for deployed Pod VMs (This should be the last playbook within deploy.yml)

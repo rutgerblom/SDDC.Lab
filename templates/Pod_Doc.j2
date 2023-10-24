@@ -190,7 +190,7 @@ tr:nth-child(even) {
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
 {% endfor %}{# Nested_ESXi.Host #}
-{% if Deploy.Product.NSXT.Federation.Enable == True %}
+{% if Deploy.Product.NSXT.Federation.Deploy == True %}
   <tr>
     <td>NSX-T Global Manager</td>
     <td>{{ Deploy.Software.NSXT.Version }}</td>
@@ -202,8 +202,8 @@ tr:nth-child(even) {
     <td><a href="https://{{ Nested_NSXT.Component.GlobalManager.Address.IPv6.Address }}">https://{{ Nested_NSXT.Component.GlobalManager.Address.IPv6.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
-{% endif %}{# Deploy.Product.NSXT.Federation.Enable #}
-{% if Deploy.Product.NSXT.Federation.Enable == True %}
+{% endif %}{# Deploy.Product.NSXT.Federation.Deploy #}
+{% if Deploy.Product.NSXT.Federation.Deploy == True %}
   <tr>
     <td>NSX-T Global Manager CLI</td>
     <td>{{ Deploy.Software.NSXT.Version }}</td>
@@ -215,7 +215,7 @@ tr:nth-child(even) {
     <td><a href="ssh://{{ Nested_NSXT.Credential.admin.Name }}@{{ Nested_NSXT.Component.GlobalManager.Address.IPv6.Address }}">ssh://{{ Nested_NSXT.Credential.admin.Name }}@{{ Nested_NSXT.Component.GlobalManager.Address.IPv6.Address }}</a></td>
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
-{% endif %}{# Deploy.Product.NSXT.Federation.Enable #}
+{% endif %}{# Deploy.Product.NSXT.Federation.Deploy #}
 {% if Deploy.Product.NSXT.LocalManager.Deploy == True %}
   <tr>
     <td>NSX-T Local Manager</td>

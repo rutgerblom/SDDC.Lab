@@ -52,7 +52,7 @@
       retries: 10
       delay: 5
       when:
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Deploy == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -60,7 +60,7 @@
       ansible.builtin.set_fact:
         site_id: "{{ result.json.unique_id }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Deploy == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
         - result.status == 200
@@ -85,7 +85,7 @@
       register: result
       until: result.status == 200
       when: 
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Deploy == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -103,7 +103,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Deploy == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -113,7 +113,7 @@
       vars:
         query: results[?display_name=='{{ SiteCode }}-RTEP-Pool']|[0].id
       when:
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Deploy == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
         - result.status == 200
@@ -129,7 +129,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Deploy == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -152,7 +152,7 @@
       register: result
       until: result.status == 200
       when: 
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Deploy == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -170,7 +170,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Deploy == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -191,7 +191,7 @@
           }
       loop: "{{ result.json.results }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Deploy == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -209,7 +209,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables == true
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Deploy == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 
@@ -230,7 +230,7 @@
       until: result.status == 200
       loop: "{{ EdgeNodes }}"
       when: 
-        - Deploy.Product.NSXT.Federation.Enable == true
+        - Deploy.Product.NSXT.Federation.Deploy == true
         - Deploy.Product.NSXT.LocalManager.Deploy == true
         - Deploy.Product.NSXT.Edge.Deploy == true
 

@@ -182,14 +182,14 @@
       register: result
       ignore_errors: true
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Store SSH Fingerprint of SFTP Server [Global Manager]
       ansible.builtin.set_fact:
         ssh_fingerprint: "{{ result.json.ssh_fingerprint | default(None) }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: DEBUG -- Display SSH Fingerprint of SFTP Server [Global Manager] (Pause)
@@ -202,7 +202,7 @@
 
           ===========================================================================================
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
         - DEBUG.DisplayVariables
 
@@ -247,7 +247,7 @@
       register: result
       ignore_errors: true
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
 
@@ -269,13 +269,13 @@
         timeout: 5
       ignore_errors: true
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: Wait 10 seconds before start checking whether the NSX-T Local Manager backup has completed [Local Manager]
       ansible.builtin.pause: seconds=10
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: Wait for NSX-T Local Manager backup to complete [Local Manager]
@@ -296,5 +296,5 @@
       retries: 60
       delay: 30
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
