@@ -76,7 +76,7 @@ Deploy:
       Deploy: false                                       # Replication - Deploy a vSphere Replication Appliance as part of the Pod deployment.
     NSXT:
       Federation:
-        Enable: false                                     # Indicates if Federation should be configured as part of the deployment.
+        Deploy: false                                     # Indicates if Federation should be deployed as part of the Pod deployment.
       LocalManager:
         Deploy: true                                      # LocalManager - Deploy NSX-T Local Manager as part of the Pod deployment.
       GlobalManager:
@@ -619,28 +619,28 @@ Nested_Router:
             Address: "{{ Net.Uplink.IPv6.Network }}::{{ '%04x'|format(1) }}"
       NSXEdges:
         - Name: "{{ SiteCode }}-T0-EdgeVM-01-1"
-          ASN: "{% if Deploy.Product.NSXT.Federation.Enable %}{{ 65000 + (Deploy.Product.NSXT.GlobalManager.PodNumber|int) + 1 }}{% else %}{{ 65000 + Pod.Number + 1 }}{% endif %}"
+          ASN: "{% if Deploy.Product.NSXT.Federation.Deploy %}{{ 65000 + (Deploy.Product.NSXT.GlobalManager.PodNumber|int) + 1 }}{% else %}{{ 65000 + Pod.Number + 1 }}{% endif %}"
           SendDefault: true
           IPv4:
             Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"
           IPv6:
             Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(2) }}"
         - Name: "{{ SiteCode }}-T0-EdgeVM-01-2"
-          ASN: "{% if Deploy.Product.NSXT.Federation.Enable %}{{ 65000 + (Deploy.Product.NSXT.GlobalManager.PodNumber|int) + 1 }}{% else %}{{ 65000 + Pod.Number + 1 }}{% endif %}"
+          ASN: "{% if Deploy.Product.NSXT.Federation.Deploy %}{{ 65000 + (Deploy.Product.NSXT.GlobalManager.PodNumber|int) + 1 }}{% else %}{{ 65000 + Pod.Number + 1 }}{% endif %}"
           SendDefault: true
           IPv4:
             Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"
           IPv6:
             Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(2) }}"
         - Name: "{{ SiteCode }}-T0-EdgeVM-02-1"
-          ASN: "{% if Deploy.Product.NSXT.Federation.Enable %}{{ 65000 + (Deploy.Product.NSXT.GlobalManager.PodNumber|int) + 1 }}{% else %}{{ 65000 + Pod.Number + 1 }}{% endif %}"
+          ASN: "{% if Deploy.Product.NSXT.Federation.Deploy %}{{ 65000 + (Deploy.Product.NSXT.GlobalManager.PodNumber|int) + 1 }}{% else %}{{ 65000 + Pod.Number + 1 }}{% endif %}"
           SendDefault: true
           IPv4:
             Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"
           IPv6:
             Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(3) }}"
         - Name: "{{ SiteCode }}-T0-EdgeVM-02-2"
-          ASN: "{% if Deploy.Product.NSXT.Federation.Enable %}{{ 65000 + (Deploy.Product.NSXT.GlobalManager.PodNumber|int) + 1 }}{% else %}{{ 65000 + Pod.Number + 1 }}{% endif %}"
+          ASN: "{% if Deploy.Product.NSXT.Federation.Deploy %}{{ 65000 + (Deploy.Product.NSXT.GlobalManager.PodNumber|int) + 1 }}{% else %}{{ 65000 + Pod.Number + 1 }}{% endif %}"
           SendDefault: true
           IPv4:
             Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.3"

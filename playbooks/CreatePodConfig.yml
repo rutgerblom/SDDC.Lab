@@ -22,14 +22,14 @@
                                   _vRLIv{% if Deploy.Product.vRLI.Deploy == false %}NONE{% else %}{{ Deploy.Software.vRLI.Version }}{% endif %}\
                                   _ALBv{% if Deploy.Product.ALB.Deploy == false %}NONE{% else %}{{ Deploy.Software.ALB.Version }}{% endif %}\
                                   _NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}\
-                                  _Fed-{% if Deploy.Product.NSXT.Federation.Enable %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}\
+                                  _Fed-{% if Deploy.Product.NSXT.Federation.Deploy %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}\
                                   {% else %}N{% endif %}{% endif %}.json"
     - PodConfigFile: "{{ SiteCode }}-Config_{{ lookup('pipe', 'date +%Y%m%d') }}_VCSAv{{ Deploy.Software.vCenter.Version }}\
                       _ESXIv{{ Deploy.Software.ESXi.Version }}\
                       _vRLIv{% if Deploy.Product.vRLI.Deploy == false %}NONE{% else %}{{ Deploy.Software.vRLI.Version }}{% endif %}\
                       _ALBv{% if Deploy.Product.ALB.Deploy == false %}NONE{% else %}{{ Deploy.Software.ALB.Version }}{% endif %}\
                       _NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}\
-                      _Fed-{% if Deploy.Product.NSXT.Federation.Enable %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}\
+                      _Fed-{% if Deploy.Product.NSXT.Federation.Deploy %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}\
                       {% else %}N{% endif %}{% endif %}.yml"
 
   vars_prompt:

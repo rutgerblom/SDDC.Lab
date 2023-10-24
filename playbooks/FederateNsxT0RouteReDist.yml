@@ -83,7 +83,7 @@
       retries: 12
       delay: 5
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
@@ -92,7 +92,7 @@
       ansible.builtin.set_fact:
         route_redistribution_config: "{{ result.json.route_redistribution_config }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
@@ -113,7 +113,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
@@ -140,7 +140,7 @@
       retries: 12
       delay: 5
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode

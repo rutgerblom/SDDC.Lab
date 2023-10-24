@@ -9,7 +9,7 @@
 ##               if not already created, and centralizing the maintenance of the code.
 ##
 ##    IMPORTANT: DHCP Server is not supported by Federation, so these steps should only be executed if
-##               NSX-T Federation is NOT enabled (Deploy.Product.NSXT.Federation.Enable == False)
+##               NSX-T Federation is NOT enabled (Deploy.Product.NSXT.Federation.Deploy == False)
 ##
 ---
     - name: Include_Var_DHCPProfilePath_Playbook
@@ -24,7 +24,7 @@
 
                                              Ansible Playbook: {{ ansible_play_name }}
 
-                        Deploy.Product.NSXT.Federation.Enable: {{ Deploy.Product.NSXT.Federation.Enable }}
+                        Deploy.Product.NSXT.Federation.Deploy: {{ Deploy.Product.NSXT.Federation.Deploy }}
                            Does DHCPProfilePath already exist: {{ DHCPProfilePath is defined | bool }}
 
                                       Number of DHCP Profiles: {{ Nested_NSXT.Networking.DHCPProfiles | length }}
@@ -38,7 +38,7 @@
       ansible.builtin.set_fact:
         DHCPProfilePath_Does_Not_Already_Exist: "{{ not (DHCPProfilePath is defined) | bool }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable == false
+        - Deploy.Product.NSXT.Federation.Deploy == false
 
     - name: Create DHCPProfilePath dictionary (DHCP Server Profiles)
       ansible.builtin.set_fact:
@@ -47,7 +47,7 @@
         PathToProfile: "/infra/dhcp-server-configs/{{ item.Name }}"
       loop: "{{ Nested_NSXT.Networking.DHCPProfiles }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable == false
+        - Deploy.Product.NSXT.Federation.Deploy == false
         - item.Type == "DHCP_SERVER"
         - DHCPProfilePath_Does_Not_Already_Exist
 
@@ -58,7 +58,7 @@
         PathToProfile: "/infra/dhcp-relay-configs/{{ item.Name }}"
       loop: "{{ Nested_NSXT.Networking.DHCPProfiles }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable == false
+        - Deploy.Product.NSXT.Federation.Deploy == false
         - item.Type == "DHCP_RELAY"
         - DHCPProfilePath_Does_Not_Already_Exist
 
@@ -75,5 +75,5 @@
 
           =================================================================================================
       when:
-        - Deploy.Product.NSXT.Federation.Enable == false
+        - Deploy.Product.NSXT.Federation.Deploy == false
         - DEBUG.DisplayVariables == true

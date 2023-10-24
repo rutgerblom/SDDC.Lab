@@ -14,7 +14,7 @@
   vars:
     - PodTemplate: "Pod_Config.j2"
     - PodTempConfigFile: "{{ SiteCode }}-Config_Temp.yml"
-    - PodConfigFile: "{{ SiteCode }}-Config_VCSAv{{ Deploy.Software.vCenter.Version }}_ESXIv{{ Deploy.Software.ESXi.Version }}_NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}_Fed-{% if Deploy.Product.NSXT.Federation.Enable == true %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}{% else %}N{% endif %}{% endif %}.yml"
+    - PodConfigFile: "{{ SiteCode }}-Config_VCSAv{{ Deploy.Software.vCenter.Version }}_ESXIv{{ Deploy.Software.ESXi.Version }}_NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}_Fed-{% if Deploy.Product.NSXT.Federation.Deploy == true %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}{% else %}N{% endif %}{% endif %}.yml"
 
   vars_prompt:
     - name: SourceConfigPath

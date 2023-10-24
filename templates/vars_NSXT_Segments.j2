@@ -44,7 +44,7 @@
     domain_name: {{ Common.DNS.Domain }}
     uplink_teaming_policy_name: "{{ Segment.UplinkTeamingPolicy }}"
 {# Only add DHCP Profile into structure if Federation is NOT enabled #}
-{%   if DHCPProfilePath[Nested_NSXT.Networking.DHCPProfiles[0].Name] is defined and Deploy.Product.NSXT.Federation.Enable == false %}    dhcp_config_path: {{ DHCPProfilePath[Nested_NSXT.Networking.DHCPProfiles[0].Name] }}{% endif %}
+{%   if DHCPProfilePath[Nested_NSXT.Networking.DHCPProfiles[0].Name] is defined and Deploy.Product.NSXT.Federation.Deploy == false %}    dhcp_config_path: {{ DHCPProfilePath[Nested_NSXT.Networking.DHCPProfiles[0].Name] }}{% endif %}
 
 {# DO NOT REMOVE THE EMPTY LINE ABOVE THIS COMMENT #}
 {%   if Segment.ConnectedTo is defined %}
@@ -90,7 +90,7 @@
 
 {# DO NOT REMOVE THE EMPTY LINE ABOVE THIS COMMENT #}
       - gateway_address: {{ ipv4_subnet | ansible.utils.ipaddr('1') }}
-{%           if Deploy.Product.NSXT.Federation.Enable == false %}
+{%           if Deploy.Product.NSXT.Federation.Deploy == false %}
         dhcp_ranges:
           - {{ ipv4_subnet | ansible.utils.ipsubnet(Pod.BaseOverlay.IPv4.RangePrefix, -1) | ansible.utils.ipaddr('range_usable') }}
         dhcp_config:
@@ -99,13 +99,13 @@
           lease_time: {{ Common.DHCP.LeaseTime }}
           dns_servers:
             - {{ Common.DNS.Server1.IPv4 }}
-{%           endif %}{# Deploy.Product.NSXT.Federation.Enable == false #}
+{%           endif %}{# Deploy.Product.NSXT.Federation.Deploy == false #}
 {%         endif %}{# Deploy.Setting.IPv4 #}
 {###### IPv6 Settings ######}
 {%         if (Deploy.Setting.IPv6) %}
 {%           set ipv6_subnet = Pod.BaseOverlay.IPv6.Network | ansible.utils.ipsubnet(Pod.BaseOverlay.IPv6.Prefix, Pod.Number + ns.segment_count) %}
       - gateway_address: {{ ipv6_subnet | ansible.utils.ipaddr('1') }}
-{%           if Deploy.Product.NSXT.Federation.Enable == false %}
+{%           if Deploy.Product.NSXT.Federation.Deploy == false %}
         dhcp_ranges:
           - {{ ipv6_subnet | ansible.utils.ipaddr('-1') | ansible.utils.previous_nth_usable(2**(128-Pod.BaseOverlay.IPv6.RangePrefix)-1) }}-{{ ipv6_subnet | ansible.utils.ipaddr('last_usable') }}
         dhcp_config:
@@ -116,7 +116,7 @@
             - {{ Common.DNS.Server1.IPv6 }}
           domain_names:
             - {{ Common.DNS.Domain }}
-{%           endif %}{# Deploy.Product.NSXT.Federation.Enable == false #}
+{%           endif %}{# Deploy.Product.NSXT.Federation.Deploy == false #}
 {%         endif %}{# Deploy.Setting.IPv6 #}
 {%         set ns.segment_count = ns.segment_count + 1 %}
 {%       else %}{# Else Segment.Subnets != None, then Subnets exist, so use them to allocate IP addresses #}
@@ -124,7 +124,7 @@
 {%         for Subnet in Segment.Subnets %}
 {%           if ((Deploy.Setting.IPv4 and Subnet | ansible.utils.ipv4) or (Deploy.Setting.IPv6 and Subnet | ansible.utils.ipv6)) %}
       - gateway_address: {{ Subnet }}
-{%             if Deploy.Product.NSXT.Federation.Enable == false %}
+{%             if Deploy.Product.NSXT.Federation.Deploy == false %}
         dhcp_ranges:
           - {% if (Subnet | ansible.utils.ipv4) %}{{ Subnet | ansible.utils.ipsubnet(Pod.BaseOverlay.IPv4.RangePrefix, -1) | ansible.utils.ipaddr('range_usable') }}{% else %}{{ Subnet | ansible.utils.ipaddr('-1') | ansible.utils.previous_nth_usable(2**(128-Pod.BaseOverlay.IPv6.RangePrefix)-1) }}-{{ Subnet | ansible.utils.ipaddr('last_usable') }}{% endif %}
 
@@ -143,7 +143,7 @@
           domain_names:
             - {{ Common.DNS.Domain }}
 {%               endif %}{# Subnet | ansible.utils.ipv6 #}
-{%             endif %}{# Deploy.Product.NSXT.Federation.Enable == false #}
+{%             endif %}{# Deploy.Product.NSXT.Federation.Deploy == false #}
 {%           endif %}{# Deploy.Setting.IPv4 or Deploy.Setting.IPv6 #}
 {%         endfor %}{# Subnet #}
 {%       endif %}{# Segment.Subnets == None #}

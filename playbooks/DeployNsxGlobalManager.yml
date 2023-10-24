@@ -112,7 +112,7 @@
       register: nsxman_check
       ignore_errors: true
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Deploy NSX-T Global Manager from OVA
@@ -154,7 +154,7 @@
           nsx_passwd_0:  "{{ Nested_NSXT.Credential.admin.Password }}"
           nsx_role:      "{{ Nested_NSXT.Component.GlobalManager.Deployment.Role }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
         - nsxman_check.status != 200
       async: 7200
@@ -164,7 +164,7 @@
     - name: Wait 3 seconds before start checking whether the NSX-T Global Manager node is ready
       ansible.builtin.pause: seconds=3
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
         - deployment.changed
 
@@ -174,7 +174,7 @@
       register: job_result
       with_items: "{{ deployment.results }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
         - deployment.changed
         - item.started is defined
@@ -196,7 +196,7 @@
       retries: 60
       delay: 60
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Configure NSX-T Global Manager Virtual IP (VIP) Address
@@ -216,7 +216,7 @@
       retries: 10
       delay: 60
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Wait until the NSX-T API reports that the NSX-T Global Manager operational state is "NONE" on the VIP
@@ -236,7 +236,7 @@
       retries: 60
       delay: 60
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Enable and Activate NSX-T Global Manager
@@ -248,7 +248,7 @@
         display_name: "{{ Nested_NSXT.Component.GlobalManager_VIP.VMName }}"
         id: "{{ Nested_NSXT.Component.GlobalManager_VIP.VMName }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Wait until the NSX-T API reports that the NSX-T Global Manager operational state is "ACTIVE" on the VIP
@@ -268,7 +268,7 @@
       retries: 60
       delay: 60
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Apply Memory Reservation and Share Settings
@@ -285,7 +285,7 @@
           mem_shares_level: "{{ Nested_NSXT.DeploymentSetting.Hardware.Memory.Shares }}"
           memory_reservation_lock: "{{ Nested_NSXT.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Write annotation on the NSX-T Global Manager VM
@@ -304,7 +304,7 @@
                     Username: {{ Nested_NSXT.Credential.admin.Name }}
                     Password: {{ Nested_NSXT.Credential.admin.Password }}
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
 
@@ -325,7 +325,7 @@
         status_code: 200
       register: userlist
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
     - name: Disable Password Expiration Of All NSX-T Users
@@ -347,7 +347,7 @@
       delay: 3
       loop: "{{ userlist.json.results }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
 
 ##
@@ -368,6 +368,6 @@
         return_content: true
         status_code: 200
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
         - Nested_NSXT.Question.EULA.Accept

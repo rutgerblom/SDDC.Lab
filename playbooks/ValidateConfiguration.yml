@@ -149,7 +149,7 @@
 
 ##
 ## Verify the following two options are not set, as Federation with NSX-T v3.2.0 is not supported:
-##     Deploy.Product.NSXT.Federation.Enable
+##     Deploy.Product.NSXT.Federation.Deploy
 ##     Deploy.Software.NSXT.Version == '3.2.0'
 ##
     - name: Verify Federation Support
@@ -160,20 +160,47 @@
 
                         Issue: Deploying Federation on NSX-T v3.2.0 is not supported
 
-            Configured Values: Deploy.Product.NSXT.Federation.Enable == {{ Deploy.Product.NSXT.Federation.Enable }}
+            Configured Values: Deploy.Product.NSXT.Federation.Deploy == {{ Deploy.Product.NSXT.Federation.Deploy }}
                                Deploy.Software.NSXT.Version == {{ Deploy.Software.NSXT.Version }}
 
           =================================================================================================
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Software.NSXT.Version == '3.2.0'
 
     - name: Set flag if issue found with Federation Support
       ansible.builtin.set_fact:
         issuefound: true
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Software.NSXT.Version == '3.2.0'
+
+
+##
+## Verify if Deploy.Product.NSXT.Federation.Deploy == 'True', that Deploy.Product.NSXT.LocalManager.Deploy is also set to 'True':
+##
+    - name: Verify Federation Deployment Settings
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Deploying Federation can not be deployed unless Local Manager is also set to deploy
+
+            Configured Values: Deploy.Product.NSXT.Federation.Deploy == {{ Deploy.Product.NSXT.Federation.Deploy }}
+                               Deploy.Product.NSXT.LocalManager.Deploy == {{ Deploy.Product.NSXT.LocalManager.Deploy }}
+
+          =================================================================================================
+      when:
+        - Deploy.Product.NSXT.Federation.Deploy
+        - Deploy.Product.NSXT.LocalManager.Deploy != true
+
+    - name: Set flag if issue found with settings needed to deploy NSX Federation
+      ansible.builtin.set_fact:
+        issuefound: true
+      when:
+        - Deploy.Product.NSXT.Federation.Deploy
+        - Deploy.Product.NSXT.LocalManager.Deploy != true
 
 
 ##

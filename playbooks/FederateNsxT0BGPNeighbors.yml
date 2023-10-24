@@ -83,7 +83,7 @@
       delay: 10
       loop: "{{ lookup('template', Target.TemplateFolder + '/vars_NSXT_T0BGPNeighbors.j2') | from_yaml }}"
       when:
-        - Deploy.Product.NSXT.Federation.Enable
+        - Deploy.Product.NSXT.Federation.Deploy
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
         - Deploy.Product.NSXT.GlobalManager.SiteCode != SiteCode
