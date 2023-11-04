@@ -297,7 +297,7 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 254 | EdgeVM-01 | NSX-T Tier-0 Edge Transport Node 1 | Pod-240-T0-EdgeVM-01 | Yes |
 
 ### Overlay Network
-When a Pod is deployed, the IP space or the NSX overlay is derived from the configurable variables under ```Pod.BaseOverlay``` located in the Pod configuration.
+When a Pod is deployed, the IP space for the NSX overlay is derived from the configurable settings under ```Pod.BaseOverlay``` located in the Pod configuration file.
 
 ## SDDC.Lab Default Credentials
 To expedite and simplify the login process to the various products within a Pod, we have put together a CSV file with all the default credentials for each of the products supported.  The CSV file can be used to populate the "memorized" username/password fields, and are browser specific.
