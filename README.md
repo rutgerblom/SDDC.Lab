@@ -8,7 +8,6 @@
 ```
 
 ## Table of Contents
-
 * [Description](#description)
 * [Requirements](#requirements)
   * [Recommendations](#recommendations)
@@ -16,6 +15,8 @@
 * [Upgrade Considerations](#upgrade-considerations)
 * [Networking](#networking)
 * [IP Address Assignments](#ip-address-assignments)
+  * [Underlay Network](#underlay-network)
+  * [Overlay Network](#overlay-network)
 * [SDDC.Lab Default Credentials](#sddclab-default-credentials)
 * [Usage](#usage)
 * [Project Features](#project-features)
@@ -32,7 +33,6 @@
 
 
 ## Description
-
 This repository contains Ansible scripts that perform fully automated deployments of complete nested VMware SDDC Pods. Each Pod contains:
 * A [VyOS](https://www.vyos.io/) Router
 * vCenter Server
@@ -87,7 +87,6 @@ The following are recommendations based on our experience with deploying Pods:
 
 
 ## Preparations
-
 * Configure your physical network:
   * Create an Lab-Routers VLAN used as transit segment between your layer-3 switch and the Pod [VyOS](https://www.vyos.io/) router.
   * Configure routing (OSPFv2/OSPFv3/BGP/static) on the Lab-Routers segment.
@@ -220,6 +219,8 @@ When three or more physical ESXi servers are being used to run Pod workloads, yo
 
 
 ## IP Address Assignments
+
+### Underlay Network
 When a Pod is deployed, various components are deployed as part of that Pod.  Each of those components are connected to the Pod's Management subnet.  Here is a listing of those components along with their respective host IP address:
 
 | IPv4 Address | Component | Description | DNS Name | Part of Default Deployment |
@@ -295,6 +296,8 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 253 | EdgeVM-02 | NSX-T Tier-0 Edge Transport Node 2 | Pod-240-T0-EdgeVM-02 | Yes |
 | 254 | EdgeVM-01 | NSX-T Tier-0 Edge Transport Node 1 | Pod-240-T0-EdgeVM-01 | Yes |
 
+### Overlay Network
+
 ## SDDC.Lab Default Credentials
 To expedite and simplify the login process to the various products within a Pod, we have put together a CSV file with all the default credentials for each of the products supported.  The CSV file can be used to populate the "memorized" username/password fields, and are browser specific.
 
@@ -304,7 +307,6 @@ By default, the importing of passwords into Firefox is disabled, so you must ena
 The Mozilla Firefox specific CSV file is [SDDCLab_Credentials_for_Firefox.csv](misc/SDDCLab_Credentials_for_Firefox.csv).
 
 ## Usage
-
 To deploy a Pod:
 1. Generate a Pod configuration with:  
 ```ansible-playbook ~/git/SDDC.Lab/playbooks/CreatePodConfig.yml```
@@ -319,7 +321,6 @@ Similary you remove an SDDC Pod with:
 
 
 ## Project Features
-
 Below are some project features that we feel are important enough to provide further explanation on, along with the SDDC.Lab version it was introduced in.
 
 ### NSX-T Federation (v4)
@@ -366,7 +367,6 @@ In SDDC.Lab v5, the following functionality was added to Content Library support
 1. Multiple content libraries are now supported.
 
 2. Content libraries located on the Internet are now supported.
-
 
 ### Deploy Test Workloads (v4)
 SDDC.Lab has a feature where it can automatically deploy test workload VMs from the Pod's content library at the end of the Pod deployment process.  The test workload VMs to deploy are defined in the ```WorkloadVMs``` section of the ```config_sample.yml``` file.  The default test workload VM included in ```config_sample.yml``` is called [TinyVM](https://github.com/luischanu/TinyVM), and it can be downloaded from the [TinyVM](https://github.com/luischanu/TinyVM) project site.  If you decide to leverage this feature, here are the items that need to be configured to enable the deployment of test workload VMs:
@@ -472,12 +472,10 @@ As we use SDDC.Lab in our labs, every now-and-then we notice some issues/problem
 | 26-APR-2023 | 7.0.0U3L | 7.0.0U3L | 3.2.2.1 | NSX-T Federation deployment is not supported due to a Federation onboarding bug with NSX where the Segment paths are not correct within vCenter Server.  This is the same issue discovered with NSX v4.0.1.1.  | Luis Chanu |
 
 
-
 ## More Information
 For detailed installation, preparation, and deployment steps, please see the "[Deploying your first SDDC.Lab Pod](FirstPod.md)" document.
 
 We also suggest that you watch [our vBrownBag video](https://www.youtube.com/watch?v=caSkrOFs0qs) from VMworld 2021.  In that video, we provide an overview of the SDDC.Lab environment, and go over the various configuration files that need to be modified to deploy your first SDDC.Lab Pod.  We also explain the Pod configuration file, along with the reason why the ```CreatePodConfig.yml``` playbook needs to be run.  Keep in mind that this video is based on SDDC.Lab version 3.
-
 
 ## Credits
 A big thank you to [Yasen Simeonov](https://www.linkedin.com/in/yasen/). His project at https://github.com/yasensim/vsphere-lab-deploy was the inspiration for this project. Another big thank you to my companion and lead developer [Luis Chanu](https://www.linkedin.com/in/luischanu/) (VCDX #246) for pushing this project forward all the time. Last but not least thank you vCommunity for trying this out and providing valuable feedback.
