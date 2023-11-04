@@ -2518,6 +2518,7 @@ Nested_NSXT:
 ##
     Segments:
       - Name: "SEG-T0-Edge-Uplink1_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink1.VLAN|int) }}"
+        Create: "{% if Deploy.Product.NSXT.Edge.Deploy %}true{% else %}false{% endif %}"        # Set to "true" only when NSX-T Edge is going to be deployed
         AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
         Description: NSX T0-Edge Uplink 1
         TransportZone: TZ-Edge
@@ -2529,6 +2530,7 @@ Nested_NSXT:
           - Tag: Auto-Created
             Scope: SDDC.Lab
       - Name: "SEG-T0-Edge-Uplink2_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink2.VLAN|int) }}"
+        Create: "{% if Deploy.Product.NSXT.Edge.Deploy %}true{% else %}false{% endif %}"        # Set to "true" only when NSX-T Edge is going to be deployed
         AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
         Description: NSX T0-Edge Uplink 2
         TransportZone: TZ-Edge
@@ -2540,6 +2542,7 @@ Nested_NSXT:
           - Tag: Auto-Created
             Scope: SDDC.Lab
       - Name: SEG-Web
+        Create: true                                                                            # Control whether segment is created
         AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
         Description: Web Segment
         TransportZone: TZ-Overlay
@@ -2554,6 +2557,7 @@ Nested_NSXT:
           - Tag: Auto-Created
             Scope: SDDC.Lab
       - Name: SEG-App
+        Create: true                                                                            # Control whether segment is created
         AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
         Description: App Segment
         TransportZone: TZ-Overlay
@@ -2568,6 +2572,7 @@ Nested_NSXT:
           - Tag:
             Scope:
       - Name: SEG-DB
+        Create: true                                                                            # Control whether segment is created
         AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
         Description: DB Segment
         TransportZone: TZ-Overlay
@@ -2582,6 +2587,7 @@ Nested_NSXT:
           - Tag: Auto-Created
             Scope: SDDC.Lab
       - Name: SEG-Example-Tier0-Overlay-Segment
+        Create: true                                                                            # Control whether segment is created
         AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
         Description: Example of a Tier-0 Overlay Segment with user assigned subnets
         TransportZone: TZ-Overlay
@@ -2600,6 +2606,7 @@ Nested_NSXT:
           - Tag: Donald
             Scope: Disney
       - Name: SEG-ALB-SE-Management
+        Create: "{% if Deploy.Product.ALB.Deploy %}true{% else %}false{% endif %}"              # Set to "true" only when ALB is going to be deployed
         AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
         Description: ALB SE Management Segment
         TransportZone: TZ-Overlay
@@ -2614,6 +2621,7 @@ Nested_NSXT:
           - Tag: Auto-Created
             Scope: SDDC.Lab
       - Name: SEG-ALB-SE-Data
+        Create: "{% if Deploy.Product.ALB.Deploy %}true{% else %}false{% endif %}"              # Set to "true" only when ALB is going to be deployed
         AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
         Description: ALB SE Data Segment
         TransportZone: TZ-Overlay
