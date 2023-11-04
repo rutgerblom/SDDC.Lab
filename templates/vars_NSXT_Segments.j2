@@ -35,8 +35,8 @@
 {# Define Global Variables using Jinja Namespace #}
 {% set ns = namespace() %}
 {% set ns.segment_count = 0 %}
-{% if Segment.Create %}
-{%   for Segment in Nested_NSXT.Networking.Segments %}
+{% for Segment in Nested_NSXT.Networking.Segments %}
+{%   if Segment.Create == true %}
   - display_name: {{ Segment.Name }}
     description:  {{ Segment.Description }}
     admin_state:  {{ Segment.AdminState }}
@@ -150,5 +150,5 @@
 {%         endif %}{# Segment.Subnets == None #}
 {%       endif %}{# Segment.Subnets is defined #}
 {%     endif %}{# OVERLAY #}
-{%   endfor %}{# Segment #}
-{% endif %}{# Segment.Create #}
+{%   endif %}{# Segment.Create #}
+{% endfor %}{# Segment #}
