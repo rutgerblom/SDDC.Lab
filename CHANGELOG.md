@@ -2217,3 +2217,16 @@
   - Changed ```Deploy.Product.NSXT.Federation.Enable``` references to ```Deploy.Product.NSXT.Federation.Deploy``` in all playbooks, templates, and tests.
   - Added additional check in ```playbooks/ValidateConfiguration.yml``` which verifies ```Deploy.Product.NSXT.LocalManager.Deploy``` must be ```True``` if ```Deploy.Product.NSXT.Federation.Deploy``` is set to ```True```.  This ensures GMs are not deployed without LMs also being deployed.
   - Be sure to update your ```config.yml``` file(s).
+
+## Dev-v6.0.0 04-NOVEMBER-2023
+
+### Added by Rutger Blom
+  - Added a "Create" item to NSX-T segments in ```config_sample.yml``` to provide control over whether a segment is created or not.
+  The following segments are now created conditionally:
+    - NSX T0-Edge Uplink 1 segment - creation depends on whether NSX-T Edge will be deployed (Deploy.Product.NSXT.Edge.Deploy)
+    - NSX T0-Edge Uplink 2 segment - creation depends on whether NSX-T Edge will be deployed (Deploy.Product.NSXT.Edge.Deploy)
+    - ALB SE Management segment- creation depends on whether NSX ALB will be deployed (Deploy.Product.ALB.Deploy)
+    - ALB SE Data segment- creation depends on whether NSX ALB will be deployed (Deploy.Product.ALB.Deploy)
+  - Added top-level "if" statement to ```templates/vars_NSXT_Segments.j2``` so that the new "Create" item is evaluated.
+  - Added vCenter Server v8.0.0 Update 2a to ```software_sample.yml``` file. (UNTESTED)
+  - Be sure to update your ```config.yml```, ```software.yml``` , and ```templates.yml``` files.
