@@ -2518,7 +2518,7 @@ Nested_NSXT:
 ##
     Segments:
       - Name: "SEG-T0-Edge-Uplink1_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink1.VLAN|int) }}"
-        Create: true                                                                            # Set to "true" only when NSX-T Edge is going to be deployed
+        Create: true                                                                            # Control whether segment is created
         AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
         Description: NSX T0-Edge Uplink 1
         TransportZone: TZ-Edge
@@ -2530,7 +2530,7 @@ Nested_NSXT:
           - Tag: Auto-Created
             Scope: SDDC.Lab
       - Name: "SEG-T0-Edge-Uplink2_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink2.VLAN|int) }}"
-        Create: true                                                                            # Set to "true" only when NSX-T Edge is going to be deployed
+        Create: true                                                                           # Control whether segment is created
         AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
         Description: NSX T0-Edge Uplink 2
         TransportZone: TZ-Edge
