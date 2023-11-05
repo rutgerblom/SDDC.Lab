@@ -2244,4 +2244,5 @@
 ### Added by Luis Chanu
   - Corrected vCenter Server v8.00 Update 2A entry in ```software_sample.yml``` and ```templates_sample.yml``` files.
   - If you created the directory in your ```/Software``` repository, you will need to rename it.
+  - Added ```BFD``` data structures to ```Nested_Router``` and ```Nested_NSXT```.  Not implemented yet, just preparation for future changes.
   - Be sure to update your ```config.yml```, ```software.yml``` , and ```templates.yml``` files.

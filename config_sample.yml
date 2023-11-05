@@ -593,11 +593,17 @@ Nested_Router:
         Prefix:  "{{ Net.VMNetwork.IPv6.Prefix }}"
   NTP:
     Servers:
-    - Name: Upstream NTP Server
-      IPv4:
-        Address: "{{ Common.NTP.Server1.IPv4 }}"
-      IPv6:
-        Address: "{{ Common.NTP.Server1.IPv6 }}"
+      - Name: Upstream NTP Server
+        IPv4:
+          Address: "{{ Common.NTP.Server1.IPv4 }}"
+        IPv6:
+          Address: "{{ Common.NTP.Server1.IPv6 }}"
+  BFD:
+    Enabled: true
+    Settings:
+      Multiplier: 3
+      Receive: 500                                                                      # Bidirectional Forward Detection (BFD) receive  interval in milliseconds (ms)
+      Transmit: 500                                                                     # Bidirectional Forward Detection (BFD) transmit interval in milliseconds (ms)
   OSPF:
     RouterID: "{{ Net.Uplink.IPv4.Network }}.{{ Pod.Number }}"
     Uplink:
@@ -2263,8 +2269,11 @@ Nested_NSXT:
               SourceAddresses:
                 - "{{ Net.NSXEdgeUplink1.IPv4.Network}}.2"
                 - "{{ Net.NSXEdgeUplink1.IPv4.Network}}.3"
-              BFD:
-                Enabled: false
+              BFD:                                                                              # Obtain BFD configuration settings from 'Nested_Router'
+                Enabled: "{{ Nested_Router.BFD.Enabled }}"
+                Settings:
+                  Interval: "{{ Nested_Router.BFD.Settings.Receive }}"
+                  Multiplier: "{{ Nested_Router.BFD.Settings.Multiplier }}"
               GracefulRestartMode: DISABLE
               BGPSettings:
                 HoldDownTime: 180
@@ -2278,8 +2287,11 @@ Nested_NSXT:
               SourceAddresses:
                 - "{{ Net.NSXEdgeUplink2.IPv4.Network}}.2"
                 - "{{ Net.NSXEdgeUplink2.IPv4.Network}}.3"
-              BFD:
-                Enabled: false
+              BFD:                                                                              # Obtain BFD configuration settings from 'Nested_Router'
+                Enabled: "{{ Nested_Router.BFD.Enabled }}"
+                Settings:
+                  Interval: "{{ Nested_Router.BFD.Settings.Receive }}"
+                  Multiplier: "{{ Nested_Router.BFD.Settings.Multiplier }}"
               GracefulRestartMode: DISABLE
               BGPSettings:
                 HoldDownTime: 180
@@ -2293,8 +2305,11 @@ Nested_NSXT:
               SourceAddresses:
                 - "{{ Net.NSXEdgeUplink1.IPv6.Network}}::{{ '%04x'|format(2) }}"
                 - "{{ Net.NSXEdgeUplink1.IPv6.Network}}::{{ '%04x'|format(3) }}"
-              BFD:
-                Enabled: false
+              BFD:                                                                              # Obtain BFD configuration settings from 'Nested_Router'
+                Enabled: "{{ Nested_Router.BFD.Enabled }}"
+                Settings:
+                  Interval: "{{ Nested_Router.BFD.Settings.Receive }}"
+                  Multiplier: "{{ Nested_Router.BFD.Settings.Multiplier }}"
               GracefulRestartMode: DISABLE
               BGPSettings:
                 HoldDownTime: 180
@@ -2308,8 +2323,11 @@ Nested_NSXT:
               SourceAddresses:
                 - "{{ Net.NSXEdgeUplink2.IPv6.Network}}::{{ '%04x'|format(2) }}"
                 - "{{ Net.NSXEdgeUplink2.IPv6.Network}}::{{ '%04x'|format(3) }}"
-              BFD:
-                Enabled: false
+              BFD:                                                                              # Obtain BFD configuration settings from 'Nested_Router'
+                Enabled: "{{ Nested_Router.BFD.Enabled }}"
+                Settings:
+                  Interval: "{{ Nested_Router.BFD.Settings.Receive }}"
+                  Multiplier: "{{ Nested_Router.BFD.Settings.Multiplier }}"
               GracefulRestartMode: DISABLE
               BGPSettings:
                 HoldDownTime: 180
