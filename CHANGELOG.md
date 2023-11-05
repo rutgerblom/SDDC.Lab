@@ -2238,3 +2238,10 @@
   The following segments are now created conditionally:
     - ALB SE Management segment - creation depends on whether NSX ALB will be deployed (Deploy.Product.ALB.Deploy)
     - ALB SE Data segment - creation depends on whether NSX ALB will be deployed (Deploy.Product.ALB.Deploy)
+
+## Dev-v6.0.0 05-NOVEMBER-2023
+
+### Added by Luis Chanu
+  - Corrected vCenter Server v8.00 Update 2A entry in ```software_sample.yml``` and ```templates_sample.yml``` files.
+  - If you created the directory in your ```/Software``` repository, you will need to rename it.
+  - Be sure to update your ```config.yml```, ```software.yml``` , and ```templates.yml``` files.
