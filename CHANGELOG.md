@@ -2225,11 +2225,19 @@
   The following segments are now created conditionally:
     - NSX T0-Edge Uplink 1 segment - creation depends on whether NSX-T Edge will be deployed (Deploy.Product.NSXT.Edge.Deploy)
     - NSX T0-Edge Uplink 2 segment - creation depends on whether NSX-T Edge will be deployed (Deploy.Product.NSXT.Edge.Deploy)
-    - ALB SE Management segment- creation depends on whether NSX ALB will be deployed (Deploy.Product.ALB.Deploy)
-    - ALB SE Data segment- creation depends on whether NSX ALB will be deployed (Deploy.Product.ALB.Deploy)
+    - ALB SE Management segment - creation depends on whether NSX ALB will be deployed (Deploy.Product.ALB.Deploy)
+    - ALB SE Data segment - creation depends on whether NSX ALB will be deployed (Deploy.Product.ALB.Deploy)
   - Added top-level "if" statement to ```templates/vars_NSXT_Segments.j2``` so that the new "Create" item is evaluated.
   - Added vCenter Server v8.0.0 Update 2a to ```software_sample.yml``` file. (UNTESTED)
   - Be sure to update your ```config.yml```, ```software.yml``` , and ```templates.yml``` files.
+
+## Dev-v6.0.0 05-NOVEMBER-2023
+
+### Added by Rutger Blom
+  - Updated the "Create" item to NSX-T segments in ```config_sample.yml``` to use existing value rather than computing a value.
+  The following segments are now created conditionally:
+    - ALB SE Management segment - creation depends on whether NSX ALB will be deployed (Deploy.Product.ALB.Deploy)
+    - ALB SE Data segment - creation depends on whether NSX ALB will be deployed (Deploy.Product.ALB.Deploy)
 
 ## Dev-v6.0.0 05-NOVEMBER-2023
 
