@@ -1041,7 +1041,7 @@ Nested_Cluster:
               Network: "{{ Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number+9) | ansible.utils.ipsubnet(28, 6) | ansible.utils.ipaddr('network') }}"
               Prefix: 28
             Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
-              Network: "{{ Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number+9) | ansible.utils.ipsubnet(28, 6) | ansible.utils.ipaddr('network') }}"
+              Network: "{{ Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number+9) | ansible.utils.ipsubnet(28, 7) | ansible.utils.ipaddr('network') }}"
               Prefix: 28
 
 
