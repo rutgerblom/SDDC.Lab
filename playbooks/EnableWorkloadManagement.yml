@@ -294,7 +294,7 @@
           ============================= Display 'content_libraries' Variable ==============================
 
           content_libraries:
-            {{ content_library | to_nice_json(indent=2) | indent(2) }}
+            {{ content_libraries | to_nice_json(indent=2) | indent(2) }}
 
           =================================================================================================
       when:
@@ -307,7 +307,7 @@
       ansible.builtin.set_fact:
         content_library: "{{ content_libraries | community.general.json_query(query) }}"
       vars:
-        query: "results[*].content_lib_details[?library_name=='{{ Nested_vCenter.ContentLibrary.Local.Name }}'].library_id|[0]|[0]"
+        query: "results[*].content_lib_details[?library_name=='{{ Nested_vCenter.ContentLibrary.TKG.Name }}'].library_id|[0]|[0]"
       when:
         - tanzu_supervisor is defined
         - Deploy.Product.NSXT.LocalManager.Deploy
