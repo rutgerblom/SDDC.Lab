@@ -914,7 +914,6 @@ Nested_Cluster:
           Management:
             StartingIP: "{{ Net.Management.IPv4.Network }}.201"                         # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
-            DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
               Network: 10.244.0.0
               Prefix: 20
@@ -922,10 +921,10 @@ Nested_Cluster:
               Network: 10.96.0.0
               Prefix: 23
             Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
-              Network: "{{ Net.VMNetwork.IPv4.Network }}.32"
+              Network: "{{ Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number+9) | ansible.utils.ipsubnet(28, 0) | ansible.utils.ipaddr('network') }}"
               Prefix: 28
             Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
-              Network: "{{ Net.VMNetwork.IPv4.Network }}.48"
+              Network: "{{ Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number+9) | ansible.utils.ipsubnet(28, 1) | ansible.utils.ipaddr('network') }}"
               Prefix: 28
   ComputeA:
     DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
@@ -954,7 +953,6 @@ Nested_Cluster:
           Management:
             StartingIP: "{{ Net.Management.IPv4.Network }}.206"                         # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
-            DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
               Network: 10.244.16.0
               Prefix: 20
@@ -962,10 +960,10 @@ Nested_Cluster:
               Network: 10.96.2.0
               Prefix: 23
             Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
-              Network: "{{ Net.VMNetwork.IPv4.Network }}.64"
+              Network: "{{ Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number+9) | ansible.utils.ipsubnet(28, 2) | ansible.utils.ipaddr('network') }}"
               Prefix: 28
             Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
-              Network: "{{ Net.VMNetwork.IPv4.Network }}.80"
+              Network: "{{ Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number+9) | ansible.utils.ipsubnet(28, 3) | ansible.utils.ipaddr('network') }}"
               Prefix: 28
   ComputeB:
     DeployHosts: false                                                                  # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
@@ -994,7 +992,6 @@ Nested_Cluster:
           Management:
             StartingIP: "{{ Net.Management.IPv4.Network }}.211"                         # StartingIP - The first IP address in a range of 5 IP addresses. 1 IP per control plane VM (3), 1 floating IP, and 1 used during upgrades.
           Workload:
-            DNS: "{{ Net.VMNetwork.IPv4.Network }}.1"                                   # DNS - DNS server used on the worker nodes. Uses the Pod's router DNS forwarding service
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
               Network: 10.244.32.0
               Prefix: 20
@@ -1002,10 +999,10 @@ Nested_Cluster:
               Network: 10.96.4.0
               Prefix: 23
             Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
-              Network: "{{ Net.VMNetwork.IPv4.Network }}.96"
+              Network: "{{ Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number+9) | ansible.utils.ipsubnet(28, 4) | ansible.utils.ipaddr('network') }}"
               Prefix: 28
             Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
-              Network: "{{ Net.VMNetwork.IPv4.Network }}.112"
+              Network: "{{ Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number+9) | ansible.utils.ipsubnet(28, 5) | ansible.utils.ipaddr('network') }}"
               Prefix: 28
   Edge:                                                                                 # 'Edge' is where NSX-T ETN's are deployed.  HIGHLY suggest you always have an 'Edge' cluster.
     DeployHosts: true                                                                   # If vSphere Hosts are not deployed (False), then the vSphere cluster is not created.
@@ -1041,10 +1038,10 @@ Nested_Cluster:
               Network: 10.96.6.0
               Prefix: 23
             Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
-              Network: "{{ Net.VMNetwork.IPv4.Network }}.128"
+              Network: "{{ Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number+9) | ansible.utils.ipsubnet(28, 6) | ansible.utils.ipaddr('network') }}"
               Prefix: 28
             Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
-              Network: "{{ Net.VMNetwork.IPv4.Network }}.144"
+              Network: "{{ Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number+9) | ansible.utils.ipsubnet(28, 6) | ansible.utils.ipaddr('network') }}"
               Prefix: 28
 
 
