@@ -2254,3 +2254,8 @@
   - Updated the ```Tanzu``` section within ```Nested_Cluster``` in ```config_sample.yml``` so that Tanzu Supervisor Ingress and Tanzu Supervisor Egress are assigned IP CIDRs from the NSX overlay address space (```Pod.BaseOverlay```).
   - Configured the correct Content Library to be used when installing Tanzu Supervisor in ```playbooks/EnableWorkloadManagement.yml```.
   - Be sure to update your ```config.yml``` file(s).
+
+## Dev-v6.0.0 08-NOVEMBER-2023
+
+### Added by Rutger Blom
+  - Added missing conditional to task in ```playbooks/DeployVrli.yml```
