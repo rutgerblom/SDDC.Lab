@@ -2260,5 +2260,5 @@
 ### Added by Rutger Blom
   - Added missing conditional to task in ```playbooks/DeployVrli.yml```
   - Corrected the vRLI 8.12.0 OVA filename in ```software_sample.yml```
-  - Added vRLI 8.14.0 to ```software_sample.yml``` (UNTESTED)
+  - Added vRLI 8.14.0 to ```software_sample.yml``` (TESTED)
   - Be sure to update your ```software.yml``` file.
