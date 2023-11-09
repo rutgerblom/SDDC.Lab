@@ -2262,3 +2262,12 @@
   - Corrected the vRLI 8.12.0 OVA filename in ```software_sample.yml```
   - Added vRLI 8.14.0 to ```software_sample.yml``` (TESTED)
   - Be sure to update your ```software.yml``` file.
+
+## Dev-v6.0.0 09-NOVEMBER-2023
+
+### Added by Rutger Blom
+  - Worked on ALB playbooks:
+    - Removed tasks for creating vSphere Cloud. From now on only a NSX-T Cloud is created in ALB.
+    - Controller FQDN must be in lowercase so added ```| lower``` where required.
+  - Successful test of ALB 30.1.1 deployment using the updated playbooks. Made version 30.1.1 the default version in ```config_sample.yml```.
+  - Be sure to update your ```config.yml``` file(s).
