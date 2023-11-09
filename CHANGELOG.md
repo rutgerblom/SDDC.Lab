@@ -2270,4 +2270,6 @@
     - Removed tasks for creating vSphere Cloud. From now on only a NSX-T Cloud is created in ALB.
     - Controller FQDN must be in lowercase so added ```| lower``` where required.
   - Successful test of ALB 30.1.1 deployment using the updated playbooks. Made version 30.1.1 the default version in ```config_sample.yml```.
+  - Added version 30.1.1 for the ```vmware.alb``` collection in ```requirements.yml```.
   - Be sure to update your ```config.yml``` file(s).
+  - Be sure to update the required Ansible collections e.g. ```ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml```.
