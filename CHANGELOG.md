@@ -2273,3 +2273,4 @@
   - Added version 30.1.1 for the ```vmware.alb``` collection in ```requirements.yml```.
   - Be sure to update your ```config.yml``` file(s).
   - Be sure to update the required Ansible collections e.g. ```ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml```.
+  - Added a validation task to ```playbooks/ValidateConfiguration.yml``` to check that the TKG content library will be created when Tanzu Supervisor is enabled.
