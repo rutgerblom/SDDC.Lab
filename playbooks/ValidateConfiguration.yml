@@ -871,8 +871,6 @@
       loop: "{{ Nested_Cluster | dict2items }}"
       when:
         - item.value.Tanzu.SupervisorCluster.Enable
-
-        
         - not Nested_vCenter.ContentLibrary.TKG.Enable
 
     - name: Tanzu Supervisor can not be enabled
