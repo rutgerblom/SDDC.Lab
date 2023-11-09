@@ -13,7 +13,7 @@
     avi_credentials:
       username: "{{ Nested_ALB.Credential.admin.Name }}"
       password: "{{ Nested_ALB.Credential.admin.Password }}"
-      controller: "{{ Nested_ALB.Component.Controller.FQDN }}"
+      controller: "{{ Nested_ALB.Component.Controller.FQDN | lower }}"
       api_version: "{{ Deploy.Software.ALB.Version }}"
   tasks:
     - name: ConfigureAlbBasicConfig_Playbook
@@ -67,6 +67,7 @@
                                   ALB Controller FQDN: {{ Nested_ALB.Component.Controller.FQDN }}
                               ALB Controller VIP FQDN: {{ Nested_ALB.Component.Controller_VIP.FQDN }}
                                 ALB Controller VMName: {{ Nested_ALB.Component.Controller.VMName }}
+                                 ALB Product Password: {{ Deploy.Software.ALB.Password }}
                                        ALB Admin User: {{ Nested_ALB.Credential.admin.Name }}
                                    ALB Admin Password: {{ Nested_ALB.Credential.admin.Password }}
                                         ALB Root User: {{ Nested_ALB.Credential.root.Name }}
@@ -81,7 +82,7 @@
         avi_credentials:
           username: "{{ Nested_ALB.Credential.admin.Name }}"
           password: "{{ Deploy.Software.ALB.Password }}"
-          controller: "{{ Nested_ALB.Component.Controller.FQDN }}"
+          controller: "{{ Nested_ALB.Component.Controller.FQDN | lower }}"
           api_version: "{{ Deploy.Software.ALB.Version }}"
         old_password: "{{ Deploy.Software.ALB.Password }}"
         password: "{{ Nested_ALB.Credential.admin.Password }}"
