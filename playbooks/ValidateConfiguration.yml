@@ -854,6 +854,37 @@
 
 
 ##
+## Verify Pod TKG content library will be created if Tanzu Supervisor is enabled
+##
+    - name: Verify TKG content library for Tanzu Supervisor
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+            Issue: Tanzu Supervisor can not be enabled. Pod TKG content library is required.
+
+            Enable Tanzu Supervisor Nested_Cluster.{{ item.key }}: {{ item.value.Tanzu.SupervisorCluster.Enable }}
+                  Create local content library: {{ Nested_vCenter.ContentLibrary.TKG.Enable }}
+
+          =================================================================================================
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when:
+        - item.value.Tanzu.SupervisorCluster.Enable
+
+        
+        - not Nested_vCenter.ContentLibrary.TKG.Enable
+
+    - name: Tanzu Supervisor can not be enabled
+      ansible.builtin.set_fact:
+        issuefound: true
+      loop: "{{ Nested_Cluster | dict2items }}"
+      when:
+        - item.value.Tanzu.SupervisorCluster.Enable
+        - not Nested_vCenter.ContentLibrary.TKG.Enable
+
+
+##
 ## Done With Validation Checks
 ##
     - name: Issue found, so tell user to quit and correct issue before re-running
