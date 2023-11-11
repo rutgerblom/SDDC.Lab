@@ -2274,3 +2274,8 @@
   - Be sure to update your ```config.yml``` file(s).
   - Be sure to update the required Ansible collections e.g. ```ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml```.
   - Added a validation task to ```playbooks/ValidateConfiguration.yml``` to check that the TKG content library will be created when Tanzu Supervisor is enabled.
+
+## Dev-v6.0.0 11-NOVEMBER-2023
+
+### Added by Rutger Blom
+  - Added a validation task to ```playbooks/ValidateConfiguration.yml``` that checks whether the user has configured an initial password for ALB (set in ```software.yml```). This password is available on the VMware Customer Connect portal and is required for bootstrapping ALB.
