@@ -818,6 +818,33 @@
 
 
 ##
+## Verify that ALB initial password has been changed from the default if NSX ALB is to be deployed
+##
+    - name: Verify initial password for NSX ALB
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+            Issue: NSX Advanced Load Balancer can not be deployed. Initial ALB password must be configured in software.yml.
+
+                                Deploy NSX ALB: {{ Deploy.Product.ALB.Deploy }}
+                      NSX ALB initial password: {{ Deploy.Software.ALB.Password }}
+
+          =================================================================================================
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Deploy.Software.ALB.Password == "PASSWORD_AVAILABLE_ON_THE_VMWARE_CUSTOMER_CONNECT_PORTAL"
+
+    - name: Set flag if NSX ALB cannot be deployed
+      ansible.builtin.set_fact:
+        issuefound: true
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Deploy.Software.ALB.Password == "PASSWORD_AVAILABLE_ON_THE_VMWARE_CUSTOMER_CONNECT_PORTAL"
+
+
+##
 ## Verify NSX ALB installation files exist
 ##
     - name: Check if NSX ALB Installer file exists
