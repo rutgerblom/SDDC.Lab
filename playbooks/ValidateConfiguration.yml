@@ -193,14 +193,14 @@
           =================================================================================================
       when:
         - Deploy.Product.NSXT.Federation.Deploy
-        - Deploy.Product.NSXT.LocalManager.Deploy != true
+        - not Deploy.Product.NSXT.LocalManager.Deploy
 
     - name: Set flag if issue found with settings needed to deploy NSX Federation
       ansible.builtin.set_fact:
         issuefound: true
       when:
         - Deploy.Product.NSXT.Federation.Deploy
-        - Deploy.Product.NSXT.LocalManager.Deploy != true
+        - not Deploy.Product.NSXT.LocalManager.Deploy
 
 
 ##
