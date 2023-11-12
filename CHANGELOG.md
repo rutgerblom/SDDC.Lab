@@ -2279,3 +2279,8 @@
 
 ### Added by Rutger Blom
   - Added a validation task to ```playbooks/ValidateConfiguration.yml``` that checks whether the user has configured an initial password for ALB (set in ```software.yml```). This password is available on the VMware Customer Connect portal and is required for bootstrapping ALB.
+
+## Dev-v6.0.0 12-NOVEMBER-2023
+
+### Added by Rutger Blom
+  - Added BFD configuration to ```templates/vyos_router.j2```.
