@@ -78,6 +78,43 @@ set protocols static route 0.0.0.0/0 next-hop {{ Nested_Router.Interface.Uplink.
 
 
 ##
+## Global BFD Settings
+##
+{% if Nested_Router.BFD.Enabled -%}
+set protocols bfd profile nsx interval multiplier 3
+set protocols bfd profile nsx interval receive 500
+set protocols bfd profile nsx interval transmit 500
+
+##
+## BFD Peers
+##
+{% if Deploy.Setting.IPv4 -%}
+set protocols bfd peer {{ Net.NSXEdgeUplink1.IPv4.Network }}.2 source address {{ Nested_Router.Interface.NSXEdgeUplink1.IPv4.Address }}
+set protocols bfd peer {{ Net.NSXEdgeUplink1.IPv4.Network }}.2 profile nsx
+set protocols bfd peer {{ Net.NSXEdgeUplink1.IPv4.Network }}.3 source address {{ Nested_Router.Interface.NSXEdgeUplink1.IPv4.Address }}
+set protocols bfd peer {{ Net.NSXEdgeUplink1.IPv4.Network }}.3 profile nsx
+set protocols bfd peer {{ Net.NSXEdgeUplink2.IPv4.Network }}.2 source address {{ Nested_Router.Interface.NSXEdgeUplink2.IPv4.Address }}
+set protocols bfd peer {{ Net.NSXEdgeUplink2.IPv4.Network }}.2 profile nsx
+set protocols bfd peer {{ Net.NSXEdgeUplink2.IPv4.Network }}.3 source address {{ Nested_Router.Interface.NSXEdgeUplink2.IPv4.Address }}
+set protocols bfd peer {{ Net.NSXEdgeUplink2.IPv4.Network }}.3 profile nsx
+
+{% endif -%}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 -%}
+set protocols bfd peer {{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(2) }} source address {{ Nested_Router.Interface.NSXEdgeUplink1.IPv6.Address }}
+set protocols bfd peer {{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(2) }} profile nsx
+set protocols bfd peer {{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(3) }} source address {{ Nested_Router.Interface.NSXEdgeUplink1.IPv6.Address }}
+set protocols bfd peer {{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(3) }} profile nsx
+set protocols bfd peer {{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(2) }} source address {{ Nested_Router.Interface.NSXEdgeUplink2.IPv6.Address }}
+set protocols bfd peer {{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(2) }} profile nsx
+set protocols bfd peer {{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(3) }} source address {{ Nested_Router.Interface.NSXEdgeUplink2.IPv6.Address }}
+set protocols bfd peer {{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(3) }} profile nsx
+
+{% endif -%}{# Deploy.Setting.IPv6 #}
+
+{% endif -%}{# Nested_Router.BFD.Enabled #}
+
+
+##
 ## BGP (IPv4 & IPv6)
 ##
 {% if Nested_Router.Protocol == "BGP" or Nested_Router.Protocol == "BOTH" -%}
@@ -92,6 +129,7 @@ set protocols bgp parameters router-id {{ Nested_Router.BGP.RouterID }}
 set protocols bgp neighbor {{ Router.IPv4.Address }} description {{ Router.Name }}
 set protocols bgp neighbor {{ Router.IPv4.Address }} remote-as {{ Router.ASN }}
 set protocols bgp neighbor {{ Router.IPv4.Address }} address-family ipv4-unicast {% if Router.SendDefault %}default-originate{% endif %}
+
 
 {% endif -%}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 -%}
@@ -111,11 +149,21 @@ set protocols bgp neighbor {{ NSXEdge.IPv4.Address }} description {{ NSXEdge.Nam
 set protocols bgp neighbor {{ NSXEdge.IPv4.Address }} remote-as {{ NSXEdge.ASN }}
 set protocols bgp neighbor {{ NSXEdge.IPv4.Address }} address-family ipv4-unicast {% if NSXEdge.SendDefault %}default-originate{% endif %}
 
+{% if Nested_Router.BFD.Enabled -%}
+set protocols bgp neighbor {{ NSXEdge.IPv4.Address }} bfd profile nsx
+
+{% endif -%}{# Nested_Router.BFD.Enabled #}
+
 {% endif -%}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 -%}
 set protocols bgp neighbor {{ NSXEdge.IPv6.Address }} description {{ NSXEdge.Name }}
 set protocols bgp neighbor {{ NSXEdge.IPv6.Address }} remote-as {{ NSXEdge.ASN }}
 set protocols bgp neighbor {{ NSXEdge.IPv6.Address }} address-family ipv6-unicast {% if NSXEdge.SendDefault %}default-originate{% endif %}
+
+{% if Nested_Router.BFD.Enabled -%}
+set protocols bgp neighbor {{ NSXEdge.IPv6.Address }} bfd profile nsx
+
+{% endif -%}{# Nested_Router.BFD.Enabled #}
 
 {% endif -%}{# Deploy.Setting.IPv6 #}
 
