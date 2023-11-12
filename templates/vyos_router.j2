@@ -81,9 +81,9 @@ set protocols static route 0.0.0.0/0 next-hop {{ Nested_Router.Interface.Uplink.
 ## Global BFD Settings
 ##
 {% if Nested_Router.BFD.Enabled -%}
-set protocols bfd profile nsx interval multiplier 3
-set protocols bfd profile nsx interval receive 500
-set protocols bfd profile nsx interval transmit 500
+set protocols bfd profile nsx interval {{ Nested_Router.BFD.Settings.Multiplier }}
+set protocols bfd profile nsx interval {{ Nested_Router.BFD.Settings.Receive }}
+set protocols bfd profile nsx interval {{ Nested_Router.BFD.Settings.Transmit }}
 
 ##
 ## BFD Peers
