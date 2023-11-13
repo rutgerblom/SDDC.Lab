@@ -179,6 +179,10 @@
   when: 
     - Deploy.Product.ALB.Deploy
 
+- ansible.builtin.import_playbook: playbooks/License_ALB.yml
+  when: 
+    - Deploy.Product.ALB.Deploy
+
 # Deploy vSphere Replication (Nested)
 - ansible.builtin.import_playbook: playbooks/DeployReplication.yml
   when: 
