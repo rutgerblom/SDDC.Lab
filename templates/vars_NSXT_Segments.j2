@@ -36,7 +36,7 @@
 {% set ns = namespace() %}
 {% set ns.segment_count = 0 %}
 {% for Segment in Nested_NSXT.Networking.Segments %}
-{%   if Segment.Create == true %}
+{%   if Segment.Create %}
   - display_name: {{ Segment.Name }}
     description:  {{ Segment.Description }}
     admin_state:  {{ Segment.AdminState }}
