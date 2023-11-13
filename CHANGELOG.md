@@ -2294,4 +2294,8 @@
 
 ### Added by Rutger Blom
   - Added NSX-T 4.1.2.1 ```software_sample.yml``` (UNTESTED).
+  - Added new playbook ```playbooks/License_ALB.yml``` for automating the assignment of licenses to the NSX Advanced Load Balancer controller (TESTED).
+  - Added data structure for NSX Advanced Load Balance licenses to ```licenses_sample.yml```
+  - Added playbook ```playbooks/License_ALB.yml``` to ```deploy.yml```
   - Be sure to update your ```software.yml``` file.
+  - Be sure to update your ```license.yml``` file.
