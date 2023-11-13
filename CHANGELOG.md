@@ -2289,3 +2289,9 @@
 
 ### Added by Luis Chanu
   - Increased timeouts and increased retries in ```playbooks/CreateNsxEdgeTn.yml``` for tasks which obtain user information from Edge VMs.  This was to better accomodate busy physical hosts.
+
+## Dev-v6.0.0 13-NOVEMBER-2023
+
+### Added by Rutger Blom
+  - Added NSX-T 4.1.2.1 ```software_sample.yml``` (UNTESTED).
+  - Be sure to update your ```software.yml``` file.
