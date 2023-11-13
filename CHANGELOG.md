@@ -2284,3 +2284,8 @@
 
 ### Added by Rutger Blom
   - Added BFD configuration to ```templates/vyos_router.j2```.
+
+## Dev-v6.0.0 12-NOVEMBER-2023
+
+### Added by Luis Chanu
+  - Increased timeouts and increased retries in ```playbooks/CreateNsxEdgeTn.yml``` for tasks which obtain user information from Edge VMs.  This was to better accomodate busy physical hosts.
