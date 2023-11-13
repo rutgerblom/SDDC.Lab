@@ -1,0 +1,143 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/License_ALB.yml
+##
+---
+- hosts: localhost
+  name: License_ALB.yml
+  vars:
+    - LOCAL_LicenseFile: ../licenses.yml
+    - avi_credentials:
+        username: "{{ Nested_ALB.Credential.admin.Name }}"
+        password: "{{ Nested_ALB.Credential.admin.Password }}"
+        controller: "{{ Nested_ALB.Component.Controller_VIP.FQDN | lower }}"
+        api_version: "{{ Deploy.Software.ALB.Version }}"
+  tasks:
+    - name: License_ALB_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                            Deploy.Product.ALB.Deploy: {{ Deploy.Product.ALB.Deploy }}
+             Nested_ALB.Component.Controller_VIP.FQDN: {{ Nested_ALB.Component.Controller_VIP.FQDN }}
+
+                                         License File: {{ LOCAL_LicenseFile }}
+
+                                               ALB Deployed
+                                               ==============
+                                               Vendor: {{ Deploy.Software.ALB.Vendor }}
+                                              Product: {{ Deploy.Software.ALB.Product }}
+                                              Version: {{ Deploy.Software.ALB.Version }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+        - Deploy.Product.ALB.Deploy
+
+
+###
+### GOAL: If License file does not exist, then skip all licensing, and leave the components in Evaluation state.
+###
+    - name: Check for existance of license file
+      ansible.builtin.stat:
+        path: "{{ LOCAL_LicenseFile }}"
+        get_checksum: false
+      register: stat_results
+
+    - name: Assume file does not exist, so set flag to skip licensing products
+      ansible.builtin.set_fact:
+        licenseproducts: false
+
+    - name: If License file does exist and is a regular file, then set flag to license products
+      ansible.builtin.set_fact:
+        licenseproducts: true
+      when:
+        - stat_results.stat.exists
+        - stat_results.stat.isreg
+
+    - name: If not licensing products, notify user
+      ansible.builtin.pause:
+        seconds: 20
+        prompt: |
+          =========================================================================
+          =========================== Licensing Notice  ===========================
+          =========================================================================
+
+             The following licensing file does not appear to exist:
+                                 {{ LOCAL_LicenseFile }}
+
+             For that reason, the following products will NOT be licensed, and
+             will operate with their respective default license(s):
+
+                                 NSX Advanced Load Balancer
+
+          =========================================================================
+      when:
+        - not licenseproducts
+
+    - name: If we are licensing products, read in license information
+      ansible.builtin.include_vars:
+        file: "{{ LOCAL_LicenseFile }}"
+      when:
+        - licenseproducts
+
+
+##
+## License NSX Advanced Load Balancer
+##
+    - name: Add all licenses to ALB
+      vmware.alb.avi_api_session:
+        avi_credentials: "{{ avi_credentials }}"
+        api_context: "{{ avi_api_context | default(omit) }}"
+        http_method: "put"
+        path: "license"
+        data:
+          serial_key: "{{ item.KeyCode }}"
+      loop: "{{ License.VMware.ALB.Licenses | default([]) }}"
+      ignore_errors: true                                       # If license is already applied not applicable, it will result in 'failure', so need to ensure we continue by ignoring the error
+      no_log: true
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Deploy.Software.ALB.Version is match(item.Version)
