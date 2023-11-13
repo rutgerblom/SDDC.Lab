@@ -140,7 +140,7 @@
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes?node_types=EdgeNode
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 15
+        timeout: 30
         force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
@@ -200,7 +200,7 @@
       ansible.builtin.uri:
         url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/api/v1/transport-nodes/{{ edgenodeids[0] }}/node/users
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        timeout: 15
+        timeout: 30
         force_basic_auth: true
         url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
         url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
@@ -210,6 +210,8 @@
         status_code: 200
       register: userlist
       until: userlist.status == 200
+      retries: 10
+      delay: 60
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
