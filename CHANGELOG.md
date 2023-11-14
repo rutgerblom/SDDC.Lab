@@ -2299,3 +2299,8 @@
   - Added playbook ```playbooks/License_ALB.yml``` to ```deploy.yml```.
   - Be sure to update your ```software.yml``` file.
   - Be sure to update your ```license.yml``` file.
+
+## Dev-v6.0.0 14-NOVEMBER-2023
+
+### Added by Rutger Blom
+  - Added parameter ``` default_license_tier: ENTERPRISE``` to the "Configure basic settings" task in  ```playbooks/ConfigureAlbBasicConfig.yml```.
