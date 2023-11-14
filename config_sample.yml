@@ -358,7 +358,6 @@ Target:
 
 Net:
   Uplink:
-    Offset: None
     VLAN: None
     MTU: 1500
     Description: Router Uplink
@@ -369,7 +368,6 @@ Net:
       Prefix: 64
       Network: "{{ Pod.BaseNetwork.IPv6 }}00"
   Management:
-    Offset: 0
     VLAN: "{{ Pod.Number + 0 + Pod.VLANOffset }}"
     MTU: 1500
     Description: Management
@@ -380,7 +378,6 @@ Net:
       Prefix: 64
       Network: "{{ Pod.BaseNetwork.IPv6 }}{{ '%02x'|format(Pod.Number+0|int) }}"
   vMotion:
-    Offset: 1
     VLAN: "{{ Pod.Number + 1 + Pod.VLANOffset }}"
     MTU: 9000
     Description: vMotion
@@ -391,7 +388,6 @@ Net:
       Prefix: 64
       Network: "{{ Pod.BaseNetwork.IPv6 }}{{ '%02x'|format(Pod.Number+1|int) }}"
   vSAN:
-    Offset: 2
     VLAN: "{{ Pod.Number + 2 + Pod.VLANOffset }}"
     MTU: 9000
     Description: vSAN
@@ -402,7 +398,6 @@ Net:
       Prefix: 64
       Network: "{{ Pod.BaseNetwork.IPv6 }}{{ '%02x'|format(Pod.Number+2|int) }}"
   IPStorage:
-    Offset: 3
     VLAN: "{{ Pod.Number + 3 + Pod.VLANOffset }}"
     MTU: 9000
     Description: IP Storage
@@ -413,7 +408,6 @@ Net:
       Prefix: 64
       Network: "{{ Pod.BaseNetwork.IPv6 }}{{ '%02x'|format(Pod.Number+3|int) }}"
   Transport:
-    Offset: 4
     VLAN: "{{ Pod.Number + 4 + Pod.VLANOffset }}"
     MTU: 9000
     Description: Overlay Transport
@@ -424,7 +418,6 @@ Net:
       Prefix: 64
       Network: "{{ Pod.BaseNetwork.IPv6 }}{{ '%02x'|format(Pod.Number+4|int) }}"
   ServiceVM:
-    Offset: 5
     VLAN: "{{ Pod.Number + 5 + Pod.VLANOffset }}"
     MTU: 1500
     Description: Service VM Management
@@ -435,7 +428,6 @@ Net:
       Prefix: 64
       Network: "{{ Pod.BaseNetwork.IPv6 }}{{ '%02x'|format(Pod.Number+5|int) }}"
   NSXEdgeUplink1:
-    Offset: 6
     VLAN: "{{ Pod.Number + 6 + Pod.VLANOffset }}"
     MTU: 1500
     Description: "NSX Edge Uplink #1"
@@ -446,7 +438,6 @@ Net:
       Prefix: 64
       Network: "{{ Pod.BaseNetwork.IPv6 }}{{ '%02x'|format(Pod.Number+6|int) }}"
   NSXEdgeUplink2:
-    Offset: 7
     VLAN: "{{ Pod.Number + 7 + Pod.VLANOffset }}"
     MTU: 1500
     Description: "NSX Edge Uplink #2"
@@ -457,7 +448,6 @@ Net:
       Prefix: 64
       Network: "{{ Pod.BaseNetwork.IPv6 }}{{ '%02x'|format(Pod.Number+7|int) }}"
   RTEP:
-    Offset: 8
     VLAN: "{{ Pod.Number + 8 + Pod.VLANOffset }}"
     MTU: 1500
     Description: RTEP Transport
@@ -468,7 +458,6 @@ Net:
       Prefix: 64
       Network: "{{ Pod.BaseNetwork.IPv6 }}{{ '%02x'|format(Pod.Number+8|int) }}"
   VMNetwork:
-    Offset: 9
     VLAN: "{{ Pod.Number + 9 + Pod.VLANOffset }}"
     MTU: 1500
     Description: VM Network
