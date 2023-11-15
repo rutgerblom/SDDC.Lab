@@ -120,6 +120,12 @@ set protocols bfd peer {{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(3
 {% if Nested_Router.Protocol == "BGP" or Nested_Router.Protocol == "BOTH" -%}
 set protocols bgp system-as {{ Nested_Router.BGP.ASN }}
 set protocols bgp parameters router-id {{ Nested_Router.BGP.RouterID }}
+{% if Deploy.Setting.IPv4 -%}
+set protocols bgp address-family ipv4-unicast redistribute connected
+{% endif -%}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 -%}
+set protocols bgp address-family ipv6-unicast redistribute connected
+{% endif -%}{# Deploy.Setting.IPv6 #}
 
 #
 # BGP Neighbors - Northbound (Peering ToR Routers)
