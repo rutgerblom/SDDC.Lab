@@ -147,7 +147,7 @@
           nsx_netmask_0: "{{ (Nested_NSXT.Component.LocalManager.Address.IPv4.Address + '/' + \
                           Nested_NSXT.Component.LocalManager.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}"
           nsx_ntp_0: "{{ Common.NTP.Server1.IPv4 }}"
-          nsx_passwd_0: "{{ Nested_NSXT.Credential.admin.Password }}"
+          nsx_passwd_0: "{{ Nested_NSXT.Credential.root.Password }}"
           nsx_role: "{{ Nested_NSXT.Component.LocalManager.Deployment.Role }}"
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy
