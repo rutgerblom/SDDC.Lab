@@ -2304,3 +2304,8 @@
 
 ### Added by Rutger Blom
   - Added parameter ``` default_license_tier: ENTERPRISE``` to the "Configure basic settings" task in  ```playbooks/ConfigureAlbBasicConfig.yml```.
+
+## Dev-v6.0.0 15-NOVEMBER-2023
+
+### Added by Rutger Blom
+  - Updated the Pod router template ```templates/vyos_router.j2``` so that BGP redistributes directly attached networks.
