@@ -2590,25 +2590,6 @@ Nested_NSXT:
         Tags:
           - Tag: Auto-Created
             Scope: SDDC.Lab
-      - Name: SEG-Example-Tier0-Overlay-Segment
-        Create: true                                                                            # Control whether segment is created
-        AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
-        Description: Example of a Tier-0 Overlay Segment with user assigned subnets
-        TransportZone: TZ-Overlay
-        ReplicationMode: MTEP                                                                   # ReplicationMode can be "MTEP" or "SOURCE"
-        UplinkTeamingPolicy: ""
-        ConnectedTo:
-          Tier: 0
-          GatewayName: T0-Gateway-01
-        Subnets:                                                                                # If no subnets are listed below the "Subnets:" entry, then they will be automatically assigned.  Include subnets over-ride automatic assignment.
-          - 192.168.1.1/24
-          - fc00:0:0:0::1/64
-        VLANS:
-        Tags:
-          - Tag: Auto-Created
-            Scope: SDDC.Lab
-          - Tag: Donald
-            Scope: Disney
       - Name: SEG-ALB-SE-Management
         Create: "{{ Deploy.Product.ALB.Deploy }}"                                               # Set to "true" only when ALB is going to be deployed
         AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
@@ -2639,6 +2620,25 @@ Nested_NSXT:
         Tags:
           - Tag: Auto-Created
             Scope: SDDC.Lab
+      - Name: SEG-Example-Tier0-Overlay-Segment
+        Create: false                                                                            # Control whether segment is created
+        AdminState: UP                                                                           # AdminState can be "UP" or "DOWN"
+        Description: Example of a Tier-0 Overlay Segment with user assigned subnets
+        TransportZone: TZ-Overlay
+        ReplicationMode: MTEP                                                                   # ReplicationMode can be "MTEP" or "SOURCE"
+        UplinkTeamingPolicy: ""
+        ConnectedTo:
+          Tier: 0
+          GatewayName: T0-Gateway-01
+        Subnets:                                                                                # If no subnets are listed below the "Subnets:" entry, then they will be automatically assigned.  Include subnets over-ride automatic assignment.
+          - 192.168.1.1/24
+          - fc00:0:0:0::1/64
+        VLANS:
+        Tags:
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
+          - Tag: Donald
+            Scope: Disney
 
   System:
     Fabric:
