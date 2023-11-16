@@ -2315,3 +2315,8 @@
 ### Added by Rutger Blom
   - Updated ```config_sample.yml``` so that the ```SEG-Example-Tier0-Overlay-Segment``` is not created by default.
   - Be sure to update your ```config.yml``` file(s).
+
+## Dev-v6.0.0 16-NOVEMBER-2023
+
+### Added by Luis Chanu
+  - Added missing NSX Tag to NSX Segment ```SEG-App```.
