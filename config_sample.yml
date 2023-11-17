@@ -2573,8 +2573,8 @@ Nested_NSXT:
         Subnets:                                                                                # If no subnets are listed below the "Subnets:" entry, then they will be automatically assigned.  Include subnets over-ride automatic assignment.
         VLANS:
         Tags:
-          - Tag:
-            Scope:
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
       - Name: SEG-DB
         Create: true                                                                            # Control whether segment is created
         AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
@@ -2621,8 +2621,8 @@ Nested_NSXT:
           - Tag: Auto-Created
             Scope: SDDC.Lab
       - Name: SEG-Example-Tier0-Overlay-Segment
-        Create: false                                                                            # Control whether segment is created
-        AdminState: UP                                                                           # AdminState can be "UP" or "DOWN"
+        Create: false                                                                           # Control whether segment is created
+        AdminState: UP                                                                          # AdminState can be "UP" or "DOWN"
         Description: Example of a Tier-0 Overlay Segment with user assigned subnets
         TransportZone: TZ-Overlay
         ReplicationMode: MTEP                                                                   # ReplicationMode can be "MTEP" or "SOURCE"
