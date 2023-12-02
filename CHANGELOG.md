@@ -2320,3 +2320,9 @@
 
 ### Added by Luis Chanu
   - Added missing NSX Tag to NSX Segment ```SEG-App```.
+
+## Dev-v6.0.0 02-DECEMBER-2023
+
+### Added by Luis Chanu
+  - Added vRealize Log Insight v8.14.1 to ```software_sample.yml``` file.
+  - Be sure to update your ```software.yml``` file.
