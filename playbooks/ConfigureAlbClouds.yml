@@ -289,8 +289,8 @@
         status_code: 200
       register: result
       until: (result.json.state == 'CLOUD_STATE_PLACEMENT_READY')
-      retries: 6
-      delay: 10
+      retries: 10
+      delay: 60
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
