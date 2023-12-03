@@ -2326,3 +2326,10 @@
 ### Added by Luis Chanu
   - Added vRealize Log Insight v8.14.1 to ```software_sample.yml``` file.
   - Be sure to update your ```software.yml``` file.
+
+## Dev-v6.0.0 03-DECEMBER-2023
+
+### Added by Rutger Blom
+  - Updated task ```Start checking if the ALB Cluster VIP is configured successfuly``` in ```playbooks/ConfigureAlbBasicConfig.yml``` so that it uses an API call for polling for the VIP status.
+  - Increased "retries" and "delays" in task ```Wait until the ALB API reports that the Cloud is in READY state - NSX-T Cloud``` in ```playbooks/ConfigureAlbClouds.yml```.
+
