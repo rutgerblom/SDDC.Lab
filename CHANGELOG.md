@@ -2341,4 +2341,4 @@
 ## Dev-v6.0.0 04-DECEMBER-2023
 
 ### Added by Rutger Blom
-  - Add task to  ```playbooks/ConfigureAlbClouds.yml```  that checks if the ALB API is responsive on the cluster VIP.
+  - Add task to  ```playbooks/ConfigureAlbClouds.yml``` that checks if the ALB API is responsive on the cluster VIP.
