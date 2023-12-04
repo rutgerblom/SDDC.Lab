@@ -92,6 +92,25 @@
 ##  ██████  ███████  ██████  ██████  ██   ██ ███████
 
 
+    - name: Start checking if the ALB API is responding on Cluster VIP
+      ansible.builtin.uri:
+        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/controllerproperties
+        validate_certs: false
+        timeout: 10
+        force_basic_auth: true
+        url_username: "{{ Nested_ALB.Credential.admin.Name }}"
+        url_password: "{{ Nested_ALB.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: true
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.uuid == "global"
+      retries: 10
+      delay: 60
+      when:
+        - Deploy.Product.ALB.Deploy
+
     - name: Get list of all vSphere Content Library IDs
       community.vmware.vmware_content_library_info:
         hostname: "{{ Nested_vCenter.FQDN | lower }}"
