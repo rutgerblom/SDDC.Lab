@@ -318,7 +318,7 @@ To deploy a Pod:
 Deploying an SDDC Pod will take somewhere between 1 and 1.5 hours depending on your environment and Pod configuration.
 
 Similary you remove an SDDC Pod with:  
-```ansible-playbook -e "@~/Pod-Pod-230-Config_VCSAv7.00U3H_ESXIv7.00U3G_NSXTv4.0.0.1_Fed-N.yml" ~/git/SDDC.Lab/UnDeploy.yml```
+```ansible-playbook -e "@~/Pod-Pod-230-Config_VCSAv7.00U3H_ESXIv7.00U3G_NSXTv4.0.0.1_Fed-N.yml" ~/git/SDDC.Lab/Undeploy.yml```
 
 
 ## Project Features

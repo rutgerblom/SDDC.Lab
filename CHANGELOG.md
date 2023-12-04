@@ -2333,3 +2333,7 @@
   - Updated task ```Start checking if the ALB Cluster VIP is configured successfuly``` in ```playbooks/ConfigureAlbBasicConfig.yml``` so that it uses an API call for polling for the VIP status.
   - Increased "retries" and "delays" in task ```Wait until the ALB API reports that the Cloud is in READY state - NSX-T Cloud``` in ```playbooks/ConfigureAlbClouds.yml```.
 
+## Dev-v6.0.0 03-DECEMBER-2023
+
+### Added by Luis Chanu
+  - Corrected case in ```UnDeploy.yml``` example, changed to ```Undeploy.yml```.
