@@ -2337,3 +2337,8 @@
 
 ### Added by Luis Chanu
   - Corrected case in ```UnDeploy.yml``` example, changed to ```Undeploy.yml```.
+
+## Dev-v6.0.0 04-DECEMBER-2023
+
+### Added by Rutger Blom
+  - Add task to  ```playbooks/ConfigureAlbClouds.yml```  that checks if the ALB API is responsive on the cluster VIP.
