@@ -2347,3 +2347,4 @@
 
 ### Added by Rutger Blom
   - Updated the conditional on task ```Start checking if the ALB Cluster VIP is configured successfuly``` in ```playbooks/ConfigureAlbBasicConfig.yml```.
+  - ALB cluster configuration (nodes and VIP) is now done in two steps (tasks) because of issues with ALB 30.1.1 not being able to implement these configurations in one task.
