@@ -129,7 +129,39 @@
       when:
         - Deploy.Product.ALB.Deploy
 
-    - name: Configure Controller Cluster
+    - name: Configure Controller Cluster Nodes
+      vmware.alb.avi_cluster:
+        avi_credentials: "{{ avi_credentials }}"
+        state: present
+        name: "{{ SiteCode }}-ALB-Controller-Cluster"
+        nodes:
+          - name: "{{ Nested_ALB.Component.Controller.VMName }}"
+            ip:
+              type: V4
+              addr: "{{ Nested_ALB.Component.Controller.Address.IPv4.Address }}"
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Start checking if the Controller Cluster is configured successfuly
+      ansible.builtin.uri:
+        url: https://{{ Nested_ALB.Component.Controller.FQDN }}/api/cluster/runtime
+        validate_certs: false
+        timeout: 10
+        force_basic_auth: true
+        url_username: "{{ Nested_ALB.Credential.admin.Name }}"
+        url_password: "{{ Nested_ALB.Credential.admin.Password }}"
+        method: GET
+        body_format: json
+        return_content: true
+        status_code: 200
+      register: result
+      until: result is search('CLUSTER_UP')
+      retries: 10
+      delay: 60
+      when:
+        - Deploy.Product.ALB.Deploy
+
+    - name: Configure Controller Cluster VIP
       vmware.alb.avi_cluster:
         avi_credentials: "{{ avi_credentials }}"
         state: present
