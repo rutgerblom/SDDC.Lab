@@ -158,7 +158,7 @@
         return_content: true
         status_code: 200
       register: result
-      until: result.json.cluster_vip_runtime_status.status_message == "Cluster VIP configured successfully."
+      until: result is search('Cluster VIP configured successfully')
       retries: 10
       delay: 60
       when:
