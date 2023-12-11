@@ -2354,4 +2354,5 @@
 ### Added by Luis Chanu
   - To better align with ```Undeploy.yml``` playbook task names, added ```Remove``` keyword before all tasks in ```playbooks/CleanupDNS.yml```.
   - Added ```T1_STATIC_ROUTES``` to ```T1-Gateway-ALB``` Tier-1 Gateway so that it advertises static routes, as required by NSX ALB.
+  - Updated software versions in ```config_sample.yml``` to latest tested versions.
   - Be sure to update your ```config.yml``` file(s).
