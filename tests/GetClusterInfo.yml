@@ -8,26 +8,26 @@
 - hosts: localhost
   name: GetClusterInfo.yml
   tasks:
-    - name: Get Cluster Info For Data Center {{ Nested_vCenter.DataCenter }}
-      community.vmware.vmware_cluster_info:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
-        username: "{{ Nested_vCenter.User }}"
-        password: "{{ Nested_vCenter.Password }}"
-        datacenter: "{{ Nested_vCenter.DataCenter }}"
-        validate_certs: false
-      register: result
+    # - name: Get Cluster Info For Data Center {{ Nested_vCenter.DataCenter }}
+    #   community.vmware.vmware_cluster_info:
+    #     hostname: "{{ Nested_vCenter.FQDN | lower }}"
+    #     username: "{{ Nested_vCenter.User }}"
+    #     password: "{{ Nested_vCenter.Password }}"
+    #     datacenter: "{{ Nested_vCenter.DataCenter }}"
+    #     validate_certs: false
+    #   register: result
 
-    - name: Display Data Center 'result' (Pause)
-      ansible.builtin.pause:
-        seconds: 1
-        prompt: |
-          ============================= Display Data Center Result ==============================
+    # - name: Display Data Center 'result' (Pause)
+    #   ansible.builtin.pause:
+    #     seconds: 1
+    #     prompt: |
+    #       ============================= Display Data Center Result ==============================
 
-          result
-          ======
-          {{ result | to_nice_yaml }}
+    #       result
+    #       ======
+    #       {{ result | to_nice_yaml }}
 
-          ===========================================================================================
+    #       ===========================================================================================
 
     - name: Get Cluster Info For {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.Cluster }}
       community.vmware.vmware_cluster_info:
@@ -63,19 +63,22 @@
 
 
 ##
-## code below blows up
+## code below blows up due to Certificate Failure...even with 'vcenter_validate_certs: false' set.
 ##
 
 # https://docs.ansible.com/ansible/latest/collections/vmware/vmware_rest/cluster_moid_lookup.html#ansible-collections-vmware-vmware-rest-cluster-moid-lookup
     # - name: vCenter Authentication
     #   ansible.builtin.set_fact:
     #     connection_args:
-    #       vcenter_hostname: "{{ Nested_vCenter.FQDN | lower }}"
-    #       vcenter_username: "{{ Nested_vCenter.User }}"
-    #       vcenter_password: "{{ Nested_vCenter.Password }}"
+    #       vcenter_hostname: '{{ Nested_vCenter.FQDN | lower }}'
+    #       vcenter_username: '{{ Nested_vCenter.User }}'
+    #       vcenter_password: '{{ Nested_vCenter.Password }}'
     #       vcenter_validate_certs: false
 
-    # - name: Display MoRefID of vSphere Cluster {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.Cluster }}
+    # - name: lookup Display MoRefID of vSphere Cluster {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.Cluster }}
+    #   ansible.builtin.debug: msg="{{ lookup('vmware.vmware_rest.cluster_moid', '{{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.Cluster }}', **connection_args) }}"
+
+    # - name: query Display MoRefID of vSphere Cluster {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.Cluster }}
     #   ansible.builtin.debug: msg="{{ query('vmware.vmware_rest.cluster_moid', '{{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.Cluster }}', **connection_args) }}"
 
     # - name: Display MoRefID of Cluster {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.Cluster }}
