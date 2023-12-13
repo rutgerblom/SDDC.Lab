@@ -2358,3 +2358,8 @@
   - Added vSphere Replication software versions to ```software_sample.yml```.
   - Be sure to update your ```config.yml``` file(s).
   - Be sure to update your ```software.yml``` file.
+
+## Dev-v6.0.0 13-DECEMBER-2023
+
+### Added by Rutger Blom
+  - Updated the method used to fetch the vSphere cluster MoRefID in ```playbooks/ConfigureAlbClouds.yml```.
