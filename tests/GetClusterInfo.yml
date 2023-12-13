@@ -56,9 +56,11 @@
         prompt: |
           ============================= Display MoRefID ==============================
 
-          MoRefID for vSphere Cluster '{{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.Cluster }}' = {{ result.clusters[Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.Cluster].moid }}
+          MoRefID for vSphere Cluster '{{ result | community.general.json_query(query) }}'
 
           ===========================================================================================
+      vars:
+        query: "clusters.{{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.Cluster }}.moid"
 
 
 
