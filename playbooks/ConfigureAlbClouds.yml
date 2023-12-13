@@ -418,31 +418,24 @@
         - Deploy.Product.NSXT.Edge.Deploy
 
     - name: Get information on configured vSphere Cluster via ALB API - NSX-T Cloud
-      ansible.builtin.uri:
-        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/vimgrclusterruntime?name={{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.Cluster }}&fields=managed_object_id
+      community.vmware.vmware_cluster_info:
+        hostname: "{{ Nested_vCenter.FQDN | lower }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        cluster_name: "{{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.Cluster }}"
         validate_certs: false
-        timeout: 15
-        force_basic_auth: true
-        url_username: "{{ Nested_ALB.Credential.admin.Name }}"
-        url_password: "{{ Nested_ALB.Credential.admin.Password }}"
-        headers:
-          X-Avi-Version: "{{ Deploy.Software.ALB.Version }}"
-        method: GET
-        body_format: json
-        return_content: true
-        status_code: 200
-      register: nsxt_vimgrclusterruntime
+      register: vsphere_cluster
       when:
         - Deploy.Product.ALB.Deploy
         - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Save URL of the vSphere Cluster for later use - NSX-T Cloud
+    - name: Save MoRefID of the vSphere Cluster for later use - NSX-T Cloud
       ansible.builtin.set_fact:
-        vsphere_cluster_moref: "{{ nsxt_vimgrclusterruntime | community.general.json_query(query) }}"
+        vsphere_cluster_moref: "{{ vsphere_cluster | community.general.json_query(query) }}"
       vars:
-        query: "json.results[*].managed_object_id|[0]"
+        query: "clusters.{{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.Cluster }}.moid"
       when:
         - Deploy.Product.ALB.Deploy
         - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
@@ -487,4 +480,3 @@
         - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
-
