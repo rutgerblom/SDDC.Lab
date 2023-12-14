@@ -2363,3 +2363,9 @@
 
 ### Added by Rutger Blom
   - Updated the method used to fetch the vSphere cluster MoRefID in ```playbooks/ConfigureAlbClouds.yml```.
+
+## Dev-v6.0.0 14-DECEMBER-2023
+
+### Added by Rutger Blom
+  - Updated the data structure for ALB in ```config_sample.yml```.
+  - Be sure to update your ```config.yml``` file(s).
