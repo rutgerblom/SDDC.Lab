@@ -265,6 +265,19 @@ tr:nth-child(even) {
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
 {% endif %}{# Deploy.Product.vRLI.Deploy #}
+{% if Deploy.Product.ALB.Deploy == True %}
+  <tr>
+    <td>{{ Deploy.Software.ALB.Product }}</td>
+    <td>{{ Deploy.Software.ALB.Version }}</td>
+    <td><a href="https://{{ Nested_ALB.Component.Controller.FQDN }}">https://{{ Nested_ALB.Component.Controller.FQDN }}</a></td>
+{% if Deploy.Setting.IPv4 %}
+    <td><a href="https://{{ Nested_ALB.Component.Controller.Address.IPv4.Address }}">https://{{ Nested_ALB.Component.Controller.Address.IPv4.Address }}</a></td>
+{% endif %}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 %}
+    <td><a href="https://{{ Nested_ALB.Component.Controller.Address.IPv6.Address }}">https://{{ Nested_ALB.Component.Controller.Address.IPv6.Address }}</a></td>
+{% endif %}{# Deploy.Setting.IPv6 #}
+  </tr>
+{% endif %}{# Deploy.Product.ALB.Deploy #}
 </table>
 <br>
 
@@ -333,6 +346,18 @@ tr:nth-child(even) {
     <td>{{ Nested_vRLI.Credential.root.Password }}</td>
   </tr>
 {% endif %}{# Deploy.Product.vRLI.Deploy #}
+{% if Deploy.Product.ALB.Deploy == True %}
+  <tr>
+    <td>NSX Advanced Load Balancer (admin)</td>
+    <td>{{ Nested_ALB.Credential.admin.Name }}</td>
+    <td>{{ Nested_ALB.Credential.admin.Password }}</td>
+  </tr>
+  <tr>
+    <td>NSX Advanced Load Balancer (root)</td>
+    <td>{{ Nested_ALB.Credential.root.Name }}</td>
+    <td>{{ Nested_ALB.Credential.root.Password }}</td>
+  </tr>
+{% endif %}{# Deploy.Product.ALB.Deploy #}
 </table>
 <br>
 
