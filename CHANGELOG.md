@@ -2369,3 +2369,8 @@
 ### Added by Rutger Blom
   - Updated the data structure for ALB in ```config_sample.yml```.
   - Be sure to update your ```config.yml``` file(s).
+
+## Dev-v6.0.0 16-DECEMBER-2023
+
+### Added by Rutger Blom
+  - Updated template ```templates/Pod_Doc.j2``` so that NSX Advanced Load Balancer information is included in the generated Pod documentation.
