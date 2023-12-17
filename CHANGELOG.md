@@ -2382,4 +2382,5 @@
   - Removed ```Nested_Replication.Component.Appliance.Deployment.Size``` from ```config_sample.yml``` file.
   - Removed ```deployment_option``` line from ```Deploy vSphere Replication Appliance to Nested_vCenter``` task in ```playbooks/DeployReplication.yml``` playbook.
   - Be sure to update your ```config.yml``` file(s).
+  - Modified ```playbooks/CreatePodConfig.yml``` playbook to include vSphere Replication version in filename.
 
