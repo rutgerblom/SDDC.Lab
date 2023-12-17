@@ -2383,4 +2383,4 @@
   - Removed ```deployment_option``` line from ```Deploy vSphere Replication Appliance to Nested_vCenter``` task in ```playbooks/DeployReplication.yml``` playbook.
   - Be sure to update your ```config.yml``` file(s).
   - Modified ```playbooks/CreatePodConfig.yml``` playbook to include vSphere Replication version in filename.
-
+  - Updated task in ```playbooks/ValidateConfiguration``` that checks for known NSX-T version issues with NSX-T Federation.

@@ -158,7 +158,8 @@
         prompt: |
           =================================== Configuration Issue Found ===================================
 
-                        Issue: Deploying Federation on NSX-T v3.2.0 is not supported
+                        Issue: Deploying Federation on NSX-T v{{ Deploy.Software.NSXT.Version }} is not supported
+                               See the 'Issues With Various Versions' section in the 'README.md' file for more information
 
             Configured Values: Deploy.Product.NSXT.Federation.Deploy == {{ Deploy.Product.NSXT.Federation.Deploy }}
                                Deploy.Software.NSXT.Version == {{ Deploy.Software.NSXT.Version }}
@@ -166,14 +167,14 @@
           =================================================================================================
       when:
         - Deploy.Product.NSXT.Federation.Deploy
-        - Deploy.Software.NSXT.Version == '3.2.0'
+        - Deploy.Software.NSXT.Version == '3.2.0' or Deploy.Software.NSXT.Version == '3.2.0.1' or Deploy.Software.NSXT.Version == '3.2.2.1' or Deploy.Software.NSXT.Version == '4.0.0.1' or Deploy.Software.NSXT.Version == '4.0.1.1'
 
     - name: Set flag if issue found with Federation Support
       ansible.builtin.set_fact:
         issuefound: true
       when:
         - Deploy.Product.NSXT.Federation.Deploy
-        - Deploy.Software.NSXT.Version == '3.2.0'
+        - Deploy.Software.NSXT.Version == '3.2.0' or Deploy.Software.NSXT.Version == '3.2.0.1' or Deploy.Software.NSXT.Version == '3.2.2.1' or Deploy.Software.NSXT.Version == '4.0.0.1' or Deploy.Software.NSXT.Version == '4.0.1.1'
 
 
 ##
