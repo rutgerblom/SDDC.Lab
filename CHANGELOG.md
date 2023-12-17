@@ -2374,3 +2374,12 @@
 
 ### Added by Rutger Blom
   - Updated template ```templates/Pod_Doc.j2``` so that NSX Advanced Load Balancer information is included in the generated Pod documentation.
+
+## Dev-v6.0.0 17-DECEMBER-2023
+
+### Added by Luis Chanu
+  - vSphere Replication v8.8.0.2 no longer has ```Deployment Options``` OVF variables to deploy in ```light``` or ```standard``` size.  Because of this, when deploying with OVFTool, it fails with ```invalidProperty = 'cisp.deploymentOption'``` error.  So, removing ```Nested_Replication.Component.Appliance.Deployment.Size``` and using default deployment size for all deployments.
+  - Removed ```Nested_Replication.Component.Appliance.Deployment.Size``` from ```config_sample.yml``` file.
+  - Removed ```deployment_option``` line from ```Deploy vSphere Replication Appliance to Nested_vCenter``` task in ```playbooks/DeployReplication.yml``` playbook.
+  - Be sure to update your ```config.yml``` file(s).
+
