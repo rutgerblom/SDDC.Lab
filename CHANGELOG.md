@@ -2385,3 +2385,25 @@
   - Be sure to update your ```config.yml``` file(s).
   - Modified ```playbooks/CreatePodConfig.yml``` playbook to include vSphere Replication version in filename.
   - Updated task in ```playbooks/ValidateConfiguration``` that checks for known NSX-T version issues with NSX-T Federation.
+
+
+<br>
+
+***
+<h1 style="text-align:center">SDDC.Lab Version 6.0 Released</h1>
+<br>
+
+
+## Release-v6.0.0 13-JANUARY-2024
+
+### Added by Rutger Blom & Luis Chanu
+
+- Released version 6 of the SDDC.Lab project.
+
+```
+██████  ███████ ██    ██       ██    ██ ███████ 
+██   ██ ██      ██    ██       ██    ██      ██ 
+██   ██ █████   ██    ██ █████ ██    ██     ██  
+██   ██ ██       ██  ██         ██  ██     ██   
+██████  ███████   ████           ████      ██   
+```
