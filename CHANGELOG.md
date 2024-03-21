@@ -2407,3 +2407,8 @@
 ██   ██ ██       ██  ██         ██  ██     ██   
 ██████  ███████   ████           ████      ██   
 ```
+
+## Dev-v7.0.0 21-MARCH-2024
+
+### Added by Rutger Blom
+- Implemented a workaround in ```utils/Util_CreateSoftwareDir.yml```that solves a problem with downloading the VyOS image from GitHub.com (limit exceeded error)
