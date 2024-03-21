@@ -2413,3 +2413,4 @@
 ### Added by Rutger Blom
 - Implemented a workaround in ```utils/Util_CreateSoftwareDir.yml```that solves a problem with downloading the VyOS image from GitHub.com (limit exceeded error).
 - Updated the value off ```ipv4_reverse_zone```in ```playbooks/UpdateDNS.yml``` to prevent an issue with the ```community.general.nsupdate```module.
+- Corrected indention in template ```templates/Ubuntu_v22.04_Netplan.j2```.
