@@ -2411,4 +2411,5 @@
 ## Dev-v7.0.0 21-MARCH-2024
 
 ### Added by Rutger Blom
-- Implemented a workaround in ```utils/Util_CreateSoftwareDir.yml```that solves a problem with downloading the VyOS image from GitHub.com (limit exceeded error)
+- Implemented a workaround in ```utils/Util_CreateSoftwareDir.yml```that solves a problem with downloading the VyOS image from GitHub.com (limit exceeded error).
+- Updated the value off ```ipv4_reverse_zone```in ```playbooks/UpdateDNS.yml``` to prevent an issue with the ```community.general.nsupdate```module.
