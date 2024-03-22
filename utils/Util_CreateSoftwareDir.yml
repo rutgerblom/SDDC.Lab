@@ -22,6 +22,10 @@
     - ../software.yml
   tasks:
 
+##
+## Create a static version of software.yml to workaround an issue with downloading VyOS from GitHub (limit exceeded due to multiple iterations)
+##
+
     - name: Create software.json with realized variables
       ansible.builtin.copy:
         content: "{{ lookup('template', '../software.yml') | from_yaml }}"
