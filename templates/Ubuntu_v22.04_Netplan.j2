@@ -5,8 +5,8 @@ network:
         - {{ Nested_DNSServer.OS.Network.IPv4.Address }}/{{ Nested_DNSServer.OS.Network.IPv4.Prefix }}
         - "{{ Nested_DNSServer.OS.Network.IPv6.Address }}/{{ Nested_DNSServer.OS.Network.IPv6.Prefix }}"
       routes:
-	    - to: default
-		  via: {{ Nested_DNSServer.OS.Network.IPv4.Gateway }}
+        - to: default
+          via: {{ Nested_DNSServer.OS.Network.IPv4.Gateway }}
       nameservers:
         addresses:
           - {{ Nested_DNSServer.OS.Network.IPv4.DNS }}
@@ -14,4 +14,3 @@ network:
         search:
           - {{ Common.DNS.Domain }}
   version: 2
-  
