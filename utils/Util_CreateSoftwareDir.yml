@@ -23,6 +23,25 @@
   tasks:
 
 ##
+## Create a static version of software.yml to workaround an issue with downloading VyOS from GitHub (limit exceeded due to multiple iterations)
+##
+
+    - name: Create software.json with realized variables
+      ansible.builtin.copy:
+        content: "{{ lookup('template', '../software.yml') | from_yaml }}"
+        dest: "{{ lookup('env', 'HOME') }}/software.json"
+        mode: "775"
+
+    - name: Read realized variables from software.json into playbook
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'HOME') }}/software.json"
+
+    - name: Delete software.json file
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/software.json"
+        state: absent
+
+##
 ## Set Software Repository RootDirectory Permissions
 ##
     - name: Set permissions on {{ RootDirectory }}
