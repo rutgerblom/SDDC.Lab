@@ -67,7 +67,7 @@
 ##
     - name: Determine IPv4 Zone for PTR Records
       ansible.builtin.set_fact:
-        ipv4_reverse_zone: "{{ Pod.BaseNetwork.IPv4 | ansible.utils.ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
+        ipv4_reverse_zone: "{{ (Pod.BaseNetwork.IPv4 + '.0.0/16') | ansible.utils.ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
 
 ##
 ## Standard DEBUG Block (if enabled)
