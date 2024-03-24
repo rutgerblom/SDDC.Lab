@@ -236,16 +236,16 @@ set service ssh port 22
 ##
 {% if Deploy.Setting.IPv4 -%}
 set service dhcp-server shared-network-name servicevm authoritative
-set service dhcp-server shared-network-name servicevm subnet {{ Nested_Router.Interface.ServiceVM.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.ServiceVM.IPv4.Prefix ) }} default-router {{ Nested_Router.Interface.ServiceVM.IPv4.Address }}
-set service dhcp-server shared-network-name servicevm subnet {{ Nested_Router.Interface.ServiceVM.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.ServiceVM.IPv4.Prefix ) }} name-server {{ Common.DNS.Server1.IPv4 }}
+set service dhcp-server shared-network-name servicevm subnet {{ Nested_Router.Interface.ServiceVM.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.ServiceVM.IPv4.Prefix ) }} option default-router {{ Nested_Router.Interface.ServiceVM.IPv4.Address }}
+set service dhcp-server shared-network-name servicevm subnet {{ Nested_Router.Interface.ServiceVM.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.ServiceVM.IPv4.Prefix ) }} option name-server {{ Common.DNS.Server1.IPv4 }}
 set service dhcp-server shared-network-name servicevm subnet {{ Nested_Router.Interface.ServiceVM.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.ServiceVM.IPv4.Prefix ) }} lease 300
 set service dhcp-server shared-network-name servicevm subnet {{ Nested_Router.Interface.ServiceVM.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.ServiceVM.IPv4.Prefix ) }} range ServiceVMRange start {{ Net.ServiceVM.IPv4.Network }}.200
 set service dhcp-server shared-network-name servicevm subnet {{ Nested_Router.Interface.ServiceVM.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.ServiceVM.IPv4.Prefix ) }} range ServiceVMRange stop  {{ Net.ServiceVM.IPv4.Network }}.254
 set service dhcp-server shared-network-name servicevm subnet {{ Nested_Router.Interface.ServiceVM.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.ServiceVM.IPv4.Prefix ) }} subnet-id {{ Net.ServiceVM.VLAN }}
 
 set service dhcp-server shared-network-name vmnetwork authoritative
-set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} default-router {{ Nested_Router.Interface.VMNetwork.IPv4.Address }}
-set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} name-server {{ Common.DNS.Server1.IPv4 }}
+set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} option default-router {{ Nested_Router.Interface.VMNetwork.IPv4.Address }}
+set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} option name-server {{ Common.DNS.Server1.IPv4 }}
 set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} lease 300
 set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} range VMNetworkRange start {{ Net.VMNetwork.IPv4.Network }}.200
 set service dhcp-server shared-network-name vmnetwork subnet {{ Nested_Router.Interface.VMNetwork.IPv4.Address | ansible.utils.ipsubnet( Nested_Router.Interface.VMNetwork.IPv4.Prefix ) }} range VMNetworkRange stop  {{ Net.VMNetwork.IPv4.Network }}.254
