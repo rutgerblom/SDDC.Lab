@@ -308,7 +308,7 @@
         - Deploy.Product.Router.Deploy
         - status is failed
 
-    - name: Walk through the setup dialog 5 (Destroy data on /dev/sda)
+    - name: Walk through the setup dialog 5
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -317,10 +317,6 @@
         name: "{{ Nested_Router.Name }}"
         keys_send:
           - ENTER
-          - ENTER
-          - ENTER
-          - ENTER
-        string_send: "yes"
       when:
         - Deploy.Product.Router.Deploy
         - status is failed
@@ -332,19 +328,14 @@
         - Deploy.Product.Router.Deploy
         - status is failed
 
-    - name: Walk through the setup dialog 6 (Create root partition and confirm with 'vyos' password)
+    - name: Walk through the setup dialog 6
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         name: "{{ Nested_Router.Name }}"
-        keys_send:
-          - ENTER
-          - ENTER
-          - ENTER
-          - ENTER
-        string_send: "vyos"
+        string_send: "y"
       when:
         - Deploy.Product.Router.Deploy
         - status is failed
@@ -356,7 +347,7 @@
         - Deploy.Product.Router.Deploy
         - status is failed
 
-    - name: Walk through the setup dialog 7 (Re-enter 'vyos' password to confirm)
+    - name: Walk through the setup dialog 7
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -365,7 +356,6 @@
         name: "{{ Nested_Router.Name }}"
         keys_send:
           - ENTER
-        string_send: "vyos"
       when:
         - Deploy.Product.Router.Deploy
         - status is failed
@@ -377,7 +367,7 @@
         - Deploy.Product.Router.Deploy
         - status is failed
 
-    - name: Walk through the setup dialog 8 (Configure GRUB on boot partition)
+    - name: Walk through the setup dialog 8 (Destroy data on /dev/sda)
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -386,6 +376,50 @@
         name: "{{ Nested_Router.Name }}"
         keys_send:
           - ENTER
+          - ENTER
+          - ENTER
+          - ENTER
+        string_send: "y"
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Wait 10 seconds
+      ansible.builtin.pause:
+        seconds: 10
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Walk through the setup dialog 9
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+        string_send: "y"
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Wait 10 seconds
+      ansible.builtin.pause:
+        seconds: 10
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Walk through the setup dialog 9
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
           - ENTER
       when:
         - Deploy.Product.Router.Deploy
