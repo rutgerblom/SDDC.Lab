@@ -2419,3 +2419,4 @@
 
 ### Added by Rutger Blom
 - Updated ```playbooks/DeployRouter.yml```so that the tasks match the updated VyOS router ```ìnstall image``` dialogs.
+- Updated template ```templates/vyos_router.j2```after VyOS made several changes to DHCP service configuration syntax.
