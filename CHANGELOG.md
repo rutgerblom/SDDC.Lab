@@ -2420,3 +2420,8 @@
 ### Added by Rutger Blom
 - Updated ```playbooks/DeployRouter.yml```so that the tasks match the updated VyOS router ```ìnstall image``` dialogs.
 - Updated template ```templates/vyos_router.j2```after VyOS made several changes to DHCP service configuration syntax.
+
+## Dev-v7.0.0 26-MARCH-2024
+
+### Added by Rutger Blom
+- Updated several j2 templates for the BIND installation because ```ansible.utils.ipaddr('revdns')``` seems to require a complete CIDR these days.
