@@ -16,7 +16,7 @@ zone "{{ Common.DNS.Domain | lower }}" {
   allow-transfer { any; };       // Needs to include the IP address of the Ansible control station for utils/showdns
   file "/var/lib/bind/db.{{ Common.DNS.Domain | lower }}";
 };
-zone "{{ Pod.BaseNetwork.IPv4 | ansible.utils.ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}" {
+zone "{{ (Pod.BaseNetwork.IPv4 + '.0.0/16') | ansible.utils.ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}" {
   type master;
   allow-update { any; };         // Needs to include the IP address of the Ansible control station
   allow-transfer { any; };       // Needs to include the IP address of the Ansible control station for utils/showdns
