@@ -2411,17 +2411,23 @@
 ## Dev-v7.0.0 21-MARCH-2024
 
 ### Added by Rutger Blom
-- Implemented a workaround in ```utils/Util_CreateSoftwareDir.yml```that solves a problem with downloading the VyOS image from GitHub.com (limit exceeded error).
-- Updated the value off ```ipv4_reverse_zone```in ```playbooks/UpdateDNS.yml``` to prevent an issue with the ```community.general.nsupdate```module.
-- Corrected indention in template ```templates/Ubuntu_v22.04_Netplan.j2```.
+  - Implemented a workaround in ```utils/Util_CreateSoftwareDir.yml```that solves a problem with downloading the VyOS image from GitHub.com (limit exceeded error).
+  - Updated the value off ```ipv4_reverse_zone```in ```playbooks/UpdateDNS.yml``` to prevent an issue with the ```community.general.nsupdate```module.
+  - Corrected indention in template ```templates/Ubuntu_v22.04_Netplan.j2```.
 
 ## Dev-v7.0.0 24-MARCH-2024
 
 ### Added by Rutger Blom
-- Updated ```playbooks/DeployRouter.yml```so that the tasks match the updated VyOS router ```ìnstall image``` dialogs.
-- Updated template ```templates/vyos_router.j2```after VyOS made several changes to DHCP service configuration syntax.
+  - Updated ```playbooks/DeployRouter.yml```so that the tasks match the updated VyOS router ```ìnstall image``` dialogs.
+  - Updated template ```templates/vyos_router.j2```after VyOS made several changes to DHCP service configuration syntax.
 
 ## Dev-v7.0.0 26-MARCH-2024
 
 ### Added by Rutger Blom
-- Updated several j2 templates for the BIND installation because ```ansible.utils.ipaddr('revdns')``` seems to require a complete CIDR these days.
+  - Updated several j2 templates for the BIND installation because ```ansible.utils.ipaddr('revdns')``` seems to require a complete CIDR these days.
+
+## Dev-v7.0.0 28-MARCH-2024
+
+### Added by Rutger Blom
+  - Added NSX 4.1.2.3 to ```software_sample.yml``` (NOT TESTED)
+  - Be sure to update your ```software.yml``` file.
