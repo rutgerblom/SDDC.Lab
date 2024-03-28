@@ -2430,4 +2430,5 @@
 
 ### Added by Rutger Blom
   - Added NSX 4.1.2.3 to ```software_sample.yml``` (NOT TESTED)
+  - Added vRLI 8.16.0 to ```software_sample.yml``` (NOT TESTED)
   - Be sure to update your ```software.yml``` file.
