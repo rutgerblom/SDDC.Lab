@@ -2431,4 +2431,8 @@
 ### Added by Rutger Blom
   - Added NSX 4.1.2.3 to ```software_sample.yml``` (NOT TESTED)
   - Added vRLI 8.16.0 to ```software_sample.yml``` (NOT TESTED)
+  - Added vCenter Server v8.0.0 Update 2b (NOT TESTED)
+  - Added vCenter Server v8.0.0 Update 2c (NOT TESTED)
+  - Added ESXi v8.0.0 Update 2b (NOT TESTED)
   - Be sure to update your ```software.yml``` file.
+  - Be sure to update your ```templates.yml``` file.
