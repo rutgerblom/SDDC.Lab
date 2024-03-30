@@ -136,7 +136,7 @@
     - name: Check if Ubuntu ISO file exists locally in the software repository
       ansible.builtin.stat:
         path: "{{ Deploy.Software.DNSServer.Directory }}/{{ Deploy.Software.DNSServer.File }}"
-      register: InstallerFileCheck 
+      register: InstallerFileCheck
       when:
         - Deploy.Product.DNSServer.Deploy
 
@@ -174,7 +174,7 @@
         - Deploy.Product.DNSServer.Deploy
 
     - name: Create autoinstaller files
-      ansible.builtin.template: 
+      ansible.builtin.template:
         src: "{{ item.Source }}"
         dest: "{{ item.FinalDestination }}"
         mode: "666"
@@ -209,13 +209,13 @@
         - Deploy.Product.DNSServer.Deploy
 
     - name: Upload the custom Ubuntu ISO to the datastore
-      community.vmware.vsphere_copy: 
+      community.vmware.vsphere_copy:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter: "{{ Target.DataCenter }}"
-        src: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }}" 
+        src: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }}"
         datastore: "{{ Target.Datastore }}"
         path: "{{ Target.ISOFolder }}/{{ Deploy.Software.DNSServer.File }}"
       when:
@@ -252,7 +252,7 @@
             type: iso
             iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ Deploy.Software.DNSServer.File }}"
             state: present
-        annotation: | 
+        annotation: |
                     {{ Nested_DNSServer.VM.Annotation }}
                     {{ Deploy.Software.DNSServer.Vendor }} {{ Deploy.Software.DNSServer.Product }} {{ Deploy.Software.DNSServer.Version }}
                     Username: {{ Nested_DNSServer.OS.Credential.User }}
@@ -294,7 +294,7 @@
         - Deploy.Product.DNSServer.Deploy
 
     - name: Create configuration files
-      ansible.builtin.template: 
+      ansible.builtin.template:
         src: "{{ item.Source }}"
         dest: "{{ item.LocalDestination }}"
         mode: "666"
@@ -423,7 +423,7 @@
 
     - name: Delete the custom Ubuntu ISO file
       ansible.builtin.file:
-        path: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }}" 
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.DNSServer.File }}"
         state: absent
       when:
         - not DEBUG.KeepInstallerFiles
