@@ -2440,7 +2440,7 @@
 ## Dev-v7.0.0 30-MARCH-2024
 
 ### Added by Rutger Blom
-  -  Improved formatting as suggested by Ansible lint in the following playbooks:
+  - Improved formatting as suggested by Ansible lint in the following playbooks:
     - ```playbooks/UpdateDNS.yml```
     - ```playbooks/DeployDNSServer.yml```
     - ```playbooks/CleanupDNS.yml```
