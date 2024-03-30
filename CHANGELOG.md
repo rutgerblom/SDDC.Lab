@@ -2436,3 +2436,8 @@
   - Added ESXi v8.0.0 Update 2b (NOT TESTED)
   - Be sure to update your ```software.yml``` file.
   - Be sure to update your ```templates.yml``` file.
+
+## Dev-v7.0.0 30-MARCH-2024
+
+### Added by Rutger Blom
+  -  Removed blank lines in ```playbooks/UpdateDNS.yml``` as suggested by Ansible lint.
