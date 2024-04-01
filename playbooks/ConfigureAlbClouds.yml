@@ -7,8 +7,8 @@
 ##               and the ALB Controller Cluster VIP.
 ##
 ---
-- hosts: localhost
-  name: ConfigureAlbClouds.yml
+- name: ConfigureAlbClouds.yml
+  hosts: localhost
   vars:
     avi_credentials:
       username: "{{ Nested_ALB.Credential.admin.Name }}"
@@ -475,6 +475,31 @@
           }
         return_content: true
         status_code: 200
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
+
+    - name: Register the NSX Advanced Load Balancer Controller with NSX Manager
+      ansible.builtin.uri:
+        url: https://{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}/policy/api/v1/infra/alb-onboarding-workflow
+        validate_certs: false
+        timeout: 30
+        force_basic_auth: true
+        url_username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        url_password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        method: PUT
+        body_format: json
+        return_content: true
+        status_code: 201
+        body: |
+          {
+            "owned_by": "LCM",
+            "cluster_ip": "{{ Nested_ALB.Component.Controller_VIP.Address.IPv4.Address }}",
+            "infra_admin_username": "{{ Nested_ALB.Credential.admin.Name }}",
+            "infra_admin_password": "{{ Nested_ALB.Credential.admin.Password }}"
+          }
       when:
         - Deploy.Product.ALB.Deploy
         - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
