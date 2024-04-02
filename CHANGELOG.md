@@ -2451,3 +2451,8 @@
   - Added a task to ```playbooks/ConfigureAlbClouds.yml``` that registers the NSX Advanced Load Balancer Controller with NSX Manager. This integration is mainly used by TKGs when it requests LB instances. It avoids LB instances being instantiated on the (deprecated) native NSX Load Balancer and instantiates these in ALB instead.
   - Changed order of items in ```playbooks/ConfigureAlbClouds.yml``` as suggested by Ansible lint.
  
+## Dev-v7.0.0 02-APRIL-2024
+
+### Added by Rutger Blom
+  - Added NSX ALB 30.1.2 to ```software_sample.yml``` (NOT TESTED)
+  - Be sure to update your ```software.yml``` file.
