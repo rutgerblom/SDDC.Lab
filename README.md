@@ -33,7 +33,9 @@
 
 
 ## Description
-This repository contains Ansible scripts that perform fully automated deployments of complete nested VMware SDDC Pods. Each Pod by default contains:
+This repository contains Ansible scripts that perform fully automated deployments of complete nested VMware SDDC Pods. The primary use case is consistent and speedy provisioning of nested VMware SDDC lab environments.
+
+Each Pod by default contains:
 * A [VyOS](https://www.vyos.io/) Router
 * vCenter Server
 * ESXi Hosts
@@ -42,17 +44,13 @@ This repository contains Ansible scripts that perform fully automated deployment
 * NSX-T Edge Nodes
 * Aria Operations for Logs
 
-
-Additional products and solutions can be enabled for automated deployment and configuration with in a Pod:
+Additional products and solutions can be enabled for automated deployment and configuration within a Pod:
 * A DNS/NTP Server (multi-Pod)
 * NSX Advanced Load Balancer
 * Tanzu Kubernetes Grid Service
 * NSX-T Federation
 
-
 ![Physicaloverview](images/SDDC-Lab-pod2phys.png)
-
-The primary use case is consistent and speedy provisioning of nested VMware SDDC lab environments.
 
 
 ## Requirements
@@ -251,10 +249,10 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 16 | ALB Controller-1 | NSX Advanced Load Balancer (ALB) Controller 1 | Pod-240-ALB-Controller-1 | No |
 | 17 | ALB Controller-2 | NSX Advanced Load Balancer (ALB) Controller 2 | Pod-240-ALB-Controller-2 | No |
 | 18 | ALB Controller-3 | NSX Advanced Load Balancer (ALB) Controller 3 | Pod-240-ALB-Controller-3 | No |
-| 19 | vRLI VIP | vRealize Log Insight Cluster VIP | Pod-240-vRLI | Yes |
-| 20 | vRLI-1 | vRealize Log Insight Appliance Node 1 | Pod-240-vRLI-1 | Yes |
-| 21 | vRLI-2 | vRealize Log Insight Appliance Node 2 | Pod-240-vRLI-2 | No |
-| 22 | vRLI-3 | vRealize Log Insight Appliance Node 3 | Pod-240-vRLI-3 | No |
+| 19 | vRLI VIP | Aria Operations for Logs Cluster VIP | Pod-240-vRLI | Yes |
+| 20 | vRLI-1 | Aria Operations for Logs Appliance Node 1 | Pod-240-vRLI-1 | Yes |
+| 21 | vRLI-2 | Aria Operations for Logs Appliance Node 2 | Pod-240-vRLI-2 | No |
+| 22 | vRLI-3 | Aria Operations for Logs Appliance Node 3 | Pod-240-vRLI-3 | No |
 | 23 | vRNI Platform | vRealize Network Insight Platform Appliance | Pod-240-vRNI | No |
 | 24 | vRNI Collector | vRealize Network Insight Collector Node | Pod-240-vRNI-Collector | No |
 | 25 | Replication Appliance | vSphere Replication Appliance | Pod-240-Replication | No |
