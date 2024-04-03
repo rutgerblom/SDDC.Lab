@@ -2456,3 +2456,8 @@
 ### Added by Rutger Blom
   - Added NSX ALB 30.1.2 to ```software_sample.yml``` (NOT TESTED)
   - Be sure to update your ```software.yml``` file.
+
+## Dev-v7.0.0 03-APRIL-2024
+
+### Added by Rutger Blom
+  - Updates to the README.md
