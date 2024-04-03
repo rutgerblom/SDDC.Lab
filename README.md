@@ -33,14 +33,22 @@
 
 
 ## Description
-This repository contains Ansible scripts that perform fully automated deployments of complete nested VMware SDDC Pods. Each Pod contains:
+This repository contains Ansible scripts that perform fully automated deployments of complete nested VMware SDDC Pods. Each Pod by default contains:
 * A [VyOS](https://www.vyos.io/) Router
 * vCenter Server
 * ESXi Hosts
+* vSAN Storage
 * NSX-T Local Manager
 * NSX-T Edge Nodes
-* vRealize Log Insight
+* Aria Operations for Logs
+
+
+Additional products and solutions can be enabled for automated deployment and configuration with in a Pod:
 * A DNS/NTP Server (multi-Pod)
+* NSX Advanced Load Balancer
+* Tanzu Kubernetes Grid Service
+* NSX-T Federation
+
 
 ![Physicaloverview](images/SDDC-Lab-pod2phys.png)
 
