@@ -2461,3 +2461,8 @@
 
 ### Added by Rutger Blom
   - Updates to the README.md
+
+## Dev-v7.0.0 04-APRIL-2024
+
+### Added by Rutger Blom
+  - Updated variable in ``````playbooks/CleanupDNS.yml``` because ```ansible.utils.ipaddr('revdns')``` seems to require a complete CIDR these days.
