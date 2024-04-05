@@ -2466,3 +2466,8 @@
 
 ### Added by Rutger Blom
   - Updated variable in ``````playbooks/CleanupDNS.yml``` because ```ansible.utils.ipaddr('revdns')``` seems to require a complete CIDR these days.
+
+## Dev-v7.0.0 05-APRIL-2024
+
+### Added by Rutger Blom
+  - Updated task ```Register the NSX Advanced Load Balancer Controller with NSX Manager``` in ```playbooks/ConfigureAlbClouds.yml``` so the body also contains the configured DNS and NTP server. This to match the example given in the official product documentation.
