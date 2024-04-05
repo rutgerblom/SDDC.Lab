@@ -498,7 +498,9 @@
             "owned_by": "LCM",
             "cluster_ip": "{{ Nested_ALB.Component.Controller_VIP.Address.IPv4.Address }}",
             "infra_admin_username": "{{ Nested_ALB.Credential.admin.Name }}",
-            "infra_admin_password": "{{ Nested_ALB.Credential.admin.Password }}"
+            "infra_admin_password": "{{ Nested_ALB.Credential.admin.Password }}",
+            "dns_servers": ["{{ Common.DNS.Server1.IPv4 }}"],
+            "ntp_servers": ["{{ Common.NTP.Server1.IPv4 }}"]
           }
       when:
         - Deploy.Product.ALB.Deploy
