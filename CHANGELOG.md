@@ -2471,3 +2471,9 @@
 
 ### Added by Rutger Blom
   - Updated task ```Register the NSX Advanced Load Balancer Controller with NSX Manager``` in ```playbooks/ConfigureAlbClouds.yml``` so the body also contains the configured DNS and NTP server. This to match the example given in the official product documentation.
+
+## Dev-v7.0.0 12-APRIL-2024
+
+### Added by Rutger Blom
+  - Updated ```config_sample.yml``` with the lasted tested versions for vCenter, ESXi, NSX, NSX ALB, and Aria Operations for Logs.
+  - Be sure to update your ```config.yml``` file(s).
