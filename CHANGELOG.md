@@ -2482,3 +2482,4 @@
 
 ### Added by Rutger Blom
   - Updated NSX T0 and T1 scripts so that the description is added to the gateway objects in NSX.
+  - Added ALB version 22.1.6 to ```software_sample.yml``` (NOT TESTED).
