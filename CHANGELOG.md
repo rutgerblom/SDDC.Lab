@@ -2477,3 +2477,8 @@
 ### Added by Rutger Blom
   - Updated ```config_sample.yml``` with the lasted tested versions for vCenter, ESXi, NSX, NSX ALB, and Aria Operations for Logs.
   - Be sure to update your ```config.yml``` file(s).
+
+## Dev-v7.0.0 13-APRIL-2024
+
+### Added by Rutger Blom
+  - Updated NSX T0 and T1 scripts so that the description is added to the gateway objects in NSX.
