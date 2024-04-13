@@ -69,6 +69,7 @@
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         state: present
         display_name: "{{ item.display_name }}"
+        description: "{{ item.description }}"
         ha_mode: "{{ item.ha_mode }}"
         failover_mode: "{{ item.failover_mode }}"
         tags: "{{ item.tags | default(omit) }}"
