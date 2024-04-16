@@ -2483,3 +2483,10 @@
 ### Added by Rutger Blom
   - Updated NSX T0 and T1 scripts so that the description is added to the gateway objects in NSX.
   - Added ALB version 22.1.6 to ```software_sample.yml``` (NOT TESTED).
+
+## Dev-v7.0.0 16-APRIL-2024
+
+### Added by Rutger Blom
+  - Updated the data structure for Tier-1 Gateways in ```config_sample.yml``` so that two Tier-1 Gateways are created for NSX ALB: Management and Data.
+  - Update the ```playbooks/ConfigureAlbClouds.yml```playbook so that NSX-T Cloud makes use of the new Tier-1 Gateway topology.
+  - Be sure to update your ```config.yml``` file(s).
