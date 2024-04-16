@@ -2402,7 +2402,7 @@ Nested_NSXT:
                   Types:                                                                        # Types include TIER0_STATIC, TIER0_CONNECTED, TIER0_EXTERNAL_INTERFACE, TIER0_LOOPBACK_INTERFACE, TIER0_SEGMENT, TIER0_ROUTER_LINK, TIER0_SERVICE_INTERFACE, TIER0_DNS_FORWARDER_IP, TIER0_IPSEC_LOCAL_IP, TIER0_NAT, TIER0_EVPN_TEP_IP, TIER1_STATIC_ROUTES, TIER1_NAT, TIER1_LB_VIP, TIER1_LB_SNAT, TIER1_DNS_FORWARDER_IP, TIER1_CONNECTED, TIER1_SERVICE_INTERFACE, TIER1_SEGMENT, TIER1_IPSEC_LOCAL_ENDPOINT
                     - TIER1_CONNECTED
                     - TIER1_SEGMENT
-      - Name:           T1-Gateway-ALB
+      - Name:           T1-Gateway-ALB-Management
         Description:    Tier-1 Gateway for Advanced Load Balancer in SDDC.Lab
         FailoverMode:   NON_PREEMPTIVE                                                          # Options are "NON_PREEMPTIVE" or "PREEMPTIVE"
         Tier0Gateway:   T0-Gateway-01
@@ -2414,8 +2414,34 @@ Nested_NSXT:
           - TIER1_CONNECTED
           - TIER1_STATIC_ROUTES
         LocaleServices:
-          - Name:        T1-Gateway-ALB_Locale_Services
-            Description: T1-Gateway-ALB Locale Services Description
+          - Name:        T1-Gateway-ALB-Management_Locale_Services
+            Description: T1-Gateway-ALB-Management Locale Services Description
+            Tags:
+              - Tag: Auto-Created
+                Scope: SDDC.Lab
+            EdgeCluster:
+              Name: ""
+            RouteRedistributionConfig:
+              BGP_Enabled: true
+              Rules:
+                - Name: Redistribute Connected
+                  Types:                                                                        # Types include TIER0_STATIC, TIER0_CONNECTED, TIER0_EXTERNAL_INTERFACE, TIER0_LOOPBACK_INTERFACE, TIER0_SEGMENT, TIER0_ROUTER_LINK, TIER0_SERVICE_INTERFACE, TIER0_DNS_FORWARDER_IP, TIER0_IPSEC_LOCAL_IP, TIER0_NAT, TIER0_EVPN_TEP_IP, TIER1_STATIC_ROUTES, TIER1_NAT, TIER1_LB_VIP, TIER1_LB_SNAT, TIER1_DNS_FORWARDER_IP, TIER1_CONNECTED, TIER1_SERVICE_INTERFACE, TIER1_SEGMENT, TIER1_IPSEC_LOCAL_ENDPOINT
+                    - TIER1_CONNECTED
+                    - TIER1_SEGMENT
+      - Name:           T1-Gateway-ALB-Data
+        Description:    Tier-1 Gateway for Advanced Load Balancer in SDDC.Lab
+        FailoverMode:   NON_PREEMPTIVE                                                          # Options are "NON_PREEMPTIVE" or "PREEMPTIVE"
+        Tier0Gateway:   T0-Gateway-01
+        PoolAllocation: ROUTING
+        Tags:
+          - Tag: Auto-Created
+            Scope: SDDC.Lab
+        RouteAdvertisementTypes:
+          - TIER1_CONNECTED
+          - TIER1_STATIC_ROUTES
+        LocaleServices:
+          - Name:        T1-Gateway-ALB-Management-Data_Locale_Services
+            Description: T1-Gateway-ALB-Management-Data Locale Services Description
             Tags:
               - Tag: Auto-Created
                 Scope: SDDC.Lab
@@ -2590,7 +2616,7 @@ Nested_NSXT:
         UplinkTeamingPolicy: ""
         ConnectedTo:
           Tier: 1
-          GatewayName: T1-Gateway-ALB
+          GatewayName: T1-Gateway-ALB-Management
         Subnets:                                                                                # If no subnets are listed below the "Subnets:" entry, then they will be automatically assigned.  Include subnets over-ride automatic assignment.
         VLANS:
         Tags:
@@ -2605,7 +2631,7 @@ Nested_NSXT:
         UplinkTeamingPolicy: ""
         ConnectedTo:
           Tier: 1
-          GatewayName: T1-Gateway-ALB
+          GatewayName: T1-Gateway-ALB-Data
         Subnets:                                                                                # If no subnets are listed below the "Subnets:" entry, then they will be automatically assigned.  Include subnets over-ride automatic assignment.
         VLANS:
         Tags:
