@@ -2488,5 +2488,5 @@
 
 ### Added by Rutger Blom
   - Updated the data structure for Tier-1 Gateways in ```config_sample.yml``` so that two Tier-1 Gateways are created for NSX ALB: Management and Data.
-  - Update the ```playbooks/ConfigureAlbClouds.yml```playbook so that NSX-T Cloud makes use of the new Tier-1 Gateway topology.
+  - Updated the ```playbooks/ConfigureAlbClouds.yml```playbook so that the NSX-T Cloud makes use of the new Tier-1 Gateway topology.
   - Be sure to update your ```config.yml``` file(s).
