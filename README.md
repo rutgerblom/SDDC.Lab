@@ -104,9 +104,8 @@ The following are recommendations based on our experience with deploying Pods:
   * ```git clone https://github.com/rutgerblom/SDDC.Lab.git ~/git/SDDC.Lab```
   * ```pip3 install --upgrade -r ~/git/SDDC.Lab/pip3_requirements.txt```
 
-* Update your PATH environment variable by doing the following:
-  * Logout of your Ansible controller
-  * Login to your Ansible controller
+* Update your PATH environment variable:
+  * ```source ~/.profile```
 
 * Install Ansible collections on your Ansible controller:
   * ```ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml```
