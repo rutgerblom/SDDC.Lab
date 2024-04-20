@@ -111,10 +111,12 @@ The following are recommendations based on our experience with deploying Pods:
   * ```ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml```
 
 * Copy/rename the sample files:
-  * ```cp ~/git/SDDC.Lab/config_sample.yml ~/git/SDDC.Lab/config.yml```
-  * ```cp ~/git/SDDC.Lab/licenses_sample.yml ~/git/SDDC.Lab/licenses.yml```
-  * ```cp ~/git/SDDC.Lab/software_sample.yml ~/git/SDDC.Lab/software.yml```
-  * ```cp ~/git/SDDC.Lab/templates_sample.yml ~/git/SDDC.Lab/templates.yml```
+   ```
+   cp ~/git/SDDC.Lab/config_sample.yml ~/git/SDDC.Lab/config.yml
+   cp ~/git/SDDC.Lab/licenses_sample.yml ~/git/SDDC.Lab/licenses.yml
+   cp ~/git/SDDC.Lab/software_sample.yml ~/git/SDDC.Lab/software.yml
+   cp ~/git/SDDC.Lab/templates_sample.yml ~/git/SDDC.Lab/templates.yml
+   ```
 
 * Modify ```config.yml``` and ```licenses.yml``` files according to your needs and your environment
 
