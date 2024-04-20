@@ -51,46 +51,57 @@ After you've installed the Ubuntu OS and applied the latest updates, some additi
 version 2.12.x.
 
 1. Update package information\
-```sudo apt update```
+   ```
+   sudo apt update
+   ```
 
 2. Python, pip, xorriso, and git:\
-```sudo apt install python3 python3-pip python-is-python3 xorriso p7zip-full git```
+   ```
+   sudo apt install python3 python3-pip python-is-python3 xorriso p7zip-full git
+   ```
 
 3. The SDDC.Lab repository cloned to an appropriate location on your Ubuntu machine (e.g. $HOME/git/SDDC.Lab) with:\
-```git clone https://github.com/rutgerblom/SDDC.Lab.git ~/git/SDDC.Lab```
+   ```
+   git clone https://github.com/rutgerblom/SDDC.Lab.git ~/git/SDDC.Lab
+   ```
 
 4. Ansible and the required Python modules:\
-```pip3 install --upgrade -r ~/git/SDDC.Lab/pip3_requirements.txt```
+   ```
+   pip3 install --upgrade -r ~/git/SDDC.Lab/pip3_requirements.txt
+   ```
 
 5. Update your PATH environment variable by doing the following:\
-   a) Logout of your Ansible controller\
-   b) Login to your Ansible controller
+   ```
+   source ~/.profile
+   ```
 
 6. The required Ansible modules:\
-```ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml```
+   ```
+   ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml
+   ```
 
 ## Prepare your Pod configuration files
 After cloning the repository you will end up with a directory called "SDDC.Lab" with the following contents:
 
 ```
-    hosts
-    images
-    library
-    module_utils
-    playbooks
-    plugins
-    templates
-    utils
-    ansible.cfg
-    CHANGELOG.md
-    FirstPod.md
-    README.md
-    config_sample.yml
-    Deploy.yml
-    licenses_sample.yml
-    software_sample.yml
-    templates_sample.yml
-    UnDeploy.yml
+hosts
+images
+library
+module_utils
+playbooks
+plugins
+templates
+utils
+ansible.cfg
+CHANGELOG.md
+FirstPod.md
+README.md
+config_sample.yml
+Deploy.yml
+licenses_sample.yml
+software_sample.yml
+templates_sample.yml
+UnDeploy.yml
 ```
 
 Four files in the root of the ```~/git/SDDC.Lab``` directory require your attention:
@@ -99,11 +110,13 @@ Four files in the root of the ```~/git/SDDC.Lab``` directory require your attent
 * ```software_sample.yml```
 * ```templates_sample.yml```
 
-Start by creating your own copies of the sample configuration files:
-* ```cp ~/git/SDDC.Lab/config_sample.yml ~/git/SDDC.Lab/config.yml```
-* ```cp ~/git/SDDC.Lab/licenses_sample.yml ~/git/SDDC.Lab/licenses.yml```
-* ```cp ~/git/SDDC.Lab/software_sample.yml ~/git/SDDC.Lab/software.yml```
-* ```cp ~/git/SDDC.Lab/templates_sample.yml ~/git/SDDC.Lab/templates.yml```
+Start by creating your own copies based on the sample configuration files:
+```
+cp ~/git/SDDC.Lab/config_sample.yml ~/git/SDDC.Lab/config.yml
+cp ~/git/SDDC.Lab/licenses_sample.yml ~/git/SDDC.Lab/licenses.yml
+cp ~/git/SDDC.Lab/software_sample.yml ~/git/SDDC.Lab/software.yml
+cp ~/git/SDDC.Lab/templates_sample.yml ~/git/SDDC.Lab/templates.yml
+```
 
 ### config.yml
 This file contains all of the configuration and settings for the Pod you're about to deploy. Its contents are organized in several different sections and data structures.
@@ -204,7 +217,9 @@ You would normally not make any changes to this file and even more so when you'r
 ## Create your software library
 Now that your configuration files have been prepared, you can continue with creating the software library. The first thing you need to do is create the software library's directory structure. We've created an Ansible script that does this for you. Simply run:
 
-* ```sudo ansible-playbook ~/git/SDDC.Lab/utils/Util_CreateSoftwareDir.yml```
+```
+sudo ansible-playbook ~/git/SDDC.Lab/utils/Util_CreateSoftwareDir.yml
+```
 
 This script creates an empty directory structure at **/Software** on your Ansible controller that will look something like this:
 
@@ -280,7 +295,9 @@ A populated software library could look something like this:
 ## Generate your Pod configuration
 You can now continue with generating your Pod configuration. This is the process where all of your settings are combined into a static configuration file. To generate this configuration file you run:
 
-* ```ansible-playbook ~/git/SDDC.Lab/playbooks/CreatePodConfig.yml```
+```
+ansible-playbook ~/git/SDDC.Lab/playbooks/CreatePodConfig.yml
+```
 
 The script needs to know where your configuration file is located:
 
@@ -306,8 +323,10 @@ The static configuration file will have the following name format ```Pod-<SiteCo
 
 Finally, it's time to deploy the newly created static configuration file.  In order to do that, you simply run the following two commands:
 
-* ```cd ~/git/SDDC.Lab```
-* ```ansible-playbook -e "@~/Pod-<SiteCode>-Config_VCSAv<Version>_ESXIv<Version>_NSXTv<Version>_Fed-N.yml" Deploy.yml```
+```
+cd ~/git/SDDC.Lab
+ansible-playbook -e "@~/Pod-<SiteCode>-Config_VCSAv<Version>_ESXIv<Version>_NSXTv<Version>_Fed-N.yml" Deploy.yml
+```
 
 ## Import SDDC.Lab default credentials
 To expedite and simplify access to your Pod, it's suggested that you import the SDDC.Lab default credentials into your browser.  For instructions on how to accomplish this, please see the ```SDDC.Lab Default Credentials``` section in the [README.md](README.md) file.
