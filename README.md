@@ -99,29 +99,37 @@ The following are recommendations based on our experience with deploying Pods:
   * Add the Pod VLANs to your layer-3 switch in case you are deploying the Pod to a vSphere cluster. 
 
 * Install the required software on your Ansible controller:
-  * ```sudo apt update```
-  * ```sudo apt install python3 python3-pip python-is-python3 xorriso p7zip-full git```
-  * ```git clone https://github.com/rutgerblom/SDDC.Lab.git ~/git/SDDC.Lab```
-  * ```pip3 install --upgrade -r ~/git/SDDC.Lab/pip3_requirements.txt```
+  ```
+  sudo apt update
+  sudo apt install python3 python3-pip python-is-python3 xorriso p7zip-full git
+  git clone https://github.com/rutgerblom/SDDC.Lab.git ~/git/SDDC.Lab
+  pip3 install --upgrade -r ~/git/SDDC.Lab/pip3_requirements.txt
+  ```
 
 * Update your PATH environment variable:
-  * ```source ~/.profile```
+  ```
+  source ~/.profile
+  ```
 
 * Install Ansible collections on your Ansible controller:
-  * ```ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml```
+  ```
+  ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml
+  ```
 
 * Copy/rename the sample files:
-   ```
-   cp ~/git/SDDC.Lab/config_sample.yml ~/git/SDDC.Lab/config.yml
-   cp ~/git/SDDC.Lab/licenses_sample.yml ~/git/SDDC.Lab/licenses.yml
-   cp ~/git/SDDC.Lab/software_sample.yml ~/git/SDDC.Lab/software.yml
-   cp ~/git/SDDC.Lab/templates_sample.yml ~/git/SDDC.Lab/templates.yml
+  ```
+  cp ~/git/SDDC.Lab/config_sample.yml ~/git/SDDC.Lab/config.yml
+  cp ~/git/SDDC.Lab/licenses_sample.yml ~/git/SDDC.Lab/licenses.yml
+  cp ~/git/SDDC.Lab/software_sample.yml ~/git/SDDC.Lab/software.yml
+  cp ~/git/SDDC.Lab/templates_sample.yml ~/git/SDDC.Lab/templates.yml
    ```
 
 * Modify ```config.yml``` and ```licenses.yml``` files according to your needs and your environment
 
 * Create the Software Library directory structure and set folder permissions using:
-  * ```ansible-playbook --ask-become-pass ~/git/SDDC.Lab/utils/Util_CreateSoftwareDir.yml```
+  ```
+  ansible-playbook --ask-become-pass ~/git/SDDC.Lab/utils/Util_CreateSoftwareDir.yml
+  ```
 
     NOTE: The above command will prompt you for the 'root' password.  This is needed as the playbook needs to obtain elevated permissions to create the directory tree and change file system permissions within the Software directory.
 
