@@ -886,44 +886,6 @@
         - status is failed
 
 ##
-## Deployment Complete -- Begin cleaning things up
-##
-
-    - name: Delete VyOS installer from vSphere datastore
-      community.vmware.vsphere_file:
-        host: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        datastore: "{{ Target.Datastore }}"
-        datacenter: "{{ Target.DataCenter }}"
-        path: "{{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
-        state: absent
-      tags: upload
-      when:
-        - Deploy.Product.Router.Deploy
-        - status is failed
-        - not DEBUG.KeepInstallerFiles
-
-    - name: Delete the temporary template file for VyOS router
-      ansible.builtin.file:
-        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
-        state: absent
-      when:
-        - Deploy.Product.Router.Deploy
-        - status is failed
-        - not DEBUG.KeepConfigFiles
-
-    - name: Delete the temporary installer file for VyOS router
-      ansible.builtin.file:
-        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
-        state: absent
-      when:
-        - Deploy.Product.Router.Deploy
-        - status is failed
-        - not DEBUG.KeepInstallerFiles
-
-##
 ## Verify deployment
 ##
 
@@ -972,3 +934,41 @@
 
           =====================================================================================================
       when: '" 0% packet loss" not in result.stdout'
+
+##
+## Deployment Complete -- Begin cleaning things up
+##
+
+    - name: Delete VyOS installer from vSphere datastore
+      community.vmware.vsphere_file:
+        host: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datastore: "{{ Target.Datastore }}"
+        datacenter: "{{ Target.DataCenter }}"
+        path: "{{ Target.ISOFolder }}/{{ Deploy.Software.Router.Installer }}"
+        state: absent
+      tags: upload
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+        - not DEBUG.KeepInstallerFiles
+
+    - name: Delete the temporary template file for VyOS router
+      ansible.builtin.file:
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
+        state: absent
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+        - not DEBUG.KeepConfigFiles
+
+    - name: Delete the temporary installer file for VyOS router
+      ansible.builtin.file:
+        path: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
+        state: absent
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+        - not DEBUG.KeepInstallerFiles
