@@ -2495,3 +2495,5 @@
 
 ### Added by Rutger Blom
   - Added a check to ```playbooks/ValidateConfiguration.yml``` that validates whether the portgroup provided by ```Target.PortGroup.Uplink``` exists in the physical vCenter.
+  - Updated the router deployment script so that it's compatible with vyos-1.5-rolling-202404200018-amd64.iso
+  - Please update your software library with this or a newer VyOS router image
