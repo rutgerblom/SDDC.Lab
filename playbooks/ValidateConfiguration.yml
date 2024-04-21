@@ -488,6 +488,51 @@
 
 
 ##
+## Verify that the Target.PortGroup.Uplink exists (vCenter) by requesting info 
+##
+    - name: Gather info about all portgroups (vCenter Deployment)
+      community.vmware.vmware_dvs_portgroup_info:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        datacenter: "{{ Target.DataCenter}}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+      ignore_errors: true
+      register: portgroup_facts 
+      when:
+        - Target.Deployment == "vCenter"
+
+    - name: Find the name of the portgroup provided via Target.PortGroup.Uplink (vCenter Deployment)
+      ansible.builtin.set_fact:
+        uplink_portgroup: "{{ portgroup_facts is search(Target.PortGroup.Uplink) }}"
+      register: uplink_portgroup_result
+      when:
+        - Target.Deployment == "vCenter"
+
+    - name: Verify that Target.PortGroup.Uplink has been found (vCenter Deployment)
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: Unable find the portgroup provided via Target.PortGroup.Uplink
+
+             Configured Value: {{ Target.PortGroup.Uplink }}
+
+          =================================================================================================
+      when:
+        - Target.Deployment == "vCenter"
+        - not uplink_portgroup
+
+    - name: Set flag if issue found with Target.PortGroup.Uplink (vCenter Deployment)
+      ansible.builtin.set_fact:
+        issuefound: true
+      when:
+        - Target.Deployment == "vCenter"
+        - not uplink_portgroup
+
+
+##
 ## Verify Ansible Control Station can resolve DNS
 ##
     - name: Perform DNS lookup for github.com
