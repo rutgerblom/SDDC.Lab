@@ -505,7 +505,6 @@
     - name: Find the name of the portgroup provided via Target.PortGroup.Uplink (vCenter Deployment)
       ansible.builtin.set_fact:
         uplink_portgroup: "{{ portgroup_facts is search(Target.PortGroup.Uplink) }}"
-      register: uplink_portgroup_result
       when:
         - Target.Deployment == "vCenter"
 
