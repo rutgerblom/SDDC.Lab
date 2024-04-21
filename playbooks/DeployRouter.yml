@@ -286,7 +286,7 @@
         - Deploy.Product.Router.Deploy
         - status is failed
 
-    - name: Walk through the setup dialog 4
+    - name: Walk through the setup dialog 4 (Press 'ENTER' after password and install image)
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -308,7 +308,7 @@
         - Deploy.Product.Router.Deploy
         - status is failed
 
-    - name: Walk through the setup dialog 5
+    - name: Walk through the setup dialog 5 (Press 'ENTER' after install image)
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -328,7 +328,7 @@
         - Deploy.Product.Router.Deploy
         - status is failed
 
-    - name: Walk through the setup dialog 6
+    - name: Walk through the setup dialog 6 (Press 'y' on Would you like to continue?)
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -347,7 +347,7 @@
         - Deploy.Product.Router.Deploy
         - status is failed
 
-    - name: Walk through the setup dialog 7
+    - name: Walk through the setup dialog 7 (Press 'ENTER' after 'y' on Would you like to continue?)
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -367,7 +367,7 @@
         - Deploy.Product.Router.Deploy
         - status is failed
 
-    - name: Walk through the setup dialog 8 (Destroy data on /dev/sda)
+    - name: Walk through the setup dialog 8 (Press 'ENTER' on image name)
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -376,10 +376,6 @@
         name: "{{ Nested_Router.Name }}"
         keys_send:
           - ENTER
-          - ENTER
-          - ENTER
-          - ENTER
-        string_send: "y"
       when:
         - Deploy.Product.Router.Deploy
         - status is failed
@@ -391,16 +387,14 @@
         - Deploy.Product.Router.Deploy
         - status is failed
 
-    - name: Walk through the setup dialog 9
+    - name: Walk through the setup dialog 9 (Send 'vyos' as the password)
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         name: "{{ Nested_Router.Name }}"
-        keys_send:
-          - ENTER
-        string_send: "y"
+        string_send: "vyos"
       when:
         - Deploy.Product.Router.Deploy
         - status is failed
@@ -412,7 +406,7 @@
         - Deploy.Product.Router.Deploy
         - status is failed
 
-    - name: Walk through the setup dialog 9
+    - name: Walk through the setup dialog 10 (Press 'ENTER' after sending password)
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -428,6 +422,202 @@
     - name: Wait 30 seconds before shutting down the VyOS router
       ansible.builtin.pause:
         seconds: 30
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Walk through the setup dialog 11 (Confirm 'vyos' as the password)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_Router.Name }}"
+        string_send: "vyos"
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Wait 10 seconds
+      ansible.builtin.pause:
+        seconds: 10
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Walk through the setup dialog 12 (Press 'ENTER' after confirming password)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Wait 10 seconds
+      ansible.builtin.pause:
+        seconds: 10
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Walk through the setup dialog 13 (Press 'ENTER' to confirm KVM as console)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Wait 10 seconds
+      ansible.builtin.pause:
+        seconds: 10
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Walk through the setup dialog 14 (Press 'ENTER' to confirm drive for installation)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Wait 10 seconds
+      ansible.builtin.pause:
+        seconds: 10
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Walk through the setup dialog 15 (Press 'y' on deleting all data question)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_Router.Name }}"
+        string_send: "y"
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Wait 10 seconds
+      ansible.builtin.pause:
+        seconds: 10
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Walk through the setup dialog 15 (Press 'ENTER' after 'y' on deleting all data question)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Wait 10 seconds
+      ansible.builtin.pause:
+        seconds: 10
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Walk through the setup dialog 16 (Press 'y' on using all free space question)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_Router.Name }}"
+        string_send: "y"
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Wait 10 seconds
+      ansible.builtin.pause:
+        seconds: 10
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Walk through the setup dialog 17 (Press 'ENTER' after 'y' on using all free space question)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Wait 10 seconds
+      ansible.builtin.pause:
+        seconds: 10
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Walk through the setup dialog 16 (Press '1' on boot config file options)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_Router.Name }}"
+        string_send: "1"
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Wait 10 seconds
+      ansible.builtin.pause:
+        seconds: 10
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Walk through the setup dialog 17 (Press 'ENTER' after '1' on boot config options)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Wait 20 seconds
+      ansible.builtin.pause:
+        seconds: 20
       when:
         - Deploy.Product.Router.Deploy
         - status is failed
