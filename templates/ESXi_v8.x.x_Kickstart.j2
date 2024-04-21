@@ -5,7 +5,7 @@ vmaccepteula
 rootpw {{ Common.Password.Nested }}
 
 # Install ESXi to the local disk
-install --firstdisk --overwritevmfs
+install --firstdisk --overwritevmfs --forceunsupportedinstall
 
 # Host Network Settings
 network --bootproto=static --addvmportgroup=0 --ip={{ item.value.vmk.vmk0.Address.IPv4.Address }} --netmask={{ (item.value.vmk.vmk0.Address.IPv4.Address + '/' + item.value.vmk.vmk0.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }} --gateway={{ item.value.vmk.vmk0.Address.IPv4.Gateway }} --vlanid={{ item.value.vmk.vmk0.VLAN }} --nameserver={{ Common.DNS.Server1.IPv4 }} --hostname={{ item.value.FQDN }}
