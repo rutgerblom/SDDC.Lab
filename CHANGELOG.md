@@ -2490,3 +2490,8 @@
   - Updated the data structure for Tier-1 Gateways in ```config_sample.yml``` so that two Tier-1 Gateways are created for NSX ALB: Management and Data.
   - Updated the ```playbooks/ConfigureAlbClouds.yml```playbook so that the NSX-T Cloud makes use of the new Tier-1 Gateway topology.
   - Be sure to update your ```config.yml``` file(s).
+
+## Dev-v7.0.0 21-APRIL-2024
+
+### Added by Rutger Blom
+  - Added a check to ```playbooks/ValidateConfiguration.yml``` that validates whether the portgroup provided by ```Target.PortGroup.Uplink``` exists in the physical vCenter.
