@@ -2502,7 +2502,7 @@
 ## Dev-v7.0.0 08-MAY-2024
 
 ### Added by Rutger Blom
-  - Updated ```requirements.yml```and ```pip3_requirements.txt```to download newer versions of collections and modules.
+  - Updated ```requirements.yml``` and ```pip3_requirements.txt``` to download newer versions of collections and modules.
   - Please run the following commands on you Ansible controller so that newer versions are installed:
     - python3 -m pip install pip --upgrade
     - pip install --upgrade -r ~/git/SDDC.Lab/pip3_requirements.txt
