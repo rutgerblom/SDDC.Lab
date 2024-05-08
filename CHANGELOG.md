@@ -2498,3 +2498,8 @@
   - Added the ```--forceunsupportedinstall``` parameter to the nested ESXi kickstart file (ESXi 8) so that the nested ESXi hosts can be deployed even when the physical CPU is unsupported.
   - Updated the router deployment script so that it's compatible with vyos-1.5-rolling-202404200018-amd64.iso.
   - Please update your software library with vyos-1.5-rolling-202404200018-amd64.iso or newer VyOS router image.
+
+## Dev-v7.0.0 08-MAY-2024
+
+### Added by Rutger Blom
+  - Updated ```requirements.yml```and ```pip3_requirements.txt```to download newer versions of collections and modules.
