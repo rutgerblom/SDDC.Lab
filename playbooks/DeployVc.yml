@@ -200,7 +200,7 @@
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         state: absent
-      #when: vcenter_check.status != 200
+      when: vcenter_check.status != 200
 
     - name: Write annotation on the vCenter VM
       community.vmware.vmware_guest:
