@@ -2507,3 +2507,10 @@
     - python3 -m pip install pip --upgrade
     - pip install --upgrade -r ~/git/SDDC.Lab/pip3_requirements.txt
     - ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml
+
+## Dev-v7.0.0 09-MAY-2024
+
+### Added by Rutger Blom
+  - Updated task ```Disable password expiration on nested vCenter Server``` in ```playbooks/DeployVc.yml``` so it uses the ```community.vmware.vcenter_root_password_expiration``` module instead of running commands through a VM shell. This module was added in community.vmware version 3.10 so please make sure to run the following command on your Ansible controller:
+    - ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml
+
