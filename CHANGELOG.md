@@ -2516,3 +2516,7 @@
   - Updated ```playbooks/CreateNsxDhcpProfiles.yml``` so that PATCH is used instead of PUT in task ```Create NSX-T DHCP Server Profiles```. In a broken off Pod deployment that is restarted and where the DHCP server profile has already been created and assigned to NSX segments, PUT will not work as it wants to replace the DHCP server profile which isn't possible as it's in use. The PATCH method will work for both creation and handling an existing DHCP server profile as it only updates the DHCP server profile with the specified attributes.
   - Added Advanced Load Balancer version 30.2.1 to ```software_sample.yml```.
 
+## Dev-v7.0.0 11-MAY-2024
+
+### Added by Rutger Blom
+  - Applied some of the Ansible lint suggestions to the scripts.
