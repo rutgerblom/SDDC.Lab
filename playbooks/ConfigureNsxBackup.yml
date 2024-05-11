@@ -9,8 +9,8 @@
 ##               3) Performs a backup of the NSX-T Local Manager if Federation is configured (Needed to On-Board a site into NSX-T Federation)
 ##
 ---
-- hosts: localhost
-  name: ConfigureNsxBackup.yml
+- name: ConfigureNsxBackup.yml
+  hosts: localhost
   tasks:
     - name: ConfigureNsxBackup_Playbook
       ansible.builtin.debug:
@@ -140,7 +140,7 @@
                 "server": "{{ BackupServer[Nested_NSXT.Backup.Protocol].FQDN }}",
                 "port": {{ BackupServer[Nested_NSXT.Backup.Protocol].Port }},
                 "protocol": {
-                  "protocol_name": "{{  Nested_NSXT.Backup.Protocol|lower  }}",
+                  "protocol_name": "{{ Nested_NSXT.Backup.Protocol | lower }}",
                   "ssh_fingerprint": "{{ ssh_fingerprint }}",
                   "authentication_scheme": {
                       "scheme_name": "PASSWORD",
@@ -230,7 +230,7 @@
                 "server": "{{ BackupServer[Nested_NSXT.Backup.Protocol].FQDN }}",
                 "port": {{ BackupServer[Nested_NSXT.Backup.Protocol].Port }},
                 "protocol": {
-                  "protocol_name": "{{ Nested_NSXT.Backup.Protocol|lower }}",
+                  "protocol_name": "{{ Nested_NSXT.Backup.Protocol | lower }}",
                   "ssh_fingerprint": "{{ ssh_fingerprint }}",
                   "authentication_scheme": {
                       "scheme_name": "PASSWORD",

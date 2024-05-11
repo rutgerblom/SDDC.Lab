@@ -23,8 +23,8 @@
 ##                 SNMP URL: https://vdc-repo.vmware.com/vmwb-repository/dcr-public/4e0249dc-f050-4e5f-8a47-bb247d9fa31f/96084528-a9f7-4e2b-866d-c5bbc1b090f7/api_includes/types_SnmpProperties.html
 ##
 ---
-- hosts: localhost
-  name: ConfigureNsxBasicConfig.yml
+- name: ConfigureNsxBasicConfig.yml
+  hosts: localhost
   tasks:
     - name: ConfigureNsxBasicConfig_Playbook
       ansible.builtin.debug:
@@ -171,8 +171,8 @@
                 {
                   "server": "{{ Common.Syslog.IPv4 }}",
                   "port": "{{ Common.Syslog.Port }}",
-                  "max_log_level": "{{ Common.Syslog.Level|upper }}",
-                  "protocol": "{{ Common.Syslog.Protocol|upper }}"
+                  "max_log_level": "{{ Common.Syslog.Level | upper }}",
+                  "protocol": "{{ Common.Syslog.Protocol | upper }}"
                 }
               ]
             },

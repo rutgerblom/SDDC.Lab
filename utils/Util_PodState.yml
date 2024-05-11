@@ -52,7 +52,7 @@
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================ Display Variables For Pod {{ '%03d'|format(Pod.Number|int) }} ==================================
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
                                      Ansible Playbook: {{ ansible_play_name }}
 
@@ -65,11 +65,11 @@
                                    Nested_Router.Name: {{ Nested_Router.Name }}
                                    Nested_vRLI.VMName: {{ Nested_vRLI.VMName }}
                                 Nested_vCenter.VMName: {{ Nested_vCenter.VMName }}
-           Nested_NSXT.Component.LocalManager.VMName: {{ Nested_NSXT.Component.LocalManager.VMName }}
+            Nested_NSXT.Component.LocalManager.VMName: {{ Nested_NSXT.Component.LocalManager.VMName }}
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables == true
+        - DEBUG.DisplayVariables
 
     - name: Gather info about virtual machines in the nested vSphere environment
       community.vmware.vmware_vm_info:
@@ -83,7 +83,7 @@
     - name: Change state of VMs in the nested vSphere environment
       community.vmware.vmware_guest:
         hostname: "{{ Nested_vCenter.FQDN }}"
-        username: "{{ Nested_vCenter.User  }}"
+        username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         name: "{{ item.guest_name }}"

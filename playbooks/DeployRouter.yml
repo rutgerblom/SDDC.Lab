@@ -4,8 +4,8 @@
 ##   Filename: playbooks/DeployRouter.yml
 ##
 ---
-- hosts: localhost
-  name: DeployRouter.yml
+- name: DeployRouter.yml
+  hosts: localhost
   connection: ansible.netcommon.network_cli
   tasks:
     - name: DeployRouter_Playbook
@@ -1080,7 +1080,7 @@
 ##
 
     - name: Try to ping the Pod-Router uplink interface
-      shell: "ping -c 1 {{ Nested_Router.Interface.Uplink.IPv4.Address }}"
+      ansible.builtin.shell: "ping -c 1 {{ Nested_Router.Interface.Uplink.IPv4.Address }}"
       ignore_errors: true
       register: result
       retries: 5

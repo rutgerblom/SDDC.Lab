@@ -7,8 +7,8 @@
 ## Disabled IPv6 Dynamic DNS updates for everything but Nested_Router because v2 does not yet assign IPv6 addresses to those components.
 ##
 ---
-- hosts: localhost
-  name: CleanupDNS.yml
+- name: CleanupDNS.yml
+  hosts: localhost
   vars:
     - LOCAL_RecordState: "absent"           # LOCAL_RecordState values are either "present" (Records will be added) or "absent" (Records will be deleted)
   tasks:
