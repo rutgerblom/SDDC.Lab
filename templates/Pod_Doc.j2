@@ -99,7 +99,7 @@ tr:nth-child(even) {
     <td>{{ Deploy.Product.ALB.Deploy }}</td>
   </tr>
   <tr>
-    <td>vRealize Log Insight deployed</td>
+    <td>Aria Operations for Logs deployed</td>
     <td>{{ Deploy.Product.vRLI.Deploy }}</td>
   </tr>
   <tr>
@@ -256,19 +256,6 @@ tr:nth-child(even) {
   </tr>
 {% endfor %}{# EdgeTransportNode #}
 {% endif %}{# Deploy.Product.NSXT.Edge.Deploy #}
-{% if Deploy.Product.vRLI.Deploy == True %}
-  <tr>
-    <td>{{ Deploy.Software.vRLI.Product }}</td>
-    <td>{{ Deploy.Software.vRLI.Version }}</td>
-    <td><a href="https://{{ Nested_vRLI.Component.Node.FQDN }}">https://{{ Nested_vRLI.Component.Node.FQDN }}</a></td>
-{% if Deploy.Setting.IPv4 %}
-    <td><a href="https://{{ Nested_vRLI.Component.Node.Address.IPv4.Address }}">https://{{ Nested_vRLI.Component.Node.Address.IPv4.Address }}</a></td>
-{% endif %}{# Deploy.Setting.IPv4 #}
-{% if Deploy.Setting.IPv6 %}
-    <td><a href="https://{{ Nested_vRLI.Component.Node.Address.IPv6.Address }}">https://{{ Nested_vRLI.Component.Node.Address.IPv6.Address }}</a></td>
-{% endif %}{# Deploy.Setting.IPv6 #}
-  </tr>
-{% endif %}{# Deploy.Product.vRLI.Deploy #}
 {% if Deploy.Product.ALB.Deploy == True %}
   <tr>
     <td>{{ Deploy.Software.ALB.Product }}</td>
@@ -282,6 +269,19 @@ tr:nth-child(even) {
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
 {% endif %}{# Deploy.Product.ALB.Deploy #}
+{% if Deploy.Product.vRLI.Deploy == True %}
+  <tr>
+    <td>{{ Deploy.Software.vRLI.Product }}</td>
+    <td>{{ Deploy.Software.vRLI.Version }}</td>
+    <td><a href="https://{{ Nested_vRLI.Component.Node.FQDN }}">https://{{ Nested_vRLI.Component.Node.FQDN }}</a></td>
+{% if Deploy.Setting.IPv4 %}
+    <td><a href="https://{{ Nested_vRLI.Component.Node.Address.IPv4.Address }}">https://{{ Nested_vRLI.Component.Node.Address.IPv4.Address }}</a></td>
+{% endif %}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 %}
+    <td><a href="https://{{ Nested_vRLI.Component.Node.Address.IPv6.Address }}">https://{{ Nested_vRLI.Component.Node.Address.IPv6.Address }}</a></td>
+{% endif %}{# Deploy.Setting.IPv6 #}
+  </tr>
+{% endif %}{# Deploy.Product.vRLI.Deploy #}
 </table>
 <br>
 
@@ -338,18 +338,6 @@ tr:nth-child(even) {
     <td>{{ Nested_NSXT.Credential.root.Password }}</td>
   </tr>
 {% endif %}{# Deploy.Product.NSXT.LocalManager.Deploy #}
-{% if Deploy.Product.vRLI.Deploy == True %}
-  <tr>
-    <td>vRealize Log Insight (admin)</td>
-    <td>{{ Nested_vRLI.Credential.admin.Name }}</td>
-    <td>{{ Nested_vRLI.Credential.admin.Password }}</td>
-  </tr>
-  <tr>
-    <td>vRealize Log Insight (root)</td>
-    <td>{{ Nested_vRLI.Credential.root.Name }}</td>
-    <td>{{ Nested_vRLI.Credential.root.Password }}</td>
-  </tr>
-{% endif %}{# Deploy.Product.vRLI.Deploy #}
 {% if Deploy.Product.ALB.Deploy == True %}
   <tr>
     <td>NSX Advanced Load Balancer (admin)</td>
@@ -362,6 +350,18 @@ tr:nth-child(even) {
     <td>{{ Nested_ALB.Credential.root.Password }}</td>
   </tr>
 {% endif %}{# Deploy.Product.ALB.Deploy #}
+{% if Deploy.Product.vRLI.Deploy == True %}
+  <tr>
+    <td>Aria Operations for Logs (admin)</td>
+    <td>{{ Nested_vRLI.Credential.admin.Name }}</td>
+    <td>{{ Nested_vRLI.Credential.admin.Password }}</td>
+  </tr>
+  <tr>
+    <td>Aria Operations for Logs (root)</td>
+    <td>{{ Nested_vRLI.Credential.root.Name }}</td>
+    <td>{{ Nested_vRLI.Credential.root.Password }}</td>
+  </tr>
+{% endif %}{# Deploy.Product.vRLI.Deploy #}
 </table>
 <br>
 
