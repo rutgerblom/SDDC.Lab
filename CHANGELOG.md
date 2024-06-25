@@ -2520,3 +2520,10 @@
 
 ### Added by Rutger Blom
   - Applied some of the Ansible lint suggestions to the scripts.
+
+## Dev-v7.0.0 25-JUNE-2024
+
+### Added by Rutger Blom
+  - Added vCenter Server v8.0.0 Update 3 to ```software_sample.yml``` (NOT TESTED)
+  - Added ESXi v8.0.0 Update 3 to to ```software_sample.yml``` (NOT TESTED)
+  - Be sure to update your ```software.yml``` and ```templates.yml```file.
