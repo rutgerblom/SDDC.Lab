@@ -2526,4 +2526,9 @@
 ### Added by Rutger Blom
   - Added vCenter Server v8.0.0 Update 3 to ```software_sample.yml``` (NOT TESTED)
   - Added ESXi v8.0.0 Update 3 to to ```software_sample.yml``` (NOT TESTED)
-  - Be sure to update your ```software.yml``` and ```templates.yml```file.
+  - Be sure to update your ```software.yml``` and ```templates.yml``` file.
+
+## Dev-v7.0.0 09-JULY-2024
+
+### Added by Luis Chanu
+  - Discovered issue with pip3 ansible v10.1.0 package where ```#!/usr/bin/env python``` fails in library python modules with ```"/bin/sh: 1: /usr/bin/env python: not found\n"``` error message.  Reverting back to ansible version 9.7.0 package corrected this issue.  For that reason, ```pip3_requirements.txt``` file updated to install version 9.7.0 of the pip3 ansible package.

@@ -484,6 +484,7 @@ As we use SDDC.Lab in our labs, every now-and-then we notice some issues/problem
 | 11-OCT-2022 | 8.0.0 (Build  20519528) | 8.0.0 (Build 20513097) | 4.0.0.1 | Although v8.0.0 of vCenter Server and ESXi deploy successfully using SDDC.Lab, NSX fails when it attempts to apply the Transport Node Profile to the vSphere cluster.  It fails with the following error message, "```NSX cannot be enabled on the cluster because it contains host 6e6954ea-2f6a-491a-a3d4-34ea27078709:host-14 of unsupported version.```"  So, it appears the next version of NSX is required in order to support vSphere 8.0.0 (GA). | Luis Chanu |
 | 14-OCT-2022 | 8.0.0 (Build  20519528) | 8.0.0 (Build 20513097) | 4.0.1.1 | NSX-T Federation deployment is not supported due to a Federation onboarding bug with NSX where the Segment paths are not correct within vCenter Server. | Luis Chanu |
 | 26-APR-2023 | 7.0.0U3L | 7.0.0U3L | 3.2.2.1 | NSX-T Federation deployment is not supported due to a Federation onboarding bug with NSX where the Segment paths are not correct within vCenter Server.  This is the same issue discovered with NSX v4.0.1.1.  | Luis Chanu |
+| 09-JUL-2024 | N/A | N/A | N/A | PIP3 ansible package v10.1.0 causes ```"/bin/sh: 1: /usr/bin/env python: not found\n"``` failure during deployment.  Solution is to install ansible package v9.7.0. | Luis Chanu |
 
 
 ## More Information
