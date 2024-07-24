@@ -2525,7 +2525,7 @@
 
 ### Added by Rutger Blom
   - Added vCenter Server v8.0.0 Update 3 to ```software_sample.yml``` (NOT TESTED)
-  - Added ESXi v8.0.0 Update 3 to to ```software_sample.yml``` (NOT TESTED)
+  - Added ESXi v8.0.0 Update 3 to ```software_sample.yml``` (NOT TESTED)
   - Be sure to update your ```software.yml``` and ```templates.yml``` file.
 
 ## Dev-v7.0.0 09-JULY-2024
@@ -2537,3 +2537,9 @@
 
 ### Added by Luis Chanu
   - Added SDDC.Lab version to ```utils/Util_GetLabInfo.sh``` script.
+
+## Dev-v7.0.0 24-JULY-2024
+
+### Added by Rutger Blom
+  - Added NSX v4.2.0.0 to ```software_sample.yml``` (NOT TESTED)
+  - Be sure to update your ```software.yml``` file.
