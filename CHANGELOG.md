@@ -2543,3 +2543,13 @@
 ### Added by Rutger Blom
   - Added NSX v4.2.0.0 to ```software_sample.yml``` (NOT TESTED)
   - Be sure to update your ```software.yml``` file.
+
+## Dev-v7.0.0 25-JULY-2024
+
+### Added by Rutger Blom
+  - Updated software versions in ```config_sample.yml``` to the latest versions that were tested with a Pod deployment:
+    - vCenter 8.00U3
+    - ESXi 8.00U3
+    - NSX 4.2.0.0
+    - ALB 30.2.1
+  - Be sure to update your ```config.yml```, ```software.yml```, and ```templates.yml``` files.
