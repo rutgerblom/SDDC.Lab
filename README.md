@@ -181,7 +181,7 @@ The network configuration is where many users experience issues with the setup o
 ### Logical Networking Overview
 Before we dive into the physical network environment, it's important to understand logically how everything is configured and connected.  This is the **KEY** to understanding how SDDC.Lab works from a networking perspective.
 
-Each SDDC.Lab that is deployed is referred to as a Pod.  Every Pod is assigned a number between 10-240 which is evenly divisble by 10.  So, valid Pod numbers include 10, 20, 30, ..., 220, 230, and 240.  The Pod number drives **ALL** networking elements used by that lab, includng, VLAN IDs, IP networks (IPv4 and IPv6), and Autonomous System Numbers (ASNx).  This ensures that no duplicate networking components exist between any of the Pods.
+Each SDDC.Lab that is deployed is referred to as a Pod.  Every Pod is assigned a number between 10-240 which is evenly divisble by 10.  So, valid Pod numbers include 10, 20, 30, ..., 220, 230, and 240.  The Pod number drives **ALL** networking elements used by that lab, including, VLAN IDs, IP networks (IPv4 and IPv6), and Autonomous System Numbers (ASNx).  This ensures that no duplicate networking components exist between any of the Pods.
 
 At the heart of each Pod is a software-based [VyOS](https://vyos.io/) router, which we call the Pod-Router.  The Pod-Router provides these main functions:
 1. Connectivity to the physical environment
@@ -193,7 +193,7 @@ The Pod-Router provides gateway services for all of the SDDC.Lab's networks via 
 
 Each Pod is comprised of ten (10) SDDC.Lab networks, numbered 0 through 9.  These SDDC.Lab network numbers are added to the Pod number to create unique VLAN IDs for each Pod.  This explains why the Pod Numbers are divisible by 10.  Below are the SDDC.Lab networks that are deployed within each Pod (Pod Number 100 shown):
 
-| Pod.Number | Network Number | MTU  | VLAN ID |    Description    |
+| Pod Number | Network Number | MTU  | VLAN ID |    Description    |
 |------------|----------------|------|---------|-------------------|
 |    100     |       0        | 1500 | 100     | Management (ESXi, NSX-T Edges, etc.) |
 |    100     |       1        | 9000 | 101     | vMotion |
