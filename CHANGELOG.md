@@ -2553,3 +2553,8 @@
     - NSX 4.2.0.0
     - ALB 30.2.1
   - Be sure to update your ```config.yml```, ```software.yml```, and ```templates.yml``` files.
+
+## Dev-v7.0.0 05-AUGUST-2024
+
+### Added by Rutger Blom
+  - Increased the value of certain timers in ```playbooks/DeployRouter.yml```. 
