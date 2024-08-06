@@ -2557,4 +2557,9 @@
 ## Dev-v7.0.0 05-AUGUST-2024
 
 ### Added by Rutger Blom
-  - Increased the value of certain timers in ```playbooks/DeployRouter.yml```. 
+  - Increased the value of certain timers in ```playbooks/DeployRouter.yml```.
+
+## Dev-v7.0.0 05-AUGUST-2024
+
+### Added by Luis Chanu
+  - Newer Ansible versions are allowing ```playbooks/CreatePodConfig.yml``` to run much faster than previously.  So, modified how long it takes to generate a static Pod configuration.
