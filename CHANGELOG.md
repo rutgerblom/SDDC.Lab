@@ -2569,3 +2569,9 @@
 ### Added by Rutger Blom
   - JSON structure at the VyOS GitHub API page changed so updated the regex in ```software_sample.yml```. 
   - Be sure to update your ```software.yml```file.
+
+## Dev-v7.0.0 23-AUGUST-2024
+
+### Added by Rutger Blom
+  - Added NSX v4.2.0.1 to ```software_sample.yml``` (NOT TESTED)
+  - Be sure to update your ```software.yml``` file.
