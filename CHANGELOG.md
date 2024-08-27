@@ -2575,3 +2575,17 @@
 ### Added by Rutger Blom
   - Added NSX v4.2.0.1 to ```software_sample.yml``` (NOT TESTED)
   - Be sure to update your ```software.yml``` file.
+
+
+<br>
+
+***
+<h1 style="text-align:center">SDDC.Lab Version 7.0 Released</h1>
+<br>
+
+
+## Release-v7.0.0 26-AUGUST-2024
+
+### Added by Rutger Blom & Luis Chanu
+
+- Released version 7 of the SDDC.Lab project.
