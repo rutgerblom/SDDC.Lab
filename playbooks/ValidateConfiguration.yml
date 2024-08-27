@@ -26,7 +26,7 @@
 ##
 ## Verify SDDCLab.Version
 ##
-    - name: Verifying SDDCLab.Version is 7
+    - name: Verifying SDDCLab.Version is 8
       ansible.builtin.pause:
         seconds: 5
         prompt: |
@@ -40,13 +40,13 @@
 
           ==================================================================================================
       when:
-        - SDDCLab.Version != 7
+        - SDDCLab.Version != 8
 
     - name: Set flag if issue found with SDDCLab.Version
       ansible.builtin.set_fact:
         issuefound: true
       when:
-        - SDDCLab.Version != 7
+        - SDDCLab.Version != 8
 
 
 ##
@@ -488,17 +488,17 @@
 
 
 ##
-## Verify that the Target.PortGroup.Uplink exists (vCenter) by requesting info 
+## Verify that the Target.PortGroup.Uplink exists (vCenter) by requesting info
 ##
     - name: Gather info about all portgroups (vCenter Deployment)
       community.vmware.vmware_dvs_portgroup_info:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
-        datacenter: "{{ Target.DataCenter}}"
+        datacenter: "{{ Target.DataCenter }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
       ignore_errors: true
-      register: portgroup_facts 
+      register: portgroup_facts
       when:
         - Target.Deployment == "vCenter"
 
