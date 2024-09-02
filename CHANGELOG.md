@@ -2621,3 +2621,8 @@
   - Changed VyOS URL in ```software_sample.yml``` file.
   - Be sure to update your ```software.yml``` file.
   - Due to the VyOS URL change, be sure to re-run ```playbooks/CreatePodConfig.yml``` against all of your ```config.yml``` files.  To aid with this, you can also use the ```utils/Util_CreateAllPodConfigs.sh``` utility, which can do this for you.  Instructions on how to use it are within the shell script file.
+
+## Dev-v8.0.0 02-SEPTEMBER-2024
+
+### Added by Rutger Blom
+  - Added a new Ansible module ```library/claim_vsan_disks_all_flash.py```that configures all-flash vSAN on eligible nested ESXi hosts. Work in progress.
