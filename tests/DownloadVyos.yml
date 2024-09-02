@@ -1,0 +1,196 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/DownloadVyos.yml
+##
+##   Description: This playbook downloads the latest nightly build of the VyOS router when 'Deploy.Product.Router.Deploy' is true,
+##                and any of the following conditions exist:
+##                  1) The 'vyos-rolling-latest.iso' file (or symbolic link) does not exist in the /Software repository
+##                  2) The 'Deploy.Software.Options.UseLocalInstaller' configuration option is set to 'false'
+##
+##                This playbook does NOT deploy the VyOS router, and is only responsible for downloading the VyOS
+##                installation file(s) and placing them in the appropriate /Software VyOS folder.
+##
+---
+- name: DownloadVyos.yml
+  hosts: localhost
+  connection: ansible.netcommon.network_cli
+  tasks:
+    - name: DownloadVyos_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                     Target.ISOFolder: {{ Target.ISOFolder }}
+                                    Target.TempFolder: {{ Target.TempFolder }}
+
+                         Deploy.Product.Router.Deploy: {{ Deploy.Product.Router.Deploy }}
+
+                       Deploy.Software.Router.Version: {{ Deploy.Software.Router.Version }}
+                     Deploy.Software.Router.Installer: {{ Deploy.Software.Router.Installer }}
+                     Deploy.Software.Router.Directory: {{ Deploy.Software.Router.Directory }}
+                          Deploy.Software.Router.File: {{ Deploy.Software.Router.File }}
+                           Deploy.Software.Router.URL: {{ Deploy.Software.Router.URL }}
+
+            Deploy.Software.Options.UseLocalInstaller: {{ Deploy.Software.Options.UseLocalInstaller }}
+            Deploy.Software.Options.KeepNewInstallers: {{ Deploy.Software.Options.KeepNewInstallers }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+
+
+
+    - name: DEBUG -- Method -- Rutgers Dynamic Method
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =====================================================================
+                                 Rutgers Dynamic Method
+                      URL and Filename are dynamically generated
+          =====================================================================
+
+    - name: Pretend path in Software.yml file for testing
+      ansible.builtin.set_fact:
+        SOFTWARE_URL: "https://api.github.com/repos/vyos/vyos-nightly-build/releases/latest"
+#        SOFTWARE_URL: "https://api.github.com/repos/vyos/vyos-rolling-nightly-builds/releases/latest"
+#        SOFTWARE_URL: "https://api.github.com/repos/vyos/vyos-rolling-nightly-builds/releases/latest"
+# the first 'vyos-nightly-build' URL is the current one.  Others are alias to it, so I'm using it.
+
+
+    - name: Obtain Full URL via OLD method with corrections by Luis
+      ansible.builtin.set_fact:
+        DYN_URL_OLD: "{{ lookup('ansible.builtin.url', '{{ SOFTWARE_URL }}', split_lines=false) | regex_search('\"browser_download_url.*(https://(.*?).iso)\"', '\\1') | first }}"
+
+    - name: Obtain Filename from DYN_URL_OLD
+      ansible.builtin.set_fact:
+        DYN_FILE_OLD: "{{ DYN_URL_OLD | basename }}"
+
+    - name: Obtain Full URL using Rutger's new method which matches first instance of ISO
+      ansible.builtin.set_fact:
+        DYN_URL: "{{ lookup('ansible.builtin.url', '{{ SOFTWARE_URL }}', split_lines=false) | regex_search('https://[^\"]+\\.iso', '\\0') | first }}"
+
+    - name: Obtain Filename from DYN_URL
+      ansible.builtin.set_fact:
+        DYN_FILE: "{{ DYN_URL | basename }}"
+
+
+    - name: DEBUG -- Method -- Static Filename Method From VyOS Forums
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          =====================================================================
+                                 Forum Static Filename Method
+          =====================================================================
+
+
+    - name: Check if VyOS installation file exists locally in the software repository
+      ansible.builtin.stat:
+        path: "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
+      register: installerfilecheck
+      when: Deploy.Product.Router.Deploy
+
+    - name: Get Latest VyOS Nightly Build Release from Github
+      community.general.github_release:
+        user: vyos
+        repo: vyos-nightly-build
+        action: latest_release
+      register: version
+      when:
+        - Deploy.Product.Router.Deploy
+        - (not Deploy.Software.Options.UseLocalInstaller) or (not installerfilecheck.stat.exists)
+
+    - name: Display Latest VyOS Version
+      ansible.builtin.debug:
+        var: version.tag
+      when:
+        - Deploy.Product.Router.Deploy
+        - (not Deploy.Software.Options.UseLocalInstaller) or (not installerfilecheck.stat.exists)
+
+    - name: Create temp directory
+      ansible.builtin.file:
+        path: "{{ Target.TempFolder }}"
+        state: directory
+        mode: "755"
+      when:
+        - Deploy.Product.Router.Deploy
+        - (not Deploy.Software.Options.UseLocalInstaller) or (not installerfilecheck.stat.exists)
+
+    - name: Determine VyOS Filename
+      ansible.builtin.set_fact:
+        VYOS_FILE: "vyos-{{ version.tag }}-generic-amd64.iso"
+      when:
+        - Deploy.Product.Router.Deploy
+        - (not Deploy.Software.Options.UseLocalInstaller) or (not installerfilecheck.stat.exists)
+
+    - name: Determine VyOS URL
+      ansible.builtin.set_fact:
+        VYOS_URL:  "https://github.com/vyos/vyos-nightly-build/releases/download/{{ version.tag }}/{{ VYOS_FILE }}"
+      when:
+        - Deploy.Product.Router.Deploy
+        - (not Deploy.Software.Options.UseLocalInstaller) or (not installerfilecheck.stat.exists)
+
+    - name: Download VyOS installation media to Software repository (overwrite if exists)
+      ansible.builtin.get_url:
+        url: "{{ VYOS_URL }}"
+        dest: "{{ Deploy.Software.Router.Directory }}/{{ VYOS_FILE }}"
+        force: true
+        mode: "755"
+      when:
+        - Deploy.Product.Router.Deploy
+        - (not Deploy.Software.Options.UseLocalInstaller) or (not installerfilecheck.stat.exists)
+
+    - name: Create symbolic link for 'vyos-rolling-latest.iso'
+      ansible.builtin.file:
+        src:  "{{ Deploy.Software.Router.Directory }}/{{ VYOS_FILE }}"
+        dest: "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
+        mode: "755"
+        force: true
+        state: link
+      when:
+        - false
+        - Deploy.Product.Router.Deploy
+        - (not Deploy.Software.Options.UseLocalInstaller) or (not installerfilecheck.stat.exists)
