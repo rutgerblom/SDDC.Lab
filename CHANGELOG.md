@@ -2603,3 +2603,9 @@
 ### Added by Rutger Blom
   - Added NSX v4.1.2.4 and NSX v4.1.2.5 to ```software_sample.yml``` (NOT TESTED)
   - Be sure to update your ```software.yml``` file.
+
+
+## Dev-v8.0.0 01-SEPTEMBER-2024
+
+### Added by Luis Chanu
+  - Added ```tests/DownloadVyos.yml``` playbook.  Working out how to best download Vyos, so this is just for testing purposes.
