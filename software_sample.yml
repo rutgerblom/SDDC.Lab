@@ -1264,7 +1264,7 @@ Software:
           File: vyos-rolling-latest.iso
           Location: 
             Local: "{{ RootDirectory }}/VyOS/Router/Latest"
-            URL:   "{{ lookup('ansible.builtin.url', 'https://api.github.com/repos/vyos/vyos-rolling-nightly-builds/releases/latest', split_lines=false) | regex_search('https://[^\"]+\\.iso', '\\0') | first }}"
+            URL:   https://api.github.com/repos/vyos/vyos-nightly-build/releases/latest
           Version: "0.0"
           FileExt: iso
         Test:
@@ -1272,6 +1272,6 @@ Software:
           File: vyos-rolling-latest.iso
           Location: 
             Local: "{{ RootDirectory }}/VyOS/Router/Test"
-            URL:   "{{ lookup('ansible.builtin.url', 'https://api.github.com/repos/vyos/vyos-rolling-nightly-builds/releases/latest', split_lines=false) | regex_search('https://[^\"]+\\.iso', '\\0') | first }}"
+            URL:   https://api.github.com/repos/vyos/vyos-nightly-build/releases/latest
           Version: "0.0"
           FileExt: iso

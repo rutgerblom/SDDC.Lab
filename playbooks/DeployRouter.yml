@@ -1,7 +1,12 @@
 ##
-##    Project: SDDC.Lab
-##    Authors: Luis Chanu & Rutger Blom
-##   Filename: playbooks/DeployRouter.yml
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: playbooks/DeployRouter.yml
+##
+##  Description: The purpose of this playbook is to perform the following items:
+##                 1) Obtain VyOS installation media (either from local Software repository or from VyOS Github repository).
+##                 2) If VyOS installation media is downloaded, and the config.yml file indicates that it is to be kept, a symbolic link is created to the file.
+##                 3) Deploy the VyOS router using the installation media obtained from previous step.
 ##
 ---
 - name: DeployRouter.yml
@@ -51,7 +56,6 @@
         prompt: |
           ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
-
                                      Ansible Playbook: {{ ansible_play_name }}
 
                                     Target.Deployment: {{ Target.Deployment }}
@@ -69,11 +73,16 @@
 
                           Target.PortGroup.Trunk.Name: {{ Target.PortGroup.Trunk.Name }}
                           Target.PortGroup.Trunk.VLAN: {{ Target.PortGroup.Trunk.VLAN }}
-                    Target.PortGroup.Management.Name : {{ Target.PortGroup.Management.Name }}
-                    Target.PortGroup.Management.VLAN : {{ Target.PortGroup.Management.VLAN }}
+                     Target.PortGroup.Management.Name: {{ Target.PortGroup.Management.Name }}
+                     Target.PortGroup.Management.VLAN: {{ Target.PortGroup.Management.VLAN }}
+
+                         Deploy.Product.Router.Deploy: {{ Deploy.Product.Router.Deploy }}
 
                        Deploy.Software.Router.Version: {{ Deploy.Software.Router.Version }}
                      Deploy.Software.Router.Installer: {{ Deploy.Software.Router.Installer }}
+                     Deploy.Software.Router.Directory: {{ Deploy.Software.Router.Directory }}
+                          Deploy.Software.Router.File: {{ Deploy.Software.Router.File }}
+                           Deploy.Software.Router.URL: {{ Deploy.Software.Router.URL }}
 
             Deploy.Software.Options.UseLocalInstaller: {{ Deploy.Software.Options.UseLocalInstaller }}
             Deploy.Software.Options.KeepNewInstallers: {{ Deploy.Software.Options.KeepNewInstallers }}
@@ -126,9 +135,30 @@
         - Deploy.Product.Router.Deploy
         - status is failed
 
-    - name: Download VyOS installation media (overwrite if exists)
+
+##
+## The Below tasks are for downloading the VyOS latest nightly build release (ISO)
+##
+
+    - name: Obtain URL to VyOS latest nightly build release
+      ansible.builtin.set_fact:
+        VYOS_URL: "{{ lookup('ansible.builtin.url', '{{ Deploy.Software.Router.URL }}', split_lines=false) | regex_search('\"browser_download_url.*(https://(.*?).iso)\"', '\\1') | first }}"
+      when:
+        - (not installerfilecheck.stat.exists) or (not Deploy.Software.Options.UseLocalInstaller)
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Obtain filename of installation media from URL
+      ansible.builtin.set_fact:
+        VYOS_FILENAME: "{{ VYOS_URL | basename }}"
+      when:
+        - (not installerfilecheck.stat.exists) or (not Deploy.Software.Options.UseLocalInstaller)
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Download VyOS installation media to TempFolder (overwrite if exists)
       ansible.builtin.get_url:
-        url: "{{ Deploy.Software.Router.URL }}"
+        url: "{{ VYOS_URL }}"
         dest: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
         force: true
         mode: "755"
@@ -137,17 +167,35 @@
         - Deploy.Product.Router.Deploy
         - status is failed
 
-    - name: Update VyOS installation file in the local software repository (overwrite if exists)
+    - name: Update VyOS installation file in the local software repository from TempFolder (overwrite if exists)
       ansible.builtin.copy:
         src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Installer }}"
-        dest: "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
+        dest: "{{ Deploy.Software.Router.Directory }}/{{ VYOS_FILENAME }}"
         force: true
         mode: "755"
       when:
-        - not installerfilecheck.stat.exists
+        - (not installerfilecheck.stat.exists) or (not Deploy.Software.Options.UseLocalInstaller)
         - Deploy.Software.Options.KeepNewInstallers
         - Deploy.Product.Router.Deploy
         - status is failed
+
+    - name: Create symbolic link for 'vyos-rolling-latest.iso' to latest VyOS installation file (overwrite if exists)
+      ansible.builtin.file:
+        src:  "{{ Deploy.Software.Router.Directory }}/{{ VYOS_FILENAME }}"
+        dest: "{{ Deploy.Software.Router.Directory }}/{{ Deploy.Software.Router.File }}"
+        mode: "755"
+        force: true
+        state: link
+      when:
+        - (not installerfilecheck.stat.exists) or (not Deploy.Software.Options.UseLocalInstaller)
+        - Deploy.Software.Options.KeepNewInstallers
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+
+##
+## At this point we have the installation media, so build the VyOS router configuration in preparation for deployment.
+##
 
     - name: Create configuration file for VyOS router
       ansible.builtin.template:

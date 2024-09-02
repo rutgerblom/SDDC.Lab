@@ -2609,3 +2609,14 @@
 
 ### Added by Luis Chanu
   - Added ```tests/DownloadVyos.yml``` playbook.  Working out how to best download Vyos, so this is just for testing purposes.
+
+
+## Dev-v8.0.0 02-SEPTEMBER-2024
+
+### Added by Luis Chanu
+  - Updated ```playbooks/DeployRouter.yml``` as follows:
+    - Moved dynamic portion of URL into playbook.
+    - VyOS installation media files are now individually kept in the Software repository with their specific rolling release version.
+    - ```vyos-rolling-latest.iso``` is now a symbolic link that references the last downloaded VyOS installation media.
+  - Changed VyOS URL in ```software_sample.yml``` file.
+  - Be sure to update your ```software.yml``` file.
