@@ -2620,3 +2620,4 @@
     - ```vyos-rolling-latest.iso``` is now a symbolic link that references the last downloaded VyOS installation media.
   - Changed VyOS URL in ```software_sample.yml``` file.
   - Be sure to update your ```software.yml``` file.
+  - Due to the VyOS URL change, be sure to re-run ```playbooks/CreatePodConfig.yml``` against all of your ```config.yml``` files.  To aid with this, you can also use the ```utils/Util_CreateAllPodConfigs.sh``` utility, which can do this for you.  Instructions on how to use it are within the shell script file.
