@@ -156,34 +156,6 @@
         - item.value.DeployHosts == true
         - DEBUG.KeepConfigFiles == true
 
-    - name: Modify all Cache drives in the clusters to be 'Flash' type devices
-      set_drive_type:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
-        username: "{{ Nested_vCenter.User }}"
-        password: "{{ Nested_vCenter.Password }}"
-        datacenter: "{{ Nested_vCenter.DataCenter }}"
-        cluster_name: "{{ item.key }}"
-        drive_capacity: "{{ (Nested_ESXi.HardwareSettings[item.key].vSAN.CacheSize |int) * 1024 }}"
-        set_drivetype_to_flash: true
-      loop: "{{ Nested_Cluster | dict2items }}"
-      when:
-        - item.value.vSAN == true
-        - item.value.DeployHosts == true
-
-    - name: Modify all Capacity drives in the clusters to be 'HDD' type devices
-      set_drive_type:
-        hostname: "{{ Nested_vCenter.FQDN | lower }}"
-        username: "{{ Nested_vCenter.User }}"
-        password: "{{ Nested_vCenter.Password }}"
-        datacenter: "{{ Nested_vCenter.DataCenter }}"
-        cluster_name: "{{ item.key }}"
-        drive_capacity: "{{ (Nested_ESXi.HardwareSettings[item.key].vSAN.CapacitySize |int) * 1024 }}"
-        set_drivetype_to_flash: false
-      loop: "{{ Nested_Cluster | dict2items }}"
-      when:
-        - item.value.vSAN == true
-        - item.value.DeployHosts == true
-
     - name: Enable vSAN
       enable_vsan:
         vcenter: "{{ Nested_vCenter.FQDN | lower }}"
@@ -197,7 +169,7 @@
         - item.value.DeployHosts == true
 
     - name: Claim disks for vSAN
-      claim_vsan_disks:
+      claim_vsan_disks_all_flash:
         vcenter: "{{ Nested_vCenter.FQDN | lower }}"
         user: "{{ Nested_vCenter.User }}"
         passwd: "{{ Nested_vCenter.Password }}"
