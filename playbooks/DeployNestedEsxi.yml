@@ -76,22 +76,28 @@
         name: "{{ item.value.VMName }}"
         state: poweredon
         guest_id: vmkernel65Guest
-        cluster: "{{ Target.Cluster }}"
         datacenter: "{{ Target.DataCenter }}"
+        cluster: "{{ Target.Cluster }}"
+        datastore: "{{ Target.Datastore }}"
         folder: "{{ Target.VMFolder }}"
         disk:
           - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['BootDiskSize'] }}"
             type: "{{ Common.DiskProvisioning }}"
-            datastore: "{{ Target.Datastore }}"
+            controller_type: 'nvme'
+            controller_number: 0
+            unit_number: 0
           - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['vSAN']['CacheSize'] }}"
             type: "{{ Common.DiskProvisioning }}"
-            datastore: "{{ Target.Datastore }}"
+            controller_type: 'nvme'
+            controller_number: 0
+            unit_number: 1
           - size_gb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['vSAN']['CapacitySize'] }}"
             type: "{{ Common.DiskProvisioning }}"
-            datastore: "{{ Target.Datastore }}"
+            controller_type: 'nvme'
+            controller_number: 0
+            unit_number: 2
         hardware:
           nested_virt: true
-          scsi: paravirtual
           memory_mb: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['Memory'] }}"
           num_cpus: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['CPU'] }}"
           num_cpu_cores_per_socket: "{{ Nested_ESXi.HardwareSettings[item.value.Cluster]['CoresPerSocket'] }}"
