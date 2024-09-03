@@ -2626,3 +2626,9 @@
 
 ### Added by Rutger Blom
   - Added a new Ansible module ```library/claim_vsan_disks_all_flash.py```that configures all-flash vSAN on eligible nested ESXi hosts. Work in progress.
+
+## Dev-v8.0.0 03-SEPTEMBER-2024
+
+### Added by Rutger Blom
+  - Added a new Ansible module for vSAN disk claiming that can handle ESXi hosts with flash-only storage.
+  - Updated the ```playbooks/DeployNestedEsxi.yml```so that it creates ESXi VMs with an NVMe controller and attaches disk to this controller. This to facilitate the new all-flash vSAN configuration.
