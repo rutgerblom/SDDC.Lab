@@ -2632,3 +2632,5 @@
 ### Added by Rutger Blom
   - Added a new Ansible module for vSAN disk claiming that can handle ESXi hosts with flash-only storage.
   - Updated the ```playbooks/DeployNestedEsxi.yml```so that it creates ESXi VMs with an NVMe controller and attaches disk to this controller. This to facilitate the new all-flash vSAN configuration.
+  - Updated task in ```playbooks/ConfigureNestedEsxi.yml``` so that CDROM device is removed instead of disconnected from ESXi VMs.
+  - Updated CDROM controller to SATA in ```playbooks/DeployNestedEsxi.yml``` in order to allow hot remove of the device.
