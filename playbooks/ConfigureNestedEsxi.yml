@@ -116,7 +116,7 @@
         - Nested_Cluster[item.value.Cluster]['DeployHosts']
         - Deploy.Setting.UseNFS
 
-    - name: Disconnect CDROM from nested ESXi hosts
+    - name: Remove CDROM device from nested ESXi hosts
       community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
@@ -126,8 +126,9 @@
         cdrom:
           - controller_number: 0
             unit_number: 0
+            controller_type: sata
             type: none
-            state: present
+            state: absent
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       when:
         - Nested_Cluster[item.value.Cluster]['DeployHosts']
