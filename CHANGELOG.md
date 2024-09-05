@@ -2635,3 +2635,6 @@
   - Updated task in ```playbooks/ConfigureNestedEsxi.yml``` so that CDROM device is removed instead of disconnected from ESXi VMs.
   - Updated CDROM controller to SATA in ```playbooks/DeployNestedEsxi.yml``` in order to allow hot remove of the device.
   - vSAN health check "NVMe device is VMware certified" is now silenced through ```templates/vsan_silence.rb.j2``` to avoid unnecessary alarms in vCenter after Pod deployment.
+  - Be sure to update the Python and Ansible modules on your Ansible Controller:
+    -   ```pip3 install --upgrade -r ~/git/SDDC.Lab/pip3_requirements.txt```
+    -  ```ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml```
