@@ -2638,3 +2638,8 @@
   - Be sure to update the Python and Ansible modules on your Ansible Controller:
     -   ```pip3 install --upgrade -r ~/git/SDDC.Lab/pip3_requirements.txt```
     -  ```ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml```
+
+## Dev-v8.0.0 02-SEPTEMBER-2024
+
+### Added by Luis Chanu
+  - Moved ```Disable password expiration on nested vCenter Server``` and annotation task to the end of ```playbooks/DeployVc.yml``` to address a timeout issue with the API that occurs on busy hosts.

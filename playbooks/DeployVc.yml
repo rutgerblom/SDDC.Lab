@@ -193,31 +193,6 @@
         - vcenter_check.status != 200
         - not DEBUG.KeepConfigFiles
 
-    - name: Disable password expiration on nested vCenter Server
-      community.vmware.vcenter_root_password_expiration:
-        hostname: "{{ Nested_vCenter.FQDN }}"
-        username: "{{ Nested_vCenter.User }}"
-        password: "{{ Nested_vCenter.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        state: absent
-      when: vcenter_check.status != 200
-
-    - name: Write annotation on the vCenter VM
-      community.vmware.vmware_guest:
-        hostname: "{{ Target.FQDN }}"
-        username: "{{ Target.User }}"
-        password: "{{ Target.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        cluster: "{{ Target.Cluster }}"
-        datacenter: "{{ Target.DataCenter }}"
-        folder: "{{ Target.VMFolder }}"
-        name: "{{ Nested_vCenter.VMName }}"
-        annotation: |
-                    {{ Common.Annotation }}
-                    {{ Deploy.Software.vCenter.Vendor }} {{ Deploy.Software.vCenter.Product }} {{ Deploy.Software.vCenter.Version }}
-                    Username: {{ Nested_vCenter.User }}
-                    Password: {{ Nested_vCenter.Password }}
-
     - name: Create Datacenter
       community.vmware.vmware_datacenter:
         hostname: "{{ Nested_vCenter.FQDN | lower }}"
@@ -254,3 +229,29 @@
       when:
         - vcenter_check.status != 200
         - item.value.DeployHosts
+
+    # Moved to the bottom of the playbook to address a timeout issue on busy hosts where the API wasn't ready yet
+    - name: Disable password expiration on nested vCenter Server
+      community.vmware.vcenter_root_password_expiration:
+        hostname: "{{ Nested_vCenter.FQDN }}"
+        username: "{{ Nested_vCenter.User }}"
+        password: "{{ Nested_vCenter.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        state: absent
+      when: vcenter_check.status != 200
+
+    - name: Write annotation on the vCenter VM
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
+        name: "{{ Nested_vCenter.VMName }}"
+        annotation: |
+                    {{ Common.Annotation }}
+                    {{ Deploy.Software.vCenter.Vendor }} {{ Deploy.Software.vCenter.Product }} {{ Deploy.Software.vCenter.Version }}
+                    Username: {{ Nested_vCenter.User }}
+                    Password: {{ Nested_vCenter.Password }}
