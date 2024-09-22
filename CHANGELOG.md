@@ -2652,3 +2652,8 @@
     - ESXi v8.00U3B
   - Updated ```templates_sample.yml``` file
   - Be sure to update your ```software.yml``` and ```templates.yml``` files
+
+### Added by Rutger Blom
+  - Added the following to the ```software_sample.yml``` file (NOT TESTED)
+    - NSX Transformers v4.2.0.2
+  - Be sure to update your ```software.yml``` file
