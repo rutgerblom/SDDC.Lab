@@ -2643,3 +2643,12 @@
 
 ### Added by Luis Chanu
   - Moved ```Disable password expiration on nested vCenter Server``` and annotation task to the end of ```playbooks/DeployVc.yml``` to address a timeout issue with the API that occurs on busy hosts.
+
+## Dev-v8.0.0 22-SEPTEMBER-2024
+
+### Added by Luis Chanu
+  - Added the following to the ```software_sample.yml``` file (NOT TESTED)
+    - vCenter Server v8.00U3B
+    - ESXi v8.00U3B
+  - Updated ```templates_sample.yml``` file
+  - Be sure to update your ```software.yml``` and ```templates.yml``` files
