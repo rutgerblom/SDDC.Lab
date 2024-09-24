@@ -2663,4 +2663,6 @@
 ### Added by Rutger Blom
   - Added the following to the ```software_sample.yml``` file (NOT TESTED)
     - NSX Advanced Load Balancer v30.2.2
+    - VMware Aria Operations for Logs 8.16.1
+    - VMware Aria Operations for Logs 8.18.0
   - Be sure to update your ```software.yml``` file
