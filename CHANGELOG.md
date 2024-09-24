@@ -2657,3 +2657,10 @@
   - Added the following to the ```software_sample.yml``` file (NOT TESTED)
     - NSX Transformers v4.2.0.2
   - Be sure to update your ```software.yml``` file
+
+## Dev-v8.0.0 24-SEPTEMBER-2024
+
+### Added by Rutger Blom
+  - Added the following to the ```software_sample.yml``` file (NOT TESTED)
+    - NSX Advanced Load Balancer v30.2.2
+  - Be sure to update your ```software.yml``` file
