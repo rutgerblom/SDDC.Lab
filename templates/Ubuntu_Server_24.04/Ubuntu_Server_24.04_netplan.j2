@@ -1,0 +1,43 @@
+network:
+  version: 2
+  ethernets:
+{% for adapter in item.OS.Network.Adapters %}
+    {{ OS_Adapters[ loop.index0 ] }}:
+{%   if adapter.IPv4.Address is not none %}
+      dhcp4: no
+{%   else %}
+      dhcp4: yes
+{%   endif %}{# IPv4 #}
+{%   if adapter.IPv6.Address is not none %}
+      dhcp6: no
+{%   else %}
+      dhcp6: yes
+      accept-ra: yes
+{%   endif %}{# IPv6 #}
+{%   if (adapter.IPv4.Address is not none) or (adapter.IPv6.Address is not none) %}{# Verify if either IPv4 or IPv6 have static IPs #}
+      addresses:
+{%     if (adapter.IPv4.Address is not none) and (adapter.IPv4.Prefix is not none) %}
+        - {{ adapter.IPv4.Address }}/{{ adapter.IPv4.Prefix }}
+{%     endif %}{# IPv4.Address #}
+{%     if (adapter.IPv6.Address is not none) and (adapter.IPv6.Prefix is not none) %}
+        - "{{ adapter.IPv6.Address }}/{{ adapter.IPv6.Prefix }}"
+{%     endif %}{# IPv6.Address #}
+{%     if (adapter.IPv4.Gateway is not none) or (adapter.IPv6.Gateway is not none) %}
+      routes:
+{%       if adapter.IPv4.Gateway is not none %}
+        - to: default
+          via: {{ adapter.IPv4.Gateway }}
+{%       endif %}{# IPv4.Gateway #}
+{%       if adapter.IPv6.Gateway is not none %}
+        - to: default
+          via: "{{ adapter.IPv6.Gateway }}"
+{%       endif %}{# IPv6.Gateway #}
+{%     endif %}{# adapter.IPv4.Gateway or adapter.IPv6.Gateway #}
+{%   endif %}{# adapter.IPv4.Address is not none or adapter.IPv6.Address is not none #}
+{%     if loop.first and (item.OS.Network.DNS.Servers is not none) %}
+      nameservers:
+        addresses: {{ item.OS.Network.DNS.Servers }}
+        search:
+          - {{ Common.DNS.Domain }}
+{%     endif %}{# loop.first and DNS #}
+{% endfor %}{# adapter #}

@@ -1,0 +1,60 @@
+{#
+ #       Authors: Luis Chanu & Rutger Blom
+ #      Filename: templates/Ubuntu_Server_24.04_runbook.j2
+ #       Used By: This file is used by the playbook DeployGenericVm.yml
+ #   Description: This Jinja2 template file is used to create the data structure that is provided to the modules
+ #                in DeployGenericVm.yml, which subsequently uses Include_Tasks_DeployGenericVm.yml to do the
+ #                actually work.
+ #  Dependencies: This Jinja2 template references runbook specific templates located in the templates/Ubuntu_Server_24.04
+ #                directory.
+ #
+ #}
+Configuration:
+  Templates:
+    AutoInstall:
+      - Name: GrubCfg
+        Source: {{ VMTarget.TemplateFolder }}/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}_grub.j2
+        LocalDestination:
+        StageDestination:
+        FinalDestination: {{ VMTarget.TempFolder }}/isos/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}/boot/grub/grub.cfg
+      - Name: UserData
+        Source: {{ VMTarget.TemplateFolder }}/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}_user-data.j2
+        LocalDestination:
+        StageDestination:
+        FinalDestination: {{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}/{{ Common.DNS.Domain }}/user-data
+      - Name: MetaData
+        Source: {{ VMTarget.TemplateFolder }}/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}_meta-data.j2
+        LocalDestination:
+        StageDestination:
+        FinalDestination: {{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}/{{ Common.DNS.Domain }}/meta-data
+      - Name: VMHardware
+        Source: {{ VMTarget.TemplateFolder }}/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}_vm-hardware.j2
+        LocalDestination:
+        StageDestination:
+        FinalDestination: {{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}/{{ Common.DNS.Domain }}/vm-hardware
+    AfterBoot:
+      - Name: NetPlan
+        Source: {{ VMTarget.TemplateFolder }}/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}_netplan.j2
+        LocalDestination: {{ VMTarget.TempFolder }}/00-installer-config.yaml
+        StageDestination: /home/{{ item.OS.Credential.User }}/00-installer-config.yaml
+        FinalDestination: /etc/netplan/00-installer-config.yaml
+  Packages:
+    - Name: net-tools
+      Daemon:
+    - Name: ntpstat
+      Daemon:
+    - Name: software-properties-common
+      Daemon:
+    - Name: apt-transport-https
+      Daemon:
+    - Name: webmin
+      Daemon:
+  Directories:
+    - Name: Dummy-Entry-Kept-For-Documentation
+      Path: /tmp/dummy
+      Owner: nobody:nobody
+  Commands:
+    - Name: echo '{{ item.OS.Credential.User }} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu # Allow user to run sudo without password. Required for successfull post configuration.
+    - Name: apt-get update
+    - Name: apt-get upgrade -y
+    - Name: apt-get autoremove

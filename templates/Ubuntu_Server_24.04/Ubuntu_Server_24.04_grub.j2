@@ -1,0 +1,35 @@
+set timeout=0
+
+loadfont unicode
+
+set menu_color_normal=white/black
+set menu_color_highlight=black/light-gray
+
+menuentry "Autoinstall {{ item.Software.Vendor }} {{ item.Software.Product }} {{ item.Software.Product }}" {
+    set gfxpayload=keep
+    linux   /casper/vmlinuz quiet autoinstall ds=nocloud\;s=/cdrom/{{ Common.DNS.Domain }}/  ---
+    initrd  /casper/initrd
+}
+menuentry "Try or Install {{ item.Software.Vendor }} {{ item.Software.Product }}" {
+        set gfxpayload=keep
+        linux   /casper/vmlinuz  ---
+        initrd  /casper/initrd
+}
+menuentry "Ubuntu Server with the HWE kernel" {
+        set gfxpayload=keep
+        linux   /casper/hwe-vmlinuz  ---
+        initrd  /casper/hwe-initrd
+}
+grub_platform
+if [ "$grub_platform" = "efi" ]; then
+menuentry 'Boot from next volume' {
+        exit 1
+}
+menuentry 'UEFI Firmware Settings' {
+        fwsetup
+}
+else
+menuentry 'Test memory' {
+        linux16 /boot/memtest86+.bin
+}
+fi

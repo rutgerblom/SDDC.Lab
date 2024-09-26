@@ -2666,3 +2666,19 @@
     - VMware Aria Operations for Logs 8.16.1
     - VMware Aria Operations for Logs 8.18.0
   - Be sure to update your ```software.yml``` file
+
+## Dev-v8.0.0 26-SEPTEMBER-2024
+
+### Added by Luis Chanu
+  - Initial commit of new ```Deploy Generic VM``` feature.  Feature is NOT yet functional, and is still work in progress.  (NOT FUNCTIONAL)
+  - Goal of this new feature is to deploy a fully functional stable 'Generic' VM workload in either the Nested or Physical environment.
+  - The 'Generic' VM can be customized to include multiple NICs, disks, and even have commands applied to it as part of the deployment.
+  - New/Modified files include:
+    - ```playbooks/DeployGenericVm.yml```: Main deployment playbook
+    - ```playbooks/Include_Tasks_DeployGenericVm.yml```: Performs the 'heavy lifting' of deploying the VM.
+    - ```templates/Ubuntu_Server_24.04_runbook.j2```: Runbook for Ubuntu Server v24.04 that is used to deploy the base 'Generic' VM.
+    - ```templates/Ubuntu_Server_24.04/*```: Jinja2 templates used by runbook to deploy Ubuntu Server v24.04 'Generic' VM.
+    - ```templates_sample.yml```: Defines the runbook used for each given OS version.  Ubuntu Server v24.04 is the first to be added.
+    - ```software_sample.yml```: Ubuntu Server v24.04 was added.
+  - For testing, the data structure describing the 'Generic' VM to be deployed is located in ```playbooks/DeployGenericVm.yml``` playbook, and is called ```VM``` for now.  Once fully functional, it may be renamed, and will be added to the ```config_sample.yml``` file.
+    - Be sure to update your ```software.yml``` and ```templates.yml``` files
