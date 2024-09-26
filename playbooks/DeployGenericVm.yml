@@ -1,0 +1,267 @@
+##
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: playbooks/DeployGenericVm.yml
+##
+##  Description: This playbook acts as a wrapper.  It loops through the VMs datastructure, provisioning 
+##               each VM, one-by-one, by "sending" the VM object to the "Include_Tasks_DeployGenericVm.yml" playbook.
+##               That playbook does all of the "heavy liftings" and includes ALL of the tasks needed to provision a 
+##               given VM.  That includes not only installing the OS, but also configuring it once deployed, per the 
+##               settings in the VM data structure).
+##
+##               There is no option whether or not to power-on the VM, as all VMs are powered-on so that the OS can
+##               be installed, and tasks run.
+##
+##    Variables: As the VM structure is currently not "extended" (or added to) by CreatePodConfig.yml like the Deploy
+##               structure is, we need to (for now) include the software.yml and templates.yml files so that
+##               we can determine software path, installation file, and templates at runtime.  Should the
+##               playbook be brought into SDDC.Lab, then we can see at possibly updating the VM structure then.
+##
+
+##
+## ToDo Items:
+##   1) Add Ubuntu section in Templates.yml for different versions of Ubuntu.
+##
+---
+- name: DeployGenericVm.yml
+  hosts: localhost
+  vars_files:
+    - ../software.yml
+    - ../templates.yml
+  vars:
+##
+## VM datastructure, which is a list of VMs, consumed by 'Include_Tasks_DeployGenericVm'
+##
+#   TODO: Update descriptions to identify which are OPTIONAL or MANDATORY, Default value, and possible values.
+    VMs:
+      - VMName: "{{ SiteCode}}-TestVM"                                # If not specified, a randon name will be assigned in the following format:  "{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-VM-{{ 999999 | ansible.builtin.random }}"
+        FQDN: "{{ SiteCode}}-TestVM.{{ Common.DNS.Domain }}"
+        Deploy: true                                                  # Boolean to control if the VM is to be deployed or not
+        Deployment:
+          Target: NESTED                                              # PHYSICAL or NESTED
+          Cluster: ComputeA                                           # Only applicable for NESTED
+          VMFolder:
+          UpdateDNS: true                                             # Only the first interface is added to DNS
+        Software:
+          Vendor: Ubuntu
+          Product: Server
+          Version: "24.04"
+        Annotation: "{{ Common.Annotation }}"
+        VMOptions:
+          GeneralOptions:
+            GuestOS: ubuntu64Guest
+          BootOptions:
+            Firmware: efi                                             # Options are 'bios' or 'efi'
+        HardwareSettings:
+          Version: latest                                             # Virtual Machine HW version.  If not specified, 'latest' will be used.
+          NestedVirtualization: true                                  # Boolean to control the enabling of nested virtualization support
+          CPU:
+            Quantity: 2
+            CoresPerSocket: 2
+            Reservation:
+            SharesLevel: normal                                       # low, normal, high
+            AllowHotAdd:                                              # Boolean to control whether to allow virtual CPUs to be added while VM is running.
+            AllowHotRemove:                                           # Boolean
+          Memory:
+            Size: 2048                                                # In MB
+            Reservation: 0
+            SharesLevel: normal                                       # low, normal, high
+            AllowHotAdd: false                                        # Boolean to control whether to allow virtual memory to be added while VM is running.
+          Storage:
+            SCSIController:
+            Disks:
+              - Size: 40960
+                DiskProvisioning: "{{ Common.DiskProvisioning }}"
+                Datastore:  "{{ Target.Datastore }}"
+                Controller:
+                  Type: paravirtual                                   # If not specified, 'paravirtual' is used.  Options include: paravirtual, buslogic, lsilogic, lsilogicsas, sata, nvme
+                  Number: 0                                           # If not specified, it is auto allocated
+          Network:
+            Adapters:
+              - StartConnected: true
+                DeviceType:                                           # If not specified, 'vmxnet3' is used.  Options include e1000, e1000e, pcnet32, vmxnet2, vmxnet3, and sriov.
+                PortGroup:
+              - StartConnected: false
+                DeviceType:                                           # If not specified, use vmxnet3
+                PortGroup:                                            # If not specified, use "VMNetwork" Port-Group
+        NSXT:
+          Tags:
+            - Tag: Auto-Deployed
+              Scope: SDDC.Lab
+        OS:
+          Credential:
+            User: ubuntu
+            Password: "{{ Common.Password.Nested }}"
+          Locale: en_US
+          Keyboard:
+            Layout: us
+            Variant: intl
+          Network:
+            DNS:
+              Domain: "{{ Common.DNS.Domain }}"
+              Servers:                                                # List of DNS Servers
+                - "{{ Common.DNS.Server1.IPv4 }}"
+                - "{{ Common.DNS.Server1.IPv6 }}"
+            Adapters:
+              - IPv4:
+                  Address: 1.2.3.4                                           # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix: 24
+                  Gateway: 1.2.3.1
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+          PostInstall:
+            Reboot: true                                              # Force reboot after installation: true or false
+            SSH:
+              Server:
+                Install: yes
+            Packages:
+              - traceroute
+              - dnsutils
+            Directories:
+              - Name:
+                Path:
+                Owner:
+            Commands:                                                    # List of commands to run post install to configure the VM
+              - ls
+
+
+  tasks:
+    - name: DeployGenericVm_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: 
+        - Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                             Ansible Playbook: {{ ansible_play_name }}
+
+                                            Target.Deployment: {{ Target.Deployment }}
+
+                              Number of Generic VMs to deploy: {{ VMs | length }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+
+##
+## Provision Workload VMs
+##
+    - name: Provision VMs one at a time
+      ansible.builtin.include_tasks:
+        file: Include_Tasks_DeployGenericVm.yml
+      loop: "{{ VMs }}"
+      when:
+        - VMs is defined
+        - VMs | length > 0
+        - item.Deploy

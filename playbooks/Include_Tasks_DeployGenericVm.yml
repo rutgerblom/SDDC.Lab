@@ -1,0 +1,837 @@
+##
+##      Project: SDDC.Lab
+##      Authors: Luis Chanu & Rutger Blom
+##     Filename: playbooks/Include_Tasks_DeployGenericVm.yml
+##
+##  Description: This file does the 'heavy lifting' of actually performing the deployment of the Generic VM.
+##
+##  ToDo Items:
+##    1) If deployed via DHCP, need to obtain the dynamic IP address and then use that to populate DNS.
+##
+---
+    - name: Include_Tasks_DeployGenericVm_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: Include_Tasks_DeployGenericVm"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                    Virtual Machine Deployment Target: {{ item.Deployment.Target }}
+
+                                 Virtual Machine Name: {{ item.VMName }}
+                                 Virtual Machine FQDN: {{ item.FQDN }}
+                                      Software Vendor: {{ item.Software.Vendor }}
+                                     Software Product: {{ item.Software.Product }}
+                                     Software Version: {{ item.Software.Version }}
+
+                     Virtual Machine Hardware Version: {{ item.HardwareSettings.Version }}
+                         Virtual Machine CPU Quantity: {{ item.HardwareSettings.CPU.Quantity }}
+                     Virtual Machine CPU Cores/Socket: {{ item.HardwareSettings.CPU.CoresPerSocket }}
+                               Virtual Machine Memory: {{ item.HardwareSettings.Memory.Size }}
+                      Virtual Machine Number of Disks: {{ item.HardwareSettings.Storage.Disks | length }}
+           Virtual Machine Number of Network Adapters: {{ item.HardwareSettings.Network.Adapters | length }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+
+    - name: Set deployment variables for PHYSICAL target (Physical vCenter or Host)
+      ansible.builtin.set_fact:
+        VMTarget:
+          FQDN: "{{ Target.FQDN }}"
+          User: "{{ Target.User }}"
+          Password: "{{ Target.Password }}"
+          DataCenter: "{{ Target.DataCenter }}"
+          Cluster: "{{ Target.Cluster }}"
+          Datastore: "{{ Target.Datastore }}"
+          VMFolder: "{{ Target.VMFolder }}"
+          ISOFolder: "{{ Target.ISOFolder }}"
+          TempFolder: "{{ Target.TempFolder }}"
+          TemplateFolder: "{{ Target.TemplateFolder }}"
+          Installer: "{{ SiteCode }}-Installer-VM"
+          Template: "{{ Template[item.Software.Vendor][item.Software.Version].Template }}"
+          SoftwareDirectory: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].Local }}"
+          SoftwareFile: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version].File }}"
+          SoftwareURL: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].URL }}"
+      when: 
+        - item.Deployment.Target == "PHYSICAL"
+
+    - name: Set deployment variables for NESTED target (Nested Pod vCenter)
+      ansible.builtin.set_fact:
+        VMTarget:
+          FQDN: "{{ Nested_vCenter.FQDN }}"
+          User: "{{ Nested_vCenter.User }}"
+          Password: "{{ Nested_vCenter.Password }}"
+          DataCenter: "{{ Nested_vCenter.DataCenter }}"
+          Cluster: "{{ item.Deployment.Cluster }}"
+          Datastore: "{{ Nested_Cluster[item.Deployment.Cluster].vsanDatastore }}"
+          VMFolder: "{{ item.Deployment.VMFolder }}"
+          ISOFolder: "{{ Target.ISOFolder }}"
+          TempFolder: "{{ Target.TempFolder }}"
+          TemplateFolder: "{{ Target.TemplateFolder }}"
+          Installer: "{{ SiteCode }}-Installer-VM"
+          Template: "{{ Template[item.Software.Vendor][item.Software.Version].Template }}"
+          SoftwareDirectory: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].Local }}"
+          SoftwareFile: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version].File }}"
+          SoftwareURL: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].URL }}"
+      when:
+        - item.Deployment.Target == "NESTED"
+
+    - name: DEBUG -- Display VMTarget Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================= Display VMTarget Variables ====================================
+
+                    item.Deployment.Target: {{ item.Deployment.Target }}
+
+                      item.Software.Vendor: {{ item.Software.Vendor }}
+                     item.Software.Product: {{ item.Software.Product }}
+                     item.Software.Version: {{ item.Software.Version }}
+
+                         VMTarget.Template: {{ VMTarget.Template }}
+
+                             VMTarget.FQDN: {{ VMTarget.FQDN }}
+                             VMTarget.User: {{ VMTarget.User }}
+                         VMTarget.Password: {{ VMTarget.Password }}
+                       VMTarget.DataCenter: {{ VMTarget.DataCenter }}
+                          VMTarget.Cluster: {{ VMTarget.Cluster }}
+                        VMTarget.Datastore: {{ VMTarget.Datastore }}
+                         VMTarget.VMFolder: {{ VMTarget.VMFolder }}
+                        VMTarget.ISOFolder: {{ VMTarget.ISOFolder }}
+                       VMTarget.TempFolder: {{ VMTarget.TempFolder }}
+                   VMTarget.TemplateFolder: {{ VMTarget.TemplateFolder }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+    - name: Check if '{{ item.VMName }}' is already deployed on '{{ VMTarget.FQDN }}'
+      community.vmware.vmware_guest_info:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datacenter: "{{ VMTarget.DataCenter }}"
+        folder: "{% if item.Deployment.Target == 'PHYSICAL' and Target.Deployment == 'vCenter' %}{{ VMTarget.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}\
+                 {% else %}{{ VMTarget.VMFolder }}{% endif %}"          # If vCenter, use Parent folder
+        name: "{{ item.VMName }}"
+        schema: vsphere
+        properties: ["overallStatus"]
+      register: vm_deployed_status
+      ignore_errors: true
+      no_log: true
+      when:
+        - item.Deploy
+
+    - name: Create Linux adapter list
+      ansible.builtin.set_fact:
+        OS_Adapters: [ens33, ens35, ens36, ens37, ens38, ens39, ens40, ens41, ens42, ens43]
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Generate the runbook
+      ansible.builtin.set_fact:
+        runbook: "{{ lookup('template', VMTarget.TemplateFolder + '/' + VMTarget.Template) | from_yaml }}"
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: DEBUG -- Display 'runbook' Variable (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ==================================== Display runbook Variable ===================================
+
+          runbook:
+          {{ runbook | to_nice_yaml(indent=2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+        - runbook is defined:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Create temp directory
+      ansible.builtin.file:
+        path: "{{ VMTarget.TempFolder }}"
+        state: directory
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Check if Ubuntu ISO file exists locally in the software repository
+      ansible.builtin.stat:
+        path: "{{ VMTarget.SoftwareDirectory }}/{{ VMTarget.SoftwareFile }}"
+      register: InstallerFileCheck
+      when:
+        - item.Deploy
+
+    - name: Update Ubuntu ISO file in the local software repository (overwrite if exists)
+      ansible.builtin.get_url:
+        url: "{{ VMTarget.SoftwareURL }}/{{ VMTarget.SoftwareFile }}"
+        dest: "{{ VMTarget.SoftwareDirectory }}/{{ VMTarget.SoftwareFile }}"
+        force: true
+      when:
+        - (not InstallerFileCheck.stat.exists) or (not Deploy.Software.Options.UseLocalInstaller)
+        - Deploy.Software.Options.KeepNewInstallers
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Extract Ubuntu ISO
+      ansible.builtin.command: "7z -y x {{ VMTarget.SoftwareDirectory }}/{{ VMTarget.SoftwareFile }} -o{{ VMTarget.TempFolder }}/isos/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}"
+      changed_when: false
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Move [BOOT] out of ISO extraction directory
+      ansible.builtin.command: "mv {{ VMTarget.TempFolder }}/isos/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}/'[BOOT]' {{ VMTarget.TempFolder }}/isos/BOOT"
+      changed_when: false
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Create directory to store user-data and meta-data
+      ansible.builtin.file:
+        path: "{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}/{{ Common.DNS.Domain }}"
+        state: directory
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Create Linux AutoInstall files from Jinja2 templates
+      ansible.builtin.template:
+        src: "{{ runbook_item.Source }}"
+        dest: "{{ runbook_item.FinalDestination }}"
+        mode: "666"
+      loop: "{{ runbook.Configuration.Templates.AutoInstall }}"
+      loop_control:
+        loop_var: runbook_item
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Create custom Ubuntu ISO
+      ansible.builtin.command: "xorriso -as mkisofs -r \
+                                -V '{{ item.Software.Vendor }} {{ item.Software.Version }} AUTO (EFIBIOS)' \
+                                -o {{ VMTarget.TempFolder }}/{{ VMTarget.SoftwareFile }} \
+                                --grub2-mbr {{ VMTarget.TempFolder }}/isos/BOOT/1-Boot-NoEmul.img  \
+                                -partition_offset 16 \
+                                --mbr-force-bootable \
+                                -append_partition 2 28732ac11ff8d211ba4b00a0c93ec93b {{ VMTarget.TempFolder }}/isos/BOOT/2-Boot-NoEmul.img \
+                                -appended_part_as_gpt \
+                                -iso_mbr_part_type a2a0d0ebe5b9334487c068b6b72699c7 \
+                                -c '/boot.catalog' \
+                                -b '/boot/grub/i386-pc/eltorito.img' \
+                                  -no-emul-boot -boot-load-size 4 -boot-info-table --grub2-boot-info \
+                                -eltorito-alt-boot \
+                                -e '--interval:appended_partition_2:::' \
+                                -no-emul-boot \
+                                {{ VMTarget.TempFolder }}/isos/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}/ \
+                                {{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}/"
+      args:
+        chdir: "{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}/"
+      changed_when: false
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Upload the custom Ubuntu ISO to the datastore
+      community.vmware.vsphere_copy:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datacenter: "{{ VMTarget.DataCenter }}"
+        src: "{{ VMTarget.TempFolder }}/{{ VMTarget.SoftwareFile }}"
+        datastore: "{{ VMTarget.Datastore }}"
+        path: "{{ VMTarget.ISOFolder }}/{{ VMTarget.SoftwareFile }}"
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Generate VM Hardware data structure for hardware components with multiple entries (i.e., Lists)
+      ansible.builtin.set_fact:
+        vm_hardware: "{{ lookup('template', VMTarget.TemplateFolder + '/' + item.Software.Vendor + '_' + item.Software.Product + '_' + item.Software.Version + '/' + item.Software.Vendor + '_' + item.Software.Product + '_' + item.Software.Version + '_vm-hardware.j2') | from_yaml }}"
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+##### STOPPED HERE -- NEED TO CONTINUE DEFINING DEFAULT VALUES BELOW ######
+
+    - name: Deploy {{ item.VMName }} VM
+      community.vmware.vmware_guest:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ item.VMName }}"
+        state: poweredon
+        guest_id: "{{ item.VMOptions.GeneralOptions.GuestOS }}"
+        cluster: "{{ VMTarget.Cluster }}"
+        datacenter: "{{ VMTarget.DataCenter }}"
+        folder: "{% if item.Deployment.Target == 'PHYSICAL' and Target.Deployment == 'vCenter' %}{{ VMTarget.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}{% else %}{{ VMTarget.VMFolder }}{% endif %}"          # If vCenter, use Parent folder
+        disk: "{{ vm_hardware.disks }}"
+        networks: "{{ vm_hardware.networks }}"
+        hardware:
+          version: "{{ (item.HardwareSettings.Version != '') | ternary(item.HardwareSettings.Version, 'latest', 'latest') }}"
+          boot_firmware: "{{ item.VMOptions.BootOptions.Firmware | default(omit) }}"
+          nested_virt: "{{ item.HardwareSettings.NestedVirtualization | default(omit) }}"
+          memory_mb: "{{ item.HardwareSettings.Memory.Size }}"
+          mem_reservation: "{{ item.Hardwaresettings.Memory.Reservation | default(omit) }}"
+          mem_shares_level: "{{ item.HardwareSettings.Memory.SharesLevel | default(omit) }}"
+          hotadd_memory: "{{ item.HardwareSettings.Memory.AllowHotAdd | default(omit) }}"
+          num_cpus: "{{ item.HardwareSettings.CPU.Quantity }}"
+          num_cpu_cores_per_socket: "{{ item.HardwareSettings.CPU.CoresPerSocket }}"
+          cpu_shares_level: "{{ item.HardwareSettings.CPU.SharesLevel | default(omit) }}"
+          cpu_reservation: "{{ (item.HardwareSettings.CPU.Reservation != '') | ternary(item.HardwareSettings.CPU.Reservation, 0, 0) }}"
+          hotadd_cpu: "{{ (item.HardwareSettings.CPU.AllowHotAdd != '') | ternary(item.HardwareSettings.CPU.AllowHotAdd, false, false) }}"
+          hotremove_cpu: "{{ (item.HardwareSettings.CPU.AllowHotRemove != '') | ternary(item.HardwareSettings.CPU.AllowHotRemove, false, false) }}"
+          scsi: "{{ (item.HardwareSettings.Storage.SCSIController != '') | ansible.builtin.ternary(item.HardwareSettings.Storage.SCSIController, 'paravirtual', 'paravirtual') }}"
+        cdrom:
+          - controller_number: 0
+            unit_number: 0
+            type: iso
+            iso_path: "[{{ VMTarget.Datastore }}] {{ VMTarget.ISOFolder }}/{{ VMTarget.SoftwareFile }}"
+            state: present
+        annotation: |
+                    {{ item.Annotation }}
+                    {{ item.Software.Vendor }} {{ item.Software.Product }} {{ item.Software.Version }}
+                    Username: {{ item.OS.Credential.User }}
+                    Password: {{ item.OS.Credential.Password }}
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Start checking if the {{ item.VMName }} VM is ready
+      community.vmware.vmware_guest_info:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datacenter: "{{ VMTarget.DataCenter }}"
+        name: "{{ item.VMName }}"
+        schema: vsphere
+      register: vm_facts
+      until: vm_facts.instance.guest.hostName is search(item.FQDN)
+      retries: 30
+      delay: 60
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Set password for the {{ item.OS.Credential.User }} user
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ item.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: VMware1!
+        vm_shell: /usr/bin/echo
+        vm_shell_args: "'{{ item.OS.Credential.User }}:{{ item.OS.Credential.Password }}' | sudo chpasswd"
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Create AfterBoot configuration files
+      ansible.builtin.template:
+        src: "{{ runbook_item.Source }}"
+        dest: "{{ runbook_item.LocalDestination }}"
+        mode: "666"
+      loop: "{{ runbook.Configuration.Templates.AfterBoot }}"
+      loop_control:
+        loop_var: runbook_item
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+        - runbook.Configuration.Templates.AfterBoot != ""
+
+    - name: Copy AfterBoot configuration files to the {{ item.VMName }} VM
+      community.vmware.vmware_guest_file_operation:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ item.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        copy:
+          src: "{{ runbook_item.LocalDestination }}"
+          dest: "{{ runbook_item.StageDestination }}"
+      loop: "{{ runbook.Configuration.Templates.AfterBoot }}"
+      loop_control:
+        loop_var: runbook_item
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+        - runbook.Configuration.Templates.AfterBoot != ""
+
+    - name: Move AfterBoot configuration files to their final location on the {{ item.VMName }} VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ item.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "mv {{ runbook_item.StageDestination }} {{ runbook_item.FinalDestination }}"
+      loop: "{{ runbook.Configuration.Templates.AfterBoot }}"
+      loop_control:
+        loop_var: runbook_item
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+        - runbook.Configuration.Templates.AfterBoot != ""
+
+    - name: Create directories on {{ item.VMName }} VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ item.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "mkdir {{ runbook_item.Path }}"
+      loop: "{{ runbook.Configuration.Directories }}"
+      loop_control:
+        loop_var: runbook_item
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+        - runbook.Configuration.Directories != ""
+
+    - name: Set owner on directories on {{ item.VMName }} VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ item.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "chown {{ runbook_item.Owner }} {{ runbook_item.Path }}"
+      loop: "{{ runbook.Configuration.Directories }}"
+      loop_control:
+        loop_var: runbook_item
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+        - runbook.Configuration.Directories != ""
+
+    - name: Apply the network configuration on {{ item.VMName }} VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ item.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: netplan apply
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Restart daemons on {{ item.VMName }} VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ item.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "systemctl restart {{ runbook_item.Daemon }}"
+      loop: "{{ runbook.Configuration.Packages }}"
+      loop_control:
+        loop_var: runbook_item
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+        - runbook.Configuration.Packages != ""
+
+    - name: Delete local ISO extraction directory
+      ansible.builtin.file:
+        path: "{{ VMTarget.TempFolder }}/isos/{{ item.Software.Vendor }}_{{ item.Software.Product }}_{{ item.Software.Version }}"
+        state: absent
+      when:
+        - not DEBUG.KeepInstallerFiles
+
+    - name: Delete local ISO content directory
+      ansible.builtin.file:
+        path: "{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}"
+        state: absent
+      when:
+        - not DEBUG.KeepInstallerFiles
+        - item.Deploy
+        - vm_deployed_status is failed
+
+    - name: Delete the custom Ubuntu ISO file
+      ansible.builtin.file:
+        path: "{{ VMTarget.TempFolder }}/{{ VMTarget.SoftwareFile }}"
+        state: absent
+      when:
+        - not DEBUG.KeepInstallerFiles
+        - item.Deploy
+        - vm_deployed_status is failed
+
+    - name: Delete configuration files
+      ansible.builtin.file:
+        path: "{{ runbook_item.LocalDestination }}"
+        state: absent
+      loop: "{{ runbook.Configuration.Templates.AfterBoot }}"
+      loop_control:
+        loop_var: runbook_item
+      when:
+        - not DEBUG.KeepConfigFiles
+        - vm_deployed_status is failed
+        - item.Deploy
+        - runbook.Configuration.Templates.AfterBoot != ""
+
+
+##
+## At this point the VM should be deployed, and the installation environment in a 'clean' state.
+##
+
+##
+## Update DNS Records
+##
+
+##
+## Determine Zone to use for IPv6 Reverse Records.  If begins with 'FD', then must use /8.  If it does not begin with 'FD', then default to /56.
+##
+    - name: Determine IPv6 Zone for PTR Records (i.e. Reverse DNS) if BaseNetwork.IPv6 begins with 'fd'
+      ansible.builtin.set_fact:
+        ipv6_reverse_zone: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ansible.utils.ipaddr('revdns') | regex_replace('^.{60}(.*).$', '\\1') }}"
+      when: (Pod.BaseNetwork.IPv6[0:2] | lower) == 'fd'
+
+    - name: Determine IPv6 Zone for PTR Records (i.e. Reverse DNS) if BaseNetwork.IPv6 does NOT begin with 'fd'
+      ansible.builtin.set_fact:
+        ipv6_reverse_zone: "{{ (Pod.BaseNetwork.IPv6 + '::') | lower | ansible.utils.ipaddr('revdns') | regex_replace('^.{36}(.*).$', '\\1') }}"
+      when: (Pod.BaseNetwork.IPv6[0:2] | lower) != 'fd'
+
+##
+## Define Zone to use for IPv4 Reverse Records.
+##
+    - name: Determine IPv4 Zone for PTR Records
+      ansible.builtin.set_fact:
+        ipv4_reverse_zone: "{{ (Pod.BaseNetwork.IPv4 + '.0.0/16') | ansible.utils.ipaddr('revdns') | regex_replace('^.{4}(.*).$', '\\1') }}"
+
+
+#
+# NOTE: Only the first IPv4 and IPv6 address are added to DNS
+#
+
+#
+# ██ ██████  ██    ██ ██   ██
+# ██ ██   ██ ██    ██ ██   ██
+# ██ ██████  ██    ██ ███████
+# ██ ██       ██  ██       ██
+# ██ ██        ████        ██
+#
+    - name: DEBUG -- Display IPv4 'A' record for {{ item.VMName }} VM
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================== Display {{ item_VMName }} DNS IPv4 "A" Record =============================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+
+                                               Record: {{ item.VMName }}
+                                                Value: {{ item.OS.Network.Adapters[0].IPv4.Address }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+        - item.Deployment.UpdateDNS
+        - item.OS.Network.Adapters[0].IPv4.Address is defined
+
+    - name: IPv4 'A' record for {{ item.VMName }}
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv4 }}"
+        type: A
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ Common.DNS.Domain }}"
+        record: "{{ item.VMName }}"
+        value: "{{ item.OS.Network.Adapters[0].IPv4.Address }}"
+        state: present
+      ignore_errors: true
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+        - item.Deployment.UpdateDNS
+        - item.OS.Network.Adapters[0].IPv4.Address is defined
+
+    - name: DEBUG -- Display IPv4 'PTR' record for {{ item.VMName }}
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================== Display {{ item.VMName }} DNS IPv4 "PTR" Record ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ ipv4_reverse_zone }}
+
+                                               Record: {{ item.OS.Network.Adapters[0].IPv4.Address | ansible.utils.ipaddr('revdns') }}
+                                                Value: {{ item.VMName }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+        - item.Deployment.UpdateDNS
+        - item.OS.Network.Adapters[0].IPv4.Address is defined
+
+    - name: IPv4 'PTR' records for {{ item.VMName }}
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv4 }}"
+        type: PTR
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ ipv4_reverse_zone }}"
+        record: "{{ item.OS.Network.Adapters[0].IPv4.Address | ansible.utils.ipaddr('revdns') }}"
+        value: "{{ item.VMName }}.{{ Common.DNS.Domain }}."
+        state: present
+      ignore_errors: true
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+        - item.Deployment.UpdateDNS
+        - item.OS.Network.Adapters[0].IPv4.Address is defined
+
+
+#
+# ██ ██████  ██    ██  ██████
+# ██ ██   ██ ██    ██ ██
+# ██ ██████  ██    ██ ███████
+# ██ ██       ██  ██  ██    ██
+# ██ ██        ████    ██████
+#
+    - name: DEBUG -- Display IPv6 'AAAA' record for {{ item.VMName }}
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================= Display {{ item.VMName }} DNS IPv6 "AAAA" Record ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+
+                                               Record: {{ item.VMName }}
+                                                Value: {{ item.OS.Network.Adapters[0].IPv6.Address }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+        - item.Deployment.UpdateDNS
+        - item.OS.Network.Adapters[0].IPv6.Address is defined
+
+    - name: IPv6 'AAAA' records for {{ item.VMName }}
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv6 }}"
+        type: AAAA
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ Common.DNS.Domain }}"
+        record: "{{ item.VMName }}"
+        value: "{{ item.OS.Network.Adapters[0].IPv6.Address }}"
+        state: present
+      ignore_errors: true
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+        - item.Deployment.UpdateDNS
+        - item.OS.Network.Adapters[0].IPv6.Address is defined
+
+    - name: DEBUG -- Display IPv6 'PTR' record for {{ item.VMName }}
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================== Display {{ item.VMName }} DNS IPv6 "PTR" Record ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ ipv6_reverse_zone }}
+
+                                               Record: {{ item.OS.Network.Adapters[0].IPv6.Address | ansible.utils.ipaddr('revdns') }}
+                                                Value: {{ item.VMName }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+        - item.Deployment.UpdateDNS
+        - item.OS.Network.Adapters[0].IPv6.Address is defined
+
+    - name: IPv6 'PTR' records for {{ item.VMName }}
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv6 }}"
+        type: PTR
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ ipv6_reverse_zone }}"
+        record: "{{ item.OS.Network.Adapters[0].IPv6.Address | ansible.utils.ipaddr('revdns') }}"
+        value: "{{ item.VMName }}.{{ Common.DNS.Domain }}."
+        state: present
+      ignore_errors: true
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+        - item.Deployment.UpdateDNS
+        - item.OS.Network.Adapters[0].IPv6.Address is defined
+
+
+##
+## Perform VM PostInstall Items
+##
+
+#
+# Install Packages
+#
+    - name: Update repositories on {{ item.VMName }} VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ item.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "apt-get update"
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Install Linux packages on {{ item.VMName }} VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ item.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "apt-get -y install {{ package }}"
+      loop: "{{ item.OS.PostInstall.Packages | default([]) }}"
+      loop_control:
+        loop_var: package
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+        - item.OS.PostInstall.Packages is defined
+
+
+#
+# Execute commands
+#
+    - name: Execute commands Install Linux packages on {{ item.VMName }} VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ item.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "{{ command }}"
+      loop: "{{ item.OS.PostInstall.Commands | default([]) }}"
+      loop_control:
+        loop_var: command
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+        - item.OS.PostInstall.Commands is defined
+
+    - name: Flush unwritten data to disk on {{ item.VMName }} VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ item.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "sync"
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+
+#
+# Reboot VM
+#
+    - name: Reboot {{ item.VMName }} VM
+      community.vmware.vmware_guest:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ item.VMName }}"
+        state: rebootguest
+      when:
+        - item.OS.PostInstall.Reboot
+        - vm_deployed_status is failed
+        - item.Deploy

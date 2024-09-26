@@ -1,0 +1,14 @@
+disks:
+{% for disk in item.HardwareSettings.Storage.Disks %}
+  - size_gb: {{ disk.Size }}
+    type: {{ disk.DiskProvisioning }}
+    datastore: {{ disk.Datastore }}
+    controller_type: {% if disk.Controller.Type is not none %}{{ disk.Controller.Type}}{% else %}paravirtual{% endif +%}
+    controller_number: {% if disk.Controller.Number is not none %}{{ disk.Controller.Number }}{% else %}0{% endif +%}
+{% endfor %}{# disk #}
+networks:
+{% for adapter in item.HardwareSettings.Network.Adapters %}
+  - name: {% if adapter.PortGroup is not none %}{{ adapter.PortGroup }}{% else %}VMNetwork{% endif +%}
+    device_type: {{ adapter.DeviceType }}
+    start_connected: {{ adapter.StartConnected }}
+{% endfor %}{# network #}
