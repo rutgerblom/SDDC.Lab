@@ -1,8 +1,14 @@
+{#
+ #
+ # If this Jinja2 template is updated, be sure to update the user-data.j2 file as well, as portions of this template
+ # are in that Jinja2 template.
+ #
+ #}
 network:
   version: 2
   ethernets:
 {% for adapter in item.OS.Network.Adapters %}
-    {{ OS_Adapters[ loop.index0 ] }}:
+    {{ os_hardware.network.adapters[ loop.index0 ] }}:
 {%   if adapter.IPv4.Address is not none %}
       dhcp4: no
 {%   else %}

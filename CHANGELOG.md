@@ -2682,3 +2682,9 @@
     - ```software_sample.yml```: Ubuntu Server v24.04 was added.
   - For testing, the data structure describing the 'Generic' VM to be deployed is located in ```playbooks/DeployGenericVm.yml``` playbook, and is called ```VM``` for now.  Once fully functional, it may be renamed, and will be added to the ```config_sample.yml``` file.
     - Be sure to update your ```software.yml``` and ```templates.yml``` files
+
+## Dev-v8.0.0 27-SEPTEMBER-2024
+
+### Added by Luis Chanu
+  - Initial commit of sucessful deployment of ```Deploy Generic VM``` feature with Ubuntu Server v24.04.
+  - Not ready for public use.

@@ -5,13 +5,61 @@ autoinstall:
   keyboard:
     layout: {{ item.OS.Keyboard.Layout }}
     variant: {{ item.OS.Keyboard.Variant }}
-{% include item.Software.Vendor + '_' + item.Software.Product + '_' + item.Software.Version + '_netplan.j2' %}
+  refresh-installer:
+    update: true
+    channel: latest/edge
+{# ################# Below taken from netplan.j2, but only includes first OS.Network.Adapters entry ################ #}
+  network:
+    version: 2
+    ethernets:
+      {{ os_hardware.network.adapters[0] }}:
+{% if item.OS.Network.Adapters[0].IPv4.Address is not none %}
+        dhcp4: no
+{% else %}
+        dhcp4: yes
+{% endif %}{# IPv4 #}
+{% if item.OS.Network.Adapters[0].IPv6.Address is not none %}
+        dhcp6: no
+{% else %}
+        dhcp6: yes
+        accept-ra: yes
+{% endif %}{# IPv6 #}
+{# Verify if either IPv4 or IPv6 have static IPs #}
+{% if (item.OS.Network.Adapters[0].IPv4.Address is not none) or (item.OS.Network.Adapters[0].IPv6.Address is not none) %}
+        addresses:
+{%   if (item.OS.Network.Adapters[0].IPv4.Address is not none) and (item.OS.Network.Adapters[0].IPv4.Prefix is not none) %}
+          - {{ item.OS.Network.Adapters[0].IPv4.Address }}/{{ item.OS.Network.Adapters[0].IPv4.Prefix }}
+{%   endif %}{# IPv4.Address #}
+{%   if (item.OS.Network.Adapters[0].IPv6.Address is not none) and (item.OS.Network.Adapters[0].IPv6.Prefix is not none) %}
+          - "{{ item.OS.Network.Adapters[0].IPv6.Address }}/{{ item.OS.Network.Adapters[0].IPv6.Prefix }}"
+{%   endif %}{# IPv6.Address #}
+{%   if (item.OS.Network.Adapters[0].IPv4.Gateway is not none) or (item.OS.Network.Adapters[0].IPv6.Gateway is not none) %}
+        routes:
+{%     if item.OS.Network.Adapters[0].IPv4.Gateway is not none %}
+          - to: default
+            via: {{ item.OS.Network.Adapters[0].IPv4.Gateway }}
+{%     endif %}{# IPv4.Gateway #}
+{%     if item.OS.Network.Adapters[0].IPv6.Gateway is not none %}
+          - to: default
+            via: "{{ item.OS.Network.Adapters[0].IPv6.Gateway }}"
+{%     endif %}{# IPv6.Gateway #}
+{%   endif %}{# item.OS.Network.Adapters[0].IPv4.Gateway or item.OS.Network.Adapters[0].IPv6.Gateway #}
+{% endif %}{# IPv4.Address or IPv6.Address #}
+{% if item.OS.Network.DNS.Servers is not none %}
+        nameservers:
+          addresses: {{ item.OS.Network.DNS.Servers }}
+          search:
+            - {{ Common.DNS.Domain }}
+{% endif %}{# DNS #}
+{# ################# Above taken from netplan.j2, but only includes first OS.Network.Adapters entry ################ #}
   identity:
     hostname: {{ item.FQDN }}
     username: {{ item.OS.Credential.User }}
     password: "$6$ryx4qBcSL3V1qKaU$UVKN5KO0gwjUqha0OQkGX8CL/Dbp3NCPo52vEvXO1/2s3NkFcvw540HPWc1g6/7UFEmYEbeRXFdttuguFsvj00" # VMware1!
   ssh:
     install-server: {{ item.OS.PostInstall.SSH.Server.Install }}
+    allow-pw: true
+{#
   apt:
     sources:
       source1:
@@ -41,6 +89,7 @@ autoinstall:
           /YzvqYwAnj85Ehe8EmnKuor/k/TPtKl4MzDm
           =oxvD
           -----END PGP PUBLIC KEY BLOCK-----
+ #}
   packages:
 {% for Package in runbook.Configuration.Packages %}
     - {{ Package.Name }}
