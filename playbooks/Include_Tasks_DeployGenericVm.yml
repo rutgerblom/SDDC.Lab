@@ -7,6 +7,10 @@
 ##
 ##  ToDo Items:
 ##    1) If deployed via DHCP, need to obtain the dynamic IP address and then use that to populate DNS.
+##    2) After deployment, eject ISO from CD-ROM drive
+##    3) Delete ISO image in ESXi datastore after deployment
+##    4) Apply NSX Tags
+##    5) Random VMName if field is left empty
 ##
 ---
     - name: Include_Tasks_DeployGenericVm_Playbook
@@ -137,6 +141,7 @@
                         VMTarget.Datastore: {{ VMTarget.Datastore }}
                          VMTarget.VMFolder: {{ VMTarget.VMFolder }}
                         VMTarget.ISOFolder: {{ VMTarget.ISOFolder }}
+                        VMTarget.Installer: {{ VMTarget.Installer }}
                        VMTarget.TempFolder: {{ VMTarget.TempFolder }}
                    VMTarget.TemplateFolder: {{ VMTarget.TemplateFolder }}
 
@@ -162,10 +167,12 @@
       when:
         - item.Deploy
 
+### DELETE ME ###
     - name: Create Linux adapter list
       ansible.builtin.set_fact:
         OS_Adapters: [ens33, ens35, ens36, ens37, ens38, ens39, ens40, ens41, ens42, ens43]
       when:
+        - false
         - vm_deployed_status is failed
         - item.Deploy
 
@@ -183,12 +190,46 @@
           ==================================== Display runbook Variable ===================================
 
           runbook:
-          {{ runbook | to_nice_yaml(indent=2) }}
+            {{ runbook | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables
         - runbook is defined:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Generate OS Hardware data structure needed for OS configuration
+      ansible.builtin.set_fact:
+        os_hardware: "{{ lookup('template', VMTarget.TemplateFolder + '/' + item.Software.Vendor + '_' + item.Software.Product + '_' + item.Software.Version + '/' + item.Software.Vendor + '_' + item.Software.Product + '_' + item.Software.Version + '_os-hardware.j2') | from_yaml }}"
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Generate VM Hardware data structure needed for VM provisioning
+      ansible.builtin.set_fact:
+        vm_hardware: "{{ lookup('template', VMTarget.TemplateFolder + '/' + item.Software.Vendor + '_' + item.Software.Product + '_' + item.Software.Version + '/' + item.Software.Vendor + '_' + item.Software.Product + '_' + item.Software.Version + '_vm-hardware.j2') | from_yaml }}"
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: DEBUG -- Display 'hardware' Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ==================================== Display 'hardware' Variables ==================================
+
+          os_hardware:
+            {{ os_hardware | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+
+          vm_hardware:
+            {{ vm_hardware | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+        - vm_hardware is defined:
         - vm_deployed_status is failed
         - item.Deploy
 
@@ -291,13 +332,6 @@
         - vm_deployed_status is failed
         - item.Deploy
 
-    - name: Generate VM Hardware data structure for hardware components with multiple entries (i.e., Lists)
-      ansible.builtin.set_fact:
-        vm_hardware: "{{ lookup('template', VMTarget.TemplateFolder + '/' + item.Software.Vendor + '_' + item.Software.Product + '_' + item.Software.Version + '/' + item.Software.Vendor + '_' + item.Software.Product + '_' + item.Software.Version + '_vm-hardware.j2') | from_yaml }}"
-      when:
-        - vm_deployed_status is failed
-        - item.Deploy
-
 ##### STOPPED HERE -- NEED TO CONTINUE DEFINING DEFAULT VALUES BELOW ######
 
     - name: Deploy {{ item.VMName }} VM
@@ -312,23 +346,24 @@
         cluster: "{{ VMTarget.Cluster }}"
         datacenter: "{{ VMTarget.DataCenter }}"
         folder: "{% if item.Deployment.Target == 'PHYSICAL' and Target.Deployment == 'vCenter' %}{{ VMTarget.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}{% else %}{{ VMTarget.VMFolder }}{% endif %}"          # If vCenter, use Parent folder
+        datastore: "{{ VMTarget.Datastore }}"
         disk: "{{ vm_hardware.disks }}"
         networks: "{{ vm_hardware.networks }}"
         hardware:
           version: "{{ (item.HardwareSettings.Version != '') | ternary(item.HardwareSettings.Version, 'latest', 'latest') }}"
-          boot_firmware: "{{ item.VMOptions.BootOptions.Firmware | default(omit) }}"
-          nested_virt: "{{ item.HardwareSettings.NestedVirtualization | default(omit) }}"
+          boot_firmware: "{{ (item.VMOptions.BootOptions.Firmware != '') | ternary(item.VMOptions.BootOptions.Firmware, 'bios', 'bios') }}"
+          nested_virt: "{{ (item.HardwareSettings.NestedVirtualization != '') | ternary(item.HardwareSettings.NestedVirtualization, true, true) }}"
           memory_mb: "{{ item.HardwareSettings.Memory.Size }}"
-          mem_reservation: "{{ item.Hardwaresettings.Memory.Reservation | default(omit) }}"
-          mem_shares_level: "{{ item.HardwareSettings.Memory.SharesLevel | default(omit) }}"
-          hotadd_memory: "{{ item.HardwareSettings.Memory.AllowHotAdd | default(omit) }}"
+          mem_reservation: "{{ (item.HardwareSettings.Memory.Reservation != '') | ternary(item.HardwareSettings.Memory.Reservation, 0, 0) }}"
+          mem_shares_level: "{{ (item.HardwareSettings.Memory.SharesLevel != '') | ternary(item.HardwareSettings.Memory.SharesLevel, 'normal', 'normal') }}"
+          hotadd_memory: "{{ (item.HardwareSettings.Memory.AllowHotAdd != '') | ternary(item.HardwareSettings.Memory.AllowHotAdd, false, false) }}"
           num_cpus: "{{ item.HardwareSettings.CPU.Quantity }}"
           num_cpu_cores_per_socket: "{{ item.HardwareSettings.CPU.CoresPerSocket }}"
-          cpu_shares_level: "{{ item.HardwareSettings.CPU.SharesLevel | default(omit) }}"
+          cpu_shares_level: "{{ (item.HardwareSettings.CPU.SharesLevel != '') | ternary(item.HardwareSettings.CPU.SharesLevel, 'normal', 'normal') }}"
           cpu_reservation: "{{ (item.HardwareSettings.CPU.Reservation != '') | ternary(item.HardwareSettings.CPU.Reservation, 0, 0) }}"
           hotadd_cpu: "{{ (item.HardwareSettings.CPU.AllowHotAdd != '') | ternary(item.HardwareSettings.CPU.AllowHotAdd, false, false) }}"
           hotremove_cpu: "{{ (item.HardwareSettings.CPU.AllowHotRemove != '') | ternary(item.HardwareSettings.CPU.AllowHotRemove, false, false) }}"
-          scsi: "{{ (item.HardwareSettings.Storage.SCSIController != '') | ansible.builtin.ternary(item.HardwareSettings.Storage.SCSIController, 'paravirtual', 'paravirtual') }}"
+          scsi: "{{ (item.HardwareSettings.Storage.Controller != '') | ansible.builtin.ternary(item.HardwareSettings.Storage.Controller, 'paravirtual', 'paravirtual') }}"
         cdrom:
           - controller_number: 0
             unit_number: 0
@@ -355,7 +390,7 @@
         schema: vsphere
       register: vm_facts
       until: vm_facts.instance.guest.hostName is search(item.FQDN)
-      retries: 30
+      retries: 45
       delay: 60
       when:
         - vm_deployed_status is failed

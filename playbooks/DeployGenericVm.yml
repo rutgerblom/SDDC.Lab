@@ -34,8 +34,8 @@
 ##
 #   TODO: Update descriptions to identify which are OPTIONAL or MANDATORY, Default value, and possible values.
     VMs:
-      - VMName: "{{ SiteCode}}-TestVM"                                # If not specified, a randon name will be assigned in the following format:  "{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-VM-{{ 999999 | ansible.builtin.random }}"
-        FQDN: "{{ SiteCode}}-TestVM.{{ Common.DNS.Domain }}"
+      - VMName: "{{ SiteCode}}-TestVM-001"                                # If not specified, a randon name will be assigned in the following format:  "{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-VM-{{ 999999 | ansible.builtin.random }}"
+        FQDN: "{{ SiteCode}}-TestVM-001.{{ Common.DNS.Domain }}"
         Deploy: true                                                  # Boolean to control if the VM is to be deployed or not
         Deployment:
           Target: NESTED                                              # PHYSICAL or NESTED
@@ -51,39 +51,62 @@
           GeneralOptions:
             GuestOS: ubuntu64Guest
           BootOptions:
-            Firmware: efi                                             # Options are 'bios' or 'efi'
+            Firmware: bios                                            # OPTIONAL - Options are 'bios' or 'efi'
         HardwareSettings:
           Version: latest                                             # Virtual Machine HW version.  If not specified, 'latest' will be used.
           NestedVirtualization: true                                  # Boolean to control the enabling of nested virtualization support
           CPU:
             Quantity: 2
             CoresPerSocket: 2
-            Reservation:
+            Reservation: 0
             SharesLevel: normal                                       # low, normal, high
-            AllowHotAdd:                                              # Boolean to control whether to allow virtual CPUs to be added while VM is running.
-            AllowHotRemove:                                           # Boolean
+            AllowHotAdd: false                                             # Boolean to control whether to allow virtual CPUs to be added while VM is running.
+            AllowHotRemove: false                                          # Boolean
           Memory:
-            Size: 2048                                                # In MB
+            Size: 8192                                                # In MB
             Reservation: 0
             SharesLevel: normal                                       # low, normal, high
             AllowHotAdd: false                                        # Boolean to control whether to allow virtual memory to be added while VM is running.
           Storage:
-            SCSIController:
+            Controller: paravirtual
             Disks:
-              - Size: 40960
+              - Size: 80                                              # In GB
                 DiskProvisioning: "{{ Common.DiskProvisioning }}"
-                Datastore:  "{{ Target.Datastore }}"
                 Controller:
-                  Type: paravirtual                                   # If not specified, 'paravirtual' is used.  Options include: paravirtual, buslogic, lsilogic, lsilogicsas, sata, nvme
-                  Number: 0                                           # If not specified, it is auto allocated
+                  Type: paravirtual                                   # OPTIONAL - Options: paravirtual, buslogic, lsilogic, lsilogicsas, sata, nvme
+                  Number:                                             # OPTIONAL - If not specified, it is auto assigned
           Network:
             Adapters:
               - StartConnected: true
-                DeviceType:                                           # If not specified, 'vmxnet3' is used.  Options include e1000, e1000e, pcnet32, vmxnet2, vmxnet3, and sriov.
-                PortGroup:
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
               - StartConnected: false
-                DeviceType:                                           # If not specified, use vmxnet3
-                PortGroup:                                            # If not specified, use "VMNetwork" Port-Group
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+              - StartConnected: false
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+              - StartConnected: false
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+              - StartConnected: false
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+              - StartConnected: false
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+              - StartConnected: false
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+              - StartConnected: false
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+              - StartConnected: false
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+              - StartConnected: false
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
         NSXT:
           Tags:
             - Tag: Auto-Deployed
@@ -104,9 +127,9 @@
                 - "{{ Common.DNS.Server1.IPv6 }}"
             Adapters:
               - IPv4:
-                  Address: 1.2.3.4                                           # Use DHCPv4 if not specified, else configure static IP address
-                  Prefix: 24
-                  Gateway: 1.2.3.1
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix: 
+                  Gateway:
                 IPv6:
                   Address:                                            # Use SLAAC/DHCPv6 if not specified, else configure static IP address
                   Prefix:

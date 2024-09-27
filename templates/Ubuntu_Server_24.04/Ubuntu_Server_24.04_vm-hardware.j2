@@ -1,14 +1,21 @@
+{#
+ #  This Jinja2 template generates the data structure that is consumed by the vmware_guest play
+ #  that deploys the VM.  The data structure created is the dynamic number of disks and network
+ #  adapters found in the VM configuration.
+ #
+ #}
 disks:
 {% for disk in item.HardwareSettings.Storage.Disks %}
   - size_gb: {{ disk.Size }}
     type: {{ disk.DiskProvisioning }}
-    datastore: {{ disk.Datastore }}
-    controller_type: {% if disk.Controller.Type is not none %}{{ disk.Controller.Type}}{% else %}paravirtual{% endif +%}
-    controller_number: {% if disk.Controller.Number is not none %}{{ disk.Controller.Number }}{% else %}0{% endif +%}
+    controller_type: {% if disk.Controller.Type is not none %}{{ disk.Controller.Type }}{% else %}paravirtual{% endif +%}
+    controller_number: {{ loop.index0 // 4 }}
+{# Modulo 7 because if a SCSI controller is chosen, 7 cannot be used.  So, keeping below 7 #}
+    unit_number: {% if disk.Controller.Number is not none %}{{ disk.Controller.Number }}{% else %}{{ loop.index0 % 7 }}{% endif +%}
 {% endfor %}{# disk #}
 networks:
 {% for adapter in item.HardwareSettings.Network.Adapters %}
-  - name: {% if adapter.PortGroup is not none %}{{ adapter.PortGroup }}{% else %}VMNetwork{% endif +%}
+  - name: {{ adapter.PortGroup }}
     device_type: {{ adapter.DeviceType }}
     start_connected: {{ adapter.StartConnected }}
 {% endfor %}{# network #}
