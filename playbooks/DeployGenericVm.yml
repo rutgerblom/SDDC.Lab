@@ -34,10 +34,7 @@
 ##
 #   TODO: Update descriptions to identify which are OPTIONAL or MANDATORY, Default value, and possible values.
     VMs:
-      - VMName:
-        FQDN:
-#      - VMName: "{{ SiteCode}}-TestVM-001"                            # OPTIONAL - If not specified, the following will be used:  "{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-VM-{{ 999999 | ansible.builtin.random }}"
-#        FQDN: "{{ SiteCode}}-TestVM-001.{{ Common.DNS.Domain }}"
+      - VMName:                                                       # OPTIONAL - If not specified, the following is used:  "{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop.index|int) }}"
         Deploy: true                                                  # Boolean to control if the VM is to be deployed or not
         Deployment:
           Target: NESTED                                              # PHYSICAL or NESTED
