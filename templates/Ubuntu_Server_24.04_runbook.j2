@@ -42,17 +42,13 @@ Configuration:
       Daemon:
     - Name: apt-transport-https
       Daemon:
-{#
-    - Name: webmin
-      Daemon:
- #}
   Directories:
     - Name: Dummy-Entry-Kept-For-Documentation
       Path: /tmp/dummy
       Owner: nobody:nobody
   Commands:
     - Name: echo '{{ item.OS.Credential.User }} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu # Allow user to run sudo without password. Required for successfull post configuration.
-{#    - Name: apt-get update
+    - Name: apt-get update
     - Name: apt-get upgrade -y
     - Name: apt-get autoremove
-#}
+    - Name: sync

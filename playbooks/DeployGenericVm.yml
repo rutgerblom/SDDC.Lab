@@ -32,20 +32,19 @@
 ##
 ## VM datastructure, which is a list of VMs, consumed by 'Include_Tasks_DeployGenericVm'
 ##
-#   TODO: Update descriptions to identify which are OPTIONAL or MANDATORY, Default value, and possible values.
+#   TODO: Update descriptions to identify which are OPTIONAL or REQUIRED, Default value, and possible values.
     VMs:
-      - VMName: "{{ SiteCode}}-TestVM-001"                                # If not specified, a randon name will be assigned in the following format:  "{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-VM-{{ 999999 | ansible.builtin.random }}"
-        FQDN: "{{ SiteCode}}-TestVM-001.{{ Common.DNS.Domain }}"
-        Deploy: true                                                  # Boolean to control if the VM is to be deployed or not
+      - VMName:                                                       # OPTIONAL - If not specified, the following is used:  "{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}"
+        Deploy: true                                                  # REQUIRED - Boolean to control if the VM is to be deployed or not
         Deployment:
-          Target: NESTED                                              # PHYSICAL or NESTED
+          Target: NESTED                                              # REQUIRED - PHYSICAL or NESTED
           Cluster: ComputeA                                           # Only applicable for NESTED
           VMFolder:
-          UpdateDNS: true                                             # Only the first interface is added to DNS
+          UpdateDNS: true                                             # REQUIRED - Only the first interface is added to DNS, and it must be configured as a static IP.  DHCP is not added to DNS.
         Software:
-          Vendor: Ubuntu
-          Product: Server
-          Version: "24.04"
+          Vendor: Ubuntu                                              # REQUIRED
+          Product: Server                                             # REQUIRED
+          Version: "24.04"                                            # REQUIRED - Must be a string (i.e., Surrounded by quotes)
         Annotation: "{{ Common.Annotation }}"
         VMOptions:
           GeneralOptions:
@@ -207,10 +206,10 @@
                   Prefix:
                   Gateway:
           PostInstall:
-            Reboot: true                                              # Force reboot after installation: true or false
             SSH:
               Server:
-                Install: yes
+                Install: true
+                AllowPW: true
             Packages:
               - traceroute
               - dnsutils
@@ -284,6 +283,8 @@
       ansible.builtin.include_tasks:
         file: Include_Tasks_DeployGenericVm.yml
       loop: "{{ VMs }}"
+      loop_control:
+        index_var: loop_idx
       when:
         - VMs is defined
         - VMs | length > 0

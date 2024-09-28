@@ -7,10 +7,12 @@
 ##
 ##  ToDo Items:
 ##    1) If deployed via DHCP, need to obtain the dynamic IP address and then use that to populate DNS.
-##    2) After deployment, eject ISO from CD-ROM drive
+##  --2) After deployment, eject ISO from CD-ROM drive
 ##    3) Delete ISO image in ESXi datastore after deployment
 ##    4) Apply NSX Tags
-##    5) Random VMName if field is left empty
+##  --5) Random VMName if field is left empty
+##    6) Delete 'BOOT' directory in isos folder
+##    7) Add 'bios' and 'efi' key for OS Adapters
 ##
 ---
     - name: Include_Tasks_DeployGenericVm_Playbook
@@ -59,8 +61,6 @@
 
                     Virtual Machine Deployment Target: {{ item.Deployment.Target }}
 
-                                 Virtual Machine Name: {{ item.VMName }}
-                                 Virtual Machine FQDN: {{ item.FQDN }}
                                       Software Vendor: {{ item.Software.Vendor }}
                                      Software Product: {{ item.Software.Product }}
                                      Software Version: {{ item.Software.Version }}
@@ -90,12 +90,15 @@
           ISOFolder: "{{ Target.ISOFolder }}"
           TempFolder: "{{ Target.TempFolder }}"
           TemplateFolder: "{{ Target.TemplateFolder }}"
-          Installer: "{{ SiteCode }}-Installer-VM"
+          Installer: "{{ SiteCode }}-Installer-VM-{{ '%03d'|format(loop_idx|int) }}"
           Template: "{{ Template[item.Software.Vendor][item.Software.Version].Template }}"
           SoftwareDirectory: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].Local }}"
           SoftwareFile: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version].File }}"
           SoftwareURL: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].URL }}"
-      when: 
+        VMInfo:
+          VMName: "{% if item.VMName is not none %}{{ item.VMName }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}{% endif %}"
+          FQDN:   "{% if item.VMName is not none %}{{ item.VMName }}.{{ Common.DNS.Domain }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}.{{ Common.DNS.Domain }}{% endif %}"
+      when:
         - item.Deployment.Target == "PHYSICAL"
 
     - name: Set deployment variables for NESTED target (Nested Pod vCenter)
@@ -111,21 +114,27 @@
           ISOFolder: "{{ Target.ISOFolder }}"
           TempFolder: "{{ Target.TempFolder }}"
           TemplateFolder: "{{ Target.TemplateFolder }}"
-          Installer: "{{ SiteCode }}-Installer-VM"
+          Installer: "{{ SiteCode }}-Installer-VM-{{ '%03d'|format(loop_idx+1|int) }}"
           Template: "{{ Template[item.Software.Vendor][item.Software.Version].Template }}"
           SoftwareDirectory: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].Local }}"
           SoftwareFile: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version].File }}"
           SoftwareURL: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].URL }}"
+        VMInfo:
+          VMName: "{% if item.VMName is not none %}{{ item.VMName }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}{% endif %}"
+          FQDN:   "{% if item.VMName is not none %}{{ item.VMName }}.{{ Common.DNS.Domain }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}.{{ Common.DNS.Domain }}{% endif %}"
       when:
         - item.Deployment.Target == "NESTED"
 
-    - name: DEBUG -- Display VMTarget Variables (Pause)
+    - name: DEBUG -- Display VMTarget & VMInfo Variables (Pause)
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================= Display VMTarget Variables ====================================
+          ================================= Display VMTarget & VMInfo Variables ====================================
 
                     item.Deployment.Target: {{ item.Deployment.Target }}
+
+                             VMInfo.VMName: {{ VMInfo.VMName }}
+                               VMInfo.FQDN: {{ VMInfo.FQDN }}
 
                       item.Software.Vendor: {{ item.Software.Vendor }}
                      item.Software.Product: {{ item.Software.Product }}
@@ -149,7 +158,7 @@
       when:
         - DEBUG.DisplayVariables
 
-    - name: Check if '{{ item.VMName }}' is already deployed on '{{ VMTarget.FQDN }}'
+    - name: Check if '{{ VMInfo.VMName }}' is already deployed on '{{ VMTarget.FQDN }}'
       community.vmware.vmware_guest_info:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
@@ -158,22 +167,13 @@
         datacenter: "{{ VMTarget.DataCenter }}"
         folder: "{% if item.Deployment.Target == 'PHYSICAL' and Target.Deployment == 'vCenter' %}{{ VMTarget.VMFolder | regex_replace('^(.*)/.*$', '\\1') }}\
                  {% else %}{{ VMTarget.VMFolder }}{% endif %}"          # If vCenter, use Parent folder
-        name: "{{ item.VMName }}"
+        name: "{{ VMInfo.VMName }}"
         schema: vsphere
         properties: ["overallStatus"]
       register: vm_deployed_status
       ignore_errors: true
       no_log: true
       when:
-        - item.Deploy
-
-### DELETE ME ###
-    - name: Create Linux adapter list
-      ansible.builtin.set_fact:
-        OS_Adapters: [ens33, ens35, ens36, ens37, ens38, ens39, ens40, ens41, ens42, ens43]
-      when:
-        - false
-        - vm_deployed_status is failed
         - item.Deploy
 
     - name: Generate the runbook
@@ -332,15 +332,13 @@
         - vm_deployed_status is failed
         - item.Deploy
 
-##### STOPPED HERE -- NEED TO CONTINUE DEFINING DEFAULT VALUES BELOW ######
-
-    - name: Deploy {{ item.VMName }} VM
+    - name: Deploy {{ VMInfo.VMName }} VM
       community.vmware.vmware_guest:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
         password: "{{ VMTarget.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        name: "{{ item.VMName }}"
+        name: "{{ VMInfo.VMName }}"
         state: poweredon
         guest_id: "{{ item.VMOptions.GeneralOptions.GuestOS }}"
         cluster: "{{ VMTarget.Cluster }}"
@@ -379,30 +377,35 @@
         - vm_deployed_status is failed
         - item.Deploy
 
-    - name: Start checking if the {{ item.VMName }} VM is ready
+    - name: Start checking if the {{ VMInfo.VMName }} VM is ready
       community.vmware.vmware_guest_info:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
         password: "{{ VMTarget.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter: "{{ VMTarget.DataCenter }}"
-        name: "{{ item.VMName }}"
+        name: "{{ VMInfo.VMName }}"
         schema: vsphere
       register: vm_facts
-      until: vm_facts.instance.guest.hostName is search(item.FQDN)
-      retries: 45
-      delay: 60
+      until: vm_facts.instance.guest.hostName is search(VMInfo.FQDN)
+      retries: 180
+      delay: 5
       when:
         - vm_deployed_status is failed
         - item.Deploy
 
+
+
+##
+## Continue with post-installation configuration items
+##
     - name: Set password for the {{ item.OS.Credential.User }} user
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
         password: "{{ VMTarget.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        vm_id: "{{ item.VMName }}"
+        vm_id: "{{ VMInfo.VMName }}"
         vm_username: "{{ item.OS.Credential.User }}"
         vm_password: VMware1!
         vm_shell: /usr/bin/echo
@@ -424,13 +427,13 @@
         - item.Deploy
         - runbook.Configuration.Templates.AfterBoot != ""
 
-    - name: Copy AfterBoot configuration files to the {{ item.VMName }} VM
+    - name: Copy AfterBoot configuration files to the {{ VMInfo.VMName }} VM
       community.vmware.vmware_guest_file_operation:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
         password: "{{ VMTarget.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        vm_id: "{{ item.VMName }}"
+        vm_id: "{{ VMInfo.VMName }}"
         vm_username: "{{ item.OS.Credential.User }}"
         vm_password: "{{ item.OS.Credential.Password }}"
         copy:
@@ -444,13 +447,13 @@
         - item.Deploy
         - runbook.Configuration.Templates.AfterBoot != ""
 
-    - name: Move AfterBoot configuration files to their final location on the {{ item.VMName }} VM
+    - name: Move AfterBoot configuration files to their final location on the {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
         password: "{{ VMTarget.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        vm_id: "{{ item.VMName }}"
+        vm_id: "{{ VMInfo.VMName }}"
         vm_username: "{{ item.OS.Credential.User }}"
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
@@ -463,13 +466,13 @@
         - item.Deploy
         - runbook.Configuration.Templates.AfterBoot != ""
 
-    - name: Create directories on {{ item.VMName }} VM
+    - name: Create directories on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
         password: "{{ VMTarget.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        vm_id: "{{ item.VMName }}"
+        vm_id: "{{ VMInfo.VMName }}"
         vm_username: "{{ item.OS.Credential.User }}"
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
@@ -482,13 +485,13 @@
         - item.Deploy
         - runbook.Configuration.Directories != ""
 
-    - name: Set owner on directories on {{ item.VMName }} VM
+    - name: Set owner on directories on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
         password: "{{ VMTarget.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        vm_id: "{{ item.VMName }}"
+        vm_id: "{{ VMInfo.VMName }}"
         vm_username: "{{ item.OS.Credential.User }}"
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
@@ -501,13 +504,13 @@
         - item.Deploy
         - runbook.Configuration.Directories != ""
 
-    - name: Apply the network configuration on {{ item.VMName }} VM
+    - name: Apply the network configuration on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
         password: "{{ VMTarget.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        vm_id: "{{ item.VMName }}"
+        vm_id: "{{ VMInfo.VMName }}"
         vm_username: "{{ item.OS.Credential.User }}"
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
@@ -516,13 +519,13 @@
         - vm_deployed_status is failed
         - item.Deploy
 
-    - name: Restart daemons on {{ item.VMName }} VM
+    - name: Restart daemons on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
         password: "{{ VMTarget.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        vm_id: "{{ item.VMName }}"
+        vm_id: "{{ VMInfo.VMName }}"
         vm_username: "{{ item.OS.Credential.User }}"
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
@@ -614,17 +617,17 @@
 # ██ ██       ██  ██       ██
 # ██ ██        ████        ██
 #
-    - name: DEBUG -- Display IPv4 'A' record for {{ item.VMName }} VM
+    - name: DEBUG -- Display IPv4 'A' record for {{ VMInfo.VMName }} VM
       ansible.builtin.pause:
         seconds: 1
         prompt: |
-          ======================== Display {{ item_VMName }} DNS IPv4 "A" Record =============================
+          ======================== Display {{ VMInfo.VMName }} DNS IPv4 "A" Record =============================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                                  Zone: {{ Common.DNS.Domain }}
 
-                                               Record: {{ item.VMName }}
+                                               Record: {{ VMInfo.VMName }}
                                                 Value: {{ item.OS.Network.Adapters[0].IPv4.Address }}
 
           =================================================================================================
@@ -634,15 +637,15 @@
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv4
         - item.Deployment.UpdateDNS
-        - item.OS.Network.Adapters[0].IPv4.Address is defined
+        - item.OS.Network.Adapters[0].IPv4.Address is not none
 
-    - name: IPv4 'A' record for {{ item.VMName }}
+    - name: IPv4 'A' record for {{ VMInfo.VMName }}
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: A
         protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
-        record: "{{ item.VMName }}"
+        record: "{{ VMInfo.VMName }}"
         value: "{{ item.OS.Network.Adapters[0].IPv4.Address }}"
         state: present
       ignore_errors: true
@@ -650,20 +653,20 @@
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv4
         - item.Deployment.UpdateDNS
-        - item.OS.Network.Adapters[0].IPv4.Address is defined
+        - item.OS.Network.Adapters[0].IPv4.Address is not none
 
-    - name: DEBUG -- Display IPv4 'PTR' record for {{ item.VMName }}
+    - name: DEBUG -- Display IPv4 'PTR' record for {{ VMInfo.VMName }}
       ansible.builtin.pause:
         seconds: 1
         prompt: |
-          ======================== Display {{ item.VMName }} DNS IPv4 "PTR" Record ===========================
+          ======================== Display {{ VMInfo.VMName }} DNS IPv4 "PTR" Record ===========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                            DNS Server: {{ Common.DNS.Server1.IPv4 }}
                                                  Zone: {{ ipv4_reverse_zone }}
 
                                                Record: {{ item.OS.Network.Adapters[0].IPv4.Address | ansible.utils.ipaddr('revdns') }}
-                                                Value: {{ item.VMName }}.{{ Common.DNS.Domain }}.
+                                                Value: {{ VMInfo.VMName }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
       when:
@@ -672,23 +675,23 @@
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv4
         - item.Deployment.UpdateDNS
-        - item.OS.Network.Adapters[0].IPv4.Address is defined
+        - item.OS.Network.Adapters[0].IPv4.Address is not none
 
-    - name: IPv4 'PTR' records for {{ item.VMName }}
+    - name: IPv4 'PTR' records for {{ VMInfo.VMName }}
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv4 }}"
         type: PTR
         protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ ipv4_reverse_zone }}"
         record: "{{ item.OS.Network.Adapters[0].IPv4.Address | ansible.utils.ipaddr('revdns') }}"
-        value: "{{ item.VMName }}.{{ Common.DNS.Domain }}."
+        value: "{{ VMInfo.VMName }}.{{ Common.DNS.Domain }}."
         state: present
       ignore_errors: true
       when:
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv4
         - item.Deployment.UpdateDNS
-        - item.OS.Network.Adapters[0].IPv4.Address is defined
+        - item.OS.Network.Adapters[0].IPv4.Address is not none
 
 
 #
@@ -698,17 +701,17 @@
 # ██ ██       ██  ██  ██    ██
 # ██ ██        ████    ██████
 #
-    - name: DEBUG -- Display IPv6 'AAAA' record for {{ item.VMName }}
+    - name: DEBUG -- Display IPv6 'AAAA' record for {{ VMInfo.VMName }}
       ansible.builtin.pause:
         seconds: 1
         prompt: |
-          ======================= Display {{ item.VMName }} DNS IPv6 "AAAA" Record ===========================
+          ======================= Display {{ VMInfo.VMName }} DNS IPv6 "AAAA" Record ===========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
                                                  Zone: {{ Common.DNS.Domain }}
 
-                                               Record: {{ item.VMName }}
+                                               Record: {{ VMInfo.VMName }}
                                                 Value: {{ item.OS.Network.Adapters[0].IPv6.Address }}
 
           =================================================================================================
@@ -718,15 +721,15 @@
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv6
         - item.Deployment.UpdateDNS
-        - item.OS.Network.Adapters[0].IPv6.Address is defined
+        - item.OS.Network.Adapters[0].IPv6.Address is not none
 
-    - name: IPv6 'AAAA' records for {{ item.VMName }}
+    - name: IPv6 'AAAA' records for {{ VMInfo.VMName }}
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv6 }}"
         type: AAAA
         protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ Common.DNS.Domain }}"
-        record: "{{ item.VMName }}"
+        record: "{{ VMInfo.VMName }}"
         value: "{{ item.OS.Network.Adapters[0].IPv6.Address }}"
         state: present
       ignore_errors: true
@@ -734,20 +737,20 @@
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv6
         - item.Deployment.UpdateDNS
-        - item.OS.Network.Adapters[0].IPv6.Address is defined
+        - item.OS.Network.Adapters[0].IPv6.Address is not none
 
-    - name: DEBUG -- Display IPv6 'PTR' record for {{ item.VMName }}
+    - name: DEBUG -- Display IPv6 'PTR' record for {{ VMInfo.VMName }}
       ansible.builtin.pause:
         seconds: 1
         prompt: |
-          ======================== Display {{ item.VMName }} DNS IPv6 "PTR" Record ===========================
+          ======================== Display {{ VMInfo.VMName }} DNS IPv6 "PTR" Record ===========================
 
                                 Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
                                            DNS Server: {{ Common.DNS.Server1.IPv6 }}
                                                  Zone: {{ ipv6_reverse_zone }}
 
                                                Record: {{ item.OS.Network.Adapters[0].IPv6.Address | ansible.utils.ipaddr('revdns') }}
-                                                Value: {{ item.VMName }}.{{ Common.DNS.Domain }}.
+                                                Value: {{ VMInfo.VMName }}.{{ Common.DNS.Domain }}.
 
           =================================================================================================
       when:
@@ -756,23 +759,23 @@
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv6
         - item.Deployment.UpdateDNS
-        - item.OS.Network.Adapters[0].IPv6.Address is defined
+        - item.OS.Network.Adapters[0].IPv6.Address is not none
 
-    - name: IPv6 'PTR' records for {{ item.VMName }}
+    - name: IPv6 'PTR' records for {{ VMInfo.VMName }}
       community.general.nsupdate:
         server: "{{ Common.DNS.Server1.IPv6 }}"
         type: PTR
         protocol: "{{ Common.DNS.Protocol }}"
         zone: "{{ ipv6_reverse_zone }}"
         record: "{{ item.OS.Network.Adapters[0].IPv6.Address | ansible.utils.ipaddr('revdns') }}"
-        value: "{{ item.VMName }}.{{ Common.DNS.Domain }}."
+        value: "{{ VMInfo.VMName }}.{{ Common.DNS.Domain }}."
         state: present
       ignore_errors: true
       when:
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv6
         - item.Deployment.UpdateDNS
-        - item.OS.Network.Adapters[0].IPv6.Address is defined
+        - item.OS.Network.Adapters[0].IPv6.Address is not none
 
 
 ##
@@ -782,13 +785,13 @@
 #
 # Install Packages
 #
-    - name: Update repositories on {{ item.VMName }} VM
+    - name: Update repositories on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
         password: "{{ VMTarget.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        vm_id: "{{ item.VMName }}"
+        vm_id: "{{ VMInfo.VMName }}"
         vm_username: "{{ item.OS.Credential.User }}"
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
@@ -797,13 +800,13 @@
         - vm_deployed_status is failed
         - item.Deploy
 
-    - name: Install Linux packages on {{ item.VMName }} VM
+    - name: Install Linux packages on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
         password: "{{ VMTarget.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        vm_id: "{{ item.VMName }}"
+        vm_id: "{{ VMInfo.VMName }}"
         vm_username: "{{ item.OS.Credential.User }}"
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
@@ -820,13 +823,13 @@
 #
 # Execute commands
 #
-    - name: Execute commands Install Linux packages on {{ item.VMName }} VM
+    - name: Execute commands Install Linux packages on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
         password: "{{ VMTarget.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        vm_id: "{{ item.VMName }}"
+        vm_id: "{{ VMInfo.VMName }}"
         vm_username: "{{ item.OS.Credential.User }}"
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
@@ -839,13 +842,13 @@
         - item.Deploy
         - item.OS.PostInstall.Commands is defined
 
-    - name: Flush unwritten data to disk on {{ item.VMName }} VM
+    - name: Flush unwritten data to disk on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
         password: "{{ VMTarget.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        vm_id: "{{ item.VMName }}"
+        vm_id: "{{ VMInfo.VMName }}"
         vm_username: "{{ item.OS.Credential.User }}"
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
@@ -855,18 +858,65 @@
         - item.Deploy
 
 
-#
-# Reboot VM
-#
-    - name: Reboot {{ item.VMName }} VM
+##
+## Shutdown down VM and eject the CD-ROM
+##
+    - name: Shutdown {{ VMInfo.VMName }} VM
       community.vmware.vmware_guest:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
         password: "{{ VMTarget.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        name: "{{ item.VMName }}"
-        state: rebootguest
+        name: "{{ VMInfo.VMName }}"
+        state: shutdownguest
       when:
-        - item.OS.PostInstall.Reboot
         - vm_deployed_status is failed
         - item.Deploy
+
+    - name: Wait for {{ VMInfo.VMName }} VM to be Powered Off
+      community.vmware.vmware_guest_info:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        datacenter: "{{ VMTarget.DataCenter }}"
+        name: "{{ VMInfo.VMName }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        tags: false
+        tag_details: false
+      register: result
+      until: result.instance.hw_power_status == "poweredOff"
+      retries: 60
+      delay: 10
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Disconnect CDROM on {{ VMInfo.VMName }} VM
+      community.vmware.vmware_guest:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ VMInfo.VMName }}"
+        cdrom:
+          - controller_number: 0
+            unit_number: 0
+            type: iso
+            iso_path: "[{{ VMTarget.Datastore }}] {{ VMTarget.ISOFolder }}/{{ VMTarget.SoftwareFile }}"
+            state: absent
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Start the {{ VMInfo.VMName }} VM
+      community.vmware.vmware_guest_powerstate:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ VMInfo.VMName }}"
+        state: powered-on
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+

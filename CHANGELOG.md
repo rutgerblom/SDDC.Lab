@@ -2688,3 +2688,5 @@
 ### Added by Luis Chanu
   - Initial commit of sucessful deployment of ```Deploy Generic VM``` feature with Ubuntu Server v24.04.
   - Not ready for public use.
+  - Tested using 'bios' deployment with Ubuntu Server 24.04, and working.  Updates still needed for 'efi'.
+  - Added dynamic naming of VMName and FQDN for VM.
