@@ -10,7 +10,9 @@
 ##  --2) After deployment, eject ISO from CD-ROM drive
 ##    3) Delete ISO image in ESXi datastore after deployment
 ##    4) Apply NSX Tags
-##    5) Random VMName if field is left empty
+##  --5) Random VMName if field is left empty
+##    6) Delete 'BOOT' directory in isos folder
+##    7) Add 'bios' and 'efi' key for OS Adapters
 ##
 ---
     - name: Include_Tasks_DeployGenericVm_Playbook
@@ -88,14 +90,14 @@
           ISOFolder: "{{ Target.ISOFolder }}"
           TempFolder: "{{ Target.TempFolder }}"
           TemplateFolder: "{{ Target.TemplateFolder }}"
-          Installer: "{{ SiteCode }}-Installer-VM"
+          Installer: "{{ SiteCode }}-Installer-VM-{{ '%03d'|format(loop_idx|int) }}"
           Template: "{{ Template[item.Software.Vendor][item.Software.Version].Template }}"
           SoftwareDirectory: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].Local }}"
           SoftwareFile: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version].File }}"
           SoftwareURL: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].URL }}"
         VMInfo:
-          VMName: "{% if item.VMName is not none %}{{ item.VMName }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop.index|int) }}{% endif %}"
-          FQDN:   "{% if item.VMName is not none %}{{ item.VMName }}.{{ Common.DNS.Domain }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop.index|int) }}.{{ Common.DNS.Domain }}{% endif %}"
+          VMName: "{% if item.VMName is not none %}{{ item.VMName }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}{% endif %}"
+          FQDN:   "{% if item.VMName is not none %}{{ item.VMName }}.{{ Common.DNS.Domain }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}.{{ Common.DNS.Domain }}{% endif %}"
       when:
         - item.Deployment.Target == "PHYSICAL"
 
@@ -112,14 +114,14 @@
           ISOFolder: "{{ Target.ISOFolder }}"
           TempFolder: "{{ Target.TempFolder }}"
           TemplateFolder: "{{ Target.TemplateFolder }}"
-          Installer: "{{ SiteCode }}-Installer-VM"
+          Installer: "{{ SiteCode }}-Installer-VM-{{ '%03d'|format(loop_idx+1|int) }}"
           Template: "{{ Template[item.Software.Vendor][item.Software.Version].Template }}"
           SoftwareDirectory: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].Local }}"
           SoftwareFile: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version].File }}"
           SoftwareURL: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].URL }}"
         VMInfo:
-          VMName: "{% if item.VMName is not none %}{{ item.VMName }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(ansible_loop.index|int) }}{% endif %}"
-          FQDN:   "{% if item.VMName is not none %}{{ item.VMName }}.{{ Common.DNS.Domain }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(ansible_loop.index|int) }}.{{ Common.DNS.Domain }}{% endif %}"
+          VMName: "{% if item.VMName is not none %}{{ item.VMName }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}{% endif %}"
+          FQDN:   "{% if item.VMName is not none %}{{ item.VMName }}.{{ Common.DNS.Domain }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}.{{ Common.DNS.Domain }}{% endif %}"
       when:
         - item.Deployment.Target == "NESTED"
 
@@ -172,15 +174,6 @@
       ignore_errors: true
       no_log: true
       when:
-        - item.Deploy
-
-### DELETE ME ###
-    - name: Create Linux adapter list
-      ansible.builtin.set_fact:
-        OS_Adapters: [ens33, ens35, ens36, ens37, ens38, ens39, ens40, ens41, ens42, ens43]
-      when:
-        - false
-        - vm_deployed_status is failed
         - item.Deploy
 
     - name: Generate the runbook
@@ -394,11 +387,10 @@
         name: "{{ VMInfo.VMName }}"
         schema: vsphere
       register: vm_facts
-      until: vm_facts.instance.guest.hostName is search(item.FQDN)
+      until: vm_facts.instance.guest.hostName is search(VMInfo.FQDN)
       retries: 180
       delay: 5
       when:
-        - false
         - vm_deployed_status is failed
         - item.Deploy
 
