@@ -7,7 +7,7 @@
 ##
 ##  ToDo Items:
 ##    1) If deployed via DHCP, need to obtain the dynamic IP address and then use that to populate DNS.
-##    2) After deployment, eject ISO from CD-ROM drive
+##  --2) After deployment, eject ISO from CD-ROM drive
 ##    3) Delete ISO image in ESXi datastore after deployment
 ##    4) Apply NSX Tags
 ##    5) Random VMName if field is left empty
@@ -59,8 +59,6 @@
 
                     Virtual Machine Deployment Target: {{ item.Deployment.Target }}
 
-                                 Virtual Machine Name: {{ item.VMName }}
-                                 Virtual Machine FQDN: {{ item.FQDN }}
                                       Software Vendor: {{ item.Software.Vendor }}
                                      Software Product: {{ item.Software.Product }}
                                      Software Version: {{ item.Software.Version }}
@@ -95,7 +93,10 @@
           SoftwareDirectory: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].Local }}"
           SoftwareFile: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version].File }}"
           SoftwareURL: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].URL }}"
-      when: 
+        VMInfo:
+          VMName: "{% if item.VMName is not none %}{{ item.VMName }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-VM-{{ '%03d'|format(loop.index|int) }}{% endif %}"
+          FQDN:   "{% if item.VMName is not none %}{{ item.VMName }}.{{ Common.DNS.Domain }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-VM-{{ '%03d'|format(loop.index|int) }}.{{ Common.DNS.Domain }}{% endif %}"
+      when:
         - item.Deployment.Target == "PHYSICAL"
 
     - name: Set deployment variables for NESTED target (Nested Pod vCenter)
@@ -116,16 +117,22 @@
           SoftwareDirectory: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].Local }}"
           SoftwareFile: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version].File }}"
           SoftwareURL: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].URL }}"
+        VMInfo:
+          VMName: "{% if item.VMName is not none %}{{ item.VMName }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-VM-{{ '%03d'|format(ansible_loop.index|int) }}{% endif %}"
+          FQDN:   "{% if item.VMName is not none %}{{ item.VMName }}.{{ Common.DNS.Domain }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-VM-{{ '%03d'|format(ansible_loop.index|int) }}.{{ Common.DNS.Domain }}{% endif %}"
       when:
         - item.Deployment.Target == "NESTED"
 
-    - name: DEBUG -- Display VMTarget Variables (Pause)
+    - name: DEBUG -- Display VMTarget & VMInfo Variables (Pause)
       ansible.builtin.pause:
         seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
         prompt: |
-          ================================= Display VMTarget Variables ====================================
+          ================================= Display VMTarget & VMInfo Variables ====================================
 
                     item.Deployment.Target: {{ item.Deployment.Target }}
+
+                             VMInfo.VMName: {{ VMInfo.VMName }}
+                               VMInfo.FQDN: {{ VMInfo.FQDN }}
 
                       item.Software.Vendor: {{ item.Software.Vendor }}
                      item.Software.Product: {{ item.Software.Product }}
@@ -332,8 +339,6 @@
         - vm_deployed_status is failed
         - item.Deploy
 
-##### STOPPED HERE -- NEED TO CONTINUE DEFINING DEFAULT VALUES BELOW ######
-
     - name: Deploy {{ item.VMName }} VM
       community.vmware.vmware_guest:
         hostname: "{{ VMTarget.FQDN }}"
@@ -390,12 +395,18 @@
         schema: vsphere
       register: vm_facts
       until: vm_facts.instance.guest.hostName is search(item.FQDN)
-      retries: 45
-      delay: 60
+      retries: 180
+      delay: 5
       when:
+        - false
         - vm_deployed_status is failed
         - item.Deploy
 
+
+
+##
+## Continue with post-installation configuration items
+##
     - name: Set password for the {{ item.OS.Credential.User }} user
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
@@ -855,18 +866,65 @@
         - item.Deploy
 
 
-#
-# Reboot VM
-#
-    - name: Reboot {{ item.VMName }} VM
+##
+## Shutdown down VM and eject the CD-ROM
+##
+    - name: Shutdown {{ item.VMName }} VM
       community.vmware.vmware_guest:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
         password: "{{ VMTarget.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         name: "{{ item.VMName }}"
-        state: rebootguest
+        state: shutdownguest
       when:
-        - item.OS.PostInstall.Reboot
         - vm_deployed_status is failed
         - item.Deploy
+
+    - name: Wait for {{ item.VMName }} VM to be Powered Off
+      community.vmware.vmware_guest_info:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        datacenter: "{{ VMTarget.DataCenter }}"
+        name: "{{ item.VMName }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        tags: false
+        tag_details: false
+      register: result
+      until: result.instance.hw_power_status == "poweredOff"
+      retries: 60
+      delay: 10
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Disconnect CDROM on {{ item.VMName }} VM
+      community.vmware.vmware_guest:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ item.VMName }}"
+        cdrom:
+          - controller_number: 0
+            unit_number: 0
+            type: iso
+            iso_path: "[{{ VMTarget.Datastore }}] {{ VMTarget.ISOFolder }}/{{ VMTarget.SoftwareFile }}"
+            state: absent
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Start the {{ item.VMName }} VM
+      community.vmware.vmware_guest_powerstate:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ item.VMName }}"
+        state: powered-on
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+

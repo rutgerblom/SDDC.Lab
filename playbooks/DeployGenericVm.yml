@@ -34,8 +34,10 @@
 ##
 #   TODO: Update descriptions to identify which are OPTIONAL or MANDATORY, Default value, and possible values.
     VMs:
-      - VMName: "{{ SiteCode}}-TestVM-001"                                # If not specified, a randon name will be assigned in the following format:  "{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-VM-{{ 999999 | ansible.builtin.random }}"
-        FQDN: "{{ SiteCode}}-TestVM-001.{{ Common.DNS.Domain }}"
+      - VMName:
+        FQDN:
+#      - VMName: "{{ SiteCode}}-TestVM-001"                            # OPTIONAL - If not specified, the following will be used:  "{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-VM-{{ 999999 | ansible.builtin.random }}"
+#        FQDN: "{{ SiteCode}}-TestVM-001.{{ Common.DNS.Domain }}"
         Deploy: true                                                  # Boolean to control if the VM is to be deployed or not
         Deployment:
           Target: NESTED                                              # PHYSICAL or NESTED
@@ -45,7 +47,7 @@
         Software:
           Vendor: Ubuntu
           Product: Server
-          Version: "24.04"
+          Version: "24.04"                                            # Must be a string (i.e., Surrounded by quotes)
         Annotation: "{{ Common.Annotation }}"
         VMOptions:
           GeneralOptions:
@@ -207,10 +209,10 @@
                   Prefix:
                   Gateway:
           PostInstall:
-            Reboot: true                                              # Force reboot after installation: true or false
             SSH:
               Server:
-                Install: yes
+                Install: true
+                AllowPW: true
             Packages:
               - traceroute
               - dnsutils
@@ -284,6 +286,8 @@
       ansible.builtin.include_tasks:
         file: Include_Tasks_DeployGenericVm.yml
       loop: "{{ VMs }}"
+      loop_control:
+        extended: true
       when:
         - VMs is defined
         - VMs | length > 0
