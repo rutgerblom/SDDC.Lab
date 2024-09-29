@@ -41,6 +41,7 @@
           Cluster: ComputeA                                           # Only applicable for NESTED
           VMFolder:
           UpdateDNS: true                                             # REQUIRED - Only the first interface is added to DNS, and it must be configured as a static IP.  DHCP is not added to DNS.
+          RemoveCDROMDevice: true                                     # REQUIRED - Boolean control if the CDROM is removed from the VM Hardware after deployment
         Software:
           Vendor: Ubuntu                                              # REQUIRED
           Product: Server                                             # REQUIRED
@@ -50,7 +51,7 @@
           GeneralOptions:
             GuestOS: ubuntu64Guest
           BootOptions:
-            Firmware: bios                                            # OPTIONAL - Options are 'bios' or 'efi'
+            Firmware: efi                                             # OPTIONAL - Options are 'bios' or 'efi'
         HardwareSettings:
           Version: latest                                             # Virtual Machine HW version.  If not specified, 'latest' will be used.
           NestedVirtualization: true                                  # Boolean to control the enabling of nested virtualization support

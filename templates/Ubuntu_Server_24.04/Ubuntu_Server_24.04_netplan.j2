@@ -8,7 +8,7 @@ network:
   version: 2
   ethernets:
 {% for adapter in item.OS.Network.Adapters %}
-    {{ os_hardware.network.adapters[ loop.index0 ] }}:
+    {{ os_hardware[item.VMOptions.BootOptions.Firmware].network.adapters[ loop.index0 ] }}:
 {%   if adapter.IPv4.Address is not none %}
       dhcp4: no
 {%   else %}

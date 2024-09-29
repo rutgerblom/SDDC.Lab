@@ -12,7 +12,7 @@ autoinstall:
   network:
     version: 2
     ethernets:
-      {{ os_hardware.network.adapters[0] }}:
+      {{ os_hardware[item.VMOptions.BootOptions.Firmware].network.adapters[0] }}:
 {% if item.OS.Network.Adapters[0].IPv4.Address is not none %}
         dhcp4: no
 {% else %}

@@ -908,6 +908,24 @@
         - vm_deployed_status is failed
         - item.Deploy
 
+    - name: Remove CDROM device from {{ VMInfo.VMName }} VM
+      community.vmware.vmware_guest:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ VMInfo.VMName }}"
+        cdrom:
+          - controller_number: 0
+            unit_number: 0
+            controller_type: sata
+            type: none
+            state: absent
+      when:
+        - vm_deployed_status is failed
+        - item.Deployment.RemoveCDROMDevice
+        - item.Deploy
+
     - name: Start the {{ VMInfo.VMName }} VM
       community.vmware.vmware_guest_powerstate:
         hostname: "{{ VMTarget.FQDN }}"
