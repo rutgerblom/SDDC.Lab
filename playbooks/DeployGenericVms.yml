@@ -1,7 +1,7 @@
 ##
 ##      Project: SDDC.Lab
 ##      Authors: Luis Chanu & Rutger Blom
-##     Filename: playbooks/DeployGenericVm.yml
+##     Filename: playbooks/DeployGenericVms.yml
 ##
 ##  Description: This playbook acts as a wrapper.  It loops through the VMs datastructure, provisioning 
 ##               each VM, one-by-one, by "sending" the VM object to the "Include_Tasks_DeployGenericVm.yml" playbook.
@@ -23,7 +23,7 @@
 ##   1) Add Ubuntu section in Templates.yml for different versions of Ubuntu.
 ##
 ---
-- name: DeployGenericVm.yml
+- name: DeployGenericVms.yml
   hosts: localhost
   vars_files:
     - ../software.yml
@@ -41,6 +41,7 @@
           Cluster: ComputeA                                           # Only applicable for NESTED
           VMFolder:
           UpdateDNS: true                                             # REQUIRED - Only the first interface is added to DNS, and it must be configured as a static IP.  DHCP is not added to DNS.
+          RemoveCDROMDevice: true                                     # REQUIRED - Boolean control if the CDROM is removed from the VM Hardware after deployment
         Software:
           Vendor: Ubuntu                                              # REQUIRED
           Product: Server                                             # REQUIRED
@@ -50,7 +51,193 @@
           GeneralOptions:
             GuestOS: ubuntu64Guest
           BootOptions:
-            Firmware: bios                                            # OPTIONAL - Options are 'bios' or 'efi'
+            Firmware: efi                                             # OPTIONAL - Options are 'bios' or 'efi'
+        HardwareSettings:
+          Version: latest                                             # Virtual Machine HW version.  If not specified, 'latest' will be used.
+          NestedVirtualization: true                                  # Boolean to control the enabling of nested virtualization support
+          CPU:
+            Quantity: 2
+            CoresPerSocket: 2
+            Reservation: 0
+            SharesLevel: normal                                       # low, normal, high
+            AllowHotAdd: false                                             # Boolean to control whether to allow virtual CPUs to be added while VM is running.
+            AllowHotRemove: false                                          # Boolean
+          Memory:
+            Size: 8192                                                # In MB
+            Reservation: 0
+            SharesLevel: normal                                       # low, normal, high
+            AllowHotAdd: false                                        # Boolean to control whether to allow virtual memory to be added while VM is running.
+          Storage:
+            Controller: paravirtual
+            Disks:
+              - Size: 80                                              # In GB
+                DiskProvisioning: "{{ Common.DiskProvisioning }}"
+                Controller:
+                  Type: paravirtual                                   # OPTIONAL - Options: paravirtual, buslogic, lsilogic, lsilogicsas, sata, nvme
+                  Number:                                             # OPTIONAL - If not specified, it is auto assigned
+          Network:
+            Adapters:
+              - StartConnected: true
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+              - StartConnected: false
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+              - StartConnected: false
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+              - StartConnected: false
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+              - StartConnected: false
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+              - StartConnected: false
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+              - StartConnected: false
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+              - StartConnected: false
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+              - StartConnected: false
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+              - StartConnected: false
+                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+                PortGroup: VMNetwork                                  # MANDATORY
+        NSXT:
+          Tags:
+            - Tag: Auto-Deployed
+              Scope: SDDC.Lab
+        OS:
+          Credential:
+            User: ubuntu
+            Password: "{{ Common.Password.Nested }}"
+          Locale: en_US
+          Keyboard:
+            Layout: us
+            Variant: intl
+          Network:
+            DNS:
+              Domain: "{{ Common.DNS.Domain }}"
+              Servers:                                                # List of DNS Servers
+                - "{{ Common.DNS.Server1.IPv4 }}"
+                - "{{ Common.DNS.Server1.IPv6 }}"
+            Adapters:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix: 
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+              - IPv4:
+                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
+                  Prefix:
+                  Gateway:
+                IPv6:
+                  Address:                                            # Use SLAAC/DHCPv6 if not specified
+                  Prefix:
+                  Gateway:
+          PostInstall:
+            SSH:
+              Server:
+                Install: true
+                AllowPW: true
+            Packages:
+              - traceroute
+              - dnsutils
+            Directories:
+              - Name:
+                Path:
+                Owner:
+            Commands:                                                    # List of commands to run post install to configure the VM
+              - ls
+      - VMName:                                                       # OPTIONAL - If not specified, the following is used:  "{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}"
+        Deploy: true                                                  # REQUIRED - Boolean to control if the VM is to be deployed or not
+        Deployment:
+          Target: NESTED                                              # REQUIRED - PHYSICAL or NESTED
+          Cluster: ComputeA                                           # Only applicable for NESTED
+          VMFolder:
+          UpdateDNS: true                                             # REQUIRED - Only the first interface is added to DNS, and it must be configured as a static IP.  DHCP is not added to DNS.
+          RemoveCDROMDevice: true                                     # REQUIRED - Boolean control if the CDROM is removed from the VM Hardware after deployment
+        Software:
+          Vendor: Ubuntu                                              # REQUIRED
+          Product: Server                                             # REQUIRED
+          Version: "24.04"                                            # REQUIRED - Must be a string (i.e., Surrounded by quotes)
+        Annotation: "{{ Common.Annotation }}"
+        VMOptions:
+          GeneralOptions:
+            GuestOS: ubuntu64Guest
+          BootOptions:
+            Firmware: efi                                             # OPTIONAL - Options are 'bios' or 'efi'
         HardwareSettings:
           Version: latest                                             # Virtual Machine HW version.  If not specified, 'latest' will be used.
           NestedVirtualization: true                                  # Boolean to control the enabling of nested virtualization support

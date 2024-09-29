@@ -2690,3 +2690,14 @@
   - Not ready for public use.
   - Tested using 'bios' deployment with Ubuntu Server 24.04, and working.  Updates still needed for 'efi'.
   - Added dynamic naming of VMName and FQDN for VM.
+
+## Dev-v8.0.0 28-SEPTEMBER-2024
+
+### Added by Luis Chanu
+  - Changes to ```Deploy Generic VM``` feature:
+    - Added ```efi``` support.
+    - Added the ability to remove the CDROM drive from the deployed VM.
+    - Renamed ```DeployGenericVm.yml``` to ```DeployGenericVms.yml```
+    - Added unique media naming to support multiple VMs being deployed in parallel
+    - Added notification to the user if the VM already exists
+    - Added DNS cache refresh (i.e. PING request) before various steps to mitigate failures due to URL reachability errors.

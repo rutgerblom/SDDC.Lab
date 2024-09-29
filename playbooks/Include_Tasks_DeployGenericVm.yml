@@ -6,13 +6,14 @@
 ##  Description: This file does the 'heavy lifting' of actually performing the deployment of the Generic VM.
 ##
 ##  ToDo Items:
-##    1) If deployed via DHCP, need to obtain the dynamic IP address and then use that to populate DNS.
+##  XX1) If deployed via DHCP, need to obtain the dynamic IP address and then use that to populate DNS.
 ##  --2) After deployment, eject ISO from CD-ROM drive
-##    3) Delete ISO image in ESXi datastore after deployment
+##  --3) Delete ISO image in ESXi datastore after deployment
 ##    4) Apply NSX Tags
 ##  --5) Random VMName if field is left empty
-##    6) Delete 'BOOT' directory in isos folder
-##    7) Add 'bios' and 'efi' key for OS Adapters
+##  --6) Delete 'BOOT' directory in isos folder
+##  --7) Add 'bios' and 'efi' key for OS Adapters
+##    8) Add Jinja2 loop variables in VM structure to support user-specific post-deployment rendering
 ##
 ---
     - name: Include_Tasks_DeployGenericVm_Playbook
@@ -90,11 +91,12 @@
           ISOFolder: "{{ Target.ISOFolder }}"
           TempFolder: "{{ Target.TempFolder }}"
           TemplateFolder: "{{ Target.TemplateFolder }}"
-          Installer: "{{ SiteCode }}-Installer-VM-{{ '%03d'|format(loop_idx|int) }}"
+          Installer: "{{ SiteCode }}-Installer-VM-{{ '%03d'|format(loop_idx+1|int) }}"
           Template: "{{ Template[item.Software.Vendor][item.Software.Version].Template }}"
           SoftwareDirectory: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].Local }}"
           SoftwareFile: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version].File }}"
           SoftwareURL: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].URL }}"
+          SoftwareFileToDeployFrom: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version].File }}-{{ '%03d'|format(loop_idx+1|int) }}"   # Generate unique filename to deploy multiple VMs in parallel
         VMInfo:
           VMName: "{% if item.VMName is not none %}{{ item.VMName }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}{% endif %}"
           FQDN:   "{% if item.VMName is not none %}{{ item.VMName }}.{{ Common.DNS.Domain }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}.{{ Common.DNS.Domain }}{% endif %}"
@@ -119,6 +121,7 @@
           SoftwareDirectory: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].Local }}"
           SoftwareFile: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version].File }}"
           SoftwareURL: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].URL }}"
+          SoftwareFileToDeployFrom: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version].File }}-{{ '%03d'|format(loop_idx+1|int) }}"   # Generate unique filename to deploy multiple VMs in parallel
         VMInfo:
           VMName: "{% if item.VMName is not none %}{{ item.VMName }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}{% endif %}"
           FQDN:   "{% if item.VMName is not none %}{{ item.VMName }}.{{ Common.DNS.Domain }}{% else %}{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}.{{ Common.DNS.Domain }}{% endif %}"
@@ -131,28 +134,33 @@
         prompt: |
           ================================= Display VMTarget & VMInfo Variables ====================================
 
-                    item.Deployment.Target: {{ item.Deployment.Target }}
+                         item.Deployment.Target: {{ item.Deployment.Target }}
 
-                             VMInfo.VMName: {{ VMInfo.VMName }}
-                               VMInfo.FQDN: {{ VMInfo.FQDN }}
+                                  VMInfo.VMName: {{ VMInfo.VMName }}
+                                    VMInfo.FQDN: {{ VMInfo.FQDN }}
 
-                      item.Software.Vendor: {{ item.Software.Vendor }}
-                     item.Software.Product: {{ item.Software.Product }}
-                     item.Software.Version: {{ item.Software.Version }}
+                           item.Software.Vendor: {{ item.Software.Vendor }}
+                          item.Software.Product: {{ item.Software.Product }}
+                          item.Software.Version: {{ item.Software.Version }}
 
-                         VMTarget.Template: {{ VMTarget.Template }}
+                              VMTarget.Template: {{ VMTarget.Template }}
 
-                             VMTarget.FQDN: {{ VMTarget.FQDN }}
-                             VMTarget.User: {{ VMTarget.User }}
-                         VMTarget.Password: {{ VMTarget.Password }}
-                       VMTarget.DataCenter: {{ VMTarget.DataCenter }}
-                          VMTarget.Cluster: {{ VMTarget.Cluster }}
-                        VMTarget.Datastore: {{ VMTarget.Datastore }}
-                         VMTarget.VMFolder: {{ VMTarget.VMFolder }}
-                        VMTarget.ISOFolder: {{ VMTarget.ISOFolder }}
-                        VMTarget.Installer: {{ VMTarget.Installer }}
-                       VMTarget.TempFolder: {{ VMTarget.TempFolder }}
-                   VMTarget.TemplateFolder: {{ VMTarget.TemplateFolder }}
+                                  VMTarget.FQDN: {{ VMTarget.FQDN }}
+                                  VMTarget.User: {{ VMTarget.User }}
+                              VMTarget.Password: {{ VMTarget.Password }}
+                            VMTarget.DataCenter: {{ VMTarget.DataCenter }}
+                               VMTarget.Cluster: {{ VMTarget.Cluster }}
+                             VMTarget.Datastore: {{ VMTarget.Datastore }}
+                              VMTarget.VMFolder: {{ VMTarget.VMFolder }}
+                             VMTarget.ISOFolder: {{ VMTarget.ISOFolder }}
+                             VMTarget.Installer: {{ VMTarget.Installer }}
+                            VMTarget.TempFolder: {{ VMTarget.TempFolder }}
+                        VMTarget.TemplateFolder: {{ VMTarget.TemplateFolder }}
+
+                           VMTarget.SoftwareURL: {{ VMTarget.SoftwareURL }}
+                     VMTarget.SoftwareDirectory: {{ VMTarget.SoftwareDirectory }}
+                          VMTarget.SoftwareFile: {{ VMTarget.SoftwareFile }}
+              VMTarget.SoftwareFileToDeployFrom: {{ VMTarget.SoftwareFileToDeployFrom }}
 
           =================================================================================================
       when:
@@ -175,6 +183,21 @@
       no_log: true
       when:
         - item.Deploy
+
+    - name: Notify user if {{ VMInfo.VMName }} VM exists
+      ansible.builtin.pause:
+        seconds: 10
+        prompt: |
+          ==================================== NOTICE ====================================
+
+          It appears as though a VM named '{{ VMInfo.VMName }}' already exists.
+
+          Because of this, the VM will NOT be deployed.  Please verify a previous
+          deployment of the VM wasn't accidentally not deleted/removed.
+
+          ================================================================================
+      when:
+        - vm_deployed_status is not failed
 
     - name: Generate the runbook
       ansible.builtin.set_fact:
@@ -296,7 +319,7 @@
     - name: Create custom Ubuntu ISO
       ansible.builtin.command: "xorriso -as mkisofs -r \
                                 -V '{{ item.Software.Vendor }} {{ item.Software.Version }} AUTO (EFIBIOS)' \
-                                -o {{ VMTarget.TempFolder }}/{{ VMTarget.SoftwareFile }} \
+                                -o {{ VMTarget.TempFolder }}/{{ VMTarget.SoftwareFileToDeployFrom }} \
                                 --grub2-mbr {{ VMTarget.TempFolder }}/isos/BOOT/1-Boot-NoEmul.img  \
                                 -partition_offset 16 \
                                 --mbr-force-bootable \
@@ -318,6 +341,14 @@
         - vm_deployed_status is failed
         - item.Deploy
 
+    - name: Refresh DNS cache entry and verify reachability to {{ VMTarget.FQDN }}
+      ansible.builtin.shell:
+        cmd: "ping -c 3 {{ VMTarget.FQDN }}"
+      register: result
+      until: result.stdout is search(" 0% packet loss")
+      retries: 5
+      delay: 3
+
     - name: Upload the custom Ubuntu ISO to the datastore
       community.vmware.vsphere_copy:
         hostname: "{{ VMTarget.FQDN }}"
@@ -325,9 +356,9 @@
         password: "{{ VMTarget.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         datacenter: "{{ VMTarget.DataCenter }}"
-        src: "{{ VMTarget.TempFolder }}/{{ VMTarget.SoftwareFile }}"
+        src: "{{ VMTarget.TempFolder }}/{{ VMTarget.SoftwareFileToDeployFrom }}"
         datastore: "{{ VMTarget.Datastore }}"
-        path: "{{ VMTarget.ISOFolder }}/{{ VMTarget.SoftwareFile }}"
+        path: "{{ VMTarget.ISOFolder }}/{{ VMTarget.SoftwareFileToDeployFrom }}"
       when:
         - vm_deployed_status is failed
         - item.Deploy
@@ -366,7 +397,7 @@
           - controller_number: 0
             unit_number: 0
             type: iso
-            iso_path: "[{{ VMTarget.Datastore }}] {{ VMTarget.ISOFolder }}/{{ VMTarget.SoftwareFile }}"
+            iso_path: "[{{ VMTarget.Datastore }}] {{ VMTarget.ISOFolder }}/{{ VMTarget.SoftwareFileToDeployFrom }}"
             state: present
         annotation: |
                     {{ item.Annotation }}
@@ -388,8 +419,8 @@
         schema: vsphere
       register: vm_facts
       until: vm_facts.instance.guest.hostName is search(VMInfo.FQDN)
-      retries: 180
-      delay: 5
+      retries: 360
+      delay: 10
       when:
         - vm_deployed_status is failed
         - item.Deploy
@@ -556,7 +587,7 @@
 
     - name: Delete the custom Ubuntu ISO file
       ansible.builtin.file:
-        path: "{{ VMTarget.TempFolder }}/{{ VMTarget.SoftwareFile }}"
+        path: "{{ VMTarget.TempFolder }}/{{ VMTarget.SoftwareFileToDeployFrom }}"
         state: absent
       when:
         - not DEBUG.KeepInstallerFiles
@@ -902,10 +933,28 @@
           - controller_number: 0
             unit_number: 0
             type: iso
-            iso_path: "[{{ VMTarget.Datastore }}] {{ VMTarget.ISOFolder }}/{{ VMTarget.SoftwareFile }}"
+            iso_path: "[{{ VMTarget.Datastore }}] {{ VMTarget.ISOFolder }}/{{ VMTarget.SoftwareFileToDeployFrom }}"
             state: absent
       when:
         - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Remove CDROM device from {{ VMInfo.VMName }} VM
+      community.vmware.vmware_guest:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ VMInfo.VMName }}"
+        cdrom:
+          - controller_number: 0
+            unit_number: 0
+            controller_type: sata
+            type: none
+            state: absent
+      when:
+        - vm_deployed_status is failed
+        - item.Deployment.RemoveCDROMDevice
         - item.Deploy
 
     - name: Start the {{ VMInfo.VMName }} VM
@@ -919,4 +968,41 @@
       when:
         - vm_deployed_status is failed
         - item.Deploy
+
+
+##
+## Deployment Complete - Cleanup environment
+##
+
+    - name: Refresh DNS cache entry and verify reachability to {{ VMTarget.FQDN }}
+      ansible.builtin.shell:
+        cmd: "ping -c 3 {{ VMTarget.FQDN }}"
+      register: result
+      until: result.stdout is search(" 0% packet loss")
+      retries: 5
+      delay: 3
+
+    - name: Delete custom built ISO from the datastore
+      community.vmware.vsphere_file:
+        hostname: '{{ VMTarget.FQDN }}'
+        username: '{{ VMTarget.User }}'
+        password: '{{ VMTarget.Password }}'
+        datacenter: "{{ VMTarget.DataCenter }}"
+        datastore: "{{ VMTarget.Datastore }}"
+        path: "{{ VMTarget.ISOFolder }}/{{ VMTarget.SoftwareFileToDeployFrom }}"
+        state: absent
+      when:
+        - DEBUG.KeepInstallerFiles is false
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Delete local installer directory
+      ansible.builtin.file:
+        path: "{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}"
+        state: absent
+      when:
+        - DEBUG.KeepInstallerFiles is false
+        - vm_deployed_status is failed
+        - item.Deploy
+
 
