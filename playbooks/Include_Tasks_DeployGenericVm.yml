@@ -91,7 +91,7 @@
           ISOFolder: "{{ Target.ISOFolder }}"
           TempFolder: "{{ Target.TempFolder }}"
           TemplateFolder: "{{ Target.TemplateFolder }}"
-          Installer: "{{ SiteCode }}-Installer-VM-{{ '%03d'|format(loop_idx|int) }}"
+          Installer: "{{ SiteCode }}-Installer-VM-{{ '%03d'|format(loop_idx+1|int) }}"
           Template: "{{ Template[item.Software.Vendor][item.Software.Version].Template }}"
           SoftwareDirectory: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].Local }}"
           SoftwareFile: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version].File }}"
