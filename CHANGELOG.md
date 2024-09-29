@@ -2698,3 +2698,6 @@
     - Added ```efi``` support.
     - Added the ability to remove the CDROM drive from the deployed VM.
     - Renamed ```DeployGenericVm.yml``` to ```DeployGenericVms.yml```
+    - Added unique media naming to support multiple VMs being deployed in parallel
+    - Added notification to the user if the VM already exists
+    - Added DNS cache refresh (i.e. PING request) before various steps to mitigate failures due to URL reachability errors.
