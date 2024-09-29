@@ -2705,5 +2705,5 @@
 ## Dev-v8.0.0 29-SEPTEMBER-2024
 
 ### Added by Rutger Blom
-  - Added new setting "Deploy.Setting.DeployESXiOnly" to the ```config_sample.yml``` file. Setting this to "true" will deploy a Pod with a router, DNS server (optional), and nested ESXihosts only.
+  - Added new setting "Deploy.Setting.DeployESXiOnly" to the ```config_sample.yml``` file. Setting this to "true" will deploy a Pod with a router, DNS server (optional), and nested ESXi hosts only.
   - Be sure to update your ```config.yml``` file
