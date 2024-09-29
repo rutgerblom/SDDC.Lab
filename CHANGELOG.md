@@ -2697,3 +2697,4 @@
   - Changes to ```Deploy Generic VM``` feature:
     - Added ```efi``` support.
     - Added the ability to remove the CDROM drive from the deployed VM.
+    - Renamed ```DeployGenericVm.yml``` to ```DeployGenericVms.yml```
