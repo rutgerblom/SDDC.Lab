@@ -35,20 +35,42 @@
 
 # Deploy nested vSphere
 - ansible.builtin.import_playbook: playbooks/PrepareISOInstaller.yml
+
 - ansible.builtin.import_playbook: playbooks/DeployNestedEsxi.yml
 
 - name: Verify Replication Partner vCenter Server is ready
   ansible.builtin.import_playbook: playbooks/CheckVcReplicationPartner.yml
   when:
     - Nested_vCenter.SSO.ReplicationPartner != None
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/DeployVc.yml
+  when:
+    - Deploy.Setting.DeployESXiOnly == false
+
 - ansible.builtin.import_playbook: playbooks/ConfigureNestedEsxi.yml
+  when:
+    - Deploy.Setting.DeployESXiOnly == false
+
 - ansible.builtin.import_playbook: playbooks/CreateVds.yml
+  when:
+    - Deploy.Setting.DeployESXiOnly == false
+
 - ansible.builtin.import_playbook: playbooks/ConfigureVsan.yml
+  when:
+    - Deploy.Setting.DeployESXiOnly == false
+
 - ansible.builtin.import_playbook: playbooks/ConfigureHA.yml
+  when:
+    - Deploy.Setting.DeployESXiOnly == false
+
 - ansible.builtin.import_playbook: playbooks/CreateContentLibrary.yml
+  when:
+    - Deploy.Setting.DeployESXiOnly == false
+    
 - ansible.builtin.import_playbook: playbooks/License_vSphere.yml
+  when:
+    - Deploy.Setting.DeployESXiOnly == false
 
 # Deploy NSX-T
 - ansible.builtin.import_playbook: playbooks/DeployNsxGlobalManager.yml
@@ -56,152 +78,188 @@
     - Deploy.Product.NSXT.Federation.Deploy
     - Deploy.Product.NSXT.LocalManager.Deploy
     - Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/DeployNsxLocalManager.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/License_NSXT-LM.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/ConfigureNsxBasicConfig.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/ConfigureNsxFabricMTU.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/RegisterNsxComputeManager.yml
+    - Deploy.Product.NSXT.LocalManager.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/CreateNsxUplinkProfiles.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/CreateNsxTz.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/CreateNsxIpPool.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/CreateNsxTnp.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/AttachNsxTnp.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/CreateNsxEdgeTn.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy
     - Deploy.Product.NSXT.Edge.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/CreateNsxEdgeCluster.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy
     - Deploy.Product.NSXT.Edge.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 # Provision NSX-T logical networking
 - ansible.builtin.import_playbook: playbooks/EnableNsxIPv6.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy
     - Deploy.Setting.IPv6
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/CreateNsxVLANSegments.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/CreateNsxDhcpProfiles.yml
   when:
+    - Deploy.Product.NSXT.LocalManager.Deploy
     - Deploy.Product.NSXT.Federation.Deploy == false
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/CreateNsxT0Gateway.yml
   when: 
     - Deploy.Product.NSXT.Federation.Deploy == false or (Deploy.Product.NSXT.Federation.Deploy and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
     - Deploy.Product.NSXT.LocalManager.Deploy
     - Deploy.Product.NSXT.Edge.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/CreateNsxT1Gateway.yml
   when: 
     - Deploy.Product.NSXT.Federation.Deploy == false or (Deploy.Product.NSXT.Federation.Deploy and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
     - Deploy.Product.NSXT.LocalManager.Deploy
     - Deploy.Product.NSXT.Edge.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/CreateNsxOverlaySegments.yml
   when: 
     - Deploy.Product.NSXT.Federation.Deploy == false or (Deploy.Product.NSXT.Federation.Deploy and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
     - Deploy.Product.NSXT.LocalManager.Deploy
     - Deploy.Product.NSXT.Edge.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/ConfigureNsxBackup.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/FederateNsxLocalManager.yml
   when: 
     - Deploy.Product.NSXT.Federation.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/FederateNsxEdgeNodes.yml
   when: 
     - Deploy.Product.NSXT.Federation.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/FederateNsxT0RouteReDist.yml
   when: 
     - Deploy.Product.NSXT.Federation.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/FederateNsxT0BGPNeighbors.yml
   when: 
     - Deploy.Product.NSXT.Federation.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 # Deploy vRealize Log Insight
 - ansible.builtin.import_playbook: playbooks/DeployVrli.yml
   when: 
     - Deploy.Product.vRLI.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/License_vRLI.yml
   when: 
     - Deploy.Product.vRLI.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 # Deploy Advanced Load Balancer
 - ansible.builtin.import_playbook: playbooks/DeployAlb.yml
   when: 
     - Deploy.Product.ALB.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/ConfigureAlbBasicConfig.yml
   when: 
     - Deploy.Product.ALB.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/ConfigureAlbClouds.yml
   when: 
     - Deploy.Product.ALB.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/License_ALB.yml
   when: 
     - Deploy.Product.ALB.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 # Deploy vSphere Replication (Nested)
 - ansible.builtin.import_playbook: playbooks/DeployReplication.yml
   when: 
     - Deploy.Product.Replication.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/ConfigureReplicationBasicConfig.yml
   when: 
     - Deploy.Product.Replication.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 # Deploy Tanzu
 - ansible.builtin.import_playbook: playbooks/EnableWorkloadManagement.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy
     - Deploy.Product.NSXT.Edge.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/License_Tanzu.yml
   when: 
     - Deploy.Product.NSXT.LocalManager.Deploy
     - Deploy.Product.NSXT.Edge.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 # Deploy Workload VM Templates from Content Library
 - ansible.builtin.import_playbook: playbooks/DeployWorkloadVms.yml
@@ -210,6 +268,7 @@
     - Nested_vCenter.ContentLibrary.WorkloadVMs.Enable
     - not Deploy.Product.NSXT.Federation.Deploy or (Deploy.Product.NSXT.Federation.Deploy and Deploy.Product.NSXT.GlobalManager.SiteCode == SiteCode)       # Only run playbook if deployment is Stand-Alone or if it's Federation and we are deploying Global Manager
     - Deploy.Product.NSXT.LocalManager.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
 
 # Create DRS VM-VM Affinity Rule for deployed Pod VMs (This should be the last playbook within deploy.yml)
 - ansible.builtin.import_playbook: playbooks/CreateDrsVmRules.yml

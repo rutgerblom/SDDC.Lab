@@ -2701,3 +2701,9 @@
     - Added unique media naming to support multiple VMs being deployed in parallel
     - Added notification to the user if the VM already exists
     - Added DNS cache refresh (i.e. PING request) before various steps to mitigate failures due to URL reachability errors.
+
+## Dev-v8.0.0 29-SEPTEMBER-2024
+
+### Added by Rutger Blom
+  - Added new setting "Deploy.Setting.DeployESXiOnly" to the ```config_sample.yml``` file. Setting this to "true" will deploy a Pod with a router, DNS server (optional), and nested ESXihosts only.
+  - Be sure to update your ```config.yml``` file
