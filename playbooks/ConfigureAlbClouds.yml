@@ -347,30 +347,6 @@
         folder_type: vm
         folder_name: "{{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.ServiceEngineFolder }}"
         state: present
-      register: vmfolder
-      when:
-        - Deploy.Product.ALB.Deploy
-        - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
-        - Deploy.Product.NSXT.LocalManager.Deploy
-        - Deploy.Product.NSXT.Edge.Deploy
-
-    - name: Get information about VM Folders - NSX-T Cloud
-      community.vmware.vmware_folder_info:
-        hostname: "{{ Nested_vCenter.FQDN }}"
-        username: "{{ Nested_vCenter.User }}"
-        password: "{{ Nested_vCenter.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        datacenter: "{{ Nested_vCenter.DataCenter }}"
-      register: vmfolders
-      when:
-        - Deploy.Product.ALB.Deploy
-        - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
-        - Deploy.Product.NSXT.LocalManager.Deploy
-        - Deploy.Product.NSXT.Edge.Deploy
-
-    - name: Get Managed Object ID for VM Folder - NSX-T Cloud
-      ansible.builtin.set_fact:
-        vmfolder_moref: "{{ (vmfolders.flat_folder_info | selectattr('path', 'equalto', vmfolder.result.path) | map(attribute='moid'))[0] }}"
       when:
         - Deploy.Product.ALB.Deploy
         - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
@@ -459,7 +435,7 @@
                               ],
                               "include": true
                           },
-                          "vcenter_folder": "{{ vmfolder_moref }}",
+                          "vcenter_folder": "{{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.ServiceEngineFolder }}",
                           "vcenter_ref": "{{ vcenter_url }}"
                       }
                   ]
