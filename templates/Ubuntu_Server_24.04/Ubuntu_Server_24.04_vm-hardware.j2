@@ -15,7 +15,9 @@ disks:
 {% endfor %}{# disk #}
 networks:
 {% for adapter in item.HardwareSettings.Network.Adapters %}
+{%   if adapter.PortGroup is not none %}
   - name: {{ adapter.PortGroup }}
     device_type: {{ adapter.DeviceType }}
     start_connected: {{ adapter.StartConnected }}
-{% endfor %}{# network #}
+{%   endif %}{# PortGroup #}
+{% endfor %}{# adapter #}

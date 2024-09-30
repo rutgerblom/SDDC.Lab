@@ -16,7 +16,7 @@ Configuration:
         Source: {{ VMTarget.TemplateFolder }}/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}_grub.j2
         LocalDestination:
         StageDestination:
-        FinalDestination: {{ VMTarget.TempFolder }}/isos/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}/boot/grub/grub.cfg
+        FinalDestination: {{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}/isos/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}/boot/grub/grub.cfg
       - Name: UserData
         Source: {{ VMTarget.TemplateFolder }}/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}_user-data.j2
         LocalDestination:
@@ -30,7 +30,7 @@ Configuration:
     AfterBoot:
       - Name: NetPlan
         Source: {{ VMTarget.TemplateFolder }}/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}/{{ item.Software.Vendor}}_{{ item.Software.Product }}_{{ item.Software.Version }}_netplan.j2
-        LocalDestination: {{ VMTarget.TempFolder }}/00-installer-config.yaml
+        LocalDestination: {{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}/00-installer-config.yaml
         StageDestination: /home/{{ item.OS.Credential.User }}/00-installer-config.yaml
         FinalDestination: /etc/netplan/00-installer-config.yaml
   Packages:
@@ -46,7 +46,3 @@ Configuration:
       Owner: nobody:nobody
   Commands:
     - Name: echo '{{ item.OS.Credential.User }} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu # Allow user to run sudo without password. Required for successfull post configuration.
-    - Name: apt-get update
-    - Name: apt-get upgrade -y
-    - Name: apt-get autoremove
-    - Name: sync

@@ -21,6 +21,7 @@
 ##
 ## ToDo Items:
 ##   1) Add Ubuntu section in Templates.yml for different versions of Ubuntu.
+##   2) Look at 'minimal' install flag in Cloud-Init template
 ##
 ---
 - name: DeployGenericVms.yml
@@ -51,7 +52,7 @@
           GeneralOptions:
             GuestOS: ubuntu64Guest
           BootOptions:
-            Firmware: efi                                             # OPTIONAL - Options are 'bios' or 'efi'
+            Firmware: bios                                            # OPTIONAL - Options are 'bios' or 'efi'
         HardwareSettings:
           Version: latest                                             # Virtual Machine HW version.  If not specified, 'latest' will be used.
           NestedVirtualization: true                                  # Boolean to control the enabling of nested virtualization support
@@ -77,36 +78,36 @@
                   Number:                                             # OPTIONAL - If not specified, it is auto assigned
           Network:
             Adapters:
-              - StartConnected: true
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: true
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: false
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: false
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: false
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: false
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: false
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: false
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: false
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: false
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
+                StartConnected: false
         NSXT:
           Tags:
             - Tag: Auto-Deployed
@@ -207,6 +208,11 @@
                   Prefix:
                   Gateway:
           PostInstall:
+            Templates:
+              - Name:                                                                               # Descriptive name for template entry - Entries without names will be skipped
+                Source:                                                                             # REQUIRED - Source Jinja2 template is specified here
+                LocalDestination:                                                                   # REQUIRED - Temporary local destination where the rendered Jinja2 templates are placed, including the filename
+                FinalDestination:                                                                   # REQUIRED - Final location within the VM where the rendered template will be copied to, including the filename
             SSH:
               Server:
                 Install: true
@@ -263,36 +269,36 @@
                   Number:                                             # OPTIONAL - If not specified, it is auto assigned
           Network:
             Adapters:
-              - StartConnected: true
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: true
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: false
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: false
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: false
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: false
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: false
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: false
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: false
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
-              - StartConnected: false
+                StartConnected: false
+              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
-                PortGroup: VMNetwork                                  # MANDATORY
+                StartConnected: false
         NSXT:
           Tags:
             - Tag: Auto-Deployed
@@ -393,6 +399,11 @@
                   Prefix:
                   Gateway:
           PostInstall:
+            Templates:
+              - Name:                                                                               # Descriptive name for template entry - Entries without names will be skipped
+                Source:                                                                             # REQUIRED - Source Jinja2 template is specified here
+                LocalDestination:                                                                   # REQUIRED - Temporary local destination where the rendered Jinja2 templates are placed, including the filename
+                FinalDestination:                                                                   # REQUIRED - Final location within the VM where the rendered template will be copied to, including the filename
             SSH:
               Server:
                 Install: true
