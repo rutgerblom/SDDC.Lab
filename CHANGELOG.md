@@ -2708,3 +2708,10 @@
   - Updated ```playbooks/ConfigureAlbClouds.yml``` so that the VM folder name and not its ID is used in the payload to configure the SE Group.
   - Added new setting "Deploy.Setting.DeployESXiOnly" to the ```config_sample.yml``` file. Setting this to "true" will deploy a Pod with a router, DNS server (optional), and nested ESXi hosts only.
   - Be sure to update your ```config.yml``` file
+
+## Dev-v8.0.0 29-SEPTEMBER-2024
+
+### Added by Luis Chanu
+  - Modified ```Include_Tasks_DeployGenericVm.yml``` to place all deployment related files under ```{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}```.  This makes cleanup easier as rather than removing each of the other files individually throughout the playbook, the 'cleanup' was moved to the end, in one command.
+  - Modified the ```Target.ISOFolder``` variable in ```config_sample.yml``` to have an underscore at the beginning of the dirctory name.
+  - Be sure to update your ```config.yml``` file, then delete the old ```SDDCLab-ISO-Folder``` in your datastore at a point when you are not deploying any Pods.
