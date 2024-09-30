@@ -87,7 +87,7 @@
           ISOFolder: "{{ Target.ISOFolder }}"
           TempFolder: "{{ Target.TempFolder }}"
           TemplateFolder: "{{ Target.TemplateFolder }}"
-          Installer: "{{ SiteCode }}-Installer-VM-{{ '%03d'|format(loop_idx+1|int) }}"
+          Installer: "{{ SiteCode }}-VM-{{ '%03d'|format(loop_idx+1|int) }}-Installer"
           Template: "{{ Template[item.Software.Vendor][item.Software.Version].Template }}"
           SoftwareDirectory: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].Local }}"
           SoftwareFile: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version].File }}"
@@ -112,7 +112,7 @@
           ISOFolder: "{{ Target.ISOFolder }}"
           TempFolder: "{{ Target.TempFolder }}"
           TemplateFolder: "{{ Target.TemplateFolder }}"
-          Installer: "{{ SiteCode }}-Installer-VM-{{ '%03d'|format(loop_idx+1|int) }}"
+          Installer: "{{ SiteCode }}-VM-{{ '%03d'|format(loop_idx+1|int) }}-Installer"
           Template: "{{ Template[item.Software.Vendor][item.Software.Version].Template }}"
           SoftwareDirectory: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version]['Location'].Local }}"
           SoftwareFile: "{{ Software[item.Software.Vendor][item.Software.Product]['Installers'][item.Software.Version].File }}"
@@ -1004,18 +1004,6 @@
 ##
 ## Deployment Complete - Cleanup environment
 ##
-    - name: REMOVE REMOVE REMOVE REMOVE -- Refresh DNS cache entry and verify reachability to {{ VMTarget.FQDN }}
-      ansible.builtin.shell:
-        cmd: "ping -c 3 {{ VMTarget.FQDN }}"
-      register: result
-      until: result.stdout is search(" 0% packet loss")
-      retries: 5
-      delay: 3
-      when:
-        - false
-        - vm_deployed_status is failed
-        - item.Deploy
-
     - name: Delete custom built ISO from the datastore
       community.vmware.vsphere_file:
         hostname: '{{ VMTarget.FQDN }}'

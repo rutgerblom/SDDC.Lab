@@ -8,6 +8,7 @@ network:
   version: 2
   ethernets:
 {% for adapter in item.OS.Network.Adapters %}
+{%   if loop.index <= ( item.HardwareSettings.Network.Adapters | length ) %}{# Do not configure more interfaces in OS than physically exist on the VM #}
     {{ os_hardware[item.VMOptions.BootOptions.Firmware].network.adapters[ loop.index0 ] }}:
 {%   if adapter.IPv4.Address is not none %}
       dhcp4: no
@@ -46,4 +47,5 @@ network:
         search:
           - {{ Common.DNS.Domain }}
 {%     endif %}{# loop.first and DNS #}
+{%   endif %}{# loop.index #}
 {% endfor %}{# adapter #}
