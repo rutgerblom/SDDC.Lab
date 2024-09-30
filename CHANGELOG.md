@@ -2715,3 +2715,4 @@
   - Modified ```Include_Tasks_DeployGenericVm.yml``` to place all deployment related files under ```{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}```.  This makes cleanup easier as rather than removing each of the other files individually throughout the playbook, the 'cleanup' was moved to the end, in one command.
   - Modified the ```Target.ISOFolder``` variable in ```config_sample.yml``` to have an underscore at the beginning of the dirctory name.
   - Be sure to update your ```config.yml``` file, then delete the old ```SDDCLab-ISO-Folder``` in your datastore at a point when you are not deploying any Pods.
+  - Added additional logic to Generic VM that limits the number of OS network adapters to the number provisioned on the VM. (Previous commit)

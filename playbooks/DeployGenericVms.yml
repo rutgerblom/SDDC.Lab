@@ -38,9 +38,9 @@
       - VMName:                                                       # OPTIONAL - If not specified, the following is used:  "{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}"
         Deploy: true                                                  # REQUIRED - Boolean to control if the VM is to be deployed or not
         Deployment:
-          Target: NESTED                                              # REQUIRED - PHYSICAL or NESTED
+          Target: NESTED                                              # REQUIRED - Options: PHYSICAL, NESTED
           Cluster: ComputeA                                           # Only applicable for NESTED
-          VMFolder:
+          VMFolder:                                                   # Only applicable for NESTED
           UpdateDNS: true                                             # REQUIRED - Only the first interface is added to DNS, and it must be configured as a static IP.  DHCP is not added to DNS.
           RemoveCDROMDevice: true                                     # REQUIRED - Boolean control if the CDROM is removed from the VM Hardware after deployment
         Software:
@@ -50,62 +50,62 @@
         Annotation: "{{ Common.Annotation }}"
         VMOptions:
           GeneralOptions:
-            GuestOS: ubuntu64Guest
+            GuestOS: ubuntu64Guest                                    # REQUIRED - Options: Any supported Guest OS Customization Type
           BootOptions:
-            Firmware: bios                                            # OPTIONAL - Options are 'bios' or 'efi'
+            Firmware: bios                                            # REQUIRED - Options: bios, efi
         HardwareSettings:
-          Version: latest                                             # Virtual Machine HW version.  If not specified, 'latest' will be used.
-          NestedVirtualization: true                                  # Boolean to control the enabling of nested virtualization support
+          Version: latest                                             # OPTIONAL - Options: Virtual Machine HW version or 'latest'.  If not specified, 'latest' will be used.
+          NestedVirtualization: true                                  # REQUIRED - Options: true, false.  Boolean to control the enabling of nested virtualization support.
           CPU:
             Quantity: 2
             CoresPerSocket: 2
             Reservation: 0
             SharesLevel: normal                                       # low, normal, high
-            AllowHotAdd: false                                             # Boolean to control whether to allow virtual CPUs to be added while VM is running.
-            AllowHotRemove: false                                          # Boolean
+            AllowHotAdd: false                                        # Boolean to control whether to allow virtual CPUs to be added while VM is running.
+            AllowHotRemove: false                                     # Boolean
           Memory:
             Size: 8192                                                # In MB
             Reservation: 0
             SharesLevel: normal                                       # low, normal, high
             AllowHotAdd: false                                        # Boolean to control whether to allow virtual memory to be added while VM is running.
           Storage:
-            Controller: paravirtual
+            Controller: paravirtual                                   # REQUIRED - SCSI Controller options: paravirtual, buslogic, lsilogic, lsilogicsas
             Disks:
-              - Size: 80                                              # In GB
+              - Size: 80                                              # REQUIRED - In GB
                 DiskProvisioning: "{{ Common.DiskProvisioning }}"
                 Controller:
                   Type: paravirtual                                   # OPTIONAL - Options: paravirtual, buslogic, lsilogic, lsilogicsas, sata, nvme
-                  Number:                                             # OPTIONAL - If not specified, it is auto assigned
+                  Number:                                             # OPTIONAL - If not specified, it is auto assigned.  Note: Number 7 cannot be used if SCSI controller is specified.
           Network:
             Adapters:
-              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
+              - PortGroup: SEG-Web                                    # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: true
-              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
+              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
-              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
+              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
-              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
+              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
-              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
+              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
-              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
+              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
-              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
+              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
-              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
+              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
-              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
+              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
-              - PortGroup: VMNetwork                                  # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
+              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
                 DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
         NSXT:
