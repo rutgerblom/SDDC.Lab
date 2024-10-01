@@ -2721,3 +2721,7 @@
 
 ### Added by Luis Chanu
   - Added task to clear out ```{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}``` folder in case there happened to be a prior failed deployment.
+  - Added PostInstall Jinja2 templating support.
+  - Added additional bounds checking to many tasks in the playbook.
+  - Added ```REQUIRED``` and ```OPTIONAL``` designations to most VM configuration items, including options and default values for some items.
+  - Where possible, all installer files are now created within ```{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}```
