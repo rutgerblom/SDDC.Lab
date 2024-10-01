@@ -195,6 +195,14 @@
       when:
         - vm_deployed_status is not failed
 
+    - name: Delete local installer directory just in case it exists from a previously failed deployment
+      ansible.builtin.file:
+        path: "{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}"
+        state: absent
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
     - name: Generate the runbook
       ansible.builtin.set_fact:
         runbook: "{{ lookup('template', VMTarget.TemplateFolder + '/' + VMTarget.Template) | from_yaml }}"
