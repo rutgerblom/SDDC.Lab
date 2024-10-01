@@ -54,59 +54,59 @@
           BootOptions:
             Firmware: bios                                            # REQUIRED - Options: bios, efi
         HardwareSettings:
-          Version: latest                                             # OPTIONAL - Options: Virtual Machine HW version or 'latest'.  If not specified, 'latest' will be used.
+          Version: latest                                             # OPTIONAL - Options: Virtual Machine HW version number or 'latest'.  If not specified, 'latest' will be used.
           NestedVirtualization: true                                  # REQUIRED - Options: true, false.  Boolean to control the enabling of nested virtualization support.
           CPU:
             Quantity: 2
             CoresPerSocket: 2
             Reservation: 0
-            SharesLevel: normal                                       # low, normal, high
-            AllowHotAdd: false                                        # Boolean to control whether to allow virtual CPUs to be added while VM is running.
-            AllowHotRemove: false                                     # Boolean
+            SharesLevel: normal                                       # OPTIONAL - Options: low, normal, high.   If not specified, 'normal' will be used.
+            AllowHotAdd: false                                        # OPTIONAL - Options: true, false.   If not specified, 'false' will be used.  Boolean to control whether to allow virtual CPUs to be added while VM is running.
+            AllowHotRemove: false                                     # OPTIONAL - Options: true, false.   If not specified, 'false' will be used.  Boolean to control whether to allow virtual CPUs to be removed while VM is running.
           Memory:
-            Size: 8192                                                # In MB
-            Reservation: 0
-            SharesLevel: normal                                       # low, normal, high
-            AllowHotAdd: false                                        # Boolean to control whether to allow virtual memory to be added while VM is running.
+            Size: 4096                                                # REQUIRED - Memory size to provision in MB.
+            Reservation: 0                                            # OPTIONAL - Memory to reserve in MB.  If not specified, '0' will be used.
+            SharesLevel: normal                                       # OPTIONAL - Options: low, normal, high.   If not specified, 'normal' will be used.
+            AllowHotAdd: false                                        # OPTIONAL - Options: true, false.   If not specified, 'false' will be used.  Boolean to control whether to allow virtual memory to be added while VM is running.
           Storage:
-            Controller: paravirtual                                   # REQUIRED - SCSI Controller options: paravirtual, buslogic, lsilogic, lsilogicsas
+            Controller: paravirtual                                   # OPTIONAL - SCSI Controller options: paravirtual, buslogic, lsilogic, lsilogicsas.  If not specified, 'paravirtual' will be used.
             Disks:
-              - Size: 80                                              # REQUIRED - In GB
-                DiskProvisioning: "{{ Common.DiskProvisioning }}"
+              - Size: 10                                              # REQUIRED - Disk size to provision in GB.
+                DiskProvisioning: "{{ Common.DiskProvisioning }}"     # REQUIRED - Options: thin, thick.   Default will be the 'Common.DiskProvisioning' setting.
                 Controller:
                   Type: paravirtual                                   # OPTIONAL - Options: paravirtual, buslogic, lsilogic, lsilogicsas, sata, nvme
                   Number:                                             # OPTIONAL - If not specified, it is auto assigned.  Note: Number 7 cannot be used if SCSI controller is specified.
           Network:
             Adapters:
-              - PortGroup: SEG-Web                                    # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
-                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+              - PortGroup: SEG-Web                                    # REQUIRED - PortGroup name to attach to.  If not specified, PortGroup will be skipped and not provisioned.
+                DeviceType: vmxnet3                                   # REQUIRED - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: true
-              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
-                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+              - PortGroup:                                            # REQUIRED - PortGroup name to attach to.  If not specified, PortGroup will be skipped and not provisioned.
+                DeviceType: vmxnet3                                   # REQUIRED - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
-              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
-                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+              - PortGroup:                                            # REQUIRED - PortGroup name to attach to.  If not specified, PortGroup will be skipped and not provisioned.
+                DeviceType: vmxnet3                                   # REQUIRED - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
-              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
-                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+              - PortGroup:                                            # REQUIRED - PortGroup name to attach to.  If not specified, PortGroup will be skipped and not provisioned.
+                DeviceType: vmxnet3                                   # REQUIRED - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
-              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
-                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+              - PortGroup:                                            # REQUIRED - PortGroup name to attach to.  If not specified, PortGroup will be skipped and not provisioned.
+                DeviceType: vmxnet3                                   # REQUIRED - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
-              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
-                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+              - PortGroup:                                            # REQUIRED - PortGroup name to attach to.  If not specified, PortGroup will be skipped and not provisioned.
+                DeviceType: vmxnet3                                   # REQUIRED - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
-              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
-                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+              - PortGroup:                                            # REQUIRED - PortGroup name to attach to.  If not specified, PortGroup will be skipped and not provisioned.
+                DeviceType: vmxnet3                                   # REQUIRED - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
-              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
-                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+              - PortGroup:                                            # REQUIRED - PortGroup name to attach to.  If not specified, PortGroup will be skipped and not provisioned.
+                DeviceType: vmxnet3                                   # REQUIRED - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
-              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
-                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+              - PortGroup:                                            # REQUIRED - PortGroup name to attach to.  If not specified, PortGroup will be skipped and not provisioned.
+                DeviceType: vmxnet3                                   # REQUIRED - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
-              - PortGroup:                                            # MANDATORY - Adapters with empty PortGroups will be skipped and not provisioned
-                DeviceType: vmxnet3                                   # MANDATORY - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
+              - PortGroup:                                            # REQUIRED - PortGroup name to attach to.  If not specified, PortGroup will be skipped and not provisioned.
+                DeviceType: vmxnet3                                   # REQUIRED - Options: e1000, e1000e, pcnet32, vmxnet2, vmxnet3, sriov
                 StartConnected: false
         NSXT:
           Tags:
@@ -128,95 +128,95 @@
                 - "{{ Common.DNS.Server1.IPv6 }}"
             Adapters:
               - IPv4:
-                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
-                  Prefix: 
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv4 address.  If not specified, then IPv4 address will be obtained via DHCPv4.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 24).  Not required for DHCPv4.
+                  Gateway:                                            # REQUIRED - Enter IPv4 default gateway.  Not required for DHCPv4
                 IPv6:
-                  Address:                                            # Use SLAAC/DHCPv6 if not specified, else configure static IP address
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv6 address in quotes.  If not specified, then IPv6 address will be obtained via SLAAC/DHCPv6.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 64).  Not required for SLAAC/DHCPv6.
+                  Gateway:                                            # OPTIONAL - Enter IPv6 default gateway.  Not required as VM should learn IPv6 gateway via router advertisements.
               - IPv4:
-                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv4 address.  If not specified, then IPv4 address will be obtained via DHCPv4.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 24).  Not required for DHCPv4.
+                  Gateway:                                            # REQUIRED - Enter IPv4 default gateway.  Not required for DHCPv4
                 IPv6:
-                  Address:                                            # Use SLAAC/DHCPv6 if not specified
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv6 address in quotes.  If not specified, then IPv6 address will be obtained via SLAAC/DHCPv6.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 64).  Not required for SLAAC/DHCPv6.
+                  Gateway:                                            # OPTIONAL - Enter IPv6 default gateway.  Not required as VM should learn IPv6 gateway via router advertisements.
               - IPv4:
-                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv4 address.  If not specified, then IPv4 address will be obtained via DHCPv4.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 24).  Not required for DHCPv4.
+                  Gateway:                                            # REQUIRED - Enter IPv4 default gateway.  Not required for DHCPv4
                 IPv6:
-                  Address:                                            # Use SLAAC/DHCPv6 if not specified
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv6 address in quotes.  If not specified, then IPv6 address will be obtained via SLAAC/DHCPv6.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 64).  Not required for SLAAC/DHCPv6.
+                  Gateway:                                            # OPTIONAL - Enter IPv6 default gateway.  Not required as VM should learn IPv6 gateway via router advertisements.
               - IPv4:
-                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv4 address.  If not specified, then IPv4 address will be obtained via DHCPv4.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 24).  Not required for DHCPv4.
+                  Gateway:                                            # REQUIRED - Enter IPv4 default gateway.  Not required for DHCPv4
                 IPv6:
-                  Address:                                            # Use SLAAC/DHCPv6 if not specified
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv6 address in quotes.  If not specified, then IPv6 address will be obtained via SLAAC/DHCPv6.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 64).  Not required for SLAAC/DHCPv6.
+                  Gateway:                                            # OPTIONAL - Enter IPv6 default gateway.  Not required as VM should learn IPv6 gateway via router advertisements.
               - IPv4:
-                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv4 address.  If not specified, then IPv4 address will be obtained via DHCPv4.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 24).  Not required for DHCPv4.
+                  Gateway:                                            # REQUIRED - Enter IPv4 default gateway.  Not required for DHCPv4
                 IPv6:
-                  Address:                                            # Use SLAAC/DHCPv6 if not specified
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv6 address in quotes.  If not specified, then IPv6 address will be obtained via SLAAC/DHCPv6.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 64).  Not required for SLAAC/DHCPv6.
+                  Gateway:                                            # OPTIONAL - Enter IPv6 default gateway.  Not required as VM should learn IPv6 gateway via router advertisements.
               - IPv4:
-                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv4 address.  If not specified, then IPv4 address will be obtained via DHCPv4.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 24).  Not required for DHCPv4.
+                  Gateway:                                            # REQUIRED - Enter IPv4 default gateway.  Not required for DHCPv4
                 IPv6:
-                  Address:                                            # Use SLAAC/DHCPv6 if not specified
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv6 address in quotes.  If not specified, then IPv6 address will be obtained via SLAAC/DHCPv6.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 64).  Not required for SLAAC/DHCPv6.
+                  Gateway:                                            # OPTIONAL - Enter IPv6 default gateway.  Not required as VM should learn IPv6 gateway via router advertisements.
               - IPv4:
-                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv4 address.  If not specified, then IPv4 address will be obtained via DHCPv4.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 24).  Not required for DHCPv4.
+                  Gateway:                                            # REQUIRED - Enter IPv4 default gateway.  Not required for DHCPv4
                 IPv6:
-                  Address:                                            # Use SLAAC/DHCPv6 if not specified
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv6 address in quotes.  If not specified, then IPv6 address will be obtained via SLAAC/DHCPv6.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 64).  Not required for SLAAC/DHCPv6.
+                  Gateway:                                            # OPTIONAL - Enter IPv6 default gateway.  Not required as VM should learn IPv6 gateway via router advertisements.
               - IPv4:
-                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv4 address.  If not specified, then IPv4 address will be obtained via DHCPv4.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 24).  Not required for DHCPv4.
+                  Gateway:                                            # REQUIRED - Enter IPv4 default gateway.  Not required for DHCPv4
                 IPv6:
-                  Address:                                            # Use SLAAC/DHCPv6 if not specified
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv6 address in quotes.  If not specified, then IPv6 address will be obtained via SLAAC/DHCPv6.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 64).  Not required for SLAAC/DHCPv6.
+                  Gateway:                                            # OPTIONAL - Enter IPv6 default gateway.  Not required as VM should learn IPv6 gateway via router advertisements.
               - IPv4:
-                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv4 address.  If not specified, then IPv4 address will be obtained via DHCPv4.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 24).  Not required for DHCPv4.
+                  Gateway:                                            # REQUIRED - Enter IPv4 default gateway.  Not required for DHCPv4
                 IPv6:
-                  Address:                                            # Use SLAAC/DHCPv6 if not specified
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv6 address in quotes.  If not specified, then IPv6 address will be obtained via SLAAC/DHCPv6.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 64).  Not required for SLAAC/DHCPv6.
+                  Gateway:                                            # OPTIONAL - Enter IPv6 default gateway.  Not required as VM should learn IPv6 gateway via router advertisements.
               - IPv4:
-                  Address:                                            # Use DHCPv4 if not specified, else configure static IP address
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv4 address.  If not specified, then IPv4 address will be obtained via DHCPv4.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 24).  Not required for DHCPv4.
+                  Gateway:                                            # REQUIRED - Enter IPv4 default gateway.  Not required for DHCPv4
                 IPv6:
-                  Address:                                            # Use SLAAC/DHCPv6 if not specified
-                  Prefix:
-                  Gateway:
+                  Address:                                            # REQUIRED - Enter IPv6 address in quotes.  If not specified, then IPv6 address will be obtained via SLAAC/DHCPv6.
+                  Prefix:                                             # REQUIRED - Enter network prefix size (i.e. 64).  Not required for SLAAC/DHCPv6.
+                  Gateway:                                            # OPTIONAL - Enter IPv6 default gateway.  Not required as VM should learn IPv6 gateway via router advertisements.
           PostInstall:
             Templates:
-              - Name:                                                                               # Descriptive name for template entry - Entries without names will be skipped
+              - Name:                                                                               # REQUIRED - Descriptive name for template entry.  If not specified, entry will be skipped
                 Source:                                                                             # REQUIRED - Source Jinja2 template is specified here
-                LocalDestination:                                                                   # REQUIRED - Temporary local destination where the rendered Jinja2 templates are placed, including the filename
+                LocalDestination:                                                                   # REQUIRED - Temporary local destination where the rendered Jinja2 template is placed, including the filename
                 FinalDestination:                                                                   # REQUIRED - Final location within the VM where the rendered template will be copied to, including the filename
             SSH:
               Server:
-                Install: true
-                AllowPW: true
+                Install: true                                         # REQUIRED - Options: true, false.   Indicates whether to install SSH Server VM provisioning.
+                AllowPW: true                                         # REQUIRED - Options: true, false.   Indicates whether to allow passwords for SSH Server authentication.
             Packages:
               - traceroute
               - dnsutils
@@ -224,10 +224,10 @@
               - Name:
                 Path:
                 Owner:
-            Commands:                                                    # List of commands to run post install to configure the VM
+            Commands:                                                 # OPTIONAL - List of commands to run post install to configure the VM
               - ls
       - VMName:                                                       # OPTIONAL - If not specified, the following is used:  "{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}"
-        Deploy: true                                                  # REQUIRED - Boolean to control if the VM is to be deployed or not
+        Deploy: false                                                 # REQUIRED - Options: true, false   Description: Controls if the VM is to be deployed or not
         Deployment:
           Target: NESTED                                              # REQUIRED - PHYSICAL or NESTED
           Cluster: ComputeA                                           # Only applicable for NESTED
