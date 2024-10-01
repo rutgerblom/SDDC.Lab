@@ -2716,3 +2716,8 @@
   - Modified the ```Target.ISOFolder``` variable in ```config_sample.yml``` to have an underscore at the beginning of the dirctory name.
   - Be sure to update your ```config.yml``` file, then delete the old ```SDDCLab-ISO-Folder``` in your datastore at a point when you are not deploying any Pods.
   - Added additional logic to Generic VM that limits the number of OS network adapters to the number provisioned on the VM. (Previous commit)
+
+## Dev-v8.0.0 30-SEPTEMBER-2024
+
+### Added by Luis Chanu
+  - Added task to clear out ```{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}``` folder in case there happened to be a prior failed deployment.
