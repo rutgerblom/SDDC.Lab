@@ -43,6 +43,8 @@ Configuration:
   Directories:
     - Name: Dummy-Entry-Kept-For-Documentation
       Path: /tmp/dummy
-      Owner: nobody:nobody
+      Owner: nobody
   Commands:
     - Name: echo '{{ item.OS.Credential.User }} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu # Allow user to run sudo without password. Required for successfull post configuration.
+    - Name: dpkg --configure -a
+    - Name: sync

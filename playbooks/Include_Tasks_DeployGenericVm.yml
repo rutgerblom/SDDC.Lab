@@ -222,7 +222,7 @@
           =================================================================================================
       when:
         - DEBUG.DisplayVariables
-        - runbook is defined:
+        - runbook is defined
         - vm_deployed_status is failed
         - item.Deploy
 
@@ -313,12 +313,15 @@
         src: "{{ runbook_item.Source }}"
         dest: "{{ runbook_item.FinalDestination }}"
         mode: "666"
-      loop: "{{ runbook.Configuration.Templates.AutoInstall }}"
+      loop: "{{ runbook.Configuration.Templates.AutoInstall | default([]) }}"
       loop_control:
         loop_var: runbook_item
       when:
         - vm_deployed_status is failed
         - item.Deploy
+        - runbook.Configuration.Templates.AutoInstall is defined
+        - runbook_item.FinalDestination is not none
+        - runbook_item.Source is not none
 
     - name: Create custom {{ item.Software.Vendor}} {{ item.Software.Product }} {{ item.Software.Version }} ISO
       ansible.builtin.command: "xorriso -as mkisofs -r \
@@ -448,6 +451,7 @@
         vm_password: VMware1!
         vm_shell: /usr/bin/echo
         vm_shell_args: "'{{ item.OS.Credential.User }}:{{ item.OS.Credential.Password }}' | sudo chpasswd"
+        wait_for_process: true
       when:
         - vm_deployed_status is failed
         - item.Deploy
@@ -457,13 +461,15 @@
         src: "{{ runbook_item.Source }}"
         dest: "{{ runbook_item.LocalDestination }}"
         mode: "666"
-      loop: "{{ runbook.Configuration.Templates.AfterBoot }}"
+      loop: "{{ runbook.Configuration.Templates.AfterBoot | default([]) }}"
       loop_control:
         loop_var: runbook_item
       when:
         - vm_deployed_status is failed
         - item.Deploy
-        - runbook.Configuration.Templates.AfterBoot != ""
+        - runbook.Configuration.Templates.AfterBoot is defined
+        - runbook_item.LocalDestination is not none
+        - runbook_item.Source is not none
 
     - name: Copy AfterBoot configuration files to the {{ VMInfo.VMName }} VM
       community.vmware.vmware_guest_file_operation:
@@ -477,13 +483,15 @@
         copy:
           src: "{{ runbook_item.LocalDestination }}"
           dest: "{{ runbook_item.StageDestination }}"
-      loop: "{{ runbook.Configuration.Templates.AfterBoot }}"
+      loop: "{{ runbook.Configuration.Templates.AfterBoot | default([]) }}"
       loop_control:
         loop_var: runbook_item
       when:
         - vm_deployed_status is failed
         - item.Deploy
-        - runbook.Configuration.Templates.AfterBoot != ""
+        - runbook.Configuration.Templates.AfterBoot is defined
+        - runbook_item.LocalDestination is not none
+        - runbook_item.StageDestination is not none
 
     - name: Move AfterBoot configuration files to their final location on the {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
@@ -496,13 +504,16 @@
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "mv {{ runbook_item.StageDestination }} {{ runbook_item.FinalDestination }}"
-      loop: "{{ runbook.Configuration.Templates.AfterBoot }}"
+        wait_for_process: true
+      loop: "{{ runbook.Configuration.Templates.AfterBoot | default([]) }}"
       loop_control:
         loop_var: runbook_item
       when:
         - vm_deployed_status is failed
         - item.Deploy
-        - runbook.Configuration.Templates.AfterBoot != ""
+        - runbook.Configuration.Templates.AfterBoot is defined
+        - runbook_item.StageDestination is not none
+        - runbook_item.FinalDestination is not none
 
     - name: Create directories on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
@@ -515,13 +526,15 @@
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "mkdir {{ runbook_item.Path }}"
-      loop: "{{ runbook.Configuration.Directories }}"
+        wait_for_process: true
+      loop: "{{ runbook.Configuration.Directories | default([]) }}"
       loop_control:
         loop_var: runbook_item
       when:
         - vm_deployed_status is failed
         - item.Deploy
-        - runbook.Configuration.Directories != ""
+        - runbook.Configuration.Directories is defined
+        - runbook_item.Path is not none
 
     - name: Set owner on directories on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
@@ -534,13 +547,16 @@
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "chown {{ runbook_item.Owner }} {{ runbook_item.Path }}"
-      loop: "{{ runbook.Configuration.Directories }}"
+        wait_for_process: true
+      loop: "{{ runbook.Configuration.Directories | default([]) }}"
       loop_control:
         loop_var: runbook_item
       when:
         - vm_deployed_status is failed
         - item.Deploy
-        - runbook.Configuration.Directories != ""
+        - runbook.Configuration.Directories is defined
+        - runbook_item.Owner is not none
+        - runbook_item.Path is not none
 
     - name: Apply the network configuration on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
@@ -553,6 +569,7 @@
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: netplan apply
+        wait_for_process: true
       when:
         - vm_deployed_status is failed
         - item.Deploy
@@ -568,13 +585,15 @@
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "systemctl restart {{ runbook_item.Daemon }}"
-      loop: "{{ runbook.Configuration.Packages }}"
+        wait_for_process: true
+      loop: "{{ runbook.Configuration.Packages | default([]) }}"
       loop_control:
         loop_var: runbook_item
       when:
         - vm_deployed_status is failed
         - item.Deploy
-        - runbook.Configuration.Packages != ""
+        - runbook.Configuration.Packages is defined
+        - runbook_item.Daemon is not none
 
     - name: Delete configuration files
       ansible.builtin.file:
@@ -587,11 +606,13 @@
         - not DEBUG.KeepConfigFiles
         - vm_deployed_status is failed
         - item.Deploy
-        - runbook.Configuration.Templates.AfterBoot != ""
+        - runbook.Configuration.Templates.AfterBoot is defined
+        - runbook_item.LocalDestination is not none
+
 
 
 ##
-## At this point the VM should be deployed, and the installation environment in a 'clean' state.
+## At this point the VM should be deployed
 ##
 
 ##
@@ -791,6 +812,7 @@
         - item.OS.Network.Adapters[0].IPv6.Address is not none
 
 
+
 ##
 ## Perform VM PostInstall Items
 ##
@@ -809,6 +831,7 @@
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "apt-get update"
+        wait_for_process: true
       when:
         - vm_deployed_status is failed
         - item.Deploy
@@ -824,6 +847,7 @@
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "apt-get -y upgrade"
+        wait_for_process: true
       when:
         - vm_deployed_status is failed
         - item.Deploy
@@ -839,6 +863,7 @@
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "apt-get -y install {{ package }}"
+        wait_for_process: true
       loop: "{{ item.OS.PostInstall.Packages | default([]) }}"
       loop_control:
         loop_var: package
@@ -846,6 +871,7 @@
         - vm_deployed_status is failed
         - item.Deploy
         - item.OS.PostInstall.Packages is defined
+        - package is not none
 
     - name: Remove no longer needed package dependecies from {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
@@ -858,16 +884,214 @@
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "apt-get autoremove"
+        wait_for_process: true
       when:
         - vm_deployed_status is failed
         - item.Deploy
 
 
+##
+## Perform user-specified PostInstall actions
+##
 
 #
-# Execute commands
+# Create Directories
 #
-    - name: Execute commands Install Linux packages on {{ VMInfo.VMName }} VM
+    - name: Create user-specified directories on {{ VMInfo.VMName }} VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ VMInfo.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "mkdir {{ directory_item.Path }}"
+        wait_for_process: true
+      loop: "{{ item.OS.PostInstall.Directories | default([]) }}"
+      loop_control:
+        loop_var: directory_item
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+        - item.OS.PostInstall.Directories is defined
+        - directory_item.Name is not none
+        - directory_item.Path is not none
+
+    - name: Set permissions on user-specified directories on {{ VMInfo.VMName }} VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ VMInfo.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "chmod {{ directory_item.Permissions }} {{ directory_item.Path }}"
+        wait_for_process: true
+      loop: "{{ item.OS.PostInstall.Directories | default([]) }}"
+      loop_control:
+        loop_var: directory_item
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+        - item.OS.PostInstall.Directories is defined
+        - directory_item.Permissions is not none
+        - directory_item.Name is not none
+        - directory_item.Path is not none
+
+    - name: Set owner on user-specified directories on {{ VMInfo.VMName }} VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ VMInfo.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "chown {{ directory_item.Owner }} {{ directory_item.Path }}"
+        wait_for_process: true
+      loop: "{{ item.OS.PostInstall.Directories | default([]) }}"
+      loop_control:
+        loop_var: directory_item
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+        - item.OS.PostInstall.Directories is defined
+        - directory_item.Owner is not none
+        - directory_item.Name is not none
+        - directory_item.Path is not none
+
+#
+# Render Jinja2 templates and move them to their final location
+#
+    - name: Create temp directory for user-specified rendered Jinja2 templates
+      ansible.builtin.file:
+        path: "{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}/Templates"
+        state: directory
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+
+    - name: Render user-specified Jinja2 templates locally within the 'Installer' directory
+      ansible.builtin.template:
+        src: "{{ template_item.Source }}"
+        dest: "{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}/Templates/File_{{ template_idx }}"
+        mode: "666"
+      loop: "{{ item.OS.PostInstall.Templates | default([]) }}"
+      loop_control:
+        loop_var: template_item
+        index_var: template_idx
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+        - item.OS.PostInstall.Templates is defined
+        - template_item.FinalDestination is not none
+        - template_item.Source is not none
+        - template_item.Name is not none
+
+    - name: Copy rendered user-specific Jinja2 templates to staging area in {{ VMInfo.VMName }} VM
+      community.vmware.vmware_guest_file_operation:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ VMInfo.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        copy:
+          src: "{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}/Templates/File_{{ template_idx }}"
+          dest: "/home/{{ item.OS.Credential.User }}/{{ template_item.FinalDestination | basename }}"
+      loop: "{{ item.OS.PostInstall.Templates | default([]) }}"
+      loop_control:
+        loop_var: template_item
+        index_var: template_idx
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+        - item.OS.PostInstall.Templates is defined
+        - template_item.FinalDestination is not none
+        - template_item.Source is not none
+        - template_item.Name is not none
+
+    - name: Move rendered user-specific Jinja2 templates to their final location in {{ VMInfo.VMName }} VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ VMInfo.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "mv /home/{{ item.OS.Credential.User }}/{{ template_item.FinalDestination | basename }} {{ template_item.FinalDestination }}"
+        wait_for_process: true
+      loop: "{{ item.OS.PostInstall.Templates | default([]) }}"
+      loop_control:
+        loop_var: template_item
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+        - item.OS.PostInstall.Templates is defined
+        - template_item.FinalDestination is not none
+        - template_item.Source is not none
+        - template_item.Name is not none
+
+    - name: Set file permissions on moved user-specified Jinja2 rendered templates
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ VMInfo.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "chmod {{ template_item.Permissions }} {{ template_item.FinalDestination }}"
+        wait_for_process: true
+      loop: "{{ item.OS.PostInstall.Templates | default([]) }}"
+      loop_control:
+        loop_var: template_item
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+        - item.OS.PostInstall.Templates is defined
+        - template_item.Name is not none
+        - template_item.Source is not none
+        - template_item.Permissions is not none
+        - template_item.FinalDestination is not none
+
+    - name: Set owner on moved user-specified Jinja2 rendered templates
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ VMInfo.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "chown {{ template_item.Owner }} {{ template_item.FinalDestination }}"
+        wait_for_process: true
+      loop: "{{ item.OS.PostInstall.Templates | default([]) }}"
+      loop_control:
+        loop_var: template_item
+      when:
+        - item.OS.PostInstall.Templates is defined
+        - template_item.Name is not none
+        - template_item.Owner is not none
+        - template_item.Source is not none
+        - template_item.FinalDestination is not none
+        - vm_deployed_status is failed
+        - item.Deploy
+
+#
+# Execute User-Specified Commands
+#
+    - name: Execute user-specific commands on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
@@ -878,6 +1102,7 @@
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "{{ command }}"
+        wait_for_process: true
       loop: "{{ item.OS.PostInstall.Commands | default([]) }}"
       loop_control:
         loop_var: command
@@ -885,6 +1110,7 @@
         - vm_deployed_status is failed
         - item.Deploy
         - item.OS.PostInstall.Commands is defined
+        - command is not none
 
     - name: Flush unwritten data to disk on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
@@ -897,9 +1123,11 @@
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
         vm_shell_args: "sync"
+        wait_for_process: true
       when:
         - vm_deployed_status is failed
         - item.Deploy
+
 
 
 ##
@@ -981,6 +1209,7 @@
       when:
         - vm_deployed_status is failed
         - item.Deploy
+
 
 
 ##
