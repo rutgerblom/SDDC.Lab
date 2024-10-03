@@ -2725,3 +2725,8 @@
   - Added additional bounds checking to many tasks in the playbook.
   - Added ```REQUIRED``` and ```OPTIONAL``` designations to most VM configuration items, including options and default values for some items.
   - Where possible, all installer files are now created within ```{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}```
+
+## Dev-v8.0.0 02-OCTOBER-2024
+
+### Added by Luis Chanu
+  - To differentiate between 'runbook' actions, and 'VM-specific' actions (i.e., those dictated in the ```VMs``` datastructure), tasks that are VM specific have been updated to indicate 'VM-specific' in their name.
