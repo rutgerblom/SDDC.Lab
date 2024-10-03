@@ -35,7 +35,7 @@
 ##
 #   TODO: Update descriptions to identify which are OPTIONAL or REQUIRED, Default value, and possible values.
     VMs:
-      - VMName: Pod-010-DNS-Test                                                      # OPTIONAL - If not specified, the following is used:  "{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}"
+      - VMName: Pod-010-DNS-Test                                      # OPTIONAL - If not specified, the following is used:  "{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}"
         Deploy: true                                                  # REQUIRED - Boolean to control if the VM is to be deployed or not
         Deployment:
           Target: NESTED                                              # REQUIRED - Options: PHYSICAL, NESTED
@@ -54,15 +54,15 @@
           BootOptions:
             Firmware: efi                                             # REQUIRED - Options: bios, efi
         HardwareSettings:
-          Version:                                              # OPTIONAL - Options: Virtual Machine HW version number or 'latest'.  If not specified, 'latest' will be used.
+          Version:                                                    # OPTIONAL - Options: Virtual Machine HW version number or 'latest'.  If not specified, 'latest' will be used.
           NestedVirtualization: true                                  # REQUIRED - Options: true, false.  Boolean to control the enabling of nested virtualization support.
           CPU:
             Quantity: 2
             CoresPerSocket: 2
             Reservation: 0
-            SharesLevel:                                        # OPTIONAL - Options: low, normal, high.   If not specified, 'normal' will be used.
-            AllowHotAdd:                                         # OPTIONAL - Options: true, false.   If not specified, 'false' will be used.  Boolean to control whether to allow virtual CPUs to be added while VM is running.
-            AllowHotRemove:                                      # OPTIONAL - Options: true, false.   If not specified, 'false' will be used.  Boolean to control whether to allow virtual CPUs to be removed while VM is running.
+            SharesLevel:                                              # OPTIONAL - Options: low, normal, high.   If not specified, 'normal' will be used.
+            AllowHotAdd:                                              # OPTIONAL - Options: true, false.   If not specified, 'false' will be used.  Boolean to control whether to allow virtual CPUs to be added while VM is running.
+            AllowHotRemove:                                           # OPTIONAL - Options: true, false.   If not specified, 'false' will be used.  Boolean to control whether to allow virtual CPUs to be removed while VM is running.
           Memory:
             Size: 4096                                                # REQUIRED - Memory size to provision in MB.
             Reservation:                                              # OPTIONAL - Memory to reserve in MB.  If not specified, '0' will be used.
@@ -130,12 +130,12 @@
                 - "{{ Common.DNS.Server1.IPv6 }}"
             Adapters:
               - IPv4:
-                  Address: 10.204.10.10                                           # REQUIRED - Enter IPv4 address.  If not specified, then IPv4 address will be obtained via DHCPv4.
-                  Prefix: 24                                            # REQUIRED - Enter network prefix size (i.e. 24).  Not required for DHCPv4.
-                  Gateway: 10.204.10.1                                           # REQUIRED - Enter IPv4 default gateway.  Not required for DHCPv4
+                  Address: 10.204.10.10                               # REQUIRED - Enter IPv4 address.  If not specified, then IPv4 address will be obtained via DHCPv4.
+                  Prefix: 24                                          # REQUIRED - Enter network prefix size (i.e. 24).  Not required for DHCPv4.
+                  Gateway: 10.204.10.1                                # REQUIRED - Enter IPv4 default gateway.  Not required for DHCPv4
                 IPv6:
-                  Address: fc00:0:0:a::a                                           # REQUIRED - Enter IPv6 address in quotes.  If not specified, then IPv6 address will be obtained via SLAAC/DHCPv6.
-                  Prefix: 64                                            # REQUIRED - Enter network prefix size (i.e. 64).  Not required for SLAAC/DHCPv6.
+                  Address: fc00:0:0:a::a                              # REQUIRED - Enter IPv6 address in quotes.  If not specified, then IPv6 address will be obtained via SLAAC/DHCPv6.
+                  Prefix: 64                                          # REQUIRED - Enter network prefix size (i.e. 64).  Not required for SLAAC/DHCPv6.
                   Gateway:                                            # OPTIONAL - Enter IPv6 default gateway.  Not required as VM should learn IPv6 gateway via router advertisements.
               - IPv4:
                   Address:                                            # REQUIRED - Enter IPv4 address.  If not specified, then IPv4 address will be obtained via DHCPv4.
@@ -215,49 +215,44 @@
                 Install: true                                         # REQUIRED - Options: true, false.   Indicates whether to install SSH Server VM provisioning.
                 AllowPW: true                                         # REQUIRED - Options: true, false.   Indicates whether to allow passwords for SSH Server authentication.
             Directories:
-              - Name: LogDir                                                # REQUIRED - Descriptive name for template entry.  If not specified, entry will be skipped
-                Path: /var/log/named                                                # REQUIRED - Absolute path of the directory which needs to be created.
-                Owner: bind:bind                                               # OPTIONAL - Linux user to change the owner to.  If not specified, no ownership changes are made.
+              - Name: LogDir                                          # REQUIRED - Descriptive name for template entry.  If not specified, entry will be skipped
+                Path: /var/log/named                                  # REQUIRED - Absolute path of the directory which needs to be created.
+                Owner: bind:bind                                      # OPTIONAL - Linux user to change the owner to.  If not specified, no ownership changes are made.
                 Permissions:                                          # OPTIONAL - Linux file mode bit permissions to set the directory to.  If not specified, directory permissions are not changed.
             Templates:                                                #---------All template filenames must be unique
-              - Name: BINDNamedConf                                                # REQUIRED - Descriptive name for template entry.  If not specified, entry will be skipped
-                Source: "{{ Target.TemplateFolder }}/BIND_v9_named.conf"                                              # REQUIRED - Source Jinja2 template is specified here
-                FinalDestination: /etc/bind/named.conf                                    # REQUIRED - Final location within the VM where the rendered template will be copied to.  Must be an absolute path.
+              - Name: BINDNamedConf                                   # REQUIRED - Descriptive name for template entry.  If not specified, entry will be skipped
+                Source: "{{ Target.TemplateFolder }}/BIND_v9_named.conf"     # REQUIRED - Source Jinja2 template is specified here
+                Destination: /etc/bind/named.conf                     # REQUIRED - Final location within the VM where the rendered template will be copied to.  Must be an absolute path.
                 Owner:                                                # OPTIONAL - Linux user to change the owner to.  If not specified, no ownership changes are made.
                 Permissions:                                          # OPTIONAL - Linux file mode bit permissions to set the file to.  If not specified, file permissions are not changed.
-              - Name: BINDNamedConfOptions                                                # REQUIRED - Descriptive name for template entry.  If not specified, entry will be skipped
-                Source: "{{ Target.TemplateFolder }}/BIND_v9_named.conf.options.j2"                                              # REQUIRED - Source Jinja2 template is specified here
-                FinalDestination: /etc/bind/named.conf.options                                    # REQUIRED - Final location within the VM where the rendered template will be copied to.  Must be an absolute path.
+              - Name: BINDNamedConfOptions                            # REQUIRED - Descriptive name for template entry.  If not specified, entry will be skipped
+                Source: "{{ Target.TemplateFolder }}/BIND_v9_named.conf.options.j2"     # REQUIRED - Source Jinja2 template is specified here
+                Destination: /etc/bind/named.conf.options             # REQUIRED - Final location within the VM where the rendered template will be copied to.  Must be an absolute path.
                 Owner:                                                # OPTIONAL - Linux user to change the owner to.  If not specified, no ownership changes are made.
                 Permissions:                                          # OPTIONAL - Linux file mode bit permissions to set the file to.  If not specified, file permissions are not changed.
-              - Name: BINDNamedConfLocal                                                # REQUIRED - Descriptive name for template entry.  If not specified, entry will be skipped
-                Source: "{{ Target.TemplateFolder }}/BIND_v9_named.conf.local.j2"                                              # REQUIRED - Source Jinja2 template is specified here
-                FinalDestination: /etc/bind/named.conf.local                                    # REQUIRED - Final location within the VM where the rendered template will be copied to.  Must be an absolute path.
+              - Name: BINDNamedConfLocal                              # REQUIRED - Descriptive name for template entry.  If not specified, entry will be skipped
+                Source: "{{ Target.TemplateFolder }}/BIND_v9_named.conf.local.j2"      # REQUIRED - Source Jinja2 template is specified here
+                Destination: /etc/bind/named.conf.local               # REQUIRED - Final location within the VM where the rendered template will be copied to.  Must be an absolute path.
                 Owner:                                                # OPTIONAL - Linux user to change the owner to.  If not specified, no ownership changes are made.
                 Permissions:                                          # OPTIONAL - Linux file mode bit permissions to set the file to.  If not specified, file permissions are not changed.
-              - Name: BINDForwardZone                                                # REQUIRED - Descriptive name for template entry.  If not specified, entry will be skipped
-                Source: "{{ Target.TemplateFolder }}/BIND_v9_db.forwardzone.j2"                                              # REQUIRED - Source Jinja2 template is specified here
-                FinalDestination: "/var/lib/bind/db.{{ Common.DNS.Domain | lower }}"                                    # REQUIRED - Final location within the VM where the rendered template will be copied to.  Must be an absolute path.
+              - Name: BINDForwardZone                                 # REQUIRED - Descriptive name for template entry.  If not specified, entry will be skipped
+                Source: "{{ Target.TemplateFolder }}/BIND_v9_db.forwardzone.j2"     # REQUIRED - Source Jinja2 template is specified here
+                Destination: "/var/lib/bind/db.{{ Common.DNS.Domain | lower }}"     # REQUIRED - Final location within the VM where the rendered template will be copied to.  Must be an absolute path.
                 Owner:                                                # OPTIONAL - Linux user to change the owner to.  If not specified, no ownership changes are made.
                 Permissions:                                          # OPTIONAL - Linux file mode bit permissions to set the file to.  If not specified, file permissions are not changed.
-              - Name: BINDReverseZoneIPv4                                                # REQUIRED - Descriptive name for template entry.  If not specified, entry will be skipped
-                Source: "{{ Target.TemplateFolder }}/BIND_v9_db.reversezoneipv4.j2"                                              # REQUIRED - Source Jinja2 template is specified here
-                FinalDestination: "/var/lib/bind/db.{{ Pod.BaseNetwork.IPv4 }}"                                    # REQUIRED - Final location within the VM where the rendered template will be copied to.  Must be an absolute path.
+              - Name: BINDReverseZoneIPv4                             # REQUIRED - Descriptive name for template entry.  If not specified, entry will be skipped
+                Source: "{{ Target.TemplateFolder }}/BIND_v9_db.reversezoneipv4.j2"     # REQUIRED - Source Jinja2 template is specified here
+                Destination: "/var/lib/bind/db.{{ Pod.BaseNetwork.IPv4 }}"              # REQUIRED - Final location within the VM where the rendered template will be copied to.  Must be an absolute path.
                 Owner:                                                # OPTIONAL - Linux user to change the owner to.  If not specified, no ownership changes are made.
                 Permissions:                                          # OPTIONAL - Linux file mode bit permissions to set the file to.  If not specified, file permissions are not changed.
-              - Name: BINDReverseZoneIPv6                                                # REQUIRED - Descriptive name for template entry.  If not specified, entry will be skipped
-                Source: "{{ Target.TemplateFolder }}/BIND_v9_db.reversezoneipv6.j2"                                              # REQUIRED - Source Jinja2 template is specified here
-                FinalDestination: /var/lib/bind/db.fd                                    # REQUIRED - Final location within the VM where the rendered template will be copied to.  Must be an absolute path.
-                Owner:                                                # OPTIONAL - Linux user to change the owner to.  If not specified, no ownership changes are made.
-                Permissions:                                          # OPTIONAL - Linux file mode bit permissions to set the file to.  If not specified, file permissions are not changed.
-              - Name:                                                 # REQUIRED - Descriptive name for template entry.  If not specified, entry will be skipped
-                Source:                                               # REQUIRED - Source Jinja2 template is specified here
-                FinalDestination:                                     # REQUIRED - Final location within the VM where the rendered template will be copied to.  Must be an absolute path.
+              - Name: BINDReverseZoneIPv6                             # REQUIRED - Descriptive name for template entry.  If not specified, entry will be skipped
+                Source: "{{ Target.TemplateFolder }}/BIND_v9_db.reversezoneipv6.j2"     # REQUIRED - Source Jinja2 template is specified here
+                Destination: /var/lib/bind/db.fd                      # REQUIRED - Final location within the VM where the rendered template will be copied to.  Must be an absolute path.
                 Owner:                                                # OPTIONAL - Linux user to change the owner to.  If not specified, no ownership changes are made.
                 Permissions:                                          # OPTIONAL - Linux file mode bit permissions to set the file to.  If not specified, file permissions are not changed.
               - Name:                                                 # REQUIRED - Descriptive name for template entry.  If not specified, entry will be skipped
                 Source:                                               # REQUIRED - Source Jinja2 template is specified here
-                FinalDestination:                                     # REQUIRED - Final location within the VM where the rendered template will be copied to.  Must be an absolute path.
+                Destination:                                          # REQUIRED - Final location within the VM where the rendered template will be copied to.  Must be an absolute path.
                 Owner:                                                # OPTIONAL - Linux user to change the owner to.  If not specified, no ownership changes are made.
                 Permissions:                                          # OPTIONAL - Linux file mode bit permissions to set the file to.  If not specified, file permissions are not changed.
             Packages:
@@ -268,10 +263,13 @@
               - ntp
               - ntpstat
               - wget
-            Commands:                                                 # OPTIONAL - List of commands to run post install to configure the VM
-              - ls
+            Commands:                                                 # OPTIONAL - List of commands to run post install to configure the VM.  These commands are run using 'sudo'.
+              Before:                                                 #---------These commands are executed after provisioning of the VM, but BEFORE any of the group, package, or template VM-specific actions are performed.
+                -                                                     # OPTIONAL - List of commands to run.   If no command, must leave an empty list, which is just a single '-'.
+              After:                                                  #---------These commands are executed after provisioning of the VM, and AFTER  all of the group, package, or template VM-specific actions are performed.
+                - ls                                                  # OPTIONAL - List of commands to run.   If no command, must leave an empty list, which is just a single '-'.
       - VMName:                                                       # OPTIONAL - If not specified, the following is used:  "{{ SiteCode }}-{{ item.Software.Vendor }}-{{ item.Software.Product}}-{{ item.Software.Version}}-VM-{{ '%03d'|format(loop_idx+1|int) }}"
-        Deploy: false                                                  # REQUIRED - Boolean to control if the VM is to be deployed or not
+        Deploy: false                                                 # REQUIRED - Boolean to control if the VM is to be deployed or not
         Deployment:
           Target: NESTED                                              # REQUIRED - Options: PHYSICAL, NESTED
           Cluster: ComputeA                                           # Only applicable for NESTED
@@ -471,8 +469,11 @@
             Packages:
               - traceroute
               - dnsutils
-            Commands:                                                 # OPTIONAL - List of commands to run post install to configure the VM
-              - ls
+            Commands:                                                 # OPTIONAL - List of commands to run post install to configure the VM.  These commands are run using 'sudo'.
+              Before:                                                 #---------These commands are executed after provisioning of the VM, but BEFORE any of the group, package, or template VM-specific actions are performed.
+                -
+              After:                                                  #---------These commands are executed after provisioning of the VM, and AFTER  all of the group, package, or template VM-specific actions are performed.
+                - ls
 
 
   tasks:

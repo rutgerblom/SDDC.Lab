@@ -851,7 +851,7 @@
         - vm_deployed_status is failed
         - item.Deploy
 
-    - name: Install Linux packages on {{ VMInfo.VMName }} VM
+    - name: Install VM-specific Linux packages on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
@@ -892,6 +892,32 @@
 ##
 ## Perform VM-specific PostInstall actions
 ##
+
+#
+# Execute User-Specified 'Before' Commands
+#
+    - name: Execute VM-specific 'Before' commands on {{ VMInfo.VMName }} VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ VMInfo.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "{{ command }}"
+        wait_for_process: true
+      loop: "{{ item.OS.PostInstall.Commands.Before | default([]) }}"
+      loop_control:
+        loop_var: command
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+        - item.OS.PostInstall.Commands.Before is defined
+        - command is not none
+
+
 
 #
 # Create Directories
@@ -988,7 +1014,7 @@
         - vm_deployed_status is failed
         - item.Deploy
         - item.OS.PostInstall.Templates is defined
-        - template_item.FinalDestination is not none
+        - template_item.Destination is not none
         - template_item.Source is not none
         - template_item.Name is not none
 
@@ -1003,7 +1029,7 @@
         vm_password: "{{ item.OS.Credential.Password }}"
         copy:
           src: "{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}/Templates/File_{{ template_idx }}"
-          dest: "/home/{{ item.OS.Credential.User }}/{{ template_item.FinalDestination | basename }}"
+          dest: "/home/{{ item.OS.Credential.User }}/{{ template_item.Destination | basename }}"
       loop: "{{ item.OS.PostInstall.Templates | default([]) }}"
       loop_control:
         loop_var: template_item
@@ -1012,7 +1038,7 @@
         - vm_deployed_status is failed
         - item.Deploy
         - item.OS.PostInstall.Templates is defined
-        - template_item.FinalDestination is not none
+        - template_item.Destination is not none
         - template_item.Source is not none
         - template_item.Name is not none
 
@@ -1026,7 +1052,7 @@
         vm_username: "{{ item.OS.Credential.User }}"
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
-        vm_shell_args: "mv /home/{{ item.OS.Credential.User }}/{{ template_item.FinalDestination | basename }} {{ template_item.FinalDestination }}"
+        vm_shell_args: "mv /home/{{ item.OS.Credential.User }}/{{ template_item.Destination | basename }} {{ template_item.Destination }}"
         wait_for_process: true
       loop: "{{ item.OS.PostInstall.Templates | default([]) }}"
       loop_control:
@@ -1035,7 +1061,7 @@
         - vm_deployed_status is failed
         - item.Deploy
         - item.OS.PostInstall.Templates is defined
-        - template_item.FinalDestination is not none
+        - template_item.Destination is not none
         - template_item.Source is not none
         - template_item.Name is not none
 
@@ -1049,7 +1075,7 @@
         vm_username: "{{ item.OS.Credential.User }}"
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
-        vm_shell_args: "chmod {{ template_item.Permissions }} {{ template_item.FinalDestination }}"
+        vm_shell_args: "chmod {{ template_item.Permissions }} {{ template_item.Destination }}"
         wait_for_process: true
       loop: "{{ item.OS.PostInstall.Templates | default([]) }}"
       loop_control:
@@ -1061,7 +1087,7 @@
         - template_item.Name is not none
         - template_item.Source is not none
         - template_item.Permissions is not none
-        - template_item.FinalDestination is not none
+        - template_item.Destination is not none
 
     - name: Set owner on moved VM-specific rendered Jinja2 templates
       community.vmware.vmware_vm_shell:
@@ -1073,7 +1099,7 @@
         vm_username: "{{ item.OS.Credential.User }}"
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
-        vm_shell_args: "chown {{ template_item.Owner }} {{ template_item.FinalDestination }}"
+        vm_shell_args: "chown {{ template_item.Owner }} {{ template_item.Destination }}"
         wait_for_process: true
       loop: "{{ item.OS.PostInstall.Templates | default([]) }}"
       loop_control:
@@ -1083,14 +1109,14 @@
         - template_item.Name is not none
         - template_item.Owner is not none
         - template_item.Source is not none
-        - template_item.FinalDestination is not none
+        - template_item.Destination is not none
         - vm_deployed_status is failed
         - item.Deploy
 
 #
-# Execute User-Specified Commands
+# Execute User-Specified 'After' Commands
 #
-    - name: Execute VM-specific commands on {{ VMInfo.VMName }} VM
+    - name: Execute VM-specific 'After' commands on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
@@ -1102,13 +1128,13 @@
         vm_shell: /usr/bin/sudo
         vm_shell_args: "{{ command }}"
         wait_for_process: true
-      loop: "{{ item.OS.PostInstall.Commands | default([]) }}"
+      loop: "{{ item.OS.PostInstall.Commands.After | default([]) }}"
       loop_control:
         loop_var: command
       when:
         - vm_deployed_status is failed
         - item.Deploy
-        - item.OS.PostInstall.Commands is defined
+        - item.OS.PostInstall.Commands.After is defined
         - command is not none
 
     - name: Flush unwritten data to disk on {{ VMInfo.VMName }} VM
