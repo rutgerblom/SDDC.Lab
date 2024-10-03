@@ -2725,3 +2725,11 @@
   - Added additional bounds checking to many tasks in the playbook.
   - Added ```REQUIRED``` and ```OPTIONAL``` designations to most VM configuration items, including options and default values for some items.
   - Where possible, all installer files are now created within ```{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}```
+
+## Dev-v8.0.0 02-OCTOBER-2024
+
+### Added by Luis Chanu
+  - To differentiate between 'runbook' actions, and 'VM-specific' actions (i.e., those dictated in the ```VMs``` datastructure), tasks that are VM specific have been updated to indicate 'VM-specific' in their name.
+  - Added ```Before``` and ```After``` sections to the ```VMs.OS.PostInstall.Commands``` object.  The ```Before``` commands are executed before any VM-specific action is performed (i.e. Create groups, install packages, render templates), while the ```After``` commands are executed at the very end of the VM build process, after all other VM-specific actions are performed.
+  - Removed unnecessary command from ```templates/Ubuntu_Server_24.04_runbook.j2```.
+  - Renamed ```FinalDestination``` to ```Destination``` in the ```VMs``` data structure.

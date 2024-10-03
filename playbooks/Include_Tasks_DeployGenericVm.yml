@@ -10,7 +10,6 @@
 ##               be implemented.
 ##
 ##  ToDo Items:
-##    1) Add Jinja2 loop variables in VM structure to support user-specific post-deployment rendering
 ##
 ---
     - name: Include_Tasks_DeployGenericVm_Playbook
@@ -389,20 +388,20 @@
         disk: "{{ vm_hardware.disks }}"
         networks: "{{ vm_hardware.networks }}"
         hardware:
-          version: "{{ (item.HardwareSettings.Version != '') | ternary(item.HardwareSettings.Version, 'latest', 'latest') }}"
-          boot_firmware: "{{ (item.VMOptions.BootOptions.Firmware != '') | ternary(item.VMOptions.BootOptions.Firmware, 'bios', 'bios') }}"
-          nested_virt: "{{ (item.HardwareSettings.NestedVirtualization != '') | ternary(item.HardwareSettings.NestedVirtualization, true, true) }}"
+          version: "{{ (item.HardwareSettings.Version is not none) | ternary(item.HardwareSettings.Version, 'latest', 'latest') }}"
+          boot_firmware: "{{ (item.VMOptions.BootOptions.Firmware is not none) | ternary(item.VMOptions.BootOptions.Firmware, 'bios', 'bios') }}"
+          nested_virt: "{{ (item.HardwareSettings.NestedVirtualization is not none) | ternary(item.HardwareSettings.NestedVirtualization, 'true', 'true') }}"
           memory_mb: "{{ item.HardwareSettings.Memory.Size }}"
-          mem_reservation: "{{ (item.HardwareSettings.Memory.Reservation != '') | ternary(item.HardwareSettings.Memory.Reservation, 0, 0) }}"
-          mem_shares_level: "{{ (item.HardwareSettings.Memory.SharesLevel != '') | ternary(item.HardwareSettings.Memory.SharesLevel, 'normal', 'normal') }}"
-          hotadd_memory: "{{ (item.HardwareSettings.Memory.AllowHotAdd != '') | ternary(item.HardwareSettings.Memory.AllowHotAdd, false, false) }}"
+          mem_reservation: "{{ (item.HardwareSettings.Memory.Reservation is not none) | ternary(item.HardwareSettings.Memory.Reservation, 0, 0) }}"
+          mem_shares_level: "{{ (item.HardwareSettings.Memory.SharesLevel is not none) | ternary(item.HardwareSettings.Memory.SharesLevel, 'normal', 'normal') }}"
+          hotadd_memory: "{{ (item.HardwareSettings.Memory.AllowHotAdd is not none) | ternary(item.HardwareSettings.Memory.AllowHotAdd, 'false', 'false') }}"
           num_cpus: "{{ item.HardwareSettings.CPU.Quantity }}"
           num_cpu_cores_per_socket: "{{ item.HardwareSettings.CPU.CoresPerSocket }}"
-          cpu_shares_level: "{{ (item.HardwareSettings.CPU.SharesLevel != '') | ternary(item.HardwareSettings.CPU.SharesLevel, 'normal', 'normal') }}"
-          cpu_reservation: "{{ (item.HardwareSettings.CPU.Reservation != '') | ternary(item.HardwareSettings.CPU.Reservation, 0, 0) }}"
-          hotadd_cpu: "{{ (item.HardwareSettings.CPU.AllowHotAdd != '') | ternary(item.HardwareSettings.CPU.AllowHotAdd, false, false) }}"
-          hotremove_cpu: "{{ (item.HardwareSettings.CPU.AllowHotRemove != '') | ternary(item.HardwareSettings.CPU.AllowHotRemove, false, false) }}"
-          scsi: "{{ (item.HardwareSettings.Storage.Controller != '') | ansible.builtin.ternary(item.HardwareSettings.Storage.Controller, 'paravirtual', 'paravirtual') }}"
+          cpu_shares_level: "{{ (item.HardwareSettings.CPU.SharesLevel is not none) | ternary(item.HardwareSettings.CPU.SharesLevel, 'normal', 'normal') }}"
+          cpu_reservation: "{{ (item.HardwareSettings.CPU.Reservation is not none) | ternary(item.HardwareSettings.CPU.Reservation, 0, 0) }}"
+          hotadd_cpu: "{{ (item.HardwareSettings.CPU.AllowHotAdd is not none) | ternary(item.HardwareSettings.CPU.AllowHotAdd, 'false', 'false') }}"
+          hotremove_cpu: "{{ (item.HardwareSettings.CPU.AllowHotRemove is not none) | ternary(item.HardwareSettings.CPU.AllowHotRemove, 'false', 'false') }}"
+          scsi: "{{ (item.HardwareSettings.Storage.Controller is not none) | ansible.builtin.ternary(item.HardwareSettings.Storage.Controller, 'paravirtual', 'paravirtual') }}"
         cdrom:
           - controller_number: 0
             unit_number: 0
@@ -852,7 +851,7 @@
         - vm_deployed_status is failed
         - item.Deploy
 
-    - name: Install Linux packages on {{ VMInfo.VMName }} VM
+    - name: Install VM-specific Linux packages on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
@@ -891,13 +890,39 @@
 
 
 ##
-## Perform user-specified PostInstall actions
+## Perform VM-specific PostInstall actions
 ##
+
+#
+# Execute User-Specified 'Before' Commands
+#
+    - name: Execute VM-specific 'Before' commands on {{ VMInfo.VMName }} VM
+      community.vmware.vmware_vm_shell:
+        hostname: "{{ VMTarget.FQDN }}"
+        username: "{{ VMTarget.User }}"
+        password: "{{ VMTarget.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        vm_id: "{{ VMInfo.VMName }}"
+        vm_username: "{{ item.OS.Credential.User }}"
+        vm_password: "{{ item.OS.Credential.Password }}"
+        vm_shell: /usr/bin/sudo
+        vm_shell_args: "{{ command }}"
+        wait_for_process: true
+      loop: "{{ item.OS.PostInstall.Commands.Before | default([]) }}"
+      loop_control:
+        loop_var: command
+      when:
+        - vm_deployed_status is failed
+        - item.Deploy
+        - item.OS.PostInstall.Commands.Before is defined
+        - command is not none
+
+
 
 #
 # Create Directories
 #
-    - name: Create user-specified directories on {{ VMInfo.VMName }} VM
+    - name: Create VM-specific directories on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
@@ -919,7 +944,7 @@
         - directory_item.Name is not none
         - directory_item.Path is not none
 
-    - name: Set permissions on user-specified directories on {{ VMInfo.VMName }} VM
+    - name: Set VM-specific permissions on directories on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
@@ -942,7 +967,7 @@
         - directory_item.Name is not none
         - directory_item.Path is not none
 
-    - name: Set owner on user-specified directories on {{ VMInfo.VMName }} VM
+    - name: Set VM-specific owner on directories on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
@@ -968,7 +993,7 @@
 #
 # Render Jinja2 templates and move them to their final location
 #
-    - name: Create temp directory for user-specified rendered Jinja2 templates
+    - name: Create temp directory for VM-specific rendered Jinja2 templates
       ansible.builtin.file:
         path: "{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}/Templates"
         state: directory
@@ -976,7 +1001,7 @@
         - vm_deployed_status is failed
         - item.Deploy
 
-    - name: Render user-specified Jinja2 templates locally within the 'Installer' directory
+    - name: Render VM-specific Jinja2 templates locally within the 'Installer' directory
       ansible.builtin.template:
         src: "{{ template_item.Source }}"
         dest: "{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}/Templates/File_{{ template_idx }}"
@@ -989,11 +1014,11 @@
         - vm_deployed_status is failed
         - item.Deploy
         - item.OS.PostInstall.Templates is defined
-        - template_item.FinalDestination is not none
+        - template_item.Destination is not none
         - template_item.Source is not none
         - template_item.Name is not none
 
-    - name: Copy rendered user-specific Jinja2 templates to staging area in {{ VMInfo.VMName }} VM
+    - name: Copy VM-specific rendered Jinja2 templates to staging area in {{ VMInfo.VMName }} VM
       community.vmware.vmware_guest_file_operation:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
@@ -1004,7 +1029,7 @@
         vm_password: "{{ item.OS.Credential.Password }}"
         copy:
           src: "{{ VMTarget.TempFolder }}/{{ VMTarget.Installer }}/Templates/File_{{ template_idx }}"
-          dest: "/home/{{ item.OS.Credential.User }}/{{ template_item.FinalDestination | basename }}"
+          dest: "/home/{{ item.OS.Credential.User }}/{{ template_item.Destination | basename }}"
       loop: "{{ item.OS.PostInstall.Templates | default([]) }}"
       loop_control:
         loop_var: template_item
@@ -1013,11 +1038,11 @@
         - vm_deployed_status is failed
         - item.Deploy
         - item.OS.PostInstall.Templates is defined
-        - template_item.FinalDestination is not none
+        - template_item.Destination is not none
         - template_item.Source is not none
         - template_item.Name is not none
 
-    - name: Move rendered user-specific Jinja2 templates to their final location in {{ VMInfo.VMName }} VM
+    - name: Move VM-specific rendered Jinja2 templates to their final location in {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
@@ -1027,7 +1052,7 @@
         vm_username: "{{ item.OS.Credential.User }}"
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
-        vm_shell_args: "mv /home/{{ item.OS.Credential.User }}/{{ template_item.FinalDestination | basename }} {{ template_item.FinalDestination }}"
+        vm_shell_args: "mv /home/{{ item.OS.Credential.User }}/{{ template_item.Destination | basename }} {{ template_item.Destination }}"
         wait_for_process: true
       loop: "{{ item.OS.PostInstall.Templates | default([]) }}"
       loop_control:
@@ -1036,11 +1061,11 @@
         - vm_deployed_status is failed
         - item.Deploy
         - item.OS.PostInstall.Templates is defined
-        - template_item.FinalDestination is not none
+        - template_item.Destination is not none
         - template_item.Source is not none
         - template_item.Name is not none
 
-    - name: Set file permissions on moved user-specified Jinja2 rendered templates
+    - name: Set file permissions on moved VM-specific rendered Jinja2 templates
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
@@ -1050,7 +1075,7 @@
         vm_username: "{{ item.OS.Credential.User }}"
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
-        vm_shell_args: "chmod {{ template_item.Permissions }} {{ template_item.FinalDestination }}"
+        vm_shell_args: "chmod {{ template_item.Permissions }} {{ template_item.Destination }}"
         wait_for_process: true
       loop: "{{ item.OS.PostInstall.Templates | default([]) }}"
       loop_control:
@@ -1062,9 +1087,9 @@
         - template_item.Name is not none
         - template_item.Source is not none
         - template_item.Permissions is not none
-        - template_item.FinalDestination is not none
+        - template_item.Destination is not none
 
-    - name: Set owner on moved user-specified Jinja2 rendered templates
+    - name: Set owner on moved VM-specific rendered Jinja2 templates
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
@@ -1074,7 +1099,7 @@
         vm_username: "{{ item.OS.Credential.User }}"
         vm_password: "{{ item.OS.Credential.Password }}"
         vm_shell: /usr/bin/sudo
-        vm_shell_args: "chown {{ template_item.Owner }} {{ template_item.FinalDestination }}"
+        vm_shell_args: "chown {{ template_item.Owner }} {{ template_item.Destination }}"
         wait_for_process: true
       loop: "{{ item.OS.PostInstall.Templates | default([]) }}"
       loop_control:
@@ -1084,14 +1109,14 @@
         - template_item.Name is not none
         - template_item.Owner is not none
         - template_item.Source is not none
-        - template_item.FinalDestination is not none
+        - template_item.Destination is not none
         - vm_deployed_status is failed
         - item.Deploy
 
 #
-# Execute User-Specified Commands
+# Execute User-Specified 'After' Commands
 #
-    - name: Execute user-specific commands on {{ VMInfo.VMName }} VM
+    - name: Execute VM-specific 'After' commands on {{ VMInfo.VMName }} VM
       community.vmware.vmware_vm_shell:
         hostname: "{{ VMTarget.FQDN }}"
         username: "{{ VMTarget.User }}"
@@ -1103,13 +1128,13 @@
         vm_shell: /usr/bin/sudo
         vm_shell_args: "{{ command }}"
         wait_for_process: true
-      loop: "{{ item.OS.PostInstall.Commands | default([]) }}"
+      loop: "{{ item.OS.PostInstall.Commands.After | default([]) }}"
       loop_control:
         loop_var: command
       when:
         - vm_deployed_status is failed
         - item.Deploy
-        - item.OS.PostInstall.Commands is defined
+        - item.OS.PostInstall.Commands.After is defined
         - command is not none
 
     - name: Flush unwritten data to disk on {{ VMInfo.VMName }} VM
