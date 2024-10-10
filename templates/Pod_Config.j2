@@ -59,6 +59,8 @@ Deploy:
       Deploy: {{ Deploy.Product.DNSServer.Deploy }}
     Replication:
       Deploy: {{ Deploy.Product.Replication.Deploy }}
+    SDDCMgr:
+      Deploy: {{ Deploy.Product.SDDCMgr.Deploy }}
     NSXT:
       Federation:
         Deploy: {{ Deploy.Product.NSXT.Federation.Deploy }}
@@ -182,7 +184,16 @@ Deploy:
       Directory: "{{ Software[Deploy.Software.Replication.Vendor][Deploy.Software.Replication.Product]['Installers'][Deploy.Software.Replication.Version]['Location'].Local }}"
       File:      "{{ Software[Deploy.Software.Replication.Vendor][Deploy.Software.Replication.Product]['Installers'][Deploy.Software.Replication.Version].File }}"
       FileExt:   "{{ Software[Deploy.Software.Replication.Vendor][Deploy.Software.Replication.Product]['Installers'][Deploy.Software.Replication.Version].FileExt }}"
-
+    SDDCMgr:
+      Vendor:    "{{ Deploy.Software.SDDCMgr.Vendor }}"
+      Product:   "{{ Deploy.Software.SDDCMgr.Product }}"
+      Version:   "{{ Deploy.Software.SDDCMgr.Version }}"
+      Patch:     {{ Deploy.Software.SDDCMgr.Patch }}
+      Config:    "{{ Deploy.Software.SDDCMgr.Config }}"
+      Installer: "{{ Deploy.Software.SDDCMgr.Installer }}"
+      Directory: "{{ Software[Deploy.Software.SDDCMgr.Vendor][Deploy.Software.SDDCMgr.Product]['Installers'][Deploy.Software.SDDCMgr.Version]['Location'].Local }}"
+      File:      "{{ Software[Deploy.Software.SDDCMgr.Vendor][Deploy.Software.SDDCMgr.Product]['Installers'][Deploy.Software.SDDCMgr.Version].File }}"
+      FileExt:   "{{ Software[Deploy.Software.SDDCMgr.Vendor][Deploy.Software.SDDCMgr.Product]['Installers'][Deploy.Software.SDDCMgr.Version].FileExt }}"
 
 
 Common:
@@ -211,6 +222,10 @@ Nested_vRLI:
 
 Nested_Replication:
   {{ Nested_Replication | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+
+Nested_SDDCMgr:
+  {{ Nested_SDDCMgr | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
 
 Nested_ALB:

@@ -2733,3 +2733,16 @@
   - Added ```Before``` and ```After``` sections to the ```VMs.OS.PostInstall.Commands``` object.  The ```Before``` commands are executed before any VM-specific action is performed (i.e. Create groups, install packages, render templates), while the ```After``` commands are executed at the very end of the VM build process, after all other VM-specific actions are performed.
   - Removed unnecessary command from ```templates/Ubuntu_Server_24.04_runbook.j2```.
   - Renamed ```FinalDestination``` to ```Destination``` in the ```VMs``` data structure.
+  
+## Dev-v8.0.0 09-OCTOBER-2024
+
+### Added by Aaron Ellis
+  - Added initial elements to support deploying an SDDC Manager appliance during POD Build.  
+	- Added SDDC Manager v5.2 to the ```software_sample.yml``` file
+	- Added Nested_SDDC section to the ```config_sample.yml``` file
+	- Updated ```templates/Pod_Config.j2```
+	- Updated ```CreatePodConfig.yml```
+	- Added ```playbooks/DeploySDDCMgr.yml```
+	- Updated ```README.md``` to claim .26 for SDDC Manager 
+	- Tested config builds for true and false, have not tested actual SDDCMgr deployment.
+  - Be Sure to update ```config.yml``` and ```software.yml``` files.

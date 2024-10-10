@@ -74,6 +74,8 @@ Deploy:
       Deploy: false                                       # ALB - Deploy NSX Advanced Load Balancer as part of the Pod deployment.
     Replication:
       Deploy: false                                       # Replication - Deploy a vSphere Replication Appliance as part of the Pod deployment.
+    SDDCMgr:
+      Deploy: false                                       # SDDC Manager - Deploy a SDDC Manager Appliance to the pod (usually only for the first pod or standalone, look for DeployESXiOnly to build out new WLDs).
     NSXT:
       Federation:
         Deploy: false                                     # Indicates if Federation should be deployed as part of the Pod deployment.
@@ -160,6 +162,14 @@ Deploy:
       Patch:   false
       Config:  "{{ SiteCode }}-Replication"
       Installer: "{{ SiteCode }}-Replication"
+    SDDCMgr:                                          # Label used for selection of which template to use during deployment (templates.yml)
+      Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
+      Product: SDDCMgr                                    # Indicates software product you want to deploy from the software repository (software.yml)
+      Version: '5.2'                                      # Indicates which software version you want to deploy from the software repository (software.yml)
+      Patch:   false
+      Config:  "{{ SiteCode }}-SDDCMgr"
+      Installer: "{{ SiteCode }}-SDDCMgr"
+
 
 
 
@@ -808,6 +818,46 @@ Nested_Replication:
           Gateway: "{{ Net.Management.IPv4.Network }}.1"
         IPv6:
           Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(25) }}"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+
+
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ███████ ██████  ██████   ██████ ███    ███  ██████  ██████  
+## ████   ██ ██      ██         ██    ██      ██   ██         ██      ██   ██ ██   ██ ██      ████  ████ ██       ██   ██ 
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ███████ ██   ██ ██   ██ ██      ██ ████ ██ ██   ███ ██████  
+## ██  ██ ██ ██           ██    ██    ██      ██   ██              ██ ██   ██ ██   ██ ██      ██  ██  ██ ██    ██ ██   ██ 
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████ ███████ ██████  ██████   ██████ ██      ██  ██████  ██   ██ 
+##                                                                                                                       
+
+Nested_SDDCMgr:
+  Credential:
+    root:
+      Name: root
+      Password: "{{ Common.Password.Nested }}"
+    admin:
+      Name: admin
+      Password: "{{ Common.Password.Nested }}"
+    local:
+      Name: local
+      Password: "{{ Common.Password.Nested }}"
+    backup:
+      Name: backup
+      Password: "{{ Common.Password.Nested }}"
+    vcf:
+      Name: vcf
+      Password: "{{ Common.Password.Nested }}"
+  Component:
+    Appliance:
+      VMName: "{{ SiteCode }}-SDDCMgr"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-SDDCMgr.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.26{% endif %}"
+      FIPSEnable: false
+      Address:
+        IPv4:
+          Address: "{{ Net.Management.IPv4.Network }}.26"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+          Gateway: "{{ Net.Management.IPv4.Network }}.1"
+        IPv6:
+          Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(26) }}"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
 
 
