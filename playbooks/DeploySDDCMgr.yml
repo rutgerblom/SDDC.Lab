@@ -92,7 +92,7 @@
                                    SDDCMgr local Password: {{ Nested_SDDCMgr.Credential.local.Password }}
                                   SDDCMgr backup Password: {{ Nested_SDDCMgr.Credential.backup.Password }}
                                      SDDCMgr vcf Password: {{ Nested_SDDCMgr.Credential.vcf.Password }}
-                                      SDDCMgr FIPS_Enable: {{ Nested_SDDCMgr.Component.FIPSEnable }}
+                                      SDDCMgr FIPS_Enable: {{ Nested_SDDCMgr.Component.Appliance.FIPSEnable }}
 
                                        SDDCMgr Media Path: {{ Deploy.Software.SDDCMgr.Directory }}
                                        SDDCMgr Media File: {{ Deploy.Software.SDDCMgr.File }}
@@ -138,7 +138,7 @@
           BASIC_AUTH_PASSWORD: "{{ Nested_SDDCMgr.Credential.admin.Password }}"
           BACKUP_PASSWORD: "{{ Nested_SDDCMgr.Credential.backup.Password }}"
           LOCAL_USER_PASSWORD: "{{ Nested_SDDCMgr.Credential.local.Password }}"
-          FIPS_ENABLE: "{{ Nested_SDDCMgr.Component.FIPSEnable }}"
+          FIPS_ENABLE: "{{ Nested_SDDCMgr.Component.Appliance.FIPSEnable }}"
           vami.hostname: "{{ Nested_SDDCMgr.Component.Appliance.FQDN }}"
           guestinfo.ntp: "{{ Common.NTP.Server1.IPv4 }}"
           vami.ip0.SDDC-Manager: "{{ Nested_SDDCMgr.Component.Appliance.Address.IPv4.Address }}"
@@ -150,19 +150,6 @@
       when:
         - Deploy.Product.SDDCMgr.Deploy
         - sddcmgr_check.status != 200
-
-    - name: Start checking if the SDDCMgr Web UI is available
-      ansible.builtin.uri:
-        url: https://{{ Nested_SDDCMgr.Component.Appliance.FQDN }}
-        validate_certs: false
-        timeout: 5
-      register: sddcmgr_webui_check
-      until: sddcmgr_webui_check.status == 200
-      when:
-        - Deploy.Product.SDDCMgr.Deploy
-        - sddcmgr_check.status != 200
-      retries: 10
-      delay: 60
 
     - name: Write annotation on the SDDCMgr VM
       community.vmware.vmware_guest:
