@@ -73,15 +73,17 @@
                                      SDDCMgr backup User: {{ Nested_SDDCMgr.Credential.backup.Name }}
                                  SDDCMgr backup Password: {{ Nested_SDDCMgr.Credential.backup.Password }}
                                         SDDCMgr vcf User: {{ Nested_SDDCMgr.Credential.vcf.Name }}
-                                    SDDCMgr vcf Password: {{ Nested_SDDCMgr.Credential.vcf.Password }} 
-                                    
+                                    SDDCMgr vcf Password: {{ Nested_SDDCMgr.Credential.vcf.Password }}
+
                                                 OVF Variables
                                                 =============
 
                                     Network PortGroup: {{ Target.PortGroup.Management.Name }}
 
                                  Network IPv4 Address: {{ Nested_SDDCMgr.Component.Appliance.Address.IPv4.Address }}
-                                      Network Netmask: {{ (Nested_SDDCMgr.Component.Appliance.Address.IPv4.Address + '/' + Nested_SDDCMgr.Component.Appliance.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
+                                      Network Netmask: >-
+                                                       {{ (Nested_SDDCMgr.Component.Appliance.Address.IPv4.Address + '/' +
+                                                       Nested_SDDCMgr.Component.Appliance.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
                                       Network Gateway: {{ Nested_SDDCMgr.Component.Appliance.Address.IPv4.Gateway }}
 
                                    Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
@@ -127,7 +129,7 @@
         name: "{{ Nested_SDDCMgr.Component.Appliance.VMName }}"
         ovf: "{{ Deploy.Software.SDDCMgr.Directory }}/{{ Deploy.Software.SDDCMgr.File }}"
         networks:
-          "Management": "{{ Target.PortGroup.Management.Name }}"
+          "Network 1": "{{ Target.PortGroup.Management.Name }}"
         disk_provisioning: "{{ Common.DiskProvisioning }}"
         power_on: true
         wait_for_ip_address: true
@@ -142,7 +144,9 @@
           vami.hostname: "{{ Nested_SDDCMgr.Component.Appliance.FQDN }}"
           guestinfo.ntp: "{{ Common.NTP.Server1.IPv4 }}"
           vami.ip0.SDDC-Manager: "{{ Nested_SDDCMgr.Component.Appliance.Address.IPv4.Address }}"
-          vami.netmask0.SDDC-Manager:  "{{ (Nested_SDDCMgr.Component.Appliance.Address.IPv4.Address + '/' + Nested_SDDCMgr.Component.Appliance.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}"
+          vami.netmask0.SDDC-Manager: >-
+                                      "{{ (Nested_SDDCMgr.Component.Appliance.Address.IPv4.Address + '/' +
+                                      Nested_SDDCMgr.Component.Appliance.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}"
           vami.gateway.SDDC-Manager: "{{ Nested_SDDCMgr.Component.Appliance.Address.IPv4.Gateway }}"
           vami.domain.SDDC-Manager: "{{ Common.DNS.Domain }}"
           vami.searchpath.SDDC-Manager: "{{ Common.DNS.Domain }}"
@@ -173,6 +177,6 @@
                     SDDCMgr backup User: {{ Nested_SDDCMgr.Credential.backup.Name }}
                     SDDCMgr backup Password: {{ Nested_SDDCMgr.Credential.backup.Password }}
                     SDDCMgr vcf User: {{ Nested_SDDCMgr.Credential.vcf.Name }}
-                    SDDCMgr vcf Password: {{ Nested_SDDCMgr.Credential.vcf.Password }} 
+                    SDDCMgr vcf Password: {{ Nested_SDDCMgr.Credential.vcf.Password }}
       when:
         - Deploy.Product.SDDCMgr.Deploy
