@@ -2742,6 +2742,6 @@
 	- Added Nested_SDDC section to the ```config_sample.yml``` file
 	- Updated ```templates/Pod_Config.j2```
 	- Updated ```CreatePodConfig.yml```
-	- Added ```playbooks/DeploySDDCMgr.yml```
+	- Added ```playbooks/DeploySDDCManager.yml```
 	- Updated ```README.md``` to claim .26 for SDDC Manager 
   - Be Sure to update ```config.yml``` and ```software.yml``` files.

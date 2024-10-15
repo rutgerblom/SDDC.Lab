@@ -59,8 +59,8 @@ Deploy:
       Deploy: {{ Deploy.Product.DNSServer.Deploy }}
     Replication:
       Deploy: {{ Deploy.Product.Replication.Deploy }}
-    SDDCMgr:
-      Deploy: {{ Deploy.Product.SDDCMgr.Deploy }}
+    SDDCManager:
+      Deploy: {{ Deploy.Product.SDDCManager.Deploy }}
     NSXT:
       Federation:
         Deploy: {{ Deploy.Product.NSXT.Federation.Deploy }}
@@ -184,16 +184,16 @@ Deploy:
       Directory: "{{ Software[Deploy.Software.Replication.Vendor][Deploy.Software.Replication.Product]['Installers'][Deploy.Software.Replication.Version]['Location'].Local }}"
       File:      "{{ Software[Deploy.Software.Replication.Vendor][Deploy.Software.Replication.Product]['Installers'][Deploy.Software.Replication.Version].File }}"
       FileExt:   "{{ Software[Deploy.Software.Replication.Vendor][Deploy.Software.Replication.Product]['Installers'][Deploy.Software.Replication.Version].FileExt }}"
-    SDDCMgr:
-      Vendor:    "{{ Deploy.Software.SDDCMgr.Vendor }}"
-      Product:   "{{ Deploy.Software.SDDCMgr.Product }}"
-      Version:   "{{ Deploy.Software.SDDCMgr.Version }}"
-      Patch:     {{ Deploy.Software.SDDCMgr.Patch }}
-      Config:    "{{ Deploy.Software.SDDCMgr.Config }}"
-      Installer: "{{ Deploy.Software.SDDCMgr.Installer }}"
-      Directory: "{{ Software[Deploy.Software.SDDCMgr.Vendor][Deploy.Software.SDDCMgr.Product]['Installers'][Deploy.Software.SDDCMgr.Version]['Location'].Local }}"
-      File:      "{{ Software[Deploy.Software.SDDCMgr.Vendor][Deploy.Software.SDDCMgr.Product]['Installers'][Deploy.Software.SDDCMgr.Version].File }}"
-      FileExt:   "{{ Software[Deploy.Software.SDDCMgr.Vendor][Deploy.Software.SDDCMgr.Product]['Installers'][Deploy.Software.SDDCMgr.Version].FileExt }}"
+    SDDCManager:
+      Vendor:    "{{ Deploy.Software.SDDCManager.Vendor }}"
+      Product:   "{{ Deploy.Software.SDDCManager.Product }}"
+      Version:   "{{ Deploy.Software.SDDCManager.Version }}"
+      Patch:     {{ Deploy.Software.SDDCManager.Patch }}
+      Config:    "{{ Deploy.Software.SDDCManager.Config }}"
+      Installer: "{{ Deploy.Software.SDDCManager.Installer }}"
+      Directory: "{{ Software[Deploy.Software.SDDCManager.Vendor][Deploy.Software.SDDCManager.Product]['Installers'][Deploy.Software.SDDCManager.Version]['Location'].Local }}"
+      File:      "{{ Software[Deploy.Software.SDDCManager.Vendor][Deploy.Software.SDDCManager.Product]['Installers'][Deploy.Software.SDDCManager.Version].File }}"
+      FileExt:   "{{ Software[Deploy.Software.SDDCManager.Vendor][Deploy.Software.SDDCManager.Product]['Installers'][Deploy.Software.SDDCManager.Version].FileExt }}"
 
 
 Common:
@@ -224,8 +224,8 @@ Nested_Replication:
   {{ Nested_Replication | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
 
-Nested_SDDCMgr:
-  {{ Nested_SDDCMgr | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+Nested_SDDCManager:
+  {{ Nested_SDDCManager | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
 
 Nested_ALB:

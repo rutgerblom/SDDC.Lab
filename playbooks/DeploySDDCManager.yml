@@ -1,0 +1,182 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/DeploySDDCManager.yml
+##
+---
+- name: DeploySDDCManager.yml
+  hosts: localhost
+  tasks:
+    - name: DeploySDDCManager_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+
+                                          SDDCManager Version: {{ Deploy.Software.SDDCManager.Version }}
+                                  SDDCManager FQDN: {{ Nested_SDDCManager.Component.Appliance.FQDN }}
+                                SDDCManager VMName: {{ Nested_SDDCManager.Component.Appliance.VMName }}
+                                       SDDCManager root User: {{ Nested_SDDCManager.Credential.root.Name }}
+                                   SDDCManager root Password: {{ Nested_SDDCManager.Credential.root.Password }}
+                                      SDDCManager admin User: {{ Nested_SDDCManager.Credential.admin.Name }}
+                                  SDDCManager admin Password: {{ Nested_SDDCManager.Credential.admin.Password }}
+                                      SDDCManager local User: {{ Nested_SDDCManager.Credential.local.Name }}
+                                  SDDCManager local Password: {{ Nested_SDDCManager.Credential.local.Password }}
+                                     SDDCManager backup User: {{ Nested_SDDCManager.Credential.backup.Name }}
+                                 SDDCManager backup Password: {{ Nested_SDDCManager.Credential.backup.Password }}
+                                        SDDCManager vcf User: {{ Nested_SDDCManager.Credential.vcf.Name }}
+                                    SDDCManager vcf Password: {{ Nested_SDDCManager.Credential.vcf.Password }}
+
+                                                OVF Variables
+                                                =============
+
+                                    Network PortGroup: {{ Target.PortGroup.Management.Name }}
+
+                                 Network IPv4 Address: {{ Nested_SDDCManager.Component.Appliance.Address.IPv4.Address }}
+                                      Network Netmask: >-
+                                                       {{ (Nested_SDDCManager.Component.Appliance.Address.IPv4.Address + '/' +
+                                                       Nested_SDDCManager.Component.Appliance.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
+                                      Network Gateway: {{ Nested_SDDCManager.Component.Appliance.Address.IPv4.Gateway }}
+
+                                   Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                   Network DNS Domain: {{ Common.DNS.Domain }}
+
+                                    SDDCManager Root Password: {{ Nested_SDDCManager.Credential.root.Password }}
+                                   SDDCManager admin Password: {{ Nested_SDDCManager.Credential.admin.Password }}
+                                   SDDCManager local Password: {{ Nested_SDDCManager.Credential.local.Password }}
+                                  SDDCManager backup Password: {{ Nested_SDDCManager.Credential.backup.Password }}
+                                     SDDCManager vcf Password: {{ Nested_SDDCManager.Credential.vcf.Password }}
+                                      SDDCManager FIPS_Enable: {{ Nested_SDDCManager.Component.Appliance.FIPSEnable }}
+
+                                       SDDCManager Media Path: {{ Deploy.Software.SDDCManager.Directory }}
+                                       SDDCManager Media File: {{ Deploy.Software.SDDCManager.File }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+    - name: Check if SDDCManager is already installed
+      ansible.builtin.uri:
+        url: https://{{ Nested_SDDCManager.Component.Appliance.FQDN }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+      register: sddcmgr_check
+      ignore_errors: true
+      when:
+        - Deploy.Product.SDDCManager.Deploy
+
+    - name: Deploy SDDCManager from OVA
+      community.vmware.vmware_deploy_ovf:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datastore: "{{ Target.Datastore }}"
+        allow_duplicates: false
+        # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
+        folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}\
+                 {% else %}{{ Target.VMFolder }}{% endif %}"
+        datacenter: "{{ Target.DataCenter }}"
+        cluster: "{{ Target.Cluster }}"
+        name: "{{ Nested_SDDCManager.Component.Appliance.VMName }}"
+        ovf: "{{ Deploy.Software.SDDCManager.Directory }}/{{ Deploy.Software.SDDCManager.File }}"
+        networks:
+          "Network 1": "{{ Target.PortGroup.Management.Name }}"
+        disk_provisioning: "{{ Common.DiskProvisioning }}"
+        power_on: true
+        wait_for_ip_address: true
+        inject_ovf_env: true
+        properties:
+          ROOT_PASSWORD: "{{ Nested_SDDCManager.Credential.root.Password }}"
+          VCF_PASSWORD: "{{ Nested_SDDCManager.Credential.vcf.Password }}"
+          BASIC_AUTH_PASSWORD: "{{ Nested_SDDCManager.Credential.admin.Password }}"
+          BACKUP_PASSWORD: "{{ Nested_SDDCManager.Credential.backup.Password }}"
+          LOCAL_USER_PASSWORD: "{{ Nested_SDDCManager.Credential.local.Password }}"
+          FIPS_ENABLE: "{{ Nested_SDDCManager.Component.Appliance.FIPSEnable }}"
+          vami.hostname: "{{ Nested_SDDCManager.Component.Appliance.FQDN }}"
+          guestinfo.ntp: "{{ Common.NTP.Server1.IPv4 }}"
+          vami.ip0.SDDC-Manager: "{{ Nested_SDDCManager.Component.Appliance.Address.IPv4.Address }}"
+          vami.netmask0.SDDC-Manager: >-
+                                      "{{ (Nested_SDDCManager.Component.Appliance.Address.IPv4.Address + '/' +
+                                      Nested_SDDCManager.Component.Appliance.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}"
+          vami.gateway.SDDC-Manager: "{{ Nested_SDDCManager.Component.Appliance.Address.IPv4.Gateway }}"
+          vami.domain.SDDC-Manager: "{{ Common.DNS.Domain }}"
+          vami.searchpath.SDDC-Manager: "{{ Common.DNS.Domain }}"
+          vami.DNS.SDDC-Manager: "{{ Common.DNS.Server1.IPv4 }}"
+      when:
+        - Deploy.Product.SDDCManager.Deploy
+        - sddcmgr_check.status != 200
+
+    - name: Write annotation on the SDDCManager VM
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
+        name: "{{ Nested_SDDCManager.Component.Appliance.VMName }}"
+        annotation: |
+                    {{ Common.Annotation }}
+                    {{ Deploy.Software.SDDCManager.Vendor }} {{ Deploy.Software.SDDCManager.Product }} {{ Deploy.Software.SDDCManager.Version }}
+                    SDDCManager root User: {{ Nested_SDDCManager.Credential.root.Name }}
+                    SDDCManager root Password: {{ Nested_SDDCManager.Credential.root.Password }}
+                    SDDCManager admin User: {{ Nested_SDDCManager.Credential.admin.Name }}
+                    SDDCManager admin Password: {{ Nested_SDDCManager.Credential.admin.Password }}
+                    SDDCManager local User: {{ Nested_SDDCManager.Credential.local.Name }}
+                    SDDCManager local Password: {{ Nested_SDDCManager.Credential.local.Password }}
+                    SDDCManager backup User: {{ Nested_SDDCManager.Credential.backup.Name }}
+                    SDDCManager backup Password: {{ Nested_SDDCManager.Credential.backup.Password }}
+                    SDDCManager vcf User: {{ Nested_SDDCManager.Credential.vcf.Name }}
+                    SDDCManager vcf Password: {{ Nested_SDDCManager.Credential.vcf.Password }}
+      when:
+        - Deploy.Product.SDDCManager.Deploy

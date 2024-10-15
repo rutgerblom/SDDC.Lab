@@ -248,11 +248,10 @@
     - Deploy.Product.Replication.Deploy
     - Deploy.Setting.DeployESXiOnly == false
 
-# Deploy SDDG Manager (Nested)
-- ansible.builtin.import_playbook: playbooks/DeploySDDCMgr.yml
+# Deploy SDDC Manager (Nested)
+- ansible.builtin.import_playbook: playbooks/DeploySDDCManager.yml
   when: 
-    - Deploy.Product.SDDCMgr.Deploy
-    - Deploy.Setting.DeployESXiOnly == false
+    - Deploy.Product.SDDCManager.Deploy
 
 # Deploy Tanzu
 - ansible.builtin.import_playbook: playbooks/EnableWorkloadManagement.yml
