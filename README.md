@@ -449,6 +449,9 @@ Finally, there are two items to be aware of:
 2. Pod components that are deployed from ISO files, which include Pod-Router and nested ESX hosts, do have their memory reservation and share settings configured as part of their initial deployment.  As such, those memory settings are effective immediately, without the need to stop or restart them.
 
 
+### SDDC Manager Appliance Deployment (v8)
+SDDC.Lab now allows you to deploy an SDDC manager appliance along with a pod.  This can be used to take advantage of the new VCF Import functionality in VCF 5.2
+
 ## Known Items
 Here are some known items to be aware of:
 1. If you attempt to deploy a pod, and receive a message indicating "Error rmdir /home/*username*/SDDC.Lab/Pod-###/iso: [Errno 39] Directory not empty: '/home/*username*/SDDC.Lab/Pod-###/iso'", that's because a previous pod deployment failed (for whatever reason), and some files remained in the /home/*username*/SDDC.Lab/Pod-### directory.  To resolve this issue, delete the entire /home/*username*/SDDC.Lab/Pod-### directory, and then re-deploy the Pod.  If an ISO image is still mounted (which you can check by running 'mount'), then you will need to unmount the ISO image before you can delete the /home/*username*/SDDC.Lab/Pod-### directory.  In all examples, "*username*" is the name of hte logged in user, and the "###" of Pod-### is the 3-digit Pod Number.
