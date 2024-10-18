@@ -2745,3 +2745,9 @@
 	- Added ```playbooks/DeploySDDCManager.yml```
 	- Updated ```README.md``` to claim .26 for SDDC Manager 
   - Be Sure to update ```config.yml``` and ```software.yml``` files.
+
+## Dev-v8.0.0 18-OCTOBER-2024
+
+### Added by Rutger Blom
+  - Added NSX 4.2.1.0 to the ```software_sample.yml``` file (NOT TESTED)
+  - Be sure to update your ```software.yml``` file
