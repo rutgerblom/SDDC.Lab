@@ -94,6 +94,17 @@
         state: absent
       ignore_errors: true
 
+    - name: Remove SDDCManager VM
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_SDDCManager.Component.Appliance.VMName }}"
+        force: true
+        state: absent
+      ignore_errors: true
+
     - name: Remove ALB VM
       community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
@@ -277,7 +288,6 @@
         state: absent
       when:
         - Target.Deployment == "vCenter"
-
 
 
 ##

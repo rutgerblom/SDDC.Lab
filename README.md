@@ -265,6 +265,7 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 23 | vRNI Platform | vRealize Network Insight Platform Appliance | Pod-240-vRNI | No |
 | 24 | vRNI Collector | vRealize Network Insight Collector Node | Pod-240-vRNI-Collector | No |
 | 25 | Replication Appliance | vSphere Replication Appliance | Pod-240-Replication | No |
+| 26 | SDDC Manager Appliance | SDDC Manager Appliance | Pod-240-SDDCManager | No |
 | Thru 100 | Reserved | Reserved for Future Management VMs/Services | | |
 | 101 | Mgmt-1 | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-1 | No |
 | 102 | Mgmt-2 | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-2 | No |
@@ -447,6 +448,9 @@ Finally, there are two items to be aware of:
 
 2. Pod components that are deployed from ISO files, which include Pod-Router and nested ESX hosts, do have their memory reservation and share settings configured as part of their initial deployment.  As such, those memory settings are effective immediately, without the need to stop or restart them.
 
+
+### SDDC Manager Appliance Deployment (v8)
+SDDC.Lab now allows you to deploy an SDDC manager appliance along with a pod.  This can be used to take advantage of the new VCF Import functionality in VCF 5.2
 
 ## Known Items
 Here are some known items to be aware of:
