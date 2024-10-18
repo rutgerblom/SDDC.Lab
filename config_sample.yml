@@ -2718,18 +2718,21 @@ Nested_NSXT:
       TransportZone:
         TZ-VLAN:
           Type: VLAN
+          TZType: VLAN_BACKED                                                                   # tz_type required as of NSX version 4.2.1.0
           Description:
           Switch: NVDS-1
           SetAsDefault: false
           TeamingPolicies: []
         TZ-Edge:
           Type: VLAN
+          TZType: VLAN_BACKED                                                                   # tz_type required as of NSX version 4.2.1.0
           Description: Edge Cluster Peering Segments
           Switch: NVDS-1
           SetAsDefault: false
           TeamingPolicies: [ ToR-A, ToR-B ]
         TZ-Overlay:
           Type: OVERLAY
+          TZType: OVERLAY_BACKED                                                                # tz_type required as of NSX version 4.2.1.0
           Description: GEVEVE Overlay Transport Zone
           Switch: NVDS-1
           SetAsDefault: true
