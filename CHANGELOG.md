@@ -2757,4 +2757,5 @@
 
 ### Added by Rutger Blom
   - Updated default versions in ```config_sample.yml``` to the latest tested versions.
-  - Be Sure to update ```config.yml``` file.
+  - Added NSX-T 3.2.4.1 to the ```software_sample.yml``` file (NOT TESTED)
+  - Be Sure to update ```config.yml``` and ```software.yml``` files.
