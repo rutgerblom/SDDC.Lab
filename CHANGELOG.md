@@ -2752,3 +2752,9 @@
   - Added NSX 4.2.1.0 to the ```software_sample.yml``` file (NOT TESTED)
   - Added "TZType" to the dictionary for NSX Transport Zones in ```config_sample.yml``` as this is a required argument as of NSX version 4.2.1.0
   - Be Sure to update ```config.yml``` and ```software.yml``` files.
+
+## Dev-v8.0.0 19-OCTOBER-2024
+
+### Added by Rutger Blom
+  - Updated default versions in ```config_sample.yml``` to the latest tested versions.
+  - Be Sure to update ```config.yml``` file.
