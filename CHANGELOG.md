@@ -2783,3 +2783,11 @@
   - Correct ```SDDCManager``` version in ```config_sample.yml``` to match updated version numbering
   - Be Sure to update your:
     - ```config.yml``` files
+
+## Dev-v8.0.0 21-OCTOBER-2024
+
+### Added by Rutger Blom
+  - Added vCenter 8.0 Update 3d to the ```software_sample.yml``` file (NOT TESTED)
+  - Be Sure to update your:
+    - ```software.yml```
+    - ```templates.yml```
