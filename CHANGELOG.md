@@ -2763,3 +2763,10 @@
     - ```config.yml```
     - ```software.yml```
     - ```templates.yml```
+
+## Dev-v8.0.0 20-OCTOBER-2024
+
+### Added by Luis Chanu
+  - Update ```SDDCManager``` heading in ```software_sample.yml``` file.
+  - Be Sure to update your:
+    - ```software.yml```
