@@ -2763,3 +2763,19 @@
     - ```config.yml```
     - ```software.yml```
     - ```templates.yml```
+
+## Dev-v8.0.0 20-OCTOBER-2024
+
+### Added by Luis Chanu
+  - Update ```SDDCManager``` heading in ```software_sample.yml``` file.
+  - Be Sure to update your:
+    - ```software.yml```
+  - Added vCenter Server v6.7 Update 3s to the ```software_sample.yml``` and ```templates_sample.yml``` files (NOT SUPPORTED).
+  - Be Sure to update your:
+    - ```software.yml```
+    - ```templates.yml```
+  - Added SDDC Manager v5.2.1 to the ```software_sample.yml``` file.
+  - Renamed existing SDDC Manager v5.2 to v5.2.0 to make it clear what version is in that directory.
+  - Be Sure to update your:
+    - ```software.yml```
+    - ```/Software/VMware/SDDCManager/v5.2``` directory to ```/Software/VMware/SDDCManager/v5.2.0```
