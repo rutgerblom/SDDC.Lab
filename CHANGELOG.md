@@ -2780,3 +2780,6 @@
     - ```software.yml```
     - ```/Software/VMware/SDDCManager/v5.2``` directory to ```/Software/VMware/SDDCManager/v5.2.0```
   - Added ```no_log``` to ```DeployNsxGlobalManager.yml```
+  - Correct ```SDDCManager``` version in ```config_sample.yml``` to match updated version numbering
+  - Be Sure to update your:
+    - ```config.yml``` files
