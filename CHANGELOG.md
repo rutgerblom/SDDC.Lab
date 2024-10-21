@@ -2779,3 +2779,4 @@
   - Be Sure to update your:
     - ```software.yml```
     - ```/Software/VMware/SDDCManager/v5.2``` directory to ```/Software/VMware/SDDCManager/v5.2.0```
+  - Added ```no_log``` to ```DeployNsxGlobalManager.yml```
