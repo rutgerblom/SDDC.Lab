@@ -2770,3 +2770,7 @@
   - Update ```SDDCManager``` heading in ```software_sample.yml``` file.
   - Be Sure to update your:
     - ```software.yml```
+  - Added vCenter Server v6.7 Update 3s to the ```software_sample.yml``` and ```templates_sample.yml``` files (NOT SUPPORTED).
+  - Be Sure to update your:
+    - ```software.yml```
+    - ```templates.yml```
