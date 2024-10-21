@@ -2774,3 +2774,8 @@
   - Be Sure to update your:
     - ```software.yml```
     - ```templates.yml```
+  - Added SDDC Manager v5.2.1 to the ```software_sample.yml``` file.
+  - Renamed existing SDDC Manager v5.2 to v5.2.0 to make it clear what version is in that directory.
+  - Be Sure to update your:
+    - ```software.yml```
+    - ```/Software/VMware/SDDCManager/v5.2``` directory to ```/Software/VMware/SDDCManager/v5.2.0```
