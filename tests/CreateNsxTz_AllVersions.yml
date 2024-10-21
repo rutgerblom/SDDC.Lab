@@ -1,0 +1,58 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: tests/CreateNsxTz_AllVersions.yml
+##
+---
+- name: CreateNsxTz.yml
+  hosts: localhost
+  tasks:
+    - debug:
+        msg: "{{ Deploy.Software.NSXT.Version }} is later than or equal to '4.2.0'"
+      when: Deploy.Software.NSXT.Version is version('4.2.0', '>=')
+
+    - debug:
+        msg: "{{ Deploy.Software.NSXT.Version }} is earlier than '4.2.0'"
+      when: Deploy.Software.NSXT.Version is version('4.2.0', '<')
+
+    - name: Create NSX-T transport zones for both pre and post NSX v4.2.0 using TZType--IGNORE THIS TASK--KEEPING HERE FOR REFERENCE
+      vmware.ansible_for_nsxt.nsxt_transport_zones:
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        resource_type: "TransportZone"
+        display_name: "{{ item.key }}"
+        is_default: "{{ item.value.SetAsDefault }}"
+        description: "{{ item.value.Description }}"
+        transport_type: "{{ item.value.Type }}"
+        # Only include 'tz_type' if NSX is version 4.2.0 or later
+        tz_type: "{{ Deploy.Software.NSXT.Version is version('4.2.0', '>=') | ternary(item.value.TZType, omit) }}"
+        uplink_teaming_policy_names: "{{ item.value.TeamingPolicies }}"
+        state: "present"
+      register: result
+      loop: "{{ Nested_NSXT.System.Fabric.TransportZone | dict2items }}"
+      when:
+        - false
+        - Deploy.Product.NSXT.LocalManager.Deploy
+
+    - name: Create NSX-T transport zones for all NSX versions with only using 'Type' field
+      vmware.ansible_for_nsxt.nsxt_transport_zones:
+        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
+        username: "{{ Nested_NSXT.Credential.admin.Name }}"
+        password: "{{ Nested_NSXT.Credential.admin.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        resource_type: "TransportZone"
+        display_name: "{{ item.key }}"
+        is_default: "{{ item.value.SetAsDefault }}"
+        description: "{{ item.value.Description }}"
+        # Only include 'transport_type' if NSX is version < 4.2.0, and then, use the 'Type' value directly.
+        transport_type: "{{ Deploy.Software.NSXT.Version is version('4.2.0', '<') | ternary(item.value.Type, omit) }}"
+        # Only include 'tz_type' if NSX is version >= 4.2.0, and then, determine 'tz_type' value from 'Type' field value
+        tz_type: "{{ Deploy.Software.NSXT.Version is version('4.2.0', '>=') | ternary( ( (item.value.Type == 'VLAN') | ternary('VLAN_BACKED','OVERLAY_BACKED') ), omit) }}"
+        uplink_teaming_policy_names: "{{ item.value.TeamingPolicies }}"
+        state: "present"
+      register: result
+      loop: "{{ Nested_NSXT.System.Fabric.TransportZone | dict2items }}"
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy
