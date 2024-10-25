@@ -61,6 +61,9 @@ Deploy:
       Deploy: {{ Deploy.Product.Replication.Deploy }}
     SDDCManager:
       Deploy: {{ Deploy.Product.SDDCManager.Deploy }}
+    VCFImportTool:
+      Deploy: {{ Deploy.Product.VCFImportTool.Deploy }}
+      Execute: {{ Deploy.Product.VCFImportTool.Execute }}
     NSXT:
       Federation:
         Deploy: {{ Deploy.Product.NSXT.Federation.Deploy }}
@@ -194,7 +197,16 @@ Deploy:
       Directory: "{{ Software[Deploy.Software.SDDCManager.Vendor][Deploy.Software.SDDCManager.Product]['Installers'][Deploy.Software.SDDCManager.Version]['Location'].Local }}"
       File:      "{{ Software[Deploy.Software.SDDCManager.Vendor][Deploy.Software.SDDCManager.Product]['Installers'][Deploy.Software.SDDCManager.Version].File }}"
       FileExt:   "{{ Software[Deploy.Software.SDDCManager.Vendor][Deploy.Software.SDDCManager.Product]['Installers'][Deploy.Software.SDDCManager.Version].FileExt }}"
-
+    VCFImportTool:
+      Vendor:    "{{ Deploy.Software.VCFImportTool.Vendor }}"
+      Product:   "{{ Deploy.Software.VCFImportTool.Product }}"
+      Version:   "{{ Deploy.Software.VCFImportTool.Version }}"
+      Patch:     {{ Deploy.Software.VCFImportTool.Patch }}
+      Config:    "{{ Deploy.Software.VCFImportTool.Config }}"
+      Installer: "{{ Deploy.Software.VCFImportTool.Installer }}"
+      Directory: "{{ Software[Deploy.Software.VCFImportTool.Vendor][Deploy.Software.VCFImportTool.Product]['Installers'][Deploy.Software.VCFImportTool.Version]['Location'].Local }}"
+      File:      "{{ Software[Deploy.Software.VCFImportTool.Vendor][Deploy.Software.VCFImportTool.Product]['Installers'][Deploy.Software.VCFImportTool.Version].File }}"
+      FileExt:   "{{ Software[Deploy.Software.VCFImportTool.Vendor][Deploy.Software.VCFImportTool.Product]['Installers'][Deploy.Software.VCFImportTool.Version].FileExt }}"
 
 Common:
   {{ Common | to_nice_yaml(indent=2, width=99999) | indent(2) }}

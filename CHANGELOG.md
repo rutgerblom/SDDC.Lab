@@ -2791,3 +2791,13 @@
   - Be Sure to update your:
     - ```software.yml```
     - ```templates.yml```
+
+## Dev-v8.0.0 23-OCTOBER-2024
+
+### Added by Aaron Ellis
+  - Added option to deploy VCFImportTool to SDDCManager and VCSA for prechecks
+    -Precheck output is captured and copied to home directory (next to Pod Documentation)
+  - Added validations to check for SDDCManager and VCFImportTool installers
+  - Be Sure to update your:
+    - ```software.yml```
+    - ```config.yml```

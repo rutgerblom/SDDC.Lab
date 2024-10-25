@@ -953,6 +953,75 @@
         - item.value.Tanzu.SupervisorCluster.Enable
         - not Nested_vCenter.ContentLibrary.TKG.Enable
 
+##
+## Verify SDDCManager installation files exist
+##
+    - name: Check if SDDCManager Installer file exists
+      ansible.builtin.stat:
+        path: "{{ Deploy.Software.SDDCManager.Directory }}/{{ Deploy.Software.SDDCManager.File }}"
+        get_checksum: false
+        get_attributes: false
+        get_mime: false
+        follow: false
+      register: sddcmanager_installer
+      when: Deploy.Product.SDDCManager.Deploy
+
+    - name: Verify SDDCManager Installer exists
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: SDDC Manager installer file could not be found at specified path
+
+            Full Path To File: {{ Deploy.Software.SDDCManager.Directory }}/{{ Deploy.Software.SDDCManager.File }}
+
+          =================================================================================================
+      when:
+        - Deploy.Product.SDDCManager.Deploy
+        - sddcmanager_installer.stat.isreg is not defined or not sddcmanager_installer.stat.isreg
+
+    - name: Set flag if issue found locating vRLI installer file
+      ansible.builtin.set_fact:
+        issuefound: true
+      when:
+        - Deploy.Product.SDDCManager.Deploy
+        - sddcmanager_installer.stat.isreg is not defined or not sddcmanager_installer.stat.isreg
+
+##
+## Verify VCFImportTool installation files exist
+##
+    - name: Check if VCFImportTool Installer file exists
+      ansible.builtin.stat:
+        path: "{{ Deploy.Software.VCFImportTool.Directory }}/{{ Deploy.Software.VCFImportTool.File }}"
+        get_checksum: false
+        get_attributes: false
+        get_mime: false
+        follow: false
+      register: vcfimporttool_installer
+      when: Deploy.Product.VCFImportTool.Deploy
+
+    - name: Verify VCFImportTool Installer exists
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: VCFImportTool installer file could not be found at specified path
+
+            Full Path To File: {{ Deploy.Software.VCFImportTool.Directory }}/{{ Deploy.Software.VCFImportTool.File }}
+
+          =================================================================================================
+      when:
+        - Deploy.Product.VCFImportTool.Deploy
+        - vcfimporttool_installer.stat.isreg is not defined or not vcfimporttool_installer.stat.isreg
+
+    - name: Set flag if issue found locating VCFImportTool installer file
+      ansible.builtin.set_fact:
+        issuefound: true
+      when:
+        - Deploy.Product.VCFImportTool.Deploy
+        - vcfimporttool_installer.stat.isreg is not defined or not vcfimporttool_installer.stat.isreg
 
 ##
 ## Done With Validation Checks

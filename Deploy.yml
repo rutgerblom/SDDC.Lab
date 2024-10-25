@@ -253,6 +253,13 @@
   when: 
     - Deploy.Product.SDDCManager.Deploy
 
+# Deploy VCFImportTool (not compatable with NSX)
+- ansible.builtin.import_playbook: playbooks/DeployVCFImportTool.yml
+  when:
+    - Deploy.Product.VCFImportTool.Deploy
+    - Deploy.Product.SDDCManager.Deploy
+    - Deploy.Setting.DeployESXiOnly == false
+
 # Deploy Tanzu
 - ansible.builtin.import_playbook: playbooks/EnableWorkloadManagement.yml
   when: 

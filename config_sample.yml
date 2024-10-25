@@ -76,6 +76,9 @@ Deploy:
       Deploy: false                                       # Replication - Deploy a vSphere Replication Appliance as part of the Pod deployment.
     SDDCManager:
       Deploy: false                                       # SDDC Manager - Deploy a SDDC Manager Appliance to the pod (usually only for the first pod or standalone, look for DeployESXiOnly to build out new WLDs).
+    VCFImportTool:
+      Deploy: false                                       # VCF Import Tool - Copy and extract VCF Import tool to SDDC Manager and vCenter.  Also executes prechecks on vCenter and copies output file next to pod documentation
+      Execute: false                                      # Execute VCF Import automatically to convert this pod to a managment domain.
     NSXT:
       Federation:
         Deploy: false                                     # Indicates if Federation should be deployed as part of the Pod deployment.
@@ -169,6 +172,13 @@ Deploy:
       Patch:   false
       Config:  "{{ SiteCode }}-SDDCManager"
       Installer: "{{ SiteCode }}-SDDCManager"
+    VCFImportTool:                                        # Label used for selection of which template to use during deployment (templates.yml)
+      Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
+      Product: VCFImportTool                              # Indicates software product you want to deploy from the software repository (software.yml)
+      Version: '5.2.0'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
+      Patch:   false
+      Config:  "{{ SiteCode }}-VCFImportTool"
+      Installer: "{{ SiteCode }}-VCFImportTool"
 
 
 
@@ -860,7 +870,18 @@ Nested_SDDCManager:
           Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(26) }}"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
 
+##
+## ██    ██  ██████ ███████     ██ ███    ███ ██████   ██████  ██████  ████████     ████████  ██████   ██████  ██
+## ██    ██ ██      ██          ██ ████  ████ ██   ██ ██    ██ ██   ██    ██           ██    ██    ██ ██    ██ ██
+## ██    ██ ██      █████       ██ ██ ████ ██ ██████  ██    ██ ██████     ██           ██    ██    ██ ██    ██ ██
+##  ██  ██  ██      ██          ██ ██  ██  ██ ██      ██    ██ ██   ██    ██           ██    ██    ██ ██    ██ ██
+##   ████    ██████ ██          ██ ██      ██ ██       ██████  ██   ██    ██           ██     ██████   ██████  ███████
+##
 
+Execute_VCFImportTool:
+  VCFManagmentDomain:
+    name: "{{ SiteCode }}-mgmtd"
+    
 ##
 ## ███    ██ ███████ ███████ ████████ ███████ ██████          ██████  ███    ██ ███████
 ## ████   ██ ██      ██         ██    ██      ██   ██         ██   ██ ████   ██ ██
