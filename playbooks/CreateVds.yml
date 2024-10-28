@@ -74,7 +74,7 @@
         datacenter_name: "{{ Nested_vCenter.DataCenter }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         switch_name: "{{ Nested_vCenter.Networking.vSwitch.Name }}"
-        switch_version: "{% if Deploy.Software.vCenter.vSwitch == Deploy.Software.ESXi.vSwitch %}{{ omit }}\
+        switch_version: "{% if Deploy.Software.vCenter.vSwitch == Deploy.Software.ESXi.vSwitch %}{{ Deploy.Software.vCenter.vSwitch }}\
                          {% else %}{{ Deploy.Software.ESXi.vSwitch }}{% endif %}"
         mtu: "{{ Nested_vCenter.Networking.vSwitch.Config.MTU }}"
         uplink_quantity: "{{ Nested_vCenter.Networking.vSwitch.Config.NumberOfUplinks }}"

@@ -2801,3 +2801,13 @@
   - Be Sure to update your:
     - ```software.yml```
     - ```config.yml```
+
+## Dev-v8.0.0 28-OCTOBER-2024
+
+### Added by Aaron Ellis
+  - Updated ```playbooks/CreateVds.yml``` to use the actual vSwitch version value from software when vcenter and esxi were matching.
+    - If there two matched previously the version was not passed and the native vcenter verison of a VDS would be created.  This did not follow what was configured in the software.yml file.
+    Updated ```software_sample.yml``` for ESXi and vCenter 7.0 and newer to reflect the correct maximum vswitch version.
+	- To force a lower vDS version modify your software.yml
+  - Be Sure to update your:
+    - ```software.yml```
