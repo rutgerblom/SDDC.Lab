@@ -101,6 +101,7 @@
     - Deploy.Setting.DeployESXiOnly == false
 
 - ansible.builtin.import_playbook: playbooks/RegisterNsxComputeManager.yml
+  when:
     - Deploy.Product.NSXT.LocalManager.Deploy
     - Deploy.Setting.DeployESXiOnly == false
 
