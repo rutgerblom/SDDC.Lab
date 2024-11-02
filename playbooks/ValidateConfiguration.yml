@@ -574,6 +574,8 @@
         get_mime: false
         follow: false
       register: vcenter_installer
+      when:
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Verify vCenter Installer exists
       ansible.builtin.pause:
@@ -588,12 +590,14 @@
           =================================================================================================
       when:
         - vcenter_installer.stat.isreg is not defined or not vcenter_installer.stat.isreg
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Set flag if issue found locating vCenter Server installer file
       ansible.builtin.set_fact:
         issuefound: true
       when:
         - vcenter_installer.stat.isreg is not defined or not vcenter_installer.stat.isreg
+        - not Deploy.Setting.DeployESXiOnly
 
 
 ##
@@ -609,6 +613,7 @@
       register: vcenter_template
       when:
         - Target.Deployment == "vCenter"
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Verify vCenter Server Template file exists (vCenter Installation)
       ansible.builtin.pause:
@@ -624,6 +629,7 @@
       when:
         - Target.Deployment == "vCenter"
         - vcenter_template.stat.isreg is not defined or not vcenter_template.stat.isreg
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Set flag if issue found locating vCenter Server template file (vCenter Installation)
       ansible.builtin.set_fact:
@@ -631,6 +637,7 @@
       when:
         - Target.Deployment == "vCenter"
         - vcenter_template.stat.isreg is not defined or not vcenter_template.stat.isreg
+        - not Deploy.Setting.DeployESXiOnly
 
 
 ##
@@ -646,6 +653,7 @@
       register: vcenter_template
       when:
         - Target.Deployment == "Host"
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Verify vCenter Server Template file exists (Host Installation)
       ansible.builtin.pause:
@@ -661,6 +669,7 @@
       when:
         - Target.Deployment == "Host"
         - vcenter_template.stat.isreg is not defined or not vcenter_template.stat.isreg
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Set flag if issue found locating vCenter Server template file (Host Installation)
       ansible.builtin.set_fact:
@@ -668,6 +677,7 @@
       when:
         - Target.Deployment == "Host"
         - vcenter_template.stat.isreg is not defined or not vcenter_template.stat.isreg
+        - not Deploy.Setting.DeployESXiOnly
 
 
 ##
@@ -754,6 +764,7 @@
       when:
         - Deploy.Product.NSXT.Edge.Deploy
         - not Nested_Cluster.Edge.DeployHosts
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Set flag if NSX-T Edge cannot be deployed
       ansible.builtin.set_fact:
@@ -761,6 +772,7 @@
       when:
         - Deploy.Product.NSXT.Edge.Deploy
         - not Nested_Cluster.Edge.DeployHosts
+        - not Deploy.Setting.DeployESXiOnly
 
 
 ##
@@ -774,7 +786,9 @@
         get_mime: false
         follow: false
       register: nsxt_installer
-      when: Deploy.Product.NSXT.LocalManager.Deploy
+      when:
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Verify NSX-T Installer exists
       ansible.builtin.pause:
@@ -790,6 +804,7 @@
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy
         - nsxt_installer.stat.isreg is not defined or not nsxt_installer.stat.isreg
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Set flag if issue found locating NSX-T installer file
       ansible.builtin.set_fact:
@@ -797,7 +812,7 @@
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy
         - nsxt_installer.stat.isreg is not defined or not nsxt_installer.stat.isreg
-
+        - not Deploy.Setting.DeployESXiOnly
 
 ##
 ## Verify vRLI installation files exist
@@ -810,7 +825,9 @@
         get_mime: false
         follow: false
       register: vrli_installer
-      when: Deploy.Product.vRLI.Deploy
+      when:
+        - Deploy.Product.vRLI.Deploy
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Verify vRLI Installer exists
       ansible.builtin.pause:
@@ -826,6 +843,7 @@
       when:
         - Deploy.Product.vRLI.Deploy
         - vrli_installer.stat.isreg is not defined or not vrli_installer.stat.isreg
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Set flag if issue found locating vRLI installer file
       ansible.builtin.set_fact:
@@ -833,6 +851,7 @@
       when:
         - Deploy.Product.vRLI.Deploy
         - vrli_installer.stat.isreg is not defined or not vrli_installer.stat.isreg
+        - not Deploy.Setting.DeployESXiOnly
 
 
 ##
@@ -853,6 +872,7 @@
       when:
         - Deploy.Product.ALB.Deploy
         - not Nested_vCenter.ContentLibrary.Local.Enable
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Set flag if NSX ALB cannot be deployed
       ansible.builtin.set_fact:
@@ -860,6 +880,7 @@
       when:
         - Deploy.Product.ALB.Deploy
         - not Nested_vCenter.ContentLibrary.Local.Enable
+        - not Deploy.Setting.DeployESXiOnly
 
 
 ##
@@ -880,6 +901,7 @@
       when:
         - Deploy.Product.ALB.Deploy
         - Deploy.Software.ALB.Password == "PASSWORD_AVAILABLE_ON_THE_VMWARE_CUSTOMER_CONNECT_PORTAL"
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Set flag if NSX ALB cannot be deployed
       ansible.builtin.set_fact:
@@ -887,6 +909,7 @@
       when:
         - Deploy.Product.ALB.Deploy
         - Deploy.Software.ALB.Password == "PASSWORD_AVAILABLE_ON_THE_VMWARE_CUSTOMER_CONNECT_PORTAL"
+        - not Deploy.Setting.DeployESXiOnly
 
 
 ##
@@ -900,7 +923,9 @@
         get_mime: false
         follow: false
       register: alb_installer
-      when: Deploy.Product.ALB.Deploy
+      when: 
+        - Deploy.Product.ALB.Deploy
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Verify NSX ALB Installer exists
       ansible.builtin.pause:
@@ -916,6 +941,7 @@
       when:
         - Deploy.Product.ALB.Deploy
         - alb_installer.stat.isreg is not defined or not alb_installer.stat.isreg
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Set flag if issue found locating NSX ALB installer file
       ansible.builtin.set_fact:
@@ -923,6 +949,7 @@
       when:
         - Deploy.Product.ALB.Deploy
         - alb_installer.stat.isreg is not defined or not alb_installer.stat.isreg
+        - not Deploy.Setting.DeployESXiOnly
 
 
 ##
@@ -944,6 +971,7 @@
       when:
         - item.value.Tanzu.SupervisorCluster.Enable
         - not Nested_vCenter.ContentLibrary.TKG.Enable
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Tanzu Supervisor can not be enabled
       ansible.builtin.set_fact:
@@ -952,6 +980,7 @@
       when:
         - item.value.Tanzu.SupervisorCluster.Enable
         - not Nested_vCenter.ContentLibrary.TKG.Enable
+        - not Deploy.Setting.DeployESXiOnly
 
 ##
 ## Verify SDDCManager installation files exist
@@ -964,7 +993,9 @@
         get_mime: false
         follow: false
       register: sddcmanager_installer
-      when: Deploy.Product.SDDCManager.Deploy
+      when:
+        - Deploy.Product.SDDCManager.Deploy
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Verify SDDCManager Installer exists
       ansible.builtin.pause:
@@ -980,6 +1011,7 @@
       when:
         - Deploy.Product.SDDCManager.Deploy
         - sddcmanager_installer.stat.isreg is not defined or not sddcmanager_installer.stat.isreg
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Set flag if issue found locating vRLI installer file
       ansible.builtin.set_fact:
@@ -987,6 +1019,7 @@
       when:
         - Deploy.Product.SDDCManager.Deploy
         - sddcmanager_installer.stat.isreg is not defined or not sddcmanager_installer.stat.isreg
+        - not Deploy.Setting.DeployESXiOnly
 
 ##
 ## Verify VCFImportTool installation files exist
@@ -999,7 +1032,9 @@
         get_mime: false
         follow: false
       register: vcfimporttool_installer
-      when: Deploy.Product.VCFImportTool.Deploy
+      when:
+        - Deploy.Product.VCFImportTool.Deploy
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Verify VCFImportTool Installer exists
       ansible.builtin.pause:
@@ -1015,6 +1050,7 @@
       when:
         - Deploy.Product.VCFImportTool.Deploy
         - vcfimporttool_installer.stat.isreg is not defined or not vcfimporttool_installer.stat.isreg
+        - not Deploy.Setting.DeployESXiOnly
 
     - name: Set flag if issue found locating VCFImportTool installer file
       ansible.builtin.set_fact:
@@ -1022,6 +1058,7 @@
       when:
         - Deploy.Product.VCFImportTool.Deploy
         - vcfimporttool_installer.stat.isreg is not defined or not vcfimporttool_installer.stat.isreg
+        - not Deploy.Setting.DeployESXiOnly
 
 ##
 ## Done With Validation Checks
