@@ -2811,3 +2811,10 @@
 	- To force a lower vDS version modify your software.yml
   - Be Sure to update your:
     - ```software.yml```
+
+## Dev-v8.0.0 02-NOVEMBER-2024
+
+### Added by Rutger Blom
+  - Updated the ESXi kickstart files located in ```templates/``` which are used when deploying nested ESXi hosts. These now include commands to re-create the vmk0 interface so that they are assigned a unique MAC address as opposed to inheriting the MAC address of the nested ESXi hosts uplink interface. This to add support for enabling MAC Learning (and disabling Promiscuous mode) on a Pod's 'Trunk' and 'Mgmt' port groups.
+  - Updated ```playbooks/ValidateConfiguration.yml``` with new conditionals on various task that do not need to run when ```DeployESXiOnly: true```.
+  - Updated ```Deploy.yml``` so that conditional statements are written in the format that is suggested by Ansible lint.
