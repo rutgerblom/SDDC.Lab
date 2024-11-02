@@ -16,9 +16,16 @@ reboot
 # Open busybox and launch commands
 %firstboot --interpreter=busybox
 {% if item.value.EnableSSH %}
+
 # Enable & start remote ESXi Shell (SSH)
 vim-cmd hostsvc/enable_ssh
 vim-cmd hostsvc/start_ssh
+
+# Re-create the vmk0 adapter so that a unique MAC address is assigned and MAC learning can be enabled on the Pod's 'Trunk' and 'Mgmt' port groups.
+esxcli network ip interface remove --interface-name=vmk0
+esxcli network ip interface add --interface-name=vmk0 --portgroup-name='Management Network'
+esxcli network ip interface ipv4 set --interface-name=vmk0 --ipv4={{ item.value.vmk.vmk0.Address.IPv4.Address }} --netmask={{ (item.value.vmk.vmk0.Address.IPv4.Address + '/' + item.value.vmk.vmk0.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }} --type=static
+esxcfg-route -a default {{ item.value.vmk.vmk0.Address.IPv4.Gateway }}
 
 # Enable & start ESXi Shell (TSM)
 vim-cmd hostsvc/enable_esx_shell
