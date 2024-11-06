@@ -2819,3 +2819,9 @@
   - Updated ```playbooks/ValidateConfiguration.yml``` with new conditionals on various task that do not need to run when ```DeployESXiOnly: true```.
   - Updated ```Deploy.yml``` so that conditional statements are written in the format that is suggested by Ansible lint.
   - Updated ```playbooks/PreparePhysical.yml``` so it creates a Pod's 'Trunk' and 'Mgmt' port groups with MAC Learning enabled and Promiscuous mode disabled. This reduces CPU utilization on the physical ESXi host(s) significantly.
+
+## Dev-v8.0.0 05-NOVEMBER-2024
+
+### Added by Luis Chanu
+  - Changed default sizing on NSX Local Manager and NSX Global Manager in ```config_sample.yml``` from ```small``` to ```medium``` to mitigate out-of-memory and stability issues with NSX v4.2.1.0.
+  - Be sure to update your ```config.yml``` file(s) if you are planning to run NSX v4.2.1.0.

@@ -2238,7 +2238,7 @@ Nested_NSXT:
       VMName: "{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-NSXT-GM-1"
       FQDN: "{% if Deploy.Setting.UseDNS %}{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-NSXT-GM-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.8{% endif %}"
       Deployment:
-        Size: small
+        Size: medium                                                                   # Valid size options are 'small', 'medium', 'large', or 'xlarge'
         Role: NSX Global Manager
         EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
         AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -2265,7 +2265,7 @@ Nested_NSXT:
       VMName: "{{ SiteCode }}-NSXT-LM-1"
       FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-NSXT-LM-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.12{% endif %}"
       Deployment:
-        Size: small
+        Size: medium                                                                   # Valid size options are 'small', 'medium', 'large', or 'xlarge'
         Role: NSX Manager
         SiteName: "NSX-{{ SiteCode }}"
         EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
