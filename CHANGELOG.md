@@ -2831,3 +2831,8 @@
 ### Added by Rutger Blom
   - Updated ```requirements.yml``` so that the URL to the ansible-for-nsxt collection points to the latest branch instead of the 3.2.0 branch.
   - Be sure to update the required Ansible collections by running ```ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml```
+
+## Dev-v8.0.0 09-NOVEMBER-2024
+
+### Added by Rutger Blom
+  - Updated ```Undeploy.yml``` so that the task responsible for removing the distributed port groups will complete successfully.
