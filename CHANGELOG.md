@@ -2825,3 +2825,9 @@
 ### Added by Luis Chanu
   - Changed default sizing on NSX Local Manager and NSX Global Manager in ```config_sample.yml``` from ```small``` to ```medium``` to mitigate out-of-memory and stability issues with NSX v4.2.1.0.
   - Be sure to update your ```config.yml``` file(s) if you are planning to run NSX v4.2.1.0.
+
+## Dev-v8.0.0 08-NOVEMBER-2024
+
+### Added by Rutger Blom
+  - Updated ```requirements.yml``` so that the URL to the ansible-for-nsxt collection points to the latest branch instead of the 3.2.0 branch.
+  - Be sure to update the required Ansible collections by running ```ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml```
