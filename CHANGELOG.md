@@ -2851,3 +2851,7 @@
 ### Added by Rutger Blom
   - Changed default sizing on NSX Edge node in ```config_sample.yml``` from ```SMALL``` to ```MEDIUM``` to mitigate stability issues with NSX v4.2.1.0.
   - Be sure to update your ```config.yml``` file(s) if you are planning to run NSX v4.2.1.0.
+  - Added the option to deploy a VMware Cloud Builder appliance. This could be used for VCF greenfield deployments using SDDC.Lab nested ESXi hosts.
+  - Be sure to update your:
+    - ```software.yml```
+    - ```config.yml```
