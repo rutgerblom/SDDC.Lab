@@ -2845,3 +2845,9 @@
 ### Added by Luis Chanu
   - Added NSX version information to NSX v4.2 task that creates the Transport Zone in ```CreateNsxTz.yml```.
   - Added ```LabInfo``` table to ```README.md``` file.
+
+## Dev-v8.0.0 09-NOVEMBER-2024
+
+### Added by Rutger Blom
+  - Changed default sizing on NSX Edge node in ```config_sample.yml``` from ```SMALL``` to ```MEDIUM``` to mitigate stability issues with NSX v4.2.1.0.
+  - Be sure to update your ```config.yml``` file(s) if you are planning to run NSX v4.2.1.0.
