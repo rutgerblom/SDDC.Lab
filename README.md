@@ -12,6 +12,7 @@
 * [Requirements](#requirements)
   * [Recommendations](#recommendations)
 * [Preparations](#preparations)
+* [Tested Ansible Module Versions](#tested-ansible-module-versions)
 * [Upgrade Considerations](#upgrade-considerations)
 * [Networking](#networking)
 * [IP Address Assignments](#ip-address-assignments)
@@ -134,6 +135,19 @@ The following are recommendations based on our experience with deploying Pods:
     NOTE: The above command will prompt you for the 'root' password.  This is needed as the playbook needs to obtain elevated permissions to create the directory tree and change file system permissions within the Software directory.
 
 * Add installation media to the corresponding directories in the Software Library (/Software)
+
+
+## Tested Ansible Module Versions
+Although we try our best to provide detailed instructions and information about installing and using SDDC.Lab, there are some elements that we do not have control over.  One such element are all the Ansible module and components.  On a few occasions, we've run into issues after performing fresh installations or upgrades to those items where things didn't work.  Each time, the issue turned out to be one of the Ansible modules were updated, which caused SDDC.Lab to fail.
+
+To assist you in identifying and troubleshooting this same issue, we created a utility called ```Util_GetLabInfo.sh``` that displays information about your current environment.  You can then compare the output from this utility against "tested" environments.  If you find a discrepency in the version of a given module, that might point you to locating the source of your issue(s).  You can find this utility in the ```utils``` folder, and we hope this information assists you with any troubleshooting that you might need to perform.
+
+Here is a table of "tested" environments for you to compare against:
+
+|    Date    |   Added By  | SDDC.Lab Version | LabInfo file |
+|------------|-------------|------------------|--------------|
+| 8-NOV-2024 |  Luis Chanu |      dev-8       | [LabInfo_20241108.txt](misc/LabInfo/LabInfo_20241108.txt) |
+
 
 
 ## Upgrade Considerations
@@ -489,7 +503,6 @@ As we use SDDC.Lab in our labs, every now-and-then we notice some issues/problem
 | 14-OCT-2022 | 8.0.0 (Build  20519528) | 8.0.0 (Build 20513097) | 4.0.1.1 | NSX-T Federation deployment is not supported due to a Federation onboarding bug with NSX where the Segment paths are not correct within vCenter Server. | Luis Chanu |
 | 26-APR-2023 | 7.0.0U3L | 7.0.0U3L | 3.2.2.1 | NSX-T Federation deployment is not supported due to a Federation onboarding bug with NSX where the Segment paths are not correct within vCenter Server.  This is the same issue discovered with NSX v4.0.1.1.  | Luis Chanu |
 | 09-JUL-2024 | N/A | N/A | N/A | PIP3 ansible package v10.1.0 causes ```"/bin/sh: 1: /usr/bin/env python: not found\n"``` failure during deployment.  Solution is to install ansible package v9.7.0. | Luis Chanu |
-
 
 ## More Information
 For detailed installation, preparation, and deployment steps, please see the "[Deploying your first SDDC.Lab Pod](FirstPod.md)" document.

@@ -2844,3 +2844,4 @@
 
 ### Added by Luis Chanu
   - Added NSX version information to NSX v4.2 task that creates the Transport Zone in ```CreateNsxTz.yml```.
+  - Added ```LabInfo``` table to ```README.md``` file.
