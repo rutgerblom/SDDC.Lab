@@ -1,0 +1,168 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: DeployCloudBuilder.yml
+##
+---
+- name: DeployCloudBuilder.yml
+  hosts: localhost
+  tasks:
+    - name: DeployCloudBuilder_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+
+                                          CloudBuilder Version: {{ Deploy.Software.CloudBuilder.Version }}
+                                  CloudBuilder FQDN: {{ Nested_CloudBuilder.Component.Appliance.FQDN }}
+                                CloudBuilder VMName: {{ Nested_CloudBuilder.Component.Appliance.VMName }}
+                                       CloudBuilder root User: {{ Nested_CloudBuilder.Credential.root.Name }}
+                                   CloudBuilder root Password: {{ Nested_CloudBuilder.Credential.root.Password }}
+                                      CloudBuilder admin User: {{ Nested_CloudBuilder.Credential.admin.Name }}
+                                  CloudBuilder admin Password: {{ Nested_CloudBuilder.Credential.admin.Password }}
+
+                                                OVF Variables
+                                                =============
+
+                                    Network PortGroup: {{ Target.PortGroup.Management.Name }}
+
+                                 Network IPv4 Address: {{ Nested_CloudBuilder.Component.Appliance.Address.IPv4.Address }}
+                                      Network Netmask: >-
+                                                       {{ (Nested_CloudBuilder.Component.Appliance.Address.IPv4.Address + '/' +
+                                                       Nested_CloudBuilder.Component.Appliance.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
+                                      Network Gateway: {{ Nested_CloudBuilder.Component.Appliance.Address.IPv4.Gateway }}
+
+                                   Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                   Network DNS Domain: {{ Common.DNS.Domain }}
+
+                                    CloudBuilder Root Password: {{ Nested_CloudBuilder.Credential.root.Password }}
+                                   CloudBuilder admin Password: {{ Nested_CloudBuilder.Credential.admin.Password }}
+                                   CloudBuilder local Password: {{ Nested_CloudBuilder.Credential.local.Password }}
+                                  CloudBuilder backup Password: {{ Nested_CloudBuilder.Credential.backup.Password }}
+                                     CloudBuilder vcf Password: {{ Nested_CloudBuilder.Credential.vcf.Password }}
+                                      CloudBuilder FIPS_Enable: {{ Nested_CloudBuilder.Component.Appliance.FIPSEnable }}
+
+                                       CloudBuilder Media Path: {{ Deploy.Software.CloudBuilder.Directory }}
+                                       CloudBuilder Media File: {{ Deploy.Software.CloudBuilder.File }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+    - name: Check if CloudBuilder is already installed
+      ansible.builtin.uri:
+        url: https://{{ Nested_CloudBuilder.Component.Appliance.FQDN }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+      register: cloudbuilder_check
+      ignore_errors: true
+      when:
+        - Deploy.Product.CloudBuilder.Deploy
+
+    - name: Deploy CloudBuilder from OVA
+      community.vmware.vmware_deploy_ovf:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datastore: "{{ Target.Datastore }}"
+        allow_duplicates: false
+        # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
+        folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}\
+                 {% else %}{{ Target.VMFolder }}{% endif %}"
+        datacenter: "{{ Target.DataCenter }}"
+        cluster: "{{ Target.Cluster }}"
+        name: "{{ Nested_CloudBuilder.Component.Appliance.VMName }}"
+        ovf: "{{ Deploy.Software.CloudBuilder.Directory }}/{{ Deploy.Software.CloudBuilder.File }}"
+        networks:
+          "Network 1": "{{ Target.PortGroup.Management.Name }}"
+        disk_provisioning: "{{ Common.DiskProvisioning }}"
+        power_on: true
+        wait_for_ip_address: true
+        inject_ovf_env: true
+        properties:
+          ROOT_PASSWORD: "{{ Nested_CloudBuilder.Credential.root.Password }}"
+          ADMIN_USERNAME: "{{ Nested_CloudBuilder.Credential.admin.Name }}"
+          ADMIN_PASSWORD: "{{ Nested_CloudBuilder.Credential.admin.Password }}"
+          FIPS_ENABLE: "{{ Nested_CloudBuilder.Component.Appliance.FIPSEnable }}"
+          guestinfo.hostname: "{{ Nested_CloudBuilder.Component.Appliance.FQDN }}"
+          guestinfo.ntp: "{{ Common.NTP.Server1.IPv4 }}"
+          guestinfo.ip0: "{{ Nested_CloudBuilder.Component.Appliance.Address.IPv4.Address }}"
+          guestinfo.netmask0: >-
+                                      "{{ (Nested_CloudBuilder.Component.Appliance.Address.IPv4.Address + '/' +
+                                      Nested_CloudBuilder.Component.Appliance.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}"
+          guestinfo.gateway: "{{ Nested_CloudBuilder.Component.Appliance.Address.IPv4.Gateway }}"
+          guestinfo.domain: "{{ Common.DNS.Domain }}"
+          guestinfo.searchpath: "{{ Common.DNS.Domain }}"
+          guestinfo.DNS: "{{ Common.DNS.Server1.IPv4 }}"
+      when:
+        - Deploy.Product.CloudBuilder.Deploy
+        - cloudbuilder_check.status != 200
+
+    - name: Write annotation on the CloudBuilder VM
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
+        name: "{{ Nested_CloudBuilder.Component.Appliance.VMName }}"
+        annotation: |
+                    {{ Common.Annotation }}
+                    {{ Deploy.Software.CloudBuilder.Vendor }} {{ Deploy.Software.CloudBuilder.Product }} {{ Deploy.Software.CloudBuilder.Version }}
+                    CloudBuilder root User: {{ Nested_CloudBuilder.Credential.root.Name }}
+                    CloudBuilder root Password: {{ Nested_CloudBuilder.Credential.root.Password }}
+                    CloudBuilder admin User: {{ Nested_CloudBuilder.Credential.admin.Name }}
+                    CloudBuilder admin Password: {{ Nested_CloudBuilder.Credential.admin.Password }}
+      when:
+        - Deploy.Product.CloudBuilder.Deploy
