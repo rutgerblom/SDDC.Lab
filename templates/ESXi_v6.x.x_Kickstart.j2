@@ -45,5 +45,9 @@ esxcli system syslog config set --loghost={{ Common.Syslog.Protocol }}://{{ Comm
 esxcli network ip dns server add --server={{ Common.DNS.Server1.IPv4 }}
 esxcli network ip dns server add --server={{ Common.DNS.Server2.IPv4 }}
 
+# Configure and enable NTP
+esxcli system ntp set --server={{ Common.NTP.Server1.IPv4 }} --server={{ Common.NTP.Server2.IPv4 }}
+esxcli system ntp set --enabled=true
+
 # Reboot ESXi host
 reboot
