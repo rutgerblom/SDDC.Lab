@@ -129,9 +129,9 @@
         wait_for_ip_address: true
         inject_ovf_env: true
         properties:
-          ROOT_PASSWORD: "{{ Nested_CloudBuilder.Credential.root.Password }}"
-          ADMIN_USERNAME: "{{ Nested_CloudBuilder.Credential.admin.Name }}"
-          ADMIN_PASSWORD: "{{ Nested_CloudBuilder.Credential.admin.Password }}"
+          guestinfo.ROOT_PASSWORD: "{{ Nested_CloudBuilder.Credential.root.Password }}"
+          guestinfo.ADMIN_USERNAME: "{{ Nested_CloudBuilder.Credential.admin.Name }}"
+          guestinfo.ADMIN_PASSWORD: "{{ Nested_CloudBuilder.Credential.admin.Password }}"
           FIPS_ENABLE: "{{ Nested_CloudBuilder.Component.Appliance.FIPSEnable }}"
           guestinfo.hostname: "{{ Nested_CloudBuilder.Component.Appliance.FQDN }}"
           guestinfo.ntp: "{{ Common.NTP.Server1.IPv4 }}"
