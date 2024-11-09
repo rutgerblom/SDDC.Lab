@@ -75,8 +75,7 @@
                                     Network PortGroup: {{ Target.PortGroup.Management.Name }}
 
                                  Network IPv4 Address: {{ Nested_CloudBuilder.Component.Appliance.Address.IPv4.Address }}
-                                      Network Netmask: >-
-                                                       {{ (Nested_CloudBuilder.Component.Appliance.Address.IPv4.Address + '/' +
+                                      Network Netmask: {{ (Nested_CloudBuilder.Component.Appliance.Address.IPv4.Address + '/' +
                                                        Nested_CloudBuilder.Component.Appliance.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
                                       Network Gateway: {{ Nested_CloudBuilder.Component.Appliance.Address.IPv4.Gateway }}
 
@@ -85,9 +84,6 @@
 
                                     CloudBuilder Root Password: {{ Nested_CloudBuilder.Credential.root.Password }}
                                    CloudBuilder admin Password: {{ Nested_CloudBuilder.Credential.admin.Password }}
-                                   CloudBuilder local Password: {{ Nested_CloudBuilder.Credential.local.Password }}
-                                  CloudBuilder backup Password: {{ Nested_CloudBuilder.Credential.backup.Password }}
-                                     CloudBuilder vcf Password: {{ Nested_CloudBuilder.Credential.vcf.Password }}
                                       CloudBuilder FIPS_Enable: {{ Nested_CloudBuilder.Component.Appliance.FIPSEnable }}
 
                                        CloudBuilder Media Path: {{ Deploy.Software.CloudBuilder.Directory }}
@@ -95,7 +91,7 @@
 
           =================================================================================================
       when:
-        - DEBUG.DisplayVariables
+        - not DEBUG.DisplayVariables
 
     - name: Check if CloudBuilder is already installed
       ansible.builtin.uri:
@@ -136,8 +132,7 @@
           guestinfo.hostname: "{{ Nested_CloudBuilder.Component.Appliance.FQDN }}"
           guestinfo.ntp: "{{ Common.NTP.Server1.IPv4 }}"
           guestinfo.ip0: "{{ Nested_CloudBuilder.Component.Appliance.Address.IPv4.Address }}"
-          guestinfo.netmask0: >-
-                              "{{ (Nested_CloudBuilder.Component.Appliance.Address.IPv4.Address + '/' +
+          guestinfo.netmask0: "{{ (Nested_CloudBuilder.Component.Appliance.Address.IPv4.Address + '/' +
                               Nested_CloudBuilder.Component.Appliance.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}"
           guestinfo.gateway: "{{ Nested_CloudBuilder.Component.Appliance.Address.IPv4.Gateway }}"
           guestinfo.domain: "{{ Common.DNS.Domain }}"
