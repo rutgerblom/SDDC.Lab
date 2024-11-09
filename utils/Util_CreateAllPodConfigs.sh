@@ -23,9 +23,10 @@
 
 # Loop through config files
 for file in config*.yml; do
-    # Process all config.* files except config_sample.yml
+    # Process all config*.yml files except config_sample.yml
     if [[ -f "$file" ]] && [[ $file != "config_sample.yml" ]]; then
         echo -e "Processing Config File: \033[33m$file\033[0m"
         ansible-playbook -e "SourceConfigPath=$(pwd) SourceConfigFile=$file" playbooks/CreatePodConfig.yml 1> /dev/null &
+        sleep 2
     fi
 done
