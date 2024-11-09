@@ -254,6 +254,11 @@
   when: 
     - Deploy.Product.SDDCManager.Deploy
 
+# Deploy Cloud Builder (Nested)
+- ansible.builtin.import_playbook: playbooks/DeployCloudBuilder.yml
+  when: 
+    - Deploy.Product.CloudBuilder.Deploy
+
 # Deploy VCFImportTool (not compatable with NSX)
 - ansible.builtin.import_playbook: playbooks/DeployVCFImportTool.yml
   when:
