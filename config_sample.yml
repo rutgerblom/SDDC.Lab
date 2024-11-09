@@ -74,6 +74,8 @@ Deploy:
       Deploy: false                                       # ALB - Deploy NSX Advanced Load Balancer as part of the Pod deployment.
     Replication:
       Deploy: false                                       # Replication - Deploy a vSphere Replication Appliance as part of the Pod deployment.
+    CloudBuilder:
+      Deploy: false                                       # Cloud Builder - Deploy a Cloud Builder Appliance to the pod (usually only for the first pod or standalone, look for DeployESXiOnly to build out new VCF instances).
     SDDCManager:
       Deploy: false                                       # SDDC Manager - Deploy a SDDC Manager Appliance to the pod (usually only for the first pod or standalone, look for DeployESXiOnly to build out new WLDs).
     VCFImportTool:
@@ -179,7 +181,13 @@ Deploy:
       Patch:   false
       Config:  "{{ SiteCode }}-VCFImportTool"
       Installer: "{{ SiteCode }}-VCFImportTool"
-
+    CloudBuilder:                                         # Label used for selection of which template to use during deployment (templates.yml)
+      Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
+      Product: CloudBuilder                               # Indicates software product you want to deploy from the software repository (software.yml)
+      Version: '5.2.0'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
+      Patch:   false
+      Config:  "{{ SiteCode }}-CloudBuilder"
+      Installer: "{{ SiteCode }}-CloudBuilder"
 
 
 
@@ -828,6 +836,38 @@ Nested_Replication:
           Gateway: "{{ Net.Management.IPv4.Network }}.1"
         IPv6:
           Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(25) }}"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+
+
+
+
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████           ██████ ██       ██████  ██    ██ ██████  ██████  ██    ██ ██ ██      ██████  ███████ ██████  
+## ████   ██ ██      ██         ██    ██      ██   ██         ██      ██      ██    ██ ██    ██ ██   ██ ██   ██ ██    ██ ██ ██      ██   ██ ██      ██   ██ 
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██      ██      ██    ██ ██    ██ ██   ██ ██████  ██    ██ ██ ██      ██   ██ █████   ██████  
+## ██  ██ ██ ██           ██    ██    ██      ██   ██         ██      ██      ██    ██ ██    ██ ██   ██ ██   ██ ██    ██ ██ ██      ██   ██ ██      ██   ██ 
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████  ██████ ███████  ██████   ██████  ██████  ██████   ██████  ██ ███████ ██████  ███████ ██   ██ 
+## 
+Nested_CloudBuilder:
+  Credential:
+    root:
+      Name: root
+      Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+    admin:
+      Name: admin
+      Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+  Component:
+    Appliance:
+      VMName: "{{ SiteCode }}-CloudBuilder"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-SDDCManager.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.27{% endif %}"
+      FIPSEnable: false
+      Address:
+        IPv4:
+          Address: "{{ Net.Management.IPv4.Network }}.27"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+          Gateway: "{{ Net.Management.IPv4.Network }}.1"
+        IPv6:
+          Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(27) }}"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
 
 
