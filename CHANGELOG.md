@@ -2836,3 +2836,5 @@
 
 ### Added by Rutger Blom
   - Updated ```Undeploy.yml``` so that the task responsible for removing the distributed port groups will complete successfully.
+  - Updated ```utils/Util_CreateSoftwareDir.yml``` with new tasks.
+  - Updated ```software_sample.yml``` so that VCF related products are organized in a common directory structure. Also added an entry for Cloud Builder.
