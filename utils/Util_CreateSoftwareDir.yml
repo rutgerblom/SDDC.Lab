@@ -99,6 +99,43 @@
       loop: "{{ Software.VMware.ALB.Installers | dict2items }}"
       when: Software.VMware.ALB.Installers is defined
 
+    - name: Create VMware Replication directories
+      ansible.builtin.file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0777"
+      become: true
+      loop: "{{ Software.VMware.Replication.Installers | dict2items }}"
+      when: Software.VMware.Replication.Installers is defined
+
+    - name: Create VMware Cloud Builder directories
+      ansible.builtin.file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0777"
+      become: true
+      loop: "{{ Software.VMware.CloudBuilder.Installers | dict2items }}"
+      when: Software.VMware.CloudBuilder.Installers is defined
+
+    - name: Create VMware SDDC Manager directories
+      ansible.builtin.file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0777"
+      become: true
+      loop: "{{ Software.VMware.SDDCManager.Installers | dict2items }}"
+      when: Software.VMware.SDDCManager.Installers is defined
+
+    - name: Create VMware VCF Import Tool directories
+      ansible.builtin.file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0777"
+      become: true
+      loop: "{{ Software.VMware.VCFImportTool.Installers | dict2items }}"
+      when: Software.VMware.VCFImportTool.Installers is defined
+
+
 ##
 ## Ubuntu
 ##
