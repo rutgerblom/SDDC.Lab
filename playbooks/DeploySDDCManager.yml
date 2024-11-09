@@ -81,8 +81,7 @@
                                     Network PortGroup: {{ Target.PortGroup.Management.Name }}
 
                                  Network IPv4 Address: {{ Nested_SDDCManager.Component.Appliance.Address.IPv4.Address }}
-                                      Network Netmask: >-
-                                                       {{ (Nested_SDDCManager.Component.Appliance.Address.IPv4.Address + '/' +
+                                      Network Netmask: {{ (Nested_SDDCManager.Component.Appliance.Address.IPv4.Address + '/' +
                                                        Nested_SDDCManager.Component.Appliance.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
                                       Network Gateway: {{ Nested_SDDCManager.Component.Appliance.Address.IPv4.Gateway }}
 
@@ -144,8 +143,7 @@
           vami.hostname: "{{ Nested_SDDCManager.Component.Appliance.FQDN }}"
           guestinfo.ntp: "{{ Common.NTP.Server1.IPv4 }}"
           vami.ip0.SDDC-Manager: "{{ Nested_SDDCManager.Component.Appliance.Address.IPv4.Address }}"
-          vami.netmask0.SDDC-Manager: >-
-                                      "{{ (Nested_SDDCManager.Component.Appliance.Address.IPv4.Address + '/' +
+          vami.netmask0.SDDC-Manager: "{{ (Nested_SDDCManager.Component.Appliance.Address.IPv4.Address + '/' +
                                       Nested_SDDCManager.Component.Appliance.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}"
           vami.gateway.SDDC-Manager: "{{ Nested_SDDCManager.Component.Appliance.Address.IPv4.Gateway }}"
           vami.domain.SDDC-Manager: "{{ Common.DNS.Domain }}"
