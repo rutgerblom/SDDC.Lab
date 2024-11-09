@@ -59,6 +59,8 @@ Deploy:
       Deploy: {{ Deploy.Product.DNSServer.Deploy }}
     Replication:
       Deploy: {{ Deploy.Product.Replication.Deploy }}
+    CloudBuilder:
+      Deploy: {{ Deploy.Product.CloudBuilder.Deploy }}
     SDDCManager:
       Deploy: {{ Deploy.Product.SDDCManager.Deploy }}
     VCFImportTool:
@@ -207,6 +209,16 @@ Deploy:
       Directory: "{{ Software[Deploy.Software.VCFImportTool.Vendor][Deploy.Software.VCFImportTool.Product]['Installers'][Deploy.Software.VCFImportTool.Version]['Location'].Local }}"
       File:      "{{ Software[Deploy.Software.VCFImportTool.Vendor][Deploy.Software.VCFImportTool.Product]['Installers'][Deploy.Software.VCFImportTool.Version].File }}"
       FileExt:   "{{ Software[Deploy.Software.VCFImportTool.Vendor][Deploy.Software.VCFImportTool.Product]['Installers'][Deploy.Software.VCFImportTool.Version].FileExt }}"
+    CloudBuilder:
+      Vendor:    "{{ Deploy.Software.CloudBuilder.Vendor }}"
+      Product:   "{{ Deploy.Software.CloudBuilder.Product }}"
+      Version:   "{{ Deploy.Software.CloudBuilder.Version }}"
+      Patch:     {{ Deploy.Software.CloudBuilder.Patch }}
+      Config:    "{{ Deploy.Software.CloudBuilder.Config }}"
+      Installer: "{{ Deploy.Software.CloudBuilder.Installer }}"
+      Directory: "{{ Software[Deploy.Software.CloudBuilder.Vendor][Deploy.Software.CloudBuilder.Product]['Installers'][Deploy.Software.CloudBuilder.Version]['Location'].Local }}"
+      File:      "{{ Software[Deploy.Software.CloudBuilder.Vendor][Deploy.Software.CloudBuilder.Product]['Installers'][Deploy.Software.CloudBuilder.Version].File }}"
+      FileExt:   "{{ Software[Deploy.Software.CloudBuilder.Vendor][Deploy.Software.CloudBuilder.Product]['Installers'][Deploy.Software.CloudBuilder.Version].FileExt }}"
 
 Common:
   {{ Common | to_nice_yaml(indent=2, width=99999) | indent(2) }}
@@ -234,6 +246,10 @@ Nested_vRLI:
 
 Nested_Replication:
   {{ Nested_Replication | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+
+Nested_CloudBuilder:
+  {{ Nested_CloudBuilder | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
 
 Nested_SDDCManager:
