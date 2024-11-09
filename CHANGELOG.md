@@ -2856,3 +2856,4 @@
     - ```software.yml```
     - ```config.yml```
   - Updated the ESXi kickstart templates by adding commands that configure and enable NTP. NTP configuration via kickstart is needed when only nested ESXi hosts are deployed (```DeployESXiOnly: true```).
+  - Removed NTP configuration and enable tasks from ```playbooks/ConfigureNestedEsxi.yml``` as NTP is configured via kickstart.
