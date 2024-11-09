@@ -2839,3 +2839,9 @@
   - Updated ```utils/Util_CreateSoftwareDir.yml``` with new tasks.
   - Updated ```software_sample.yml``` so that VCF related products are organized in a common directory structure. Also added an entry for Cloud Builder.
   - Be sure to update your ```software.yml```
+
+## Dev-v8.0.0 09-NOVEMBER-2024
+
+### Added by Luis Chanu
+  - Added NSX version information to NSX v4.2 task that creates the Transport Zone in ```CreateNsxTz.yml```.
+  - Added ```LabInfo``` table to ```README.md``` file.
