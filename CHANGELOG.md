@@ -2857,3 +2857,10 @@
     - ```config.yml```
   - Updated the ESXi kickstart templates by adding commands that configure and enable NTP. NTP configuration via kickstart is needed when only nested ESXi hosts are deployed (```DeployESXiOnly: true```).
   - Removed NTP configuration and enable tasks from ```playbooks/ConfigureNestedEsxi.yml``` as NTP is configured via kickstart.
+
+## Dev-v8.0.0 09-NOVEMBER-2024
+
+### Added by Luis Chanu
+  - Allocated IP range ```.90``` through ```.100``` for user deployed 3rd party appliances.
+  - Added delay in ```utils/Util_CreateAllPodConfig.sh``` script to mitigate missed Pod Configs.
+  - Added comment to ```config_sample.yml``` regarding valid Edge Node form factor sizes.  No structural changes were made, so no need to recreate your ```config.yml``` files.

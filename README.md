@@ -278,10 +278,12 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 22 | vRLI-3 | Aria Operations for Logs Appliance Node 3 | Pod-240-vRLI-3 | No |
 | 23 | vRNI Platform | vRealize Network Insight Platform Appliance | Pod-240-vRNI | No |
 | 24 | vRNI Collector | vRealize Network Insight Collector Node | Pod-240-vRNI-Collector | No |
-| 25 | Replication Appliance | vSphere Replication Appliance | Pod-240-Replication | No |
-| 26 | SDDC Manager Appliance | SDDC Manager Appliance | Pod-240-SDDCManager | No |
-| 27 | Cloud Builder Appliance | Cloud Builder Appliance | Pod-240-CloudBuilder | No |
-| Thru 100 | Reserved | Reserved for Future Management VMs/Services | | |
+| 25 | vSphere Replication | vSphere Replication Appliance | Pod-240-Replication | No |
+| 26 | SDDC Manager | SDDC Manager Appliance | Pod-240-SDDCManager | No |
+| 27 | Cloud Builder | Cloud Builder Appliance | Pod-240-CloudBuilder | No |
+| Thru 89 | Reserved | Reserved for Future Management VMs/Services | | |
+| 90 | Reserved | User Deployed 3rd Party Appliances | | |
+| Thru 100 | Reserved | User Deployed 3rd Party Appliances | | |
 | 101 | Mgmt-1 | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-1 | No |
 | 102 | Mgmt-2 | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-2 | No |
 | 103 | Mgmt-3 | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-3 | No |
@@ -301,8 +303,8 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 171-179 | Reserved  | Future vSphere Cluster | | |
 | 181-189 | Reserved  | Future vSphere Cluster | | |
 | 191 | Edge-1 | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-1 | Yes |
-| 192 | Edge-2 | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-1 | Yes |
-| 193 | Edge-3 | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-1 | Yes |
+| 192 | Edge-2 | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-2 | Yes |
+| 193 | Edge-3 | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-3 | Yes |
 | 194-199 | Edge-*X* | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-*X* | No |
 | 201-205 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | | No |
 | 206-210 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | | No |
