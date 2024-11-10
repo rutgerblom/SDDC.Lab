@@ -2864,3 +2864,8 @@
   - Allocated IP range ```.90``` through ```.100``` for user deployed 3rd party appliances.
   - Added delay in ```utils/Util_CreateAllPodConfig.sh``` script to mitigate missed Pod Configs.
   - Added comment to ```config_sample.yml``` regarding valid Edge Node form factor sizes.  No structural changes were made, so no need to recreate your ```config.yml``` files.
+
+## Dev-v8.0.0 10-NOVEMBER-2024
+
+### Added by Rutger Blom
+  - Added ```misc/Cloud_Builder_v5.2.1_Example.json``` to the repo which can be used as a reference, for example when deploying a new VCF instance using nested ESXi hosts deployed by SDDC.Lab.
