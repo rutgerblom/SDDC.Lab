@@ -1,0 +1,257 @@
+{
+  "deployWithoutLicenseKeys": true,
+  "skipEsxThumbprintValidation": true,
+  "managementPoolName": "networkpool-001",
+  "sddcManagerSpec": {
+    "secondUserCredentials": {
+      "username": "vcf",
+      "password": "VMware1!VMware1!"
+    },
+    "ipAddress": "10.203.220.26",
+    "hostname": "pod-220-sddcmanager",
+    "rootUserCredentials": {
+      "username": "root",
+      "password": "VMware1!VMware1!"
+    },
+    "localUserPassword": "VMware1!VMware1!"
+  },
+  "sddcId": "pod-220-m01",
+  "esxLicense": null,
+  "workflowType": "VCF",
+  "ceipEnabled": false,
+  "fipsEnabled": false,
+  "ntpServers": [
+    "10.203.0.5"
+  ],
+  "dnsSpec": {
+    "subdomain": "SDDC.Lab",
+    "domain": "SDDC.Lab",
+    "nameserver": "10.203.0.5"
+  },
+  "networkSpecs": [
+    {
+      "networkType": "MANAGEMENT",
+      "subnet": "10.203.220.0/24",
+      "gateway": "10.203.220.1",
+      "vlanId": "220",
+      "mtu": "1500",
+      "portGroupKey": "SDDC-DPortGroup-Mgmt"
+    },
+    {
+      "networkType": "VMOTION",
+      "subnet": "10.203.221.0/24",
+      "gateway": "10.203.221.1",
+      "vlanId": "221",
+      "mtu": "9000",
+      "portGroupKey": "SDDC-DPortGroup-vMotion",
+      "includeIpAddressRanges": [
+        {
+          "endIpAddress": "10.203.221.106",
+          "startIpAddress": "10.203.221.101"
+        }
+      ]
+    },
+    {
+      "networkType": "VSAN",
+      "subnet": "10.203.222.0/24",
+      "gateway": "10.203.222.1",
+      "vlanId": "222",
+      "mtu": "9000",
+      "portGroupKey": "SDDC-DPortGroup-VSAN",
+      "includeIpAddressRanges": [
+        {
+          "endIpAddress": "10.203.222.106",
+          "startIpAddress": "10.203.222.101"
+        }
+      ]
+    },
+    {
+      "networkType": "VM_MANAGEMENT",
+      "subnet": "10.203.220.0/24",
+      "gateway": "10.203.220.1",
+      "vlanId": "220",
+      "mtu": "9000",
+      "portGroupKey": "SDDC-DPortGroup-VM-Mgmt"
+    }
+  ],
+  "nsxtSpec": {
+    "nsxtManagerSize": "medium",
+    "nsxtManagers": [
+      {
+        "hostname": "pod-220-nsxt-lm-1",
+        "ip": "10.203.220.12"
+      }
+    ],
+    "rootNsxtManagerPassword": "VMware1!VMware1!",
+    "nsxtAdminPassword": "VMware1!VMware1!",
+    "nsxtAuditPassword": "VMware1!VMware1!",
+    "vip": "10.203.220.11",
+    "vipFqdn": "pod-220-nsxt-lm",
+    "nsxtLicense": null,
+    "transportVlanId": 224,
+    "ipAddressPoolSpec": {
+      "name": "pod-220-01-m01-cl01-tep01",
+      "description": "ESXi Host Overlay TEP IP Pool",
+      "subnets": [
+        {
+          "ipAddressPoolRanges": [
+            {
+              "start": "10.203.224.10",
+              "end": "10.203.224.99"
+            }
+          ],
+          "cidr": "10.203.224.0/24",
+          "gateway": "10.203.224.1"
+        }
+      ]
+    }
+  },
+  "vsanSpec": {
+    "vsanDedup": "false",
+    "esaConfig": {
+      "enabled": false
+    },
+    "datastoreName": "pod-220-m01-cluster-001-vsan"
+  },
+  "dvsSpecs": [
+    {
+      "dvsName": "pod-220-m01-cluster-001-vds-001",
+      "vmnics": [
+        "vmnic0",
+        "vmnic1"
+      ],
+      "mtu": 9000,
+      "networks": [
+        "MANAGEMENT",
+        "VMOTION",
+        "VSAN",
+        "VM_MANAGEMENT"
+      ],
+      "niocSpecs": [
+        {
+          "trafficType": "VSAN",
+          "value": "HIGH"
+        },
+        {
+          "trafficType": "VMOTION",
+          "value": "LOW"
+        },
+        {
+          "trafficType": "VDP",
+          "value": "LOW"
+        },
+        {
+          "trafficType": "VIRTUALMACHINE",
+          "value": "HIGH"
+        },
+        {
+          "trafficType": "MANAGEMENT",
+          "value": "NORMAL"
+        },
+        {
+          "trafficType": "NFS",
+          "value": "LOW"
+        },
+        {
+          "trafficType": "HBR",
+          "value": "LOW"
+        },
+        {
+          "trafficType": "FAULTTOLERANCE",
+          "value": "LOW"
+        },
+        {
+          "trafficType": "ISCSI",
+          "value": "LOW"
+        }
+      ],
+      "nsxtSwitchConfig": {
+        "transportZones": [
+          {
+            "name": "pod-220-m01-tz-overlay01",
+            "transportType": "OVERLAY"
+          },
+          {
+            "name": "pod-220-m01-tz-vlan01",
+            "transportType": "VLAN"
+          }
+        ]
+      }
+    }
+  ],
+  "clusterSpec": {
+    "clusterName": "pod-220-m01-cluster-001",
+    "clusterEvcMode": null,
+    "clusterImageEnabled": true,
+    "vmFolders": {
+      "MANAGEMENT": "pod-220-m01-fd-mgmt",
+      "NETWORKING": "pod-220-m01-fd-nsx",
+      "EDGENODES": "pod-220-m01-fd-edge"
+    }
+  },
+  "pscSpecs": [
+    {
+      "adminUserSsoPassword": "VMware1!VMware1!",
+      "pscSsoSpec": {
+        "ssoDomain": "vsphere.local"
+      }
+    }
+  ],
+  "vcenterSpec": {
+    "vcenterIp": "10.203.220.5",
+    "vcenterHostname": "pod-220-vcenter",
+    "vmSize": "small",
+    "storageSize": null,
+    "rootVcenterPassword": "VMware1!VMware1!"
+  },
+  "hostSpecs": [
+    {
+      "association": "pod-220-m01-datacenter",
+      "hostname": "Pod-220-Mgmt-1",
+      "credentials": {
+        "username": "root",
+        "password": "VMware1!"
+      }
+    },
+    {
+      "association": "pod-220-m01-datacenter",
+      "hostname": "Pod-220-Mgmt-2",
+      "credentials": {
+        "username": "root",
+        "password": "VMware1!"
+      }
+    },
+    {
+      "association": "pod-220-m01-datacenter",
+      "hostname": "Pod-220-Mgmt-3",
+      "credentials": {
+        "username": "root",
+        "password": "VMware1!"
+      }
+    },
+    {
+      "association": "pod-220-m01-datacenter",
+      "hostname": "Pod-220-Mgmt-4",
+      "credentials": {
+        "username": "root",
+        "password": "VMware1!"
+      }
+    },
+    {
+      "association": "pod-220-m01-datacenter",
+      "hostname": "Pod-220-Mgmt-5",
+      "credentials": {
+        "username": "root",
+        "password": "VMware1!"
+      }
+    },
+    {
+      "association": "pod-220-m01-datacenter",
+      "hostname": "Pod-220-Mgmt-6",
+      "credentials": {
+        "username": "root",
+        "password": "VMware1!"
+      }
+    }
+  ]
+}
