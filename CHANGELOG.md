@@ -2869,3 +2869,4 @@
 
 ### Added by Rutger Blom
   - Added ```misc/Cloud_Builder_v5.2.1_Example.json``` to the repo which can be used as a reference, for example when deploying a new VCF instance using nested ESXi hosts deployed by SDDC.Lab.
+  - Added back the conditional in ```Deploy.yml```to the task importing the ```playbooks/DeploySDDCManager.yml``` playbook. SDDC Manager would typically be deployed together with a Pod to then perform a VCF Import.
