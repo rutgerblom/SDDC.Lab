@@ -2876,3 +2876,8 @@
 ### Added by Luis Chanu
   - Noticed an issue where not all of the NSX v4.2 EdgeVM nodes are able to power on due to memory constraints.  To mitigate this, incrased memory on vSphere Edge cluster hosts memory from 20GB to 28GB in ```config_sample.yml```.
   - Be sure to update your ```config.yml``` file(s).
+
+## Dev-v8.0.0 13-NOVEMBER-2024
+
+### Added by Luis Chanu
+  - Updated ```CreateNsxTz.yml``` playbook to utilize new ```tz_type``` argument in pre-v4.2 task.  If you run into an error, make sure your Ansible modules are current, as older modules used the ```transport_type``` field, which has been deprecated.
