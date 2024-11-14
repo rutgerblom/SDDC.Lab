@@ -2880,4 +2880,4 @@
 ## Dev-v8.0.0 13-NOVEMBER-2024
 
 ### Added by Luis Chanu
-  - Updated ```CreateNsxTz.yml``` playbook to utilize new ```sz_type``` argument in pre-v4.2 task.  If you run into an error, make sure your Ansible modules are current, as older modules used the ```transport_type``` field, which has been deprecated.
+  - Updated ```CreateNsxTz.yml``` playbook to utilize new ```tz_type``` argument in pre-v4.2 task.  If you run into an error, make sure your Ansible modules are current, as older modules used the ```transport_type``` field, which has been deprecated.
