@@ -2881,3 +2881,4 @@
 
 ### Added by Luis Chanu
   - Updated ```CreateNsxTz.yml``` playbook to utilize new ```tz_type``` argument in pre-v4.2 task.  If you run into an error, make sure your Ansible modules are current, as older modules used the ```transport_type``` field, which has been deprecated.
+  - Created ```utils/Util_DelIPv4DNSRecord.sh``` script to delete a DNS record from SDDC.Lab DNS server.
