@@ -2886,4 +2886,7 @@
 ## Dev-v8.0.0 14-NOVEMBER-2024
 
 ### Added by Rutger Blom
-  - Added vCenter 7 Update 3p and ESXi 7 Update 3n to ```software_sample.yml```. 
+  - Added vCenter 7 Update 3p and ESXi 7 Update 3n to ```software_sample.yml``` and ```templates_sample.yml```.
+    - Be sure to update your:
+    - ```software.yml```
+    - ```templates.yml```
