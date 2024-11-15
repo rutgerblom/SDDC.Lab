@@ -1,0 +1,241 @@
+{
+  "deployWithoutLicenseKeys": true,
+  "skipEsxThumbprintValidation": true,
+  "managementPoolName": "networkpool-001",
+  "sddcManagerSpec": {
+    "secondUserCredentials": {
+      "username": "vcf",
+      "password": "VMware1!VMware1!"
+    },
+    "ipAddress": "10.203.240.26",
+    "hostname": "Pod-240-SDDCManager",
+    "rootUserCredentials": {
+      "username": "root",
+      "password": "VMware1!VMware1!"
+    },
+    "localUserPassword": "VMware1!VMware1!"
+  },
+  "sddcId": "Pod-240-m01",
+  "esxLicense": null,
+  "workflowType": "VCF",
+  "ceipEnabled": false,
+  "fipsEnabled": false,
+  "ntpServers": [
+    "10.203.0.5"
+  ],
+  "dnsSpec": {
+    "subdomain": "SDDC.Lab",
+    "domain": "SDDC.Lab",
+    "nameserver": "10.203.0.5"
+  },
+  "networkSpecs": [
+    {
+      "networkType": "MANAGEMENT",
+      "subnet": "10.203.240.0/24",
+      "gateway": "10.203.240.1",
+      "vlanId": "240",
+      "mtu": "1500",
+      "portGroupKey": "SDDC-DPortGroup-Mgmt"
+    },
+    {
+      "networkType": "VMOTION",
+      "subnet": "10.203.241.0/24",
+      "gateway": "10.203.241.1",
+      "vlanId": "241",
+      "mtu": "9000",
+      "portGroupKey": "SDDC-DPortGroup-vMotion",
+      "includeIpAddressRanges": [
+        {
+          "endIpAddress": "10.203.241.106",
+          "startIpAddress": "10.203.241.101"
+        }
+      ]
+    },
+    {
+      "networkType": "VSAN",
+      "subnet": "10.203.242.0/24",
+      "gateway": "10.203.242.1",
+      "vlanId": "242",
+      "mtu": "9000",
+      "portGroupKey": "SDDC-DPortGroup-VSAN",
+      "includeIpAddressRanges": [
+        {
+          "endIpAddress": "10.203.242.106",
+          "startIpAddress": "10.203.242.101"
+        }
+      ]
+    },
+    {
+      "networkType": "VM_MANAGEMENT",
+      "subnet": "10.203.240.0/24",
+      "gateway": "10.203.240.1",
+      "vlanId": "240",
+      "mtu": "9000",
+      "portGroupKey": "SDDC-DPortGroup-VM-Mgmt"
+    }
+  ],
+  "nsxtSpec": {
+    "nsxtManagerSize": "medium",
+    "nsxtManagers": [
+      {
+        "hostname": "Pod-240-NSXT-LM-1",
+        "ip": "10.203.240.12"
+      }
+    ],
+    "rootNsxtManagerPassword": "VMware1!VMware1!",
+    "nsxtAdminPassword": "VMware1!VMware1!",
+    "nsxtAuditPassword": "VMware1!VMware1!",
+    "vip": "10.203.240.11",
+    "vipFqdn": "Pod-240-NSXT-LM",
+    "nsxtLicense": null,
+    "transportVlanId": 244,
+    "ipAddressPoolSpec": {
+      "name": "Pod-240-01-m01-cl01-tep01",
+      "description": "ESXi Host Overlay TEP IP Pool",
+      "subnets": [
+        {
+          "ipAddressPoolRanges": [
+            {
+              "start": "10.203.244.10",
+              "end": "10.203.244.99"
+            }
+          ],
+          "cidr": "10.203.244.0/24",
+          "gateway": "10.203.244.1"
+        }
+      ]
+    }
+  },
+  "vsanSpec": {
+    "vsanDedup": "false",
+    "esaConfig": {
+      "enabled": false
+    },
+    "datastoreName": "Pod-240-m01-cluster-001-vsan"
+  },
+  "dvsSpecs": [
+    {
+      "dvsName": "Pod-240-m01-cluster-001-vds-001",
+      "vmnics": [
+        "vmnic0",
+        "vmnic1"
+      ],
+      "mtu": 9000,
+      "networks": [
+        "MANAGEMENT",
+        "VMOTION",
+        "VSAN",
+        "VM_MANAGEMENT"
+      ],
+      "niocSpecs": [
+        {
+          "trafficType": "VSAN",
+          "value": "HIGH"
+        },
+        {
+          "trafficType": "VMOTION",
+          "value": "LOW"
+        },
+        {
+          "trafficType": "VDP",
+          "value": "LOW"
+        },
+        {
+          "trafficType": "VIRTUALMACHINE",
+          "value": "HIGH"
+        },
+        {
+          "trafficType": "MANAGEMENT",
+          "value": "NORMAL"
+        },
+        {
+          "trafficType": "NFS",
+          "value": "LOW"
+        },
+        {
+          "trafficType": "HBR",
+          "value": "LOW"
+        },
+        {
+          "trafficType": "FAULTTOLERANCE",
+          "value": "LOW"
+        },
+        {
+          "trafficType": "ISCSI",
+          "value": "LOW"
+        }
+      ],
+      "nsxtSwitchConfig": {
+        "transportZones": [
+          {
+            "name": "Pod-240-m01-tz-overlay01",
+            "transportType": "OVERLAY"
+          },
+          {
+            "name": "Pod-240-m01-tz-vlan01",
+            "transportType": "VLAN"
+          }
+        ]
+      }
+    }
+  ],
+  "clusterSpec": {
+    "clusterName": "Pod-240-m01-cluster-001",
+    "clusterEvcMode": null,
+    "clusterImageEnabled": true,
+    "vmFolders": {
+      "MANAGEMENT": "Pod-240-m01-fd-mgmt",
+      "NETWORKING": "Pod-240-m01-fd-nsx",
+      "EDGENODES": "Pod-240-m01-fd-edge"
+    }
+  },
+  "pscSpecs": [
+    {
+      "adminUserSsoPassword": "VMware1!VMware1!",
+      "pscSsoSpec": {
+        "ssoDomain": "vsphere.local"
+      }
+    }
+  ],
+  "vcenterSpec": {
+    "vcenterIp": "10.203.240.5",
+    "vcenterHostname": "Pod-240-vCenter",
+    "vmSize": "small",
+    "storageSize": null,
+    "rootVcenterPassword": "VMware1!VMware1!"
+  },
+  "hostSpecs": [
+    {
+      "association": "Pod-240-m01-datacenter",
+      "hostname": "Pod-240-Mgmt-1",
+      "credentials": {
+        "username": "root",
+        "password": "VMware1!"
+      }
+    },
+    {
+      "association": "Pod-240-m01-datacenter",
+      "hostname": "Pod-240-Mgmt-2",
+      "credentials": {
+        "username": "root",
+        "password": "VMware1!"
+      }
+    },
+    {
+      "association": "Pod-240-m01-datacenter",
+      "hostname": "Pod-240-Mgmt-3",
+      "credentials": {
+        "username": "root",
+        "password": "VMware1!"
+      }
+    },
+    {
+      "association": "Pod-240-m01-datacenter",
+      "hostname": "Pod-240-Mgmt-4",
+      "credentials": {
+        "username": "root",
+        "password": "VMware1!"
+      }
+    }
+  ]
+}
