@@ -2898,3 +2898,8 @@
   - Be sure to update your:
     - ```software.yml```
     - ```templates.yml```
+
+## Dev-v8.0.0 15-NOVEMBER-2024
+
+### Added by Rutger Blom
+  - Added ```misc/VCF_SDDC_Manager_Host_Commission_Example.json``` which can be used to commission ESXi hosts in SDDC Manager.
