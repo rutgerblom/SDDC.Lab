@@ -2890,3 +2890,11 @@
     - Be sure to update your:
     - ```software.yml```
     - ```templates.yml```
+
+## Dev-v8.0.0 14-NOVEMBER-2024
+
+### Added by Luis Chanu
+  - Added vCenter 7 Update 3n and 3s to ```software_sample.yml``` and ```templates_sample.yml```.
+  - Be sure to update your:
+    - ```software.yml```
+    - ```templates.yml```
