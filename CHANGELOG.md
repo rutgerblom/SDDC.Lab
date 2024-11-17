@@ -2911,3 +2911,5 @@
     - Renamed task which initiates a one-time backup of the Local Manager to better match the function being performed.
     - Increased ```timeout``` value from ```5``` to ```180``` seconds on ```Initiate a one-time backup of the NSX-T Local Manager if Federation is being configured [Local Manager]``` task to address failure message.
     - Backups now complete successfully without any error or failure message.
+  - Modified ```CreatePodConfig.yml``` playbook to include appliance sizing for vCenter, NSX Local Manager, NSX Global Manager (if Federation is enabled), and vRLI.  You will find the sizing for each product following the '~' after the version number.
+  - Issue with ```utils/Util_CreateAllPodConfigs.sh``` script has been resolved by the changes made to the ```CreatePodConfig.yml``` playbook.  For this reason, the ```sleep 2``` command was removed.
