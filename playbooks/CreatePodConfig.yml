@@ -4,7 +4,7 @@
 ##     Filename: playbooks/CreatePodConfig.yml
 ##
 ##  Description: This playbook takes a configuration file based on config_sample.yml, and generates a static Pod Configuration file
-##  in the user's home directory, which can then be used for Pod deployment.
+##               in the user's home directory, which can then be used for Pod deployment.
 ##
 ---
 - name: CreatePodConfig.yml
@@ -16,27 +16,26 @@
 
   vars:
     - PodTemplate: "Pod_Config.j2"
-    - PodTempConfigFile: "{{ SiteCode }}-Config_Temp.yml"
-    - IntermediatePodConfigFile: "Intermediate-{{ SiteCode }}-Config_{{ lookup('pipe', 'date +%Y%m%d') }}_VCSAv{{ Deploy.Software.vCenter.Version }}\
-                                  _ESXIv{{ Deploy.Software.ESXi.Version }}\
-                                  _vRLIv{% if Deploy.Product.vRLI.Deploy == false %}NONE{% else %}{{ Deploy.Software.vRLI.Version }}{% endif %}\
-                                  _ALBv{% if Deploy.Product.ALB.Deploy == false %}NONE{% else %}{{ Deploy.Software.ALB.Version }}{% endif %}\
-                                  _REPLv{% if Deploy.Product.Replication.Deploy == false %}NONE{% else %}{{ Deploy.Software.Replication.Version }}{% endif %}\
-                                  _CloudBv{% if Deploy.Product.CloudBuilder.Deploy == false %}NONE{% else %}{{ Deploy.Software.CloudBuilder.Version }}{% endif %}\
-                                  _SDDCv{% if Deploy.Product.SDDCManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.SDDCManager.Version }}{% endif %}\
-                                  _NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}\
-                                  _Fed-{% if Deploy.Product.NSXT.Federation.Deploy %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}\
-                                  {% else %}N{% endif %}{% endif %}.json"
-    - PodConfigFile: "{{ SiteCode }}-Config_{{ lookup('pipe', 'date +%Y%m%d') }}_VCSAv{{ Deploy.Software.vCenter.Version }}\
-                      _ESXIv{{ Deploy.Software.ESXi.Version }}\
-                      _vRLIv{% if Deploy.Product.vRLI.Deploy == false %}NONE{% else %}{{ Deploy.Software.vRLI.Version }}{% endif %}\
-                      _ALBv{% if Deploy.Product.ALB.Deploy == false %}NONE{% else %}{{ Deploy.Software.ALB.Version }}{% endif %}\
-                      _REPLv{% if Deploy.Product.Replication.Deploy == false %}NONE{% else %}{{ Deploy.Software.Replication.Version }}{% endif %}\
-                      _CloudBv{% if Deploy.Product.CloudBuilder.Deploy == false %}NONE{% else %}{{ Deploy.Software.CloudBuilder.Version }}{% endif %}\
-                      _SDDCv{% if Deploy.Product.SDDCManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.SDDCManager.Version }}{% endif %}\
-                      _NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}\
-                      _Fed-{% if Deploy.Product.NSXT.Federation.Deploy %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}\
-                      {% else %}N{% endif %}{% endif %}.yml"
+    - IntermediateConfigFile: "Inter-{{ SiteCode }}-Config_{{ lookup('pipe', 'date +%Y%m%d') }}_VCSAv{{ Deploy.Software.vCenter.Version }}\
+                               _ESXIv{{ Deploy.Software.ESXi.Version }}\
+                               _vRLIv{% if Deploy.Product.vRLI.Deploy == false %}NONE{% else %}{{ Deploy.Software.vRLI.Version }}{% endif %}\
+                               _ALBv{% if Deploy.Product.ALB.Deploy == false %}NONE{% else %}{{ Deploy.Software.ALB.Version }}{% endif %}\
+                               _REPLv{% if Deploy.Product.Replication.Deploy == false %}NONE{% else %}{{ Deploy.Software.Replication.Version }}{% endif %}\
+                               _CloudBv{% if Deploy.Product.CloudBuilder.Deploy == false %}NONE{% else %}{{ Deploy.Software.CloudBuilder.Version }}{% endif %}\
+                               _SDDCv{% if Deploy.Product.SDDCManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.SDDCManager.Version }}{% endif %}\
+                               _NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}\
+                               _Fed-{% if Deploy.Product.NSXT.Federation.Deploy %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}\
+                               {% else %}N{% endif %}{% endif %}.json"
+    - PodTempConfigFile: "Temp-{{ SiteCode }}-Config_{{ lookup('pipe', 'date +%Y%m%d') }}_VCSAv{{ Deploy.Software.vCenter.Version }}\
+                          _ESXIv{{ Deploy.Software.ESXi.Version }}\
+                          _vRLIv{% if Deploy.Product.vRLI.Deploy == false %}NONE{% else %}{{ Deploy.Software.vRLI.Version }}{% endif %}\
+                          _ALBv{% if Deploy.Product.ALB.Deploy == false %}NONE{% else %}{{ Deploy.Software.ALB.Version }}{% endif %}\
+                          _REPLv{% if Deploy.Product.Replication.Deploy == false %}NONE{% else %}{{ Deploy.Software.Replication.Version }}{% endif %}\
+                          _CloudBv{% if Deploy.Product.CloudBuilder.Deploy == false %}NONE{% else %}{{ Deploy.Software.CloudBuilder.Version }}{% endif %}\
+                          _SDDCv{% if Deploy.Product.SDDCManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.SDDCManager.Version }}{% endif %}\
+                          _NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}\
+                          _Fed-{% if Deploy.Product.NSXT.Federation.Deploy %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}\
+                          {% else %}N{% endif %}{% endif %}.json"
 
   vars_prompt:
     - name: SourceConfigPath
@@ -101,13 +100,51 @@
 
                        Pod-Config File Being Prepared: {{ SourceConfigPath }}/{{ SourceConfigFile }}
                                Configuration Template: {{ Target.TemplateFolder }}/{{ PodTemplate }}
-                         Intermediate Pod-Config File: {{ IntermediatePodConfigFile }}
-                       Target Temp Configuration File: {{ PodTempConfigFile }}
-                            Target Configuration File: {{ PodConfigFile }}
+                          Pod Temp Configuration File: {{ PodTempConfigFile }}
+                            Target Configuration File: Shown Below
 
           =================================================================================================
       when:
         - DEBUG.DisplayVariables
+
+
+## Start workaround issue with slow static Pod Config creation
+## Details of the underlying issue and suggested workaround: https://github.com/ansible/ansible/issues/68763
+
+    - name: Create an intermediate Pod-Config file with realized variables
+      ansible.builtin.copy:
+        content: "{{ lookup('template', SourceConfigPath + '/' + SourceConfigFile) | from_yaml }}"
+        dest: "{{ lookup('env', 'HOME') }}/{{ IntermediateConfigFile }}"
+        mode: "775"
+
+    - name: Include intermediate Pod-Config variables into playbook
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'HOME') }}/{{ IntermediateConfigFile }}"
+
+    - name: Delete intermediate Pod-Config file with realized variables
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/{{ IntermediateConfigFile }}"
+        state: absent
+      when:
+        - not DEBUG.KeepConfigFiles
+
+## End workaround issue with slow static Pod Config creation
+
+
+# Filename development must come after the Pod Config variables are static via the workaround above, else it ends up taking a long time as it dereferences each variable
+    - name: Develop filename of final Pod Config file
+      ansible.builtin.set_fact:
+        PodConfigFile: "{{ SiteCode }}-Config_{{ lookup('pipe', 'date +%Y%m%d') }}_VCSAv{{ Deploy.Software.vCenter.Version }}~{{ Nested_vCenter.DeploymentSize[:1]|upper }}\
+                        _ESXIv{{ Deploy.Software.ESXi.Version }}\
+                        _vRLIv{% if Deploy.Product.vRLI.Deploy == false %}NONE{% else %}{{ Deploy.Software.vRLI.Version }}~{{ Nested_vRLI.Component.Node.Deployment.Size[:1]|upper }}{% endif %}\
+                        _ALBv{% if Deploy.Product.ALB.Deploy == false %}NONE{% else %}{{ Deploy.Software.ALB.Version }}{% endif %}\
+                        _REPLv{% if Deploy.Product.Replication.Deploy == false %}NONE{% else %}{{ Deploy.Software.Replication.Version }}{% endif %}\
+                        _CloudBv{% if Deploy.Product.CloudBuilder.Deploy == false %}NONE{% else %}{{ Deploy.Software.CloudBuilder.Version }}{% endif %}\
+                        _SDDCv{% if Deploy.Product.SDDCManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.SDDCManager.Version }}{% endif %}\
+                        _NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}~{{ Nested_NSXT.Component.LocalManager.Deployment.Size[:1]|upper }}\
+                        _Fed-{% if Deploy.Product.NSXT.Federation.Deploy %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}\
+                        {% if SiteCode == Deploy.Product.NSXT.GlobalManager.SiteCode %}~{{ Nested_NSXT.Component.GlobalManager.Deployment.Size[:1]|upper }}{% endif %}\
+                        {% else %}N{% endif %}{% endif %}.yml"
 
     - name: Notify user that this will take some time
       ansible.builtin.pause:
@@ -128,29 +165,6 @@
               ansible-playbook -e "@{{ lookup('env', 'HOME') }}/{{ PodConfigFile }}" Deploy.yml
 
           ====================================================================================================
-
-## Start workaround issue with slow static Pod Config creation
-## Details of the underlying issue and suggested workaround: https://github.com/ansible/ansible/issues/68763
-
-    - name: Create an intermediate Pod-Config file with realized variables
-      ansible.builtin.copy:
-        content: "{{ lookup('template', SourceConfigPath + '/' + SourceConfigFile) | from_yaml }}"
-        dest: "{{ lookup('env', 'HOME') }}/{{ IntermediatePodConfigFile }}"
-        mode: "775"
-
-    - name: Include intermediate Pod-Config variables into playbook
-      ansible.builtin.include_vars:
-        file: "{{ lookup('env', 'HOME') }}/{{ IntermediatePodConfigFile }}"
-
-    - name: Delete intermediate Pod-Config file with realized variables
-      ansible.builtin.file:
-        path: "{{ lookup('env', 'HOME') }}/{{ IntermediatePodConfigFile }}"
-        state: absent
-      when:
-        - not DEBUG.KeepConfigFiles
-
-## End workaround issue with slow static Pod Config creation
-
 
     - name: Delete existing temp configuration file if it exists
       ansible.builtin.file:
