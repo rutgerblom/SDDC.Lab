@@ -2903,3 +2903,11 @@
 
 ### Added by Rutger Blom
   - Added ```misc/VCF_SDDC_Manager_Host_Commission_Example.json``` which can be used to commission ESXi hosts in SDDC Manager.
+
+## Dev-v8.0.0 16-NOVEMBER-2024
+
+### Added by Luis Chanu
+  - Modified ```ConfigureNsxBackup.yml``` playbook:
+    - Renamed task which initiates a one-time backup of the Local Manager to better match the function being performed.
+    - Increased ```timeout``` value from ```5``` to ```180``` seconds on ```Initiate a one-time backup of the NSX-T Local Manager if Federation is being configured [Local Manager]``` task to address failure message.
+    - Backups now complete successfully without any error or failure message.
