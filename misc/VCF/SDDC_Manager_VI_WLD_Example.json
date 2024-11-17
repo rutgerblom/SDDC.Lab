@@ -1,0 +1,288 @@
+{
+    "computeSpec": {
+      "clusterSpecs": [
+        {
+          "advancedOptions": {
+            "highAvailability": {
+              "enabled": true
+            }
+          },
+          "datastoreSpec": {
+            "vsanDatastoreSpec": {
+              "datastoreName": "Pod-240-w01-cluster-001-vsan",
+              "dedupAndCompressionEnabled": false,
+              "esaConfig": {
+                "enabled": false
+              },
+              "failuresToTolerate": 1,
+              "licenseKey": ""
+            }
+          },
+          "hostSpecs": [
+            {
+              "hostNetworkSpec": {
+                "vmNics": [
+                  {
+                    "id": "vmnic0",
+                    "moveToNvds": false,
+                    "uplink": "uplink1",
+                    "vdsName": "Pod-240-w01-cluster-001-vds-001"
+                  },
+                  {
+                    "id": "vmnic1",
+                    "moveToNvds": false,
+                    "uplink": "uplink2",
+                    "vdsName": "Pod-240-w01-cluster-001-vds-001"
+                  },
+                  {
+                    "id": "vmnic2",
+                    "moveToNvds": false,
+                    "uplink": "uplink1",
+                    "vdsName": "Pod-240-w01-cluster-001-vds-002"
+                  },
+                  {
+                    "id": "vmnic3",
+                    "moveToNvds": false,
+                    "uplink": "uplink2",
+                    "vdsName": "Pod-240-w01-cluster-001-vds-002"
+                  }
+                ]
+              },
+              "id": "ENTER_COMMISSIONED_HOST_ID",
+              "username": "root"
+            },
+            {
+              "hostNetworkSpec": {
+                "vmNics": [
+                  {
+                    "id": "vmnic0",
+                    "moveToNvds": false,
+                    "uplink": "uplink1",
+                    "vdsName": "Pod-240-w01-cluster-001-vds-001"
+                  },
+                  {
+                    "id": "vmnic1",
+                    "moveToNvds": false,
+                    "uplink": "uplink2",
+                    "vdsName": "Pod-240-w01-cluster-001-vds-001"
+                  },
+                  {
+                    "id": "vmnic2",
+                    "moveToNvds": false,
+                    "uplink": "uplink1",
+                    "vdsName": "Pod-240-w01-cluster-001-vds-002"
+                  },
+                  {
+                    "id": "vmnic3",
+                    "moveToNvds": false,
+                    "uplink": "uplink2",
+                    "vdsName": "Pod-240-w01-cluster-001-vds-002"
+                  }
+                ]
+              },
+              "id": "ENTER_COMMISSIONED_HOST_ID",
+              "username": "root"
+            },
+            {
+              "hostNetworkSpec": {
+                "vmNics": [
+                  {
+                    "id": "vmnic0",
+                    "moveToNvds": false,
+                    "uplink": "uplink1",
+                    "vdsName": "Pod-240-w01-cluster-001-vds-001"
+                  },
+                  {
+                    "id": "vmnic1",
+                    "moveToNvds": false,
+                    "uplink": "uplink2",
+                    "vdsName": "Pod-240-w01-cluster-001-vds-001"
+                  },
+                  {
+                    "id": "vmnic2",
+                    "moveToNvds": false,
+                    "uplink": "uplink1",
+                    "vdsName": "Pod-240-w01-cluster-001-vds-002"
+                  },
+                  {
+                    "id": "vmnic3",
+                    "moveToNvds": false,
+                    "uplink": "uplink2",
+                    "vdsName": "Pod-240-w01-cluster-001-vds-002"
+                  }
+                ]
+              },
+              "id": "ENTER_COMMISSIONED_HOST_ID",
+              "username": "root"
+            }
+          ],
+          "name": "Pod-240-w01-cluster1",
+          "networkSpec": {
+            "networkProfiles": [
+              {
+                "description": "",
+                "isDefault": true,
+                "name": "Pod-240-w01-cluster-001",
+                "nsxtHostSwitchConfigs": [
+                  {
+                    "ipAddressPoolName": "Pod-240-01-w01-cl01-tep01",
+                    "uplinkProfileName": "Uplink-Profile-1",
+                    "vdsName": "Pod-240-w01-cluster-001-vds-002",
+                    "vdsUplinkToNsxUplink": [
+                      {
+                        "nsxUplinkName": "uplink-1",
+                        "vdsUplinkName": "uplink1"
+                      },
+                      {
+                        "nsxUplinkName": "uplink-2",
+                        "vdsUplinkName": "uplink2"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "nsxClusterSpec": {
+              "nsxTClusterSpec": {
+                "geneveVlanId": 244,
+                "ipAddressPoolSpec": {
+                  "description": "ESXi Host Overlay TEP IP Pool",
+                  "ignoreUnavailableNsxtCluster": false,
+                  "name": "Pod-240-01-w01-cl01-tep01",
+                  "subnets": [
+                    {
+                      "cidr": "10.203.244.0/24",
+                      "gateway": "10.203.244.1",
+                      "ipAddressPoolRanges": [
+                        {
+                          "end": "10.203.244.100",
+                          "start": "10.203.244.199"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "uplinkProfiles": [
+                  {
+                    "name": "Uplink-Profile-1",
+                    "teamings": [
+                      {
+                        "activeUplinks": [
+                          "uplink-1",
+                          "uplink-2"
+                        ],
+                        "policy": "LOADBALANCE_SRCID",
+                        "standByUplinks": [
+                          ""
+                        ]
+                      }
+                    ],
+                    "transportVlan": 244
+                  }
+                ]
+              }
+            },
+            "vdsSpecs": [
+              {
+                "isUsedByNsxt": false,
+                "mtu": 9000,
+                "name": "Pod-240-w01-cluster-001-vds-001",
+                "portGroupSpecs": [
+                  {
+                    "activeUplinks": [
+                      "uplink1",
+                      "uplink2"
+                    ],
+                    "name": "Pod-240-w01-cluster-001-vds-001-pg-mgmt",
+                    "standByUplinks": [
+                      ""
+                    ],
+                    "teamingPolicy": "loadbalance_loadbased",
+                    "transportType": "MANAGEMENT"
+                  },
+                  {
+                    "activeUplinks": [
+                      "uplink1",
+                      "uplink2"
+                    ],
+                    "name": "Pod-240-w01-cluster-001-vds-001-pg-vmotion",
+                    "standByUplinks": [
+                      ""
+                    ],
+                    "teamingPolicy": "loadbalance_loadbased",
+                    "transportType": "VMOTION"
+                  },
+                  {
+                    "activeUplinks": [
+                      "uplink1",
+                      "uplink2"
+                    ],
+                    "name": "Pod-240-w01-cluster-001-vds-001-pg-vsan",
+                    "standByUplinks": [
+                      ""
+                    ],
+                    "teamingPolicy": "loadbalance_loadbased",
+                    "transportType": "VSAN"
+                  }
+                ]
+              },
+              {
+                "isUsedByNsxt": true,
+                "mtu": 9000,
+                "name": "Pod-240-w01-cluster-001-vds-002",
+                "nsxtSwitchConfig": {
+                  "hostSwitchOperationalMode": "STANDARD",
+                  "transportZones": [
+                    {
+                      "name": "Pod-240-w01-tz-overlay01",
+                      "transportType": "OVERLAY"
+                    },
+                    {
+                      "name": "Pod-240-w01-tz-vlan01",
+                      "transportType": "VLAN"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "skipThumbprintValidation": true
+        }
+      ],
+      "skipFailedHosts": false
+    },
+    "deployWithoutLicenseKeys": true,
+    "domainName": "Pod-240-w01",
+    "nsxTSpec": {
+      "formFactor": "medium",
+      "licenseKey": "",
+      "nsxManagerAdminPassword": "VMware1!VMware1!",
+      "nsxManagerAuditPassword": "VMware1!VMware1!",
+      "nsxManagerSpecs": [
+        {
+          "name": "Pod-240-nsxt-lm-1-w01",
+          "networkDetailsSpec": {
+            "dnsName": "Pod-240-nsxt-lm-1-w01.SDDC.Lab",
+            "gateway": "10.203.240.1",
+            "ipAddress": "10.203.240.30",
+            "subnetMask": "255.255.255.0"
+          }
+        }
+      ],
+      "vip": "10.203.240.29",
+      "vipFqdn": "Pod-240-nsxt-lm-w01.SDDC.Lab"
+    },
+    "orgName": "SDDCLab",
+    "vcenterSpec": {
+      "datacenterName": "Pod-240-w01-datacenter",
+      "name": "Pod-240-VC-w01",
+      "networkDetailsSpec": {
+        "dnsName": "Pod-240-VC-w01.SDDC.Lab",
+        "gateway": "10.203.240.1",
+        "ipAddress": "10.203.240.28",
+        "subnetMask": "255.255.255.0"
+      },
+      "rootPassword": "VMware1!VMware1!",
+      "vmSize": "tiny"
+    }
+  }
