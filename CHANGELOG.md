@@ -2913,3 +2913,10 @@
     - Backups now complete successfully without any error or failure message.
   - Modified ```CreatePodConfig.yml``` playbook to include appliance sizing for vCenter, NSX Local Manager, NSX Global Manager (if Federation is enabled), and vRLI.  You will find the sizing for each product following the '~' after the version number.
   - Issue with ```utils/Util_CreateAllPodConfigs.sh``` script has been resolved by the changes made to the ```CreatePodConfig.yml``` playbook.  For this reason, the ```sleep 2``` command was removed.
+
+## Dev-v8.0.0 19-NOVEMBER-2024
+
+### Added by Rutger Blom
+  - Added VCF Import Tool 5.2.1 ```software_sample.yml```.
+  - Be sure to update your:
+    - ```software.yml```
