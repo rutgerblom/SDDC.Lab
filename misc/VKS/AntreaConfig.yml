@@ -1,0 +1,20 @@
+##
+##    This YAML file can be used to prepare a TKG Service Namespace for integration with NSX.
+##
+##    Provision within a vSphere namespace called "tkgs-ns-1": kubectl apply -f AntreaConfig.yml
+##
+---
+apiVersion: cni.tanzu.vmware.com/v1alpha1
+kind: AntreaConfig
+metadata:
+ name: tkgs-cluster-1-antrea-package # The TKG Service Cluster name as prefix is required
+ namespace: tkgs-ns-1
+spec:
+  antrea:
+    config:
+      featureGates:
+        AntreaTraceflow: true # Facilitates network troubleshooting and visibility (optional)
+        AntreaPolicy: true # Enables advanced policy capabilities in Antrea (required)
+        NetworkPolicyStats: true # Provides visibility into the enforcement of network policies (optional)
+  antreaNSX:
+    enable: true # This is the Antrea-NSX adapter which is disabled by default (required)
