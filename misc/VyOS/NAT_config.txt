@@ -1,0 +1,9 @@
+##
+## Commands to configure NAT in the Pod router for the overlay CIDR inside a Pod.
+##
+configure
+set nat source rule 1 source address 10.204.0.0/16
+set nat source rule 1 outbound-interface name eth0
+set nat source rule 1 translation address masquerade
+commit && save
+exit
