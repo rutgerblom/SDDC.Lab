@@ -1,5 +1,5 @@
 ##
-##    This YAML file can be used to provision a minimal TKG Service Cluster using kind "TanzuKubernetesCluster".
+##    This YAML file can be used to provisions a default TanzuKubernetesCluster using the v1alpha3 API.
 ##
 ##    Provision within a vSphere namespace called "tkgs-ns-1": kubectl apply -f TanzuKubernetesCluster_min.yml
 ##
@@ -16,14 +16,14 @@ spec:
         name: antrea
   topology:
     controlPlane:
-      replicas: 1
-      storageClass: vsan-default-storage-policy
+      replicas: 1 # The number of control plane nodes
+      storageClass: vsan-default-storage-policy # The storage policy
       tkr:
         reference:
           name: v1.30.1---vmware.1-fips-tkg.5
-      vmClass: best-effort-small
+      vmClass: best-effort-small # The VM class
     nodePools:
     - name: workers
-      replicas: 1
-      storageClass: vsan-default-storage-policy
-      vmClass: best-effort-small
+      replicas: 1 # The number of worker nodes
+      storageClass: vsan-default-storage-policy # The storage policy
+      vmClass: best-effort-small # The VM class
