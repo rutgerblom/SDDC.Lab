@@ -90,7 +90,7 @@
       loop: "{{ Nested_NSXT.System.Fabric.TransportZone | dict2items }}"
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy
-        - Deploy.Software.NSXT.Version is not match("4.2*")
+        - Deploy.Software.NSXT.Version is not match("4\.2\.[0-9]\.[0-9]")
 
     - name: Create NSX-T transport zones version 4.2
       vmware.ansible_for_nsxt.nsxt_transport_zones:
@@ -109,4 +109,4 @@
       loop: "{{ Nested_NSXT.System.Fabric.TransportZone | dict2items }}"
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy
-        - Deploy.Software.NSXT.Version is match("4.2*")
+        - Deploy.Software.NSXT.Version is match("4\.2\.[0-9]\.[0-9]")
