@@ -1,0 +1,33 @@
+##
+##    This YAML file can be used to provision a minimal TKG Service Cluster based on the default ClusterClass
+##
+##    Provision within a vSphere namespace called "tkgs-ns-1": kubectl apply -f Cluster_min.yml
+##
+---
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: tkgs-cluster-1 
+  namespace: tkgs-ns-1
+spec:
+  clusterNetwork:
+    services:
+      cidrBlocks: ["10.97.0.0/22"] #CAUTION: must not overlap with Supervisor
+    pods:
+      cidrBlocks: ["10.245.0.0/20"] #CAUTION: must not overlap with Supervisor
+    serviceDomain: "cluster.local"
+  topology:
+    class: tanzukubernetescluster
+    version: v1.30.1---vmware.1-fips-tkg.5
+    controlPlane:
+      replicas: 1 # The number of control plane nodes
+    workers:
+      machineDeployments:
+        - class: node-pool
+          name: node-pool-01
+          replicas: 1 # The number of worker nodes
+    variables:
+      - name: vmClass
+        value: best-effort-smal # The VM class
+      - name: storageClass
+        value: vsan-default-storage-policy # The storage policy
