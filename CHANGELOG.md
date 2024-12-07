@@ -2926,3 +2926,10 @@
 ### Added by Rutger Blom
   - Now that the NSX-T Ansible modules are compatible with the latest Ansible version, the version constraint on Ansible in ```pip3_requirements.txt``` has been removed. 
   - Please be sure to update your NSX-T Ansible modules to the latest version using ```pip3 install --upgrade -r ~/git/SDDC.Lab/pip3_requirements.txt```.
+
+## Dev-v8.0.0 07-DECEMBER-2024
+
+### Added by Rutger Blom
+  - Added vSphere Replication version 9.0.2.1 to ```software_sample.yml```.
+  - Be sure to update your:
+    - ```software.yml```
