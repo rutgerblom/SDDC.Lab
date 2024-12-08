@@ -2933,3 +2933,8 @@
   - Added vSphere Replication version 9.0.2.1 to ```software_sample.yml```.
   - Be sure to update your:
     - ```software.yml```
+
+## Dev-v8.0.0 07-DECEMBER-2024
+
+### Added by Luis Chanu
+  - Modified ```playbooks\DeployNestedEsxi.yml``` playbook to provision ESXi hosts with 8 vNICs instead of 5.  This is to support the testing of advanced NIC deploymet scenarios from within VCF.
