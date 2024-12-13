@@ -27,6 +27,9 @@
   * [Workload Management](#workload-management-v4)
   * [NSX-T Segment IP Subnet Auto-Allocation](#nsx-t-segment-ip-subnet-auto-allocation-v5)
   * [Memory Reservation & Shares](#memory-reservation--shares-v6)
+  * [Symbolic Link to 'Latest' VyOS Installation ISO Download](#symbolic-link-to-latest-vyos-installation-iso-download-v8)
+  * [SDDC Manager Appliance Deployment](#sddc-manager-appliance-deployment-v8)
+  * [Cloud Builder Appliance Deployment](#cloud-builder-appliance-deployment-v8)
 * [Known Items](#known-items)
 * [Issues With Various Software Versions](#issues-with-various-software-versions)
 * [More Information](#more-information)
@@ -207,18 +210,18 @@ The Pod-Router provides gateway services for all of the SDDC.Lab's networks via 
 
 Each Pod is comprised of ten (10) SDDC.Lab networks, numbered 0 through 9.  These SDDC.Lab network numbers are added to the Pod number to create unique VLAN IDs for each Pod.  This explains why the Pod Numbers are divisible by 10.  Below are the SDDC.Lab networks that are deployed within each Pod (Pod Number 100 shown):
 
-| Pod Number | Network Number | MTU  | VLAN ID |    Description    |
-|------------|----------------|------|---------|-------------------|
-|    100     |       0        | 1500 | 100     | Management (ESXi, NSX-T Edges, etc.) |
-|    100     |       1        | 9000 | 101     | vMotion |
-|    100     |       2        | 9000 | 102     | vSAN |
-|    100     |       3        | 9000 | 103     | IPStorage |
-|    100     |       4        | 9000 | 104     | Overlay Transport (i.e. GENEVE Traffic) |
-|    100     |       5        | 1500 | 105     | Service VM Management Interfaces |
-|    100     |       6        | 1500 | 106     | NSX-T Edge Uplink #1 |
-|    100     |       7        | 1500 | 107     | NSX-T Edge Uplink #2 |
-|    100     |       8        | 1500 | 108     | Remote Tunnel Endpoint (RTEP) |
-|    100     |       9        | 1500 | 109     | VM Network |
+| Pod Number | Network Number | MTU  | VLAN ID | DHCP Range |   Description    |
+|------------|----------------|------|---------|------------|------------------|
+|    100     |       0        | 1500 | 100     |            | Management (ESXi, NSX-T Edges, etc.) |
+|    100     |       1        | 9000 | 101     |            | vMotion |
+|    100     |       2        | 9000 | 102     |            | vSAN |
+|    100     |       3        | 9000 | 103     |            | IPStorage |
+|    100     |       4        | 9000 | 104     | .200-.254  | Overlay Transport (i.e. GENEVE Traffic) |
+|    100     |       5        | 1500 | 105     | .200-.254  | Service VM Management Interfaces |
+|    100     |       6        | 1500 | 106     |            | NSX-T Edge Uplink #1 |
+|    100     |       7        | 1500 | 107     |            | NSX-T Edge Uplink #2 |
+|    100     |       8        | 1500 | 108     |            | Remote Tunnel Endpoint (RTEP) |
+|    100     |       9        | 1500 | 109     | .200-.254  | VM Network |
 
 In order to be able to deploy multiple Pods, VLAN ID's 10-249 should be reserved for SDDC.Lab use.
 
@@ -465,6 +468,10 @@ Finally, there are two items to be aware of:
 
 2. Pod components that are deployed from ISO files, which include Pod-Router and nested ESX hosts, do have their memory reservation and share settings configured as part of their initial deployment.  As such, those memory settings are effective immediately, without the need to stop or restart them.
 
+### Symbolic Link to 'Latest' VyOS Installation ISO Download (v8)
+There have been times when the 'Latest' VyOS installation ISO is downloaded, only to discover during a deployment that some aspect/feature of it is not functioning correctly.  After all, these are daily biulds, so it does happen.  When this occurs, you've over-written your previous working VyOS ISO image, and have to manually go and locate an earlier VyOS installer ISO to use.
+
+To mitigate this issue, the ```vyos-rolling-latest.iso``` file that is used for the installation of the Pod-Router is now a symbolic link to the most recent VyOS installation ISO download.  Should the 'Latest' VyOS installation ISO have an issue, the user simply has to update the symbolic link to one of earlier working VyOS installation ISOs to recover.  Previous VyOS installation ISOs are not removed by SDDC.Lab, and must be removed manually by the user once they determine they are no longer needed.
 
 ### SDDC Manager Appliance Deployment (v8)
 SDDC.Lab now allows you to deploy an SDDC manager appliance along with a pod.  This can be used to take advantage of the new VCF Import functionality in VCF 5.2
