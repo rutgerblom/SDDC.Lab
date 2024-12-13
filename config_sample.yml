@@ -320,7 +320,7 @@ TargetConfig:
     User: administrator@vsphere.local                                         # User - vCenter Server user account.  We suggest you create a dedicated account for deployments, such as SDDCLab@vsphere.local.  If using Content Libraries, user must be given persmission to the respective Content Library
     Password: "{{ Common.Password.Physical }}"                                # Password - Password used by User to authenticate to the physical vCenter Server
     vSwitch: SDDCLab_vDS                                                      # vSwitch - Name of the vDS which is automatically provisioned by the playbooks, and where all the Pod Port-Groups are crated
-    vSwitchVersion: 6.6.0                                                     # vSwitchVersion - vDS version used for the given vSwitch
+    vSwitchVersion: 8.0.3                                                     # vSwitchVersion - vDS version used for the given vSwitch.  If not running v8.0 Update 3 (or later), change to the version your environment supports.
     DataCenter: SDDC                                                          # DataCenter - Defines under which DataCenter object the lab Pod's are deployed
     Cluster: Lab-Cluster                                                      # Cluster - Defines which vSphere cluster within DataCenter the lab Pod's are deployed
     Datastore: Shared_VMs                                                     # Datastore - Defines Which datastore should the nested lab Pod VMs be placed
