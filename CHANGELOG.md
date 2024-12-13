@@ -2945,3 +2945,4 @@
   - Updated ```TargetConfig.vCenter.vSwitchVersion``` in ```config_sample.yml``` from version ```6.6.0``` to ```8.0.3```.  Assumption is that users are running vSphere 8.0 Update 3 on their physical hosts.
   - Be sure to update your:
     - ```config.yml``` files
+  - Added DHCPv4 scope for ```Transport``` VLAN.  As with other DHCP scopes, the router is handing out .200-.254 addresses.  This is to help facilitate the VCF deployments w/o the use of a JSON file.
