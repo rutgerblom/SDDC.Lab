@@ -114,7 +114,7 @@ Deploy:
     vCenter:                                              # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: vCenter                                    # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '8.00U3B'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '8.00U3D'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-vCenter.conf"
       Installer: "{{ SiteCode }}-Installer-vCenter"
@@ -142,7 +142,7 @@ Deploy:
     vRLI:                                                 # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: vRLI                                       # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '8.16.0'                                   # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '8.16.1'                                   # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-vRLI-1.conf"
       Installer: "{{ SiteCode }}-Installer-vRLI-1"
@@ -163,14 +163,14 @@ Deploy:
     Replication:                                          # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: Replication                                # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '8.8.0.2'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '9.0.2.1'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-Replication"
       Installer: "{{ SiteCode }}-Replication"
     SDDCManager:                                          # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: SDDCManager                                # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '5.2.0'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '5.2.1'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-SDDCManager"
       Installer: "{{ SiteCode }}-SDDCManager"
@@ -184,7 +184,7 @@ Deploy:
     CloudBuilder:                                         # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: CloudBuilder                               # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '5.2.0'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '5.2.1'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-CloudBuilder"
       Installer: "{{ SiteCode }}-CloudBuilder"
@@ -2786,22 +2786,19 @@ Nested_NSXT:
           MTU: "{{ Net.RTEP.MTU }}"
       TransportZone:
         TZ-VLAN:
-          Type: VLAN
-          TZType: VLAN_BACKED                                                                   # tz_type required as of NSX version 4.2.1.0
+          TZType: VLAN_BACKED
           Description: VLAN Transport Zone for Host Transport Nodes
           Switch: NVDS-1
           SetAsDefault: false
           TeamingPolicies: []
         TZ-Edge:
-          Type: VLAN
-          TZType: VLAN_BACKED                                                                   # tz_type required as of NSX version 4.2.1.0
+          TZType: VLAN_BACKED
           Description: VLAN Transport Zone for Edge Transport Nodes
           Switch: NVDS-1
           SetAsDefault: false
           TeamingPolicies: [ ToR-A, ToR-B ]
         TZ-Overlay:
-          Type: OVERLAY
-          TZType: OVERLAY_BACKED                                                                # tz_type required as of NSX version 4.2.1.0
+          TZType: OVERLAY_BACKED
           Description: Overlay Transport Zone for Host and Edge Transport Nodes
           Switch: NVDS-1
           SetAsDefault: true

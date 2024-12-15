@@ -88,4 +88,4 @@
       loop: "{{ lookup('template', Target.TemplateFolder + '/vars_NSXT_Segments.j2') | from_yaml }}"
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy
-        - Nested_NSXT.System.Fabric.TransportZone[item.transport_zone_display_name].Type == "VLAN"
+        - Nested_NSXT.System.Fabric.TransportZone[item.transport_zone_display_name].TZType == "VLAN_BACKED"

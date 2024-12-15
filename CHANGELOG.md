@@ -2946,3 +2946,24 @@
   - Be sure to update your:
     - ```config.yml``` files
   - Added DHCPv4 scope for ```Transport``` VLAN.  As with other DHCP scopes, the router is handing out .200-.254 addresses.  This is to help facilitate the VCF deployments w/o the use of a JSON file.
+
+## Dev-v8.0.0 13-DECEMBER-2024
+
+### Added by Luis Chanu
+  - Converted SDDC.Lab to use new NSX TransportZone variables.
+  - Modified playbooks and templates to use ```Nested_NSXT.System.Fabric.TransportZone.XXX.TZType``` instead of ```Nested_NSXT.System.Fabric.TransportZone.XXX.Type```.
+  - This change requires users to use current versions of the VMware Ansible Modules, so please be sure to upgrade your modules.  See the steps listed in the README.md file for instructions on installing (and upgrading) the Ansible modules.
+  - The following components were modified/updated within SDDC.Lab:
+    - ```playbooks/CreateNsxOverlaySegments.yml```
+    - ```playbooks/CrateNsxTz.yml```
+    - ```playbooks/CreateNsxVLANSegments.yml```
+    - ```templates/vars_NSXT_Segments.j2```
+    - ```config_sample.yml```
+  - Be sure to update your:
+    - ```config.yml``` files
+
+## Dev-v8.0.0 14-DECEMBER-2024
+
+### Added by Luis Chanu
+  - Updated VMware Ansible modules on Ansible host, and performed some testing.  All successful.
+  - Added ```misc/LabInfo/LabInfo_20241214.txt``` file to repo that shows versions of upgraded modules so users have a known good configuration baseline to compare against.
