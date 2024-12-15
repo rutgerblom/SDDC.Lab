@@ -72,27 +72,7 @@
       when:
         - DEBUG.DisplayVariables
 
-    - name: Create NSX-T transport zones pre version 4.2
-      vmware.ansible_for_nsxt.nsxt_transport_zones:
-        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
-        username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-        resource_type: "TransportZone"
-        display_name: "{{ item.key }}"
-        is_default: "{{ item.value.SetAsDefault }}"
-        description: "{{ item.value.Description }}"
-#        transport_type: "{{ item.value.Type }}"
-        tz_type: "{{ item.value.TZType }}"
-        uplink_teaming_policy_names: "{{ item.value.TeamingPolicies }}"
-        state: "present"
-      register: result
-      loop: "{{ Nested_NSXT.System.Fabric.TransportZone | dict2items }}"
-      when:
-        - Deploy.Product.NSXT.LocalManager.Deploy
-        - Deploy.Software.NSXT.Version is not match("4.2*")
-
-    - name: Create NSX-T transport zones version 4.2
+    - name: Create NSX-T transport zones
       vmware.ansible_for_nsxt.nsxt_transport_zones:
         hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         username: "{{ Nested_NSXT.Credential.admin.Name }}"
@@ -109,4 +89,3 @@
       loop: "{{ Nested_NSXT.System.Fabric.TransportZone | dict2items }}"
       when:
         - Deploy.Product.NSXT.LocalManager.Deploy
-        - Deploy.Software.NSXT.Version is match("4.2*")
