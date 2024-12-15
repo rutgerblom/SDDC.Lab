@@ -1,0 +1,604 @@
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                            SDDC.Lab Version                            %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+SDDCLab:
+  Version: 8
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                      Ansible Version & Locations                       %%
+%%                          (ansible --version)                           %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ansible [core 2.17.7]
+  config file = /home/adminuser/git/SDDC.Lab/ansible.cfg
+  configured module search path = ['/home/adminuser/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /home/adminuser/.local/lib/python3.10/site-packages/ansible
+  ansible collection location = /home/adminuser/.ansible/collections:/usr/share/ansible/collections
+  executable location = /home/adminuser/.local/bin/ansible
+  python version = 3.10.12 (main, Nov  6 2024, 20:22:13) [GCC 11.4.0] (/usr/bin/python3)
+  jinja version = 3.1.2
+  libyaml = True
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                       Installed Python Packages                        %%
+%%                              (pip3 list)                               %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Package                            Version
+---------------------------------- ----------------
+aiohttp                            3.8.5
+aiosignal                          1.3.1
+ansible                            10.7.0
+ansible-base                       2.10.8
+ansible-core                       2.17.7
+ansible-lint                       5.4.0
+apache-libcloud                    3.2.0
+apturl                             0.5.2
+argcomplete                        1.8.1
+async-timeout                      4.0.3
+attrs                              23.1.0
+Babel                              2.8.0
+bcrypt                             4.0.1
+blinker                            1.4
+bracex                             2.2.1
+Brlapi                             0.8.3
+certifi                            2020.6.20
+cffi                               1.15.1
+chardet                            4.0.0
+charset-normalizer                 3.2.0
+click                              8.0.3
+colorama                           0.4.4
+command-not-found                  0.3
+commonmark                         0.9.1
+cryptography                       44.0.0
+cupshelpers                        1.0
+dbus-python                        1.2.18
+defer                              1.0.6
+distro                             1.7.0
+distro-info                        1.1+ubuntu0.2
+dnspython                          2.7.0
+docopt                             0.6.2
+enrich                             1.2.6
+frozenlist                         1.4.0
+github3.py                         4.0.1
+gpg                                1.16.0
+httplib2                           0.20.2
+idna                               3.3
+importlib-metadata                 4.6.4
+jeepney                            0.7.1
+Jinja2                             3.1.2
+jmespath                           1.0.1
+keyring                            23.5.0
+language-selector                  0.1
+launchpadlib                       1.10.16
+lazr.restfulclient                 0.14.4
+lazr.uri                           1.0.6
+lockfile                           0.12.2
+louis                              3.20.0
+lxml                               4.9.2
+macaroonbakery                     1.3.1
+MarkupSafe                         2.1.3
+more-itertools                     8.10.0
+multidict                          6.0.4
+netaddr                            1.3.0
+netifaces                          0.11.0
+nsx_policy_python_sdk              4.2.0
+nsx_python_sdk                     4.2.0
+nsx-vmc-aws-integration-python-sdk 4.1.2.0.1
+nsx-vmc-policy-python-sdk          4.1.2.0.1
+ntlm-auth                          1.4.0
+oauthlib                           3.2.0
+olefile                            0.46
+packaging                          23.1
+paramiko                           3.5.0
+pathspec                           0.9.0
+pbr                                5.11.1
+pexpect                            4.8.0
+Pillow                             9.0.1
+pip                                22.0.2
+prompt-toolkit                     3.0.38
+protobuf                           3.12.4
+ptyprocess                         0.7.0
+pycairo                            1.20.1
+pycparser                          2.21
+pycryptodomex                      3.11.0
+pycups                             2.0.1
+pyflakes                           3.0.1
+Pygments                           2.15.1
+PyGObject                          3.42.1
+PyJWT                              2.3.0
+pykerberos                         1.1.14
+pymacaroons                        0.13.0
+PyNaCl                             1.5.0
+pyOpenSSL                          24.3.0
+pyparsing                          2.4.7
+pyRFC3339                          1.1
+python-apt                         2.4.0+ubuntu3
+python-dateutil                    2.8.1
+python-debian                      0.1.43+ubuntu1.1
+pytz                               2022.1
+pyvim                              3.0.3
+pyvmomi                            8.0.3.0.1
+pywinrm                            0.3.0
+pyxdg                              0.27
+PyYAML                             5.4.1
+reportlab                          3.6.8
+requests                           2.25.1
+requests-kerberos                  0.12.0
+requests-ntlm                      1.1.0
+requests-toolbelt                  0.9.1
+resolvelib                         1.0.1
+rich                               11.2.0
+ruamel.yaml                        0.17.16
+ruamel.yaml.clib                   0.2.6
+SecretStorage                      3.3.1
+selinux                            3.3
+setuptools                         75.6.0
+shyaml                             0.6.2
+simplejson                         3.17.6
+six                                1.16.0
+ssh-import-id                      5.11
+systemd-python                     234
+tenacity                           6.3.1
+testresources                      2.0.1
+ubuntu-drivers-common              0.0.0
+ubuntu-pro-client                  8001
+ufw                                0.36.1
+unattended-upgrades                0.1
+uritemplate                        4.1.1
+urllib3                            1.26.5
+vapi-common-client                 2.40.0
+vapi-runtime                       2.40.0
+vcenter-bindings                   4.1.0
+vmc-client-bindings                1.62.0
+vmc-draas-client-bindings          1.21.0
+vmware-vapi-common-client          2.52.0
+vmware-vapi-runtime                2.52.0
+vmware_vcenter                     8.0.3.0
+vmwarecloud-aws                    1.64.1
+vmwarecloud-draas                  1.23.1
+vsphere-automation-sdk             1.87.0
+wadllib                            1.3.6
+wcmatch                            8.3
+wcwidth                            0.2.6
+wheel                              0.37.1
+xdg                                5
+xkit                               0.0.0
+xmltodict                          0.12.0
+yamllint                           1.26.3
+yarl                               1.9.2
+zipp                               1.0.0
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                       Ansible Module Information                       %%
+%%                    (ansible-galaxy collection list)                    %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# /home/adminuser/.ansible/collections/ansible_collections
+Collection                               Version
+---------------------------------------- -------
+ansible.netcommon                        7.1.0  
+ansible.posix                            2.0.0  
+ansible.utils                            5.1.2  
+cloud.common                             3.0.0  
+community.crypto                         2.22.3 
+community.general                        10.1.0 
+community.vmware                         4.3.0  
+vmware.alb                               30.1.1 
+vmware.ansible_for_nsxt                  1.0.0  
+vmware.vmware                            1.6.0  
+vmware.vmware_rest                       3.0.0  
+vyos.vyos                                4.1.0  
+
+# /home/adminuser/.local/lib/python3.10/site-packages/ansible_collections
+Collection                               Version
+---------------------------------------- -------
+amazon.aws                               8.2.1  
+ansible.netcommon                        6.1.3  
+ansible.posix                            1.6.2  
+ansible.utils                            4.1.0  
+ansible.windows                          2.5.0  
+arista.eos                               9.0.0  
+awx.awx                                  24.6.1 
+azure.azcollection                       2.7.0  
+check_point.mgmt                         5.2.3  
+chocolatey.chocolatey                    1.5.3  
+cisco.aci                                2.10.1 
+cisco.asa                                5.0.1  
+cisco.dnac                               6.25.0 
+cisco.intersight                         2.0.20 
+cisco.ios                                8.0.0  
+cisco.iosxr                              9.0.0  
+cisco.ise                                2.9.6  
+cisco.meraki                             2.18.3 
+cisco.mso                                2.9.0  
+cisco.nxos                               8.1.0  
+cisco.ucs                                1.14.0 
+cloud.common                             3.0.0  
+cloudscale_ch.cloud                      2.4.0  
+community.aws                            8.0.0  
+community.ciscosmb                       1.0.9  
+community.crypto                         2.22.3 
+community.digitalocean                   1.27.0 
+community.dns                            3.1.0  
+community.docker                         3.13.3 
+community.general                        9.5.2  
+community.grafana                        1.9.1  
+community.hashi_vault                    6.2.0  
+community.hrobot                         2.0.2  
+community.library_inventory_filtering_v1 1.0.2  
+community.libvirt                        1.3.0  
+community.mongodb                        1.7.8  
+community.mysql                          3.11.0 
+community.network                        5.1.0  
+community.okd                            3.0.1  
+community.postgresql                     3.9.0  
+community.proxysql                       1.6.0  
+community.rabbitmq                       1.3.0  
+community.routeros                       2.20.0 
+community.sap_libs                       1.4.2  
+community.sops                           1.9.1  
+community.vmware                         4.8.1  
+community.windows                        2.3.0  
+community.zabbix                         2.5.1  
+containers.podman                        1.16.2 
+cyberark.conjur                          1.3.1  
+cyberark.pas                             1.0.30 
+dellemc.enterprise_sonic                 2.5.1  
+dellemc.openmanage                       9.9.0  
+dellemc.powerflex                        2.5.0  
+dellemc.unity                            2.0.0  
+f5networks.f5_modules                    1.32.1 
+fortinet.fortimanager                    2.8.2  
+fortinet.fortios                         2.3.8  
+frr.frr                                  2.0.2  
+google.cloud                             1.4.1  
+grafana.grafana                          5.6.0  
+hetzner.hcloud                           3.1.1  
+ibm.qradar                               3.0.0  
+ibm.spectrum_virtualize                  2.0.0  
+ibm.storage_virtualize                   2.5.0  
+ieisystem.inmanage                       2.0.0  
+infinidat.infinibox                      1.4.5  
+infoblox.nios_modules                    1.7.1  
+inspur.ispim                             2.2.3  
+inspur.sm                                2.3.0  
+junipernetworks.junos                    8.0.0  
+kaytus.ksmanage                          1.2.2  
+kubernetes.core                          3.2.0  
+kubevirt.core                            1.5.0  
+lowlydba.sqlserver                       2.3.4  
+microsoft.ad                             1.7.1  
+netapp.cloudmanager                      21.24.0
+netapp.ontap                             22.13.0
+netapp.storagegrid                       21.13.0
+netapp_eseries.santricity                1.4.1  
+netbox.netbox                            3.20.0 
+ngine_io.cloudstack                      2.5.0  
+ngine_io.exoscale                        1.1.0  
+openstack.cloud                          2.3.0  
+openvswitch.openvswitch                  2.1.1  
+ovirt.ovirt                              3.2.0  
+purestorage.flasharray                   1.32.0 
+purestorage.flashblade                   1.19.1 
+sensu.sensu_go                           1.14.0 
+splunk.es                                3.0.0  
+t_systems_mms.icinga_director            2.0.1  
+telekom_mms.icinga_director              2.2.1  
+theforeman.foreman                       4.2.0  
+vmware.vmware                            1.7.1  
+vmware.vmware_rest                       3.2.0  
+vultr.cloud                              1.13.0 
+vyos.vyos                                4.1.0  
+wti.remote                               1.0.10 
+
+# /usr/lib/python3/dist-packages/ansible_collections
+Collection                               Version
+---------------------------------------- -------
+amazon.aws                               1.4.0  
+ansible.netcommon                        1.5.0  
+ansible.posix                            1.1.1  
+ansible.windows                          1.4.0  
+arista.eos                               1.3.0  
+awx.awx                                  14.1.0 
+azure.azcollection                       1.4.0  
+check_point.mgmt                         1.0.6  
+chocolatey.chocolatey                    1.0.2  
+cisco.aci                                1.1.1  
+cisco.asa                                1.0.4  
+cisco.intersight                         1.0.10 
+cisco.ios                                1.3.0  
+cisco.iosxr                              1.2.1  
+cisco.meraki                             2.2.0  
+cisco.mso                                1.1.0  
+cisco.nso                                1.0.3  
+cisco.nxos                               1.4.0  
+cisco.ucs                                1.6.0  
+cloudscale_ch.cloud                      1.3.1  
+community.aws                            1.3.0  
+community.azure                          1.0.0  
+community.crypto                         1.4.0  
+community.digitalocean                   1.0.0  
+community.docker                         1.2.2  
+community.fortios                        1.0.0  
+community.general                        1.3.6  
+community.google                         1.0.0  
+community.grafana                        1.1.0  
+community.hashi_vault                    1.1.0  
+community.hrobot                         1.1.0  
+community.kubernetes                     1.1.1  
+community.kubevirt                       1.0.0  
+community.libvirt                        1.0.0  
+community.mongodb                        1.2.0  
+community.mysql                          1.2.0  
+community.network                        1.3.2  
+community.okd                            1.0.0  
+community.postgresql                     1.1.1  
+community.proxysql                       1.0.0  
+community.rabbitmq                       1.0.1  
+community.routeros                       1.1.0  
+community.skydive                        1.0.0  
+community.vmware                         1.7.0  
+community.windows                        1.3.0  
+community.zabbix                         1.2.0  
+containers.podman                        1.4.1  
+cyberark.conjur                          1.1.0  
+cyberark.pas                             1.0.5  
+dellemc.os10                             1.0.2  
+dellemc.os6                              1.0.6  
+dellemc.os9                              1.0.3  
+f5networks.f5_modules                    1.7.1  
+fortinet.fortimanager                    1.0.5  
+fortinet.fortios                         1.1.8  
+frr.frr                                  1.0.3  
+gluster.gluster                          1.0.1  
+google.cloud                             1.0.2  
+hetzner.hcloud                           1.2.1  
+ibm.qradar                               1.0.3  
+infinidat.infinibox                      1.2.4  
+junipernetworks.junos                    1.3.0  
+mellanox.onyx                            1.0.0  
+netapp.aws                               20.9.0 
+netapp.elementsw                         20.11.0
+netapp.ontap                             20.12.0
+netapp_eseries.santricity                1.1.0  
+netbox.netbox                            1.2.1  
+ngine_io.cloudstack                      1.2.0  
+ngine_io.exoscale                        1.0.0  
+ngine_io.vultr                           1.1.0  
+openstack.cloud                          1.2.1  
+openvswitch.openvswitch                  1.1.0  
+ovirt.ovirt                              1.3.0  
+purestorage.flasharray                   1.6.2  
+purestorage.flashblade                   1.4.0  
+servicenow.servicenow                    1.0.4  
+splunk.es                                1.0.2  
+theforeman.foreman                       1.5.1  
+vyos.vyos                                1.1.1  
+wti.remote                               1.0.1  
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                        Ansible Core Information                        %%
+%%                         (ansible-config dump)                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ACTION_WARNINGS(default) = True
+AGNOSTIC_BECOME_PROMPT(default) = True
+ANSIBLE_CONNECTION_PATH(default) = None
+ANSIBLE_COW_ACCEPTLIST(default) = ['bud-frogs', 'bunny', 'cheese', 'daemon', 'default', 'dragon', 'elephant-in-snake', 'elephant', 'eyes', 'hellokitty', 'kitty', 'luke-koala', 'meow', 'milk', 'moofasa', 'moose', 'ren', 'sheep', 'small', 'stegosaurus', 'stimpy', 'supermilker', 'three-eyes', 'turkey', 'turtle', 'tux', 'udder', 'vader-koala', 'vader', 'www']
+ANSIBLE_COW_PATH(default) = None
+ANSIBLE_COW_SELECTION(default) = default
+ANSIBLE_FORCE_COLOR(default) = False
+ANSIBLE_HOME(default) = /home/adminuser/.ansible
+ANSIBLE_NOCOLOR(default) = False
+ANSIBLE_NOCOWS(default) = False
+ANSIBLE_PIPELINING(default) = False
+ANY_ERRORS_FATAL(default) = False
+BECOME_ALLOW_SAME_USER(default) = False
+BECOME_PASSWORD_FILE(default) = None
+BECOME_PLUGIN_PATH(default) = ['/home/adminuser/.ansible/plugins/become', '/usr/share/ansible/plugins/become']
+CACHE_PLUGIN(default) = memory
+CACHE_PLUGIN_CONNECTION(default) = None
+CACHE_PLUGIN_PREFIX(default) = ansible_facts
+CACHE_PLUGIN_TIMEOUT(default) = 86400
+CALLBACKS_ENABLED(/home/adminuser/git/SDDC.Lab/ansible.cfg) = ['profile_tasks']
+COLLECTIONS_ON_ANSIBLE_VERSION_MISMATCH(default) = warning
+COLLECTIONS_PATHS(default) = ['/home/adminuser/.ansible/collections', '/usr/share/ansible/collections']
+COLLECTIONS_SCAN_SYS_PATH(default) = True
+COLOR_CHANGED(default) = yellow
+COLOR_CONSOLE_PROMPT(default) = white
+COLOR_DEBUG(default) = dark gray
+COLOR_DEPRECATE(default) = purple
+COLOR_DIFF_ADD(default) = green
+COLOR_DIFF_LINES(default) = cyan
+COLOR_DIFF_REMOVE(default) = red
+COLOR_ERROR(default) = red
+COLOR_HIGHLIGHT(default) = white
+COLOR_OK(default) = green
+COLOR_SKIP(default) = cyan
+COLOR_UNREACHABLE(default) = bright red
+COLOR_VERBOSE(default) = blue
+COLOR_WARN(default) = bright purple
+CONFIG_FILE() = /home/adminuser/git/SDDC.Lab/ansible.cfg
+CONNECTION_FACTS_MODULES(default) = {'asa': 'ansible.legacy.asa_facts', 'cisco.asa.asa': 'cisco.asa.asa_facts', 'eos': 'ansible.legacy.eos_facts', 'arista.eos.eos': 'arista.eos.eos_facts', 'frr': 'ansible.legacy.frr_facts', 'frr.frr.frr': 'frr.frr.frr_facts', 'ios': 'ansible.legacy.ios_facts', 'cisco.ios.ios': 'cisco.ios.ios_facts', 'iosxr': 'ansible.legacy.iosxr_facts', 'cisco.iosxr.iosxr': 'cisco.iosxr.iosxr_facts', 'junos': 'ansible.legacy.junos_facts', 'junipernetworks.junos.junos': 'junipernetworks.junos.junos_facts', 'nxos': 'ansible.legacy.nxos_facts', 'cisco.nxos.nxos': 'cisco.nxos.nxos_facts', 'vyos': 'ansible.legacy.vyos_facts', 'vyos.vyos.vyos': 'vyos.vyos.vyos_facts', 'exos': 'ansible.legacy.exos_facts', 'extreme.exos.exos': 'extreme.exos.exos_facts', 'slxos': 'ansible.legacy.slxos_facts', 'extreme.slxos.slxos': 'extreme.slxos.slxos_facts', 'voss': 'ansible.legacy.voss_facts', 'extreme.voss.voss': 'extreme.voss.voss_facts', 'ironware': 'ansible.legacy.ironware_facts', 'community.network.ironware': 'community.network.ironware_facts'}
+CONNECTION_PASSWORD_FILE(default) = None
+COVERAGE_REMOTE_OUTPUT(default) = None
+COVERAGE_REMOTE_PATHS(default) = *
+DEFAULT_ACTION_PLUGIN_PATH(default) = ['/home/adminuser/.ansible/plugins/action', '/usr/share/ansible/plugins/action']
+DEFAULT_ALLOW_UNSAFE_LOOKUPS(default) = False
+DEFAULT_ASK_PASS(default) = False
+DEFAULT_ASK_VAULT_PASS(default) = False
+DEFAULT_BECOME(default) = False
+DEFAULT_BECOME_ASK_PASS(default) = False
+DEFAULT_BECOME_EXE(default) = None
+DEFAULT_BECOME_FLAGS(default) = 
+DEFAULT_BECOME_METHOD(default) = sudo
+DEFAULT_BECOME_USER(default) = root
+DEFAULT_CACHE_PLUGIN_PATH(default) = ['/home/adminuser/.ansible/plugins/cache', '/usr/share/ansible/plugins/cache']
+DEFAULT_CALLBACK_PLUGIN_PATH(default) = ['/home/adminuser/.ansible/plugins/callback', '/usr/share/ansible/plugins/callback']
+DEFAULT_CLICONF_PLUGIN_PATH(default) = ['/home/adminuser/.ansible/plugins/cliconf', '/usr/share/ansible/plugins/cliconf']
+DEFAULT_CONNECTION_PLUGIN_PATH(default) = ['/home/adminuser/.ansible/plugins/connection', '/usr/share/ansible/plugins/connection']
+DEFAULT_DEBUG(default) = False
+DEFAULT_EXECUTABLE(default) = /bin/sh
+DEFAULT_FACT_PATH(default) = None
+DEFAULT_FILTER_PLUGIN_PATH(default) = ['/home/adminuser/.ansible/plugins/filter', '/usr/share/ansible/plugins/filter']
+DEFAULT_FORCE_HANDLERS(default) = False
+DEFAULT_FORKS(default) = 5
+DEFAULT_GATHERING(/home/adminuser/git/SDDC.Lab/ansible.cfg) = explicit
+DEFAULT_GATHER_SUBSET(default) = None
+DEFAULT_GATHER_TIMEOUT(default) = None
+DEFAULT_HASH_BEHAVIOUR(default) = replace
+DEFAULT_HOST_LIST(/home/adminuser/git/SDDC.Lab/ansible.cfg) = ['/home/adminuser/git/SDDC.Lab/hosts/hosts']
+DEFAULT_HTTPAPI_PLUGIN_PATH(default) = ['/home/adminuser/.ansible/plugins/httpapi', '/usr/share/ansible/plugins/httpapi']
+DEFAULT_INTERNAL_POLL_INTERVAL(default) = 0.001
+DEFAULT_INVENTORY_PLUGIN_PATH(default) = ['/home/adminuser/.ansible/plugins/inventory', '/usr/share/ansible/plugins/inventory']
+DEFAULT_JINJA2_EXTENSIONS(/home/adminuser/git/SDDC.Lab/ansible.cfg) = jinja2.ext.do,jinja2.ext.i18n
+DEFAULT_JINJA2_NATIVE(default) = False
+DEFAULT_KEEP_REMOTE_FILES(default) = False
+DEFAULT_LIBVIRT_LXC_NOSECLABEL(default) = False
+DEFAULT_LOAD_CALLBACK_PLUGINS(default) = False
+DEFAULT_LOCAL_TMP(default) = /home/adminuser/.ansible/tmp/ansible-local-134051il500lmx
+DEFAULT_LOG_FILTER(default) = []
+DEFAULT_LOG_PATH(default) = None
+DEFAULT_LOOKUP_PLUGIN_PATH(default) = ['/home/adminuser/.ansible/plugins/lookup', '/usr/share/ansible/plugins/lookup']
+DEFAULT_MANAGED_STR(default) = Ansible managed
+DEFAULT_MODULE_ARGS(default) = None
+DEFAULT_MODULE_COMPRESSION(default) = ZIP_DEFLATED
+DEFAULT_MODULE_NAME(default) = command
+DEFAULT_MODULE_PATH(default) = ['/home/adminuser/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+DEFAULT_MODULE_UTILS_PATH(default) = ['/home/adminuser/.ansible/plugins/module_utils', '/usr/share/ansible/plugins/module_utils']
+DEFAULT_NETCONF_PLUGIN_PATH(default) = ['/home/adminuser/.ansible/plugins/netconf', '/usr/share/ansible/plugins/netconf']
+DEFAULT_NO_LOG(default) = False
+DEFAULT_NO_TARGET_SYSLOG(default) = False
+DEFAULT_NULL_REPRESENTATION(default) = None
+DEFAULT_POLL_INTERVAL(default) = 15
+DEFAULT_PRIVATE_KEY_FILE(default) = None
+DEFAULT_PRIVATE_ROLE_VARS(default) = False
+DEFAULT_REMOTE_PORT(default) = None
+DEFAULT_REMOTE_USER(default) = None
+DEFAULT_ROLES_PATH(default) = ['/home/adminuser/.ansible/roles', '/usr/share/ansible/roles', '/etc/ansible/roles']
+DEFAULT_SELINUX_SPECIAL_FS(default) = ['fuse', 'nfs', 'vboxsf', 'ramfs', '9p', 'vfat']
+DEFAULT_STDOUT_CALLBACK(default) = default
+DEFAULT_STRATEGY(default) = linear
+DEFAULT_STRATEGY_PLUGIN_PATH(default) = ['/home/adminuser/.ansible/plugins/strategy', '/usr/share/ansible/plugins/strategy']
+DEFAULT_SU(default) = False
+DEFAULT_SYSLOG_FACILITY(default) = LOG_USER
+DEFAULT_TERMINAL_PLUGIN_PATH(default) = ['/home/adminuser/.ansible/plugins/terminal', '/usr/share/ansible/plugins/terminal']
+DEFAULT_TEST_PLUGIN_PATH(default) = ['/home/adminuser/.ansible/plugins/test', '/usr/share/ansible/plugins/test']
+DEFAULT_TIMEOUT(default) = 10
+DEFAULT_TRANSPORT(default) = ssh
+DEFAULT_UNDEFINED_VAR_BEHAVIOR(default) = True
+DEFAULT_VARS_PLUGIN_PATH(default) = ['/home/adminuser/.ansible/plugins/vars', '/usr/share/ansible/plugins/vars']
+DEFAULT_VAULT_ENCRYPT_IDENTITY(default) = None
+DEFAULT_VAULT_IDENTITY(default) = default
+DEFAULT_VAULT_IDENTITY_LIST(default) = []
+DEFAULT_VAULT_ID_MATCH(default) = False
+DEFAULT_VAULT_PASSWORD_FILE(default) = None
+DEFAULT_VERBOSITY(default) = 0
+DEPRECATION_WARNINGS(default) = True
+DEVEL_WARNING(default) = True
+DIFF_ALWAYS(default) = False
+DIFF_CONTEXT(default) = 3
+DISPLAY_ARGS_TO_STDOUT(default) = False
+DISPLAY_SKIPPED_HOSTS(default) = True
+DOCSITE_ROOT_URL(default) = https://docs.ansible.com/ansible-core/
+DOC_FRAGMENT_PLUGIN_PATH(default) = ['/home/adminuser/.ansible/plugins/doc_fragments', '/usr/share/ansible/plugins/doc_fragments']
+DUPLICATE_YAML_DICT_KEY(default) = warn
+EDITOR(default) = vi
+ENABLE_TASK_DEBUGGER(default) = False
+ERROR_ON_MISSING_HANDLER(default) = True
+FACTS_MODULES(default) = ['smart']
+GALAXY_CACHE_DIR(default) = /home/adminuser/.ansible/galaxy_cache
+GALAXY_COLLECTIONS_PATH_WARNING(default) = True
+GALAXY_COLLECTION_SKELETON(default) = None
+GALAXY_COLLECTION_SKELETON_IGNORE(default) = ['^.git$', '^.*/.git_keep$']
+GALAXY_DISABLE_GPG_VERIFY(default) = False
+GALAXY_DISPLAY_PROGRESS(default) = None
+GALAXY_GPG_KEYRING(default) = None
+GALAXY_IGNORE_CERTS(default) = None
+GALAXY_IGNORE_INVALID_SIGNATURE_STATUS_CODES(default) = None
+GALAXY_REQUIRED_VALID_SIGNATURE_COUNT(default) = 1
+GALAXY_ROLE_SKELETON(default) = None
+GALAXY_ROLE_SKELETON_IGNORE(default) = ['^.git$', '^.*/.git_keep$']
+GALAXY_SERVER(default) = https://galaxy.ansible.com
+GALAXY_SERVER_LIST(default) = None
+GALAXY_SERVER_TIMEOUT(default) = 60
+GALAXY_TOKEN_PATH(default) = /home/adminuser/.ansible/galaxy_token
+HOST_KEY_CHECKING(/home/adminuser/git/SDDC.Lab/ansible.cfg) = False
+HOST_PATTERN_MISMATCH(default) = warning
+INJECT_FACTS_AS_VARS(default) = True
+INTERPRETER_PYTHON(/home/adminuser/git/SDDC.Lab/ansible.cfg) = /usr/bin/python3
+INTERPRETER_PYTHON_FALLBACK(default) = ['python3.12', 'python3.11', 'python3.10', 'python3.9', 'python3.8', 'python3.7', '/usr/bin/python3', 'python3']
+INVALID_TASK_ATTRIBUTE_FAILED(default) = True
+INVENTORY_ANY_UNPARSED_IS_FAILED(default) = False
+INVENTORY_CACHE_ENABLED(default) = False
+INVENTORY_CACHE_PLUGIN(default) = None
+INVENTORY_CACHE_PLUGIN_CONNECTION(default) = None
+INVENTORY_CACHE_PLUGIN_PREFIX(default) = ansible_inventory_
+INVENTORY_CACHE_TIMEOUT(default) = 3600
+INVENTORY_ENABLED(default) = ['host_list', 'script', 'auto', 'yaml', 'ini', 'toml']
+INVENTORY_EXPORT(default) = False
+INVENTORY_IGNORE_EXTS(default) = ('.pyc', '.pyo', '.swp', '.bak', '~', '.rpm', '.md', '.txt', '.rst', '.orig', '.ini', '.cfg', '.retry')
+INVENTORY_IGNORE_PATTERNS(default) = []
+INVENTORY_UNPARSED_IS_FAILED(default) = False
+INVENTORY_UNPARSED_WARNING(default) = True
+LOCALHOST_WARNING(/home/adminuser/git/SDDC.Lab/ansible.cfg) = False
+LOG_VERBOSITY(default) = None
+MAX_FILE_SIZE_FOR_DIFF(default) = 104448
+MODULE_IGNORE_EXTS(default) = ('.pyc', '.pyo', '.swp', '.bak', '~', '.rpm', '.md', '.txt', '.rst', '.yaml', '.yml', '.ini')
+MODULE_STRICT_UTF8_RESPONSE(default) = True
+NETCONF_SSH_CONFIG(default) = None
+NETWORK_GROUP_MODULES(default) = ['eos', 'nxos', 'ios', 'iosxr', 'junos', 'enos', 'ce', 'vyos', 'sros', 'dellos9', 'dellos10', 'dellos6', 'asa', 'aruba', 'aireos', 'bigip', 'ironware', 'onyx', 'netconf', 'exos', 'voss', 'slxos']
+OLD_PLUGIN_CACHE_CLEARING(default) = False
+PAGER(default) = less
+PARAMIKO_HOST_KEY_AUTO_ADD(default) = False
+PARAMIKO_LOOK_FOR_KEYS(default) = True
+PERSISTENT_COMMAND_TIMEOUT(default) = 30
+PERSISTENT_CONNECT_RETRY_TIMEOUT(default) = 15
+PERSISTENT_CONNECT_TIMEOUT(default) = 30
+PERSISTENT_CONTROL_PATH_DIR(default) = /home/adminuser/.ansible/pc
+PLAYBOOK_DIR(default) = None
+PLAYBOOK_VARS_ROOT(default) = top
+PLUGIN_FILTERS_CFG(default) = None
+PYTHON_MODULE_RLIMIT_NOFILE(default) = 0
+RETRY_FILES_ENABLED(default) = False
+RETRY_FILES_SAVE_PATH(default) = None
+RUN_VARS_PLUGINS(default) = demand
+SHOW_CUSTOM_STATS(default) = False
+STRING_CONVERSION_ACTION(default) = warn
+STRING_TYPE_FILTERS(default) = ['string', 'to_json', 'to_nice_json', 'to_yaml', 'to_nice_yaml', 'ppretty', 'json']
+SYSTEM_WARNINGS(default) = True
+TAGS_RUN(default) = []
+TAGS_SKIP(default) = []
+TARGET_LOG_INFO(default) = None
+TASK_DEBUGGER_IGNORE_ERRORS(default) = True
+TASK_TIMEOUT(default) = 0
+TRANSFORM_INVALID_GROUP_CHARS(default) = never
+USE_PERSISTENT_CONNECTIONS(default) = False
+VALIDATE_ACTION_GROUP_METADATA(default) = True
+VARIABLE_PLUGINS_ENABLED(default) = ['host_group_vars']
+VARIABLE_PRECEDENCE(default) = ['all_inventory', 'groups_inventory', 'all_plugins_inventory', 'all_plugins_play', 'groups_plugins_inventory', 'groups_plugins_play']
+VAULT_ENCRYPT_SALT(default) = None
+VERBOSE_TO_STDERR(default) = False
+WIN_ASYNC_STARTUP_TIMEOUT(default) = 5
+WORKER_SHUTDOWN_POLL_COUNT(default) = 0
+WORKER_SHUTDOWN_POLL_DELAY(default) = 0.1
+YAML_FILENAME_EXTENSIONS(default) = ['.yml', '.yaml', '.json']

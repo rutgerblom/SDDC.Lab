@@ -2961,3 +2961,9 @@
     - ```config_sample.yml```
   - Be sure to update your:
     - ```config.yml``` files
+
+## Dev-v8.0.0 14-DECEMBER-2024
+
+### Added by Luis Chanu
+  - Updated VMware Ansible modules on Ansible host, and performed some testing.  All successful.
+  - Added ```misc/LabInfo/LabInfo_20241214.txt``` file to repo that shows versions of upgraded modules so users have a known good configuration baseline to compare against.
