@@ -2967,3 +2967,10 @@
 ### Added by Luis Chanu
   - Updated VMware Ansible modules on Ansible host, and performed some testing.  All successful.
   - Added ```misc/LabInfo/LabInfo_20241214.txt``` file to repo that shows versions of upgraded modules so users have a known good configuration baseline to compare against.
+
+## Dev-v8.0.0 18-DECEMBER-2024
+
+### Added by Rutger Blom
+  - Updated ```pip3_requirements.txt``` and ```requirements.yml``` so that the latest tested versions of libraries/collectioms are specified.
+  - Added ```vmware-vcenter``` and ```vmware-vapi-common-client``` to ```pip3_requirements.txt```.
+  - Be sure to update your Python libraries by running ```pip3 install --upgrade -r ~/git/SDDC.Lab/pip3_requirements.txt``` and your Ansible collections by running: ```ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml```.
