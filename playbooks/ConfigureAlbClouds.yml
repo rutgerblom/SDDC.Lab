@@ -451,3 +451,78 @@
         - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
+
+
+## ████████ ██      ███████      ██████ ███████ ██████  ████████ ██ ███████ ██  ██████  █████  ████████ ███████
+##    ██    ██      ██          ██      ██      ██   ██    ██    ██ ██      ██ ██      ██   ██    ██    ██
+##    ██    ██      ███████     ██      █████   ██████     ██    ██ █████   ██ ██      ███████    ██    █████
+##    ██    ██           ██     ██      ██      ██   ██    ██    ██ ██      ██ ██      ██   ██    ██    ██
+##    ██    ███████ ███████      ██████ ███████ ██   ██    ██    ██ ██      ██  ██████ ██   ██    ██    ███████
+
+
+    - name: Create a private key for self-signed certificate
+      community.crypto.openssl_privatekey_pipe:
+      register: private_key
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
+
+    - name: Create CSR for self-signed certificate
+      community.crypto.openssl_csr_pipe:
+        privatekey_content: "{{ private_key.privatekey }}"
+        common_name: "{{ Nested_ALB.Component.Controller_VIP.FQDN }}"
+        organization_name: SDDC.Lab
+        subject_alt_name:
+          - "DNS:{{ Nested_ALB.Component.Controller_VIP.FQDN }}"
+          - "DNS:{{ Nested_ALB.Component.Controller.FQDN }}"
+          - "IP:{{ Nested_ALB.Component.Controller_VIP.Address.IPv4.Address }}"
+          - "IP:{{ Nested_ALB.Component.Controller.Address.IPv4.Address }}"
+      register: csr
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
+
+    - name: Create self-signed certificate from CSR
+      community.crypto.x509_certificate_pipe:
+        csr_content: "{{ csr.csr }}"
+        privatekey_content: "{{ private_key.privatekey }}"
+        provider: selfsigned
+      register: certificate
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
+
+    - name: Add self-signed certificate to ALB Controller
+      vmware.alb.avi_sslkeyandcertificate:
+        avi_credentials: "{{ avi_credentials }}"
+        key: "{{ private_key.privatekey }}"
+        certificate:
+          self_signed: true
+          certificate: "{{ certificate.certificate }}"
+        type: SSL_CERTIFICATE_TYPE_SYSTEM
+        name: "{{ Nested_ALB.Component.Controller_VIP.FQDN }}"
+      register: controller_cert
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
+
+    - name: Configure ALB Controller to use the certificate
+      vmware.alb.avi_systemconfiguration:
+        avi_credentials: "{{ avi_credentials }}"
+        state: present
+        portal_configuration:
+          sslkeyandcertificate_refs:
+            - "{{ controller_cert.obj.url }}"
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
