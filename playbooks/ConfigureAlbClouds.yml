@@ -58,20 +58,20 @@
         prompt: |
           ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
 
-                                                       Ansible Playbook: {{ ansible_play_name }}
+                                     Ansible Playbook: {{ ansible_play_name }}
 
-                                                            ALB Version: {{ Deploy.Software.ALB.Version }}
-                                                ALB Controller VIP FQDN: {{ Nested_ALB.Component.Controller_VIP.FQDN }}
-                                                         ALB Admin User: {{ Nested_ALB.Credential.admin.Name }}
-                                                     ALB Admin Password: {{ Nested_ALB.Credential.admin.Password }}
+                                          ALB Version: {{ Deploy.Software.ALB.Version }}
+                              ALB Controller VIP FQDN: {{ Nested_ALB.Component.Controller_VIP.FQDN }}
+                                       ALB Admin User: {{ Nested_ALB.Credential.admin.Name }}
+                                   ALB Admin Password: {{ Nested_ALB.Credential.admin.Password }}
 
-                                                    Nested vCenter FQDN: {{ Nested_vCenter.FQDN | lower }}
-                                         Content Library for ALB SE VMs: {{ Nested_vCenter.ContentLibrary.Local.Name }}
+                                  Nested vCenter FQDN: {{ Nested_vCenter.FQDN | lower }}
+                       Content Library for ALB SE VMs: {{ Nested_vCenter.ContentLibrary.Local.Name }}
 
-                           vSphere Cluster for ALB SE VMs (NSX-T Cloud): {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.Cluster }}
-                                 VM Folder for ALB SE VMs (NSX-T Cloud): {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.ServiceEngineFolder }}
-                                     ALB SE VM Name Prefix (NSXT Cloud): {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.ServiceEngineNamePrefix }}
-                                  ALB SE VM Memory Reserve (NSXT Cloud): {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.BasicSetting.MemoryReserve }}
+                       vSphere Cluster for ALB SE VMs: {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.Cluster }}
+                             VM Folder for ALB SE VMs: {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.ServiceEngineFolder }}
+                                ALB SE VM Name Prefix: {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.AdvancedSetting.ServiceEngineNamePrefix }}
+                             ALB SE VM Memory Reserve: {{ Nested_ALB.Infrastructure.CloudResource.ServiceEngineGroup.Cloud.NSXT.BasicSetting.MemoryReserve }}
           =================================================================================================
       when:
         - DEBUG.DisplayVariables
@@ -143,7 +143,7 @@
 ## ██   ████ ███████ ██   ██          ██         ██████ ███████  ██████   ██████  ██████
 
 
-    - name: Add vCenter User Credentials - NSX-T Cloud
+    - name: Add vCenter User Credentials
       vmware.alb.avi_cloudconnectoruser:
         avi_credentials: "{{ avi_credentials }}"
         state: present
@@ -158,7 +158,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Add NSX-T User Credentials - NSX-T Cloud
+    - name: Add NSX-T User Credentials
       vmware.alb.avi_cloudconnectoruser:
         avi_credentials: "{{ avi_credentials }}"
         state: present
@@ -173,31 +173,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Get information on NSX-T Transport Zones - NSX-T Cloud
-      vmware.ansible_for_nsxt.nsxt_transport_zones_facts:
-        hostname: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
-        username: "{{ Nested_NSXT.Credential.admin.Name }}"
-        password: "{{ Nested_NSXT.Credential.admin.Password }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
-      register: nsxt_tz
-      when:
-        - Deploy.Product.ALB.Deploy
-        - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
-        - Deploy.Product.NSXT.LocalManager.Deploy
-        - Deploy.Product.NSXT.Edge.Deploy
-
-    - name: Save NSX-T Overlay Transport Zone ID for later use - NSX-T Cloud
-      ansible.builtin.set_fact:
-        nsxt_overlaytz_id: "{{ nsxt_tz | community.general.json_query(query) }}"
-      vars:
-        query: "results[?display_name=='TZ-Overlay'].id|[0]"
-      when:
-        - Deploy.Product.ALB.Deploy
-        - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
-        - Deploy.Product.NSXT.LocalManager.Deploy
-        - Deploy.Product.NSXT.Edge.Deploy
-
-    - name: Add NSX-T Cloud - NSX-T Cloud
+    - name: Add NSX-T Cloud
       vmware.alb.avi_cloud:
         avi_credentials: "{{ avi_credentials }}"
         state: present
@@ -213,13 +189,13 @@
                   - segment_id: /infra/segments/SEG-ALB-SE-Data
                     tier1_lr_id: /infra/tier-1s/T1-Gateway-ALB-Data
               segment_config_mode: TIER1_SEGMENT_MANUAL
-            transport_zone: "/infra/sites/default/enforcement-points/default/transport-zones/{{ nsxt_overlaytz_id }}"
+            transport_zone: "/infra/sites/default/enforcement-points/default/transport-zones/TZ-Overlay"
             tz_type: OVERLAY
           management_network_config:
             overlay_segment:
               segment_id: /infra/segments/SEG-ALB-SE-Management
               tier1_lr_id: /infra/tier-1s/T1-Gateway-ALB-Management
-            transport_zone: "/infra/sites/default/enforcement-points/default/transport-zones/{{ nsxt_overlaytz_id }}"
+            transport_zone: "/infra/sites/default/enforcement-points/default/transport-zones/TZ-Overlay"
             tz_type: OVERLAY
           nsxt_credentials_ref: "{{ nsxt_user.obj.url }}"
           nsxt_url: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
@@ -231,7 +207,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Check if a vCenter Server is already configured via ALB API - NSX-T Cloud
+    - name: Check if a vCenter Server is already configured via ALB API
       ansible.builtin.uri:
         url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/vcenterserver
         validate_certs: false
@@ -252,7 +228,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Add vCenter Server via ALB API - NSX-T Cloud
+    - name: Add vCenter Server via ALB API
       ansible.builtin.uri:
         url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/vcenterserver
         validate_certs: false
@@ -284,7 +260,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Wait until the ALB API reports that the Cloud is in READY state - NSX-T Cloud
+    - name: Wait until the ALB API reports that the Cloud is in READY state
       ansible.builtin.uri:
         url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/cloud/{{ nsxt_cloud.obj.uuid }}/status/
         validate_certs: false
@@ -306,7 +282,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Get infomation on vCenter Server via ALB API - NSX-T Cloud
+    - name: Get infomation on vCenter Server via ALB API
       ansible.builtin.uri:
         url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/vcenterserver
         validate_certs: false
@@ -326,7 +302,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Save vCenter Server URL for later use - NSX-T Cloud
+    - name: Save vCenter Server URL for later use
       ansible.builtin.set_fact:
         vcenter_url: "{{ vcenter | community.general.json_query(query) }}"
       vars:
@@ -337,7 +313,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Create VM Folder for Service Engines - NSX-T Cloud
+    - name: Create VM Folder for Service Engines
       community.vmware.vcenter_folder:
         hostname: "{{ Nested_vCenter.FQDN }}"
         username: "{{ Nested_vCenter.User }}"
@@ -353,7 +329,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Get information on Service Engine "Default-Group" via ALB API - NSX-T Cloud
+    - name: Get information on Service Engine "Default-Group" via ALB API
       ansible.builtin.uri:
         url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/serviceenginegroup?fields=url&cloud_ref.name={{ SiteCode }}%20NSX-T
         validate_certs: false
@@ -374,7 +350,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Save UUID of Service Engine "Default-Group" for later use - NSX-T Cloud
+    - name: Save UUID of Service Engine "Default-Group" for later use
       ansible.builtin.set_fact:
         nsxt_serviceenginegroup_uuid: "{{ nsxt_serviceenginegroup | community.general.json_query(query) }}"
       vars:
@@ -385,7 +361,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Get information on configured vSphere Cluster via ALB API - NSX-T Cloud
+    - name: Get information on configured vSphere Cluster via ALB API
       community.vmware.vmware_cluster_info:
         hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User }}"
@@ -399,7 +375,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Save MoRefID of the vSphere Cluster for later use - NSX-T Cloud
+    - name: Save MoRefID of the vSphere Cluster for later use
       ansible.builtin.set_fact:
         vsphere_cluster_moref: "{{ vsphere_cluster | community.general.json_query(query) }}"
       vars:
@@ -410,7 +386,7 @@
         - Deploy.Product.NSXT.LocalManager.Deploy
         - Deploy.Product.NSXT.Edge.Deploy
 
-    - name: Update Service Engine "Default-Group" settings via ALB API - NSX-T Cloud
+    - name: Update Service Engine "Default-Group" settings via ALB API
       ansible.builtin.uri:
         url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/serviceenginegroup/{{ nsxt_serviceenginegroup_uuid }}
         validate_certs: false
