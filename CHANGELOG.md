@@ -2979,3 +2979,8 @@
 
 ### Added by Luis Chanu
   - Added ```misc/LabInfo/LabInfo_20241218.txt``` file to repo that shows versions of upgraded modules so users have a known good configuration baseline to compare against.
+
+## Dev-v8.0.0 19-DECEMBER-2024
+
+### Added by Rutger Blom
+  - Updated task "Add NSX-T Cloud" in ```playbooks/ConfigureAlbClouds.yml``` to use NSX Transport Zone display name instead of id. Removed tasks that fetched the TZ id.
