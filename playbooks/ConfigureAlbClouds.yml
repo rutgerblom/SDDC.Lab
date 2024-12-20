@@ -518,9 +518,24 @@
       vmware.alb.avi_systemconfiguration:
         avi_credentials: "{{ avi_credentials }}"
         state: present
+        welcome_workflow_complete: true
+        default_license_tier: ENTERPRISE
         portal_configuration:
+          allow_basic_authentication: true
           sslkeyandcertificate_refs:
             - "{{ controller_cert.obj.url }}"
+        dns_configuration:
+          search_domain: "{{ Common.DNS.Domain }}"
+          server_list:
+            - type: V4
+              addr: "{{ Common.DNS.Server1.IPv4 }}"
+        email_configuration:
+          from_email: "{{ Nested_ALB.Credential.admin.Name }}@{{ Common.DNS.Domain }}"
+        ntp_configuration:
+          ntp_servers:
+            - server:
+                type: V4
+                addr: "{{ Common.NTP.Server1.IPv4 }}"
       when:
         - Deploy.Product.ALB.Deploy
         - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
