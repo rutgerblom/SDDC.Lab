@@ -143,6 +143,19 @@
 ## ██   ████ ███████ ██   ██          ██         ██████ ███████  ██████   ██████  ██████
 
 
+    - name: Add IPAM profile
+      vmware.alb.avi_ipamdnsproviderprofile:
+        avi_credentials: "{{ avi_credentials }}"
+        state: present
+        name: "{{ SiteCode }}-IPAM"
+        type: IPAMDNS_TYPE_INTERNAL
+      register: ipam_profile
+      when:
+        - Deploy.Product.ALB.Deploy
+        - Nested_ALB.Infrastructure.Cloud.NSXT.Configure
+        - Deploy.Product.NSXT.LocalManager.Deploy
+        - Deploy.Product.NSXT.Edge.Deploy
+
     - name: Add vCenter User Credentials
       vmware.alb.avi_cloudconnectoruser:
         avi_credentials: "{{ avi_credentials }}"
@@ -200,6 +213,7 @@
           nsxt_credentials_ref: "{{ nsxt_user.obj.url }}"
           nsxt_url: "{{ Nested_NSXT.Component.LocalManager_VIP.FQDN }}"
         vtype: CLOUD_NSXT
+        ipam_provider_ref: "{{ ipam_profile.obj.url }}"
       register: nsxt_cloud
       when:
         - Deploy.Product.ALB.Deploy
@@ -331,7 +345,7 @@
 
     - name: Get information on Service Engine "Default-Group" via ALB API
       ansible.builtin.uri:
-        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/serviceenginegroup?fields=url&cloud_ref.name={{ SiteCode }}%20NSX-T
+        url: https://{{ Nested_ALB.Component.Controller_VIP.FQDN }}/api/serviceenginegroup?fields=url&cloud_ref.name={{ SiteCode }}
         validate_certs: false
         timeout: 15
         force_basic_auth: true
