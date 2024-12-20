@@ -2053,23 +2053,6 @@ Nested_vCenter:
         URL:
           Path:                                                                         # URL path where Published Content Library is located.
           Port:                                                                         # Port used by URL.  For HTTP use 80, and for HTTPS, use 443.
-    TKG:
-      Enable: true                                                                      # Set to 'true' to create this Content Library
-      Type: subscribed                                                                  # Must be either 'local' or 'subscribed'
-      Name: "{{ SiteCode }} TKG Content Library"
-      Description: "{{ SiteCode }} TKG Content Library"
-      Datastore:                                                                        # Specifying a Datastore will over-ride the default functionality of automatically selecting the datastore to use
-      Subscribed:
-        UpdateOnDemand: true                                                            # Setting to 'true' will download files as they are needed, while 'false' will download the entire content library ahead of time
-        Type: URL                                                                       # Must be either 'vCenter' or 'URL', which indicates what source of Content Library subscription
-        vCenter:
-          FQDN: "{{ Target.FQDN }}"                                                     # vCenter Server where Published Content Library is located.  By default, we assume the Content Library is on the physical vCenter Server
-          User: "{{ Target.User }}"
-          Password: "{{ Target.Password }}"
-          PublishedLibraryName:                                                         # Name must EXACTLY match the name of the published library to which you are subscribing
-        URL:
-          Path: https://wp-content.vmware.com/v2/latest/lib.json                        # URL path where Published Content Library is located.
-          Port: 443                                                                     # Port used by URL.  For HTTP use 80, and for HTTPS, use 443.
 
   Networking:
     vSwitch:
