@@ -231,6 +231,8 @@
 - ansible.builtin.import_playbook: playbooks/ConfigureAlbClouds.yml
   when: 
     - Deploy.Product.ALB.Deploy
+    - Deploy.Product.NSXT.LocalManager.Deploy
+    - Deploy.Product.NSXT.Edge.Deploy
     - not Deploy.Setting.DeployESXiOnly
 
 - ansible.builtin.import_playbook: playbooks/License_ALB.yml
