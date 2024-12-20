@@ -2990,6 +2990,7 @@
 
 ### Added by Rutger Blom
   - Added vRLI 8.18.1 to ```software_sample.yml```.
+  - Added conditional to the task importing ```playbooks/ConfigureAlbClouds.yml``` in ```Deploy.yml``` as NSX is a hard requirement.
   - Removed content library specification in ```templates/Tanzu_Payload.j2``` as this is  handled automatically from vSphere 8.
   - Removed content library related tasks in playbook ```playbooks/EnableWorkloadManagement.yml```. Not needed anymore.
   - Removed data structure in ```config_sample.yml``` for thr TKG content library. Not needed anymore.
