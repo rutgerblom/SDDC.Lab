@@ -2985,3 +2985,9 @@
 ### Added by Rutger Blom
   - Updated task "Add NSX-T Cloud" in ```playbooks/ConfigureAlbClouds.yml``` to use NSX Transport Zone display name instead of id. Removed tasks that fetched the TZ id.
   - Added tasks to ```playbooks/ConfigureAlbClouds.yml``` that generate and then assign a self-signed certificate to the ALB Controller after it's registered with NSX Manager. This is a required step when configuring Avi Kubernetes Operator (AKO) with TKG Service using the NSX network stack.
+
+## Dev-v8.0.0 20-DECEMBER-2024
+
+### Added by Rutger Blom
+  - Added vRLI 8.18.1 to ```software_sample.yml```.
+  - Be sure to update your ```software.yml``` file.
