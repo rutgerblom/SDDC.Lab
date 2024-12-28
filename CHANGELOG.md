@@ -2997,3 +2997,10 @@
   - Be sure to update your:
     - ```software.yml```
     - ```config.yml```
+
+## Dev-v8.0.0 28-DECEMBER-2024
+
+### Added by Rutger Blom
+  - Added NSX 4.2.1.1 to ```software_sample.yml``` (NOT TESTED)
+  - Be sure to update your:
+    - ```software.yml```
