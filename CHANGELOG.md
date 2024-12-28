@@ -3002,5 +3002,8 @@
 
 ### Added by Rutger Blom
   - Added NSX 4.2.1.1 to ```software_sample.yml``` (NOT TESTED)
+  - After successful deployment, the new default version for ALB is now 30.2.2.
+  - After successful deployment, the new default version for vRLI is now 8.18.1.
   - Be sure to update your:
     - ```software.yml```
+    - ```config.yml```
