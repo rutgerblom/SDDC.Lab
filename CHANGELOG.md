@@ -3007,3 +3007,9 @@
   - Be sure to update your:
     - ```software.yml```
     - ```config.yml```
+
+## Dev-v8.0.0 29-DECEMBER-2024
+
+### Added by Luis Chanu
+  - Removed the ```Nested_NSXT.Networking.Tier1Gateways.LocaleServices.RouteRedistributionConfig``` section from each T1 Gateway in the ```config_sample.yml``` file, as this section was not being used.
+  - Be sure to update your ```config.yml``` file.
