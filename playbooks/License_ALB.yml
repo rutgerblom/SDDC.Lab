@@ -7,12 +7,12 @@
 - name: License_ALB.yml
   hosts: localhost
   vars:
-    - LOCAL_LicenseFile: ../licenses.yml
-    - avi_credentials:
-        username: "{{ Nested_ALB.Credential.admin.Name }}"
-        password: "{{ Nested_ALB.Credential.admin.Password }}"
-        controller: "{{ Nested_ALB.Component.Controller_VIP.FQDN | lower }}"
-        api_version: "{{ Deploy.Software.ALB.Version }}"
+    LOCAL_LicenseFile: ../licenses.yml
+    avi_credentials:
+      username: "{{ Nested_ALB.Credential.admin.Name }}"
+      password: "{{ Nested_ALB.Credential.admin.Password }}"
+      controller: "{{ Nested_ALB.Component.Controller_VIP.FQDN | lower }}"
+      api_version: "{{ Deploy.Software.ALB.Version }}"
   tasks:
     - name: License_ALB_Playbook
       ansible.builtin.debug:
