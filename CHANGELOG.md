@@ -3016,3 +3016,4 @@
   - Modified ```templates/vars_NSXT_T1Gateways.j2``` to support an empty NSX Edge Cluster name.
   - Modified ```config_sample.yml``` file so that Tier-1 Gateways NSX Edge Cluster names are empty, and no longer require a ```""```.  Additionally comments were added explaining that the field can be left blank.
   - Converted playbook ```vars:``` entries from list to dictionary.  This is to address deprecation of ```vars:``` list support starting in Ansible Core v2.18.
+  - Updated SDDC.Lab version from 7 to 8 in SDDC.Lab version verification play within ```ValidateConfiguration.yml``` playbook.
