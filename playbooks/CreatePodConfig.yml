@@ -15,27 +15,27 @@
     - ../templates.yml
 
   vars:
-    - PodTemplate: "Pod_Config.j2"
-    - IntermediateConfigFile: "Inter-{{ SiteCode }}-Config_{{ lookup('pipe', 'date +%Y%m%d') }}_VCSAv{{ Deploy.Software.vCenter.Version }}\
-                               _ESXIv{{ Deploy.Software.ESXi.Version }}\
-                               _vRLIv{% if Deploy.Product.vRLI.Deploy == false %}NONE{% else %}{{ Deploy.Software.vRLI.Version }}{% endif %}\
-                               _ALBv{% if Deploy.Product.ALB.Deploy == false %}NONE{% else %}{{ Deploy.Software.ALB.Version }}{% endif %}\
-                               _REPLv{% if Deploy.Product.Replication.Deploy == false %}NONE{% else %}{{ Deploy.Software.Replication.Version }}{% endif %}\
-                               _CloudBv{% if Deploy.Product.CloudBuilder.Deploy == false %}NONE{% else %}{{ Deploy.Software.CloudBuilder.Version }}{% endif %}\
-                               _SDDCv{% if Deploy.Product.SDDCManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.SDDCManager.Version }}{% endif %}\
-                               _NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}\
-                               _Fed-{% if Deploy.Product.NSXT.Federation.Deploy %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}\
-                               {% else %}N{% endif %}{% endif %}.json"
-    - PodTempConfigFile: "Temp-{{ SiteCode }}-Config_{{ lookup('pipe', 'date +%Y%m%d') }}_VCSAv{{ Deploy.Software.vCenter.Version }}\
-                          _ESXIv{{ Deploy.Software.ESXi.Version }}\
-                          _vRLIv{% if Deploy.Product.vRLI.Deploy == false %}NONE{% else %}{{ Deploy.Software.vRLI.Version }}{% endif %}\
-                          _ALBv{% if Deploy.Product.ALB.Deploy == false %}NONE{% else %}{{ Deploy.Software.ALB.Version }}{% endif %}\
-                          _REPLv{% if Deploy.Product.Replication.Deploy == false %}NONE{% else %}{{ Deploy.Software.Replication.Version }}{% endif %}\
-                          _CloudBv{% if Deploy.Product.CloudBuilder.Deploy == false %}NONE{% else %}{{ Deploy.Software.CloudBuilder.Version }}{% endif %}\
-                          _SDDCv{% if Deploy.Product.SDDCManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.SDDCManager.Version }}{% endif %}\
-                          _NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}\
-                          _Fed-{% if Deploy.Product.NSXT.Federation.Deploy %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}\
-                          {% else %}N{% endif %}{% endif %}.json"
+    PodTemplate: "Pod_Config.j2"
+    IntermediateConfigFile: "Inter-{{ SiteCode }}-Config_{{ lookup('pipe', 'date +%Y%m%d') }}_VCSAv{{ Deploy.Software.vCenter.Version }}\
+                             _ESXIv{{ Deploy.Software.ESXi.Version }}\
+                             _vRLIv{% if Deploy.Product.vRLI.Deploy == false %}NONE{% else %}{{ Deploy.Software.vRLI.Version }}{% endif %}\
+                             _ALBv{% if Deploy.Product.ALB.Deploy == false %}NONE{% else %}{{ Deploy.Software.ALB.Version }}{% endif %}\
+                             _REPLv{% if Deploy.Product.Replication.Deploy == false %}NONE{% else %}{{ Deploy.Software.Replication.Version }}{% endif %}\
+                             _CloudBv{% if Deploy.Product.CloudBuilder.Deploy == false %}NONE{% else %}{{ Deploy.Software.CloudBuilder.Version }}{% endif %}\
+                             _SDDCv{% if Deploy.Product.SDDCManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.SDDCManager.Version }}{% endif %}\
+                             _NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}\
+                             _Fed-{% if Deploy.Product.NSXT.Federation.Deploy %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}\
+                             {% else %}N{% endif %}{% endif %}.json"
+    PodTempConfigFile: "Temp-{{ SiteCode }}-Config_{{ lookup('pipe', 'date +%Y%m%d') }}_VCSAv{{ Deploy.Software.vCenter.Version }}\
+                        _ESXIv{{ Deploy.Software.ESXi.Version }}\
+                        _vRLIv{% if Deploy.Product.vRLI.Deploy == false %}NONE{% else %}{{ Deploy.Software.vRLI.Version }}{% endif %}\
+                        _ALBv{% if Deploy.Product.ALB.Deploy == false %}NONE{% else %}{{ Deploy.Software.ALB.Version }}{% endif %}\
+                        _REPLv{% if Deploy.Product.Replication.Deploy == false %}NONE{% else %}{{ Deploy.Software.Replication.Version }}{% endif %}\
+                        _CloudBv{% if Deploy.Product.CloudBuilder.Deploy == false %}NONE{% else %}{{ Deploy.Software.CloudBuilder.Version }}{% endif %}\
+                        _SDDCv{% if Deploy.Product.SDDCManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.SDDCManager.Version }}{% endif %}\
+                        _NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}\
+                        _Fed-{% if Deploy.Product.NSXT.Federation.Deploy %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}\
+                        {% else %}N{% endif %}{% endif %}.json"
 
   vars_prompt:
     - name: SourceConfigPath

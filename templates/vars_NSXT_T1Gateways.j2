@@ -50,9 +50,9 @@
             scope: ""
 {% endif %}{# Service.Tags is defined #}
 {##### Only include Edge Cluster information if one is specified #####}
-{% if Service.EdgeCluster.Name is defined and Service.EdgeCluster.Name|length %}
+{% if Service.EdgeCluster.Name is defined and Service.EdgeCluster.Name is not none and Service.EdgeCluster.Name|length %}
         edge_cluster_info:
-          edge_cluster_display_name: "{{ Service.EdgeCluster.Name | default(omit) }}"
+          edge_cluster_display_name: "{{ Service.EdgeCluster.Name }}"
 {% endif %}{# Service.EdgeCluster.Name #}
 {% endfor %}{# Service #}
 {% endfor %}{# Gateway #}
