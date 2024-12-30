@@ -1,0 +1,109 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/ValidateVersions.yml
+##
+##    Purpose: The purpose of this playbook is to try to verify the working evironment versions against
+##             the 'requirements.yml' file in the root of the SDDC.Lab project directory.
+##
+##
+## Relavent Linux Commands
+## =======================
+##
+## Obtain versions from 'requirements.yml' file
+## --------------------------------------------
+##   grep -A1 community.vmware requirements.yml | sed -rn 's/.*version.* ([0-9]+.[0-9]+.[0-9]+)/\1 /pg'
+##
+##   grep -A1 vmware.alb requirements.yml | sed -rn 's/.*version.* ([0-9]+.[0-9]+.[0-9]+)/\1 /pg'
+##
+##
+##
+## Obtain version used by Ansible from the default installation location
+## ---------------------------------------------------------------------
+##   ansible-galaxy collection list -p ~/.ansible/collections/ansible_collections community.vmware | grep -A3 $HOME/.ansible/collections/ansible_collections | sed -rn 's/.* ([0-9]+.[0-9]+.[0-9]+)/\1 /pg'
+##
+##
+
+##
+## Note to Rutger:  'shell' allows pipes, while 'command' does not.  So, using 'shell' below.
+##
+
+---
+- name: ValidateVersions.yml
+  hosts: localhost
+  vars:
+    issuefound: false
+    requirementsFile:
+      ansible: ../requirements.yml
+      pip3: ../pip3_requirements.yml
+
+  tasks:
+    - name: ValidateVersions_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+
+##
+########################################################################################################################
+##                         Perform basic validation checking of config file settings                                  ##
+########################################################################################################################
+##
+
+##
+## Verify Ansible module version: community.vmware
+##
+    - name: Obtain installed version of Ansible module community.vmware
+      ansible.builtin.shell: ansible-galaxy collection list -p ~/.ansible/collections/ansible_collections community.vmware | grep -A3 $HOME/.ansible/collections/ansible_collections | sed -rn 's/.* ([0-9]+.[0-9]+.[0-9]+)/\1 /pg'
+      register: result
+
+    - name: Extract Ansible community.vmware version
+      ansible.builtin.set_fact:
+        ansible_community_vmware_version: "{{ result.stdout.strip() }}"
+
+    - name: Obtain installed version of Ansible module vmware.alb
+      ansible.builtin.shell: ansible-galaxy collection list -p ~/.ansible/collections/ansible_collections vmware.alb | grep -A3 $HOME/.ansible/collections/ansible_collections | sed -rn 's/.* ([0-9]+.[0-9]+.[0-9]+)/\1 /pg'
+      register: result
+
+    - name: Extract Ansible vmware.alb version
+      ansible.builtin.set_fact:
+        ansible_vmware_alb_version: "{{ result.stdout.strip() }}"
+
+
+
+    - name: Obtain Ansible module version for community.vmware from SDDC.Lab requirements.yml file
+      ansible.builtin.shell: grep -A1 community.vmware {{ requirementsFile.ansible }} | sed -rn 's/.*version.* ([0-9]+.[0-9]+.[0-9]+)/\1 /pg'
+      register: result
+
+    - name: Extract SDDC.Lab community.vmware version
+      ansible.builtin.set_fact:
+        SDDCLab_community_vmware_version: "{{ result.stdout.strip() }}"
+
+    - name: Obtain Ansible module version for vmware.alb from SDDC.Lab requirements.yml file
+      ansible.builtin.shell: grep -A1 vmware.alb {{ requirementsFile.ansible }} | sed -rn 's/.*version.* ([0-9]+.[0-9]+.[0-9]+)/\1 /pg'
+      register: result
+
+    - name: Extract SDDC.Lab vmware.alb version
+      ansible.builtin.set_fact:
+        SDDCLab_vmware_alb_version: "{{ result.stdout.strip() }}"
+
+
+
+
+    - name: Display Variables
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          ============================================ Variables ============================================
+
+            ansible_community_vmware_version: {{ ansible_community_vmware_version }}
+
+                  ansible_vmware_alb_version: {{ ansible_vmware_alb_version }}
+
+
+            SDDCLab_community_vmware_version: {{ SDDCLab_community_vmware_version }}
+
+                  SDDCLab_vmware_alb_version: {{ SDDCLab_vmware_alb_version }}
+
+          ==================================================================================================
+
+
