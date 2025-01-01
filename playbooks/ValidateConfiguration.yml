@@ -6,6 +6,9 @@
 ##    Purpose: The purpose of this playbook is to try to find configuration and/or environmental issues
 ##             early in the deployment process, in the hopes of saving time from failed deployments.
 ##
+##      Notes: Regular expressions used for 'WARNING' version matches assumes the version is in the format of X.Y.Z,
+##             and will not match a X.Y format as they are currently written.
+##
 ---
 - name: ValidateConfiguration.yml
   hosts: localhost
@@ -14,7 +17,7 @@
     warningfound: false
     requirementsFile:
       ansible: ../requirements.yml
-      pip3: ../pip3_requirements.yml
+      pip3: ../pip3_requirements.txt
 
   tasks:
     - name: ValidateConfiguration_Playbook
@@ -1076,7 +1079,7 @@
 
              Suggested Action: Run the following command to upgrade your Ansible modules to the SDDC.Lab
                                recommended versions:
-             
+
                                   ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml
 
           =================================================================================================
@@ -1122,7 +1125,7 @@
 
              Suggested Action: Run the following command to upgrade your Ansible modules to the SDDC.Lab
                                recommended versions:
-             
+
                                   ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml
 
           =================================================================================================
@@ -1134,6 +1137,53 @@
         warningfound: true
       when:
         - installed_version_ansible_vmware_alb is ansible.builtin.version(SDDCLab_version_ansible_vmware_alb, '!=')
+
+
+##
+## Compare installed vs suggested PIP3 package version: Ansible
+##
+    - name: Obtain installed PIP3 version of Ansible package
+      ansible.builtin.shell: pip3 list | grep ansible\  | sed -rn 's/.* ([0-9]+.[0-9]+.[0-9]+)/\1 /pg'
+      register: result
+
+    - name: Extract installed PIP3 ansible package version
+      ansible.builtin.set_fact:
+        installed_pip3_ansible_version: "{{ result.stdout.strip() }}"
+
+    - name: Obtain PIP3 package version for ansible from SDDC.Lab requirements.yml file
+      ansible.builtin.shell: grep ansible {{ requirementsFile.pip3 }} | sed -rn 's/^.*==([0-9]+.[0-9]+.[0-9]+)/\1 /pg'
+      register: result
+
+    - name: Extract SDDC.Lab PIP3 ansible package version
+      ansible.builtin.set_fact:
+        SDDCLab_pip3_ansible_version: "{{ result.stdout.strip() }}"
+
+
+    - name: Check if SDDC.Lab and installed versions of PIP3 ansible package match
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          ========================= Warning Found - PIP3 Ansible Package Versions =========================
+
+                      Warning: Installed and SDDC.Lab recommended versions of PIP3 package 'ansible' do not match.
+
+             SDDC.Lab Version: {{ SDDCLab_pip3_ansible_version }}
+            Installed Version: {{ installed_pip3_ansible_version }}
+
+             Suggested Action: Run the following command to upgrade your PIP3 packages to the SDDC.Lab
+                               recommended versions:
+
+                                  pip3 install --upgrade -r ~/git/SDDC.Lab/pip3_requirements.txt
+
+          =================================================================================================
+      when:
+        - installed_pip3_ansible_version is ansible.builtin.version(SDDCLab_pip3_ansible_version, '!=')
+
+    - name: Set warning flag if installed and SDDC.Lab recommended versions of PIP3 packages do not match
+      ansible.builtin.set_fact:
+        warningfound: true
+      when:
+        - installed_pip3_ansible_version is ansible.builtin.version(SDDCLab_pip3_ansible_version, '!=')
 
 
 

@@ -3024,3 +3024,6 @@
   - Added Ansible module version checking to ```playbooks/ValidateConfiguration.yml``` playbook.
     - Mismatched Ansible module versions triggers a 'WARNING' message instead of an 'ISSUE' message.
     - Warnings serve only to notify the user, and do not stop the Pod deployment after a short delay.
+  - Added PIP3 'ansible' package version checking to ```playbooks/ValidateConfiguration.yml``` playbook.
+    - Mismatched PIP3 package versions triggers a 'WARNING' message instead of an 'ISSUE' message.
+    - Warnings serve only to notify the user, and do not stop the Pod deployment after a short delay.
