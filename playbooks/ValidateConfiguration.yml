@@ -6,11 +6,19 @@
 ##    Purpose: The purpose of this playbook is to try to find configuration and/or environmental issues
 ##             early in the deployment process, in the hopes of saving time from failed deployments.
 ##
+##      Notes: Regular expressions used for 'WARNING' version matches assumes the version is in the format of X.Y.Z,
+##             and will not match a X.Y format as they are currently written.
+##
 ---
 - name: ValidateConfiguration.yml
   hosts: localhost
   vars:
     issuefound: false
+    warningfound: false
+    requirementsFile:
+      ansible: ../requirements.yml
+      pip3: ../pip3_requirements.txt
+
   tasks:
     - name: ValidateConfiguration_Playbook
       ansible.builtin.debug:
@@ -19,7 +27,7 @@
 
 ##
 ########################################################################################################################
-##                         Perform basic validation checking of config file settings                                  ##
+##                                        Perform validation checks for ISSUES                                        ##
 ########################################################################################################################
 ##
 
@@ -1030,9 +1038,161 @@
         - vcfimporttool_installer.stat.isreg is not defined or not vcfimporttool_installer.stat.isreg
         - not Deploy.Setting.DeployESXiOnly
 
+
+
 ##
-## Done With Validation Checks
+########################################################################################################################
+##                                       Perform validation checks for WARNINGS                                       ##
+########################################################################################################################
 ##
+
+##
+## Compare installed vs suggested Ansible module version of community.vmware
+##
+    - name: Obtain installed version of Ansible community.vmware module
+      ansible.builtin.shell: ansible-galaxy collection list -p $HOME/.ansible/collections/ansible_collections community.vmware | grep -A3 $HOME/.ansible/collections/ansible_collections | sed -rn 's/.* ([0-9]+.[0-9]+.[0-9]+)/\1 /pg'
+      register: result
+
+    - name: Extract installed community.vmware version
+      ansible.builtin.set_fact:
+        installed_version_ansible_community_vmware: "{{ result.stdout.strip() }}"
+
+    - name: Obtain Ansible module version for community.vmware from SDDC.Lab requirements.yml file
+      ansible.builtin.shell: grep -A1 community.vmware {{ requirementsFile.ansible }} | sed -rn 's/.*version.* ([0-9]+.[0-9]+.[0-9]+)/\1 /pg'
+      register: result
+
+    - name: Extract SDDC.Lab community.vmware version
+      ansible.builtin.set_fact:
+        SDDCLab_version_ansible_community_vmware: "{{ result.stdout.strip() }}"
+
+    - name: Check if SDDC.Lab and installed versions of Ansible module 'community.vmware' match
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          ============================ Warning Found - Ansible Module Versions ============================
+
+                      Warning: Installed and SDDC.Lab recommended versions of Ansible module 'community.vmware'
+                               do not match.
+
+             SDDC.Lab Version: {{ SDDCLab_version_ansible_community_vmware }}
+            Installed Version: {{ installed_version_ansible_community_vmware }}
+
+             Suggested Action: Run the following command to upgrade your Ansible modules to the SDDC.Lab
+                               recommended versions:
+
+                                  ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml
+
+          =================================================================================================
+      when:
+        - installed_version_ansible_community_vmware is ansible.builtin.version(SDDCLab_version_ansible_community_vmware, '!=')
+
+    - name: Set warning flag if installed and SDDC.Lab recommended versions of 'community.vmware' do not match
+      ansible.builtin.set_fact:
+        warningfound: true
+      when:
+        - installed_version_ansible_community_vmware is ansible.builtin.version(SDDCLab_version_ansible_community_vmware, '!=')
+
+##
+## Compare installed vs suggested Ansible module version of vmware.alb
+##
+    - name: Obtain installed version of Ansible vmware.alb module
+      ansible.builtin.shell: ansible-galaxy collection list -p $HOME/.ansible/collections/ansible_collections vmware.alb | grep -A3 $HOME/.ansible/collections/ansible_collections | sed -rn 's/.* ([0-9]+.[0-9]+.[0-9]+)/\1 /pg'
+      register: result
+
+    - name: Extract installed vmware.alb version
+      ansible.builtin.set_fact:
+        installed_version_ansible_vmware_alb: "{{ result.stdout.strip() }}"
+
+    - name: Obtain Ansible module version for vmware.alb from SDDC.Lab requirements.yml file
+      ansible.builtin.shell: grep -A1 vmware.alb {{ requirementsFile.ansible }} | sed -rn 's/.*version.* ([0-9]+.[0-9]+.[0-9]+)/\1 /pg'
+      register: result
+
+    - name: Extract SDDC.Lab vmware.alb version
+      ansible.builtin.set_fact:
+        SDDCLab_version_ansible_vmware_alb: "{{ result.stdout.strip() }}"
+
+    - name: Check if SDDC.Lab and installed versions of Ansible module 'vmware.alb' match
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          ============================ Warning Found - Ansible Module Versions ============================
+
+                      Warning: Installed and SDDC.Lab recommended versions of Ansible module 'vmware.alb'
+                               do not match.
+
+             SDDC.Lab Version: {{ SDDCLab_version_ansible_vmware_alb }}
+            Installed Version: {{ installed_version_ansible_vmware_alb }}
+
+             Suggested Action: Run the following command to upgrade your Ansible modules to the SDDC.Lab
+                               recommended versions:
+
+                                  ansible-galaxy collection install --upgrade -r ~/git/SDDC.Lab/requirements.yml
+
+          =================================================================================================
+      when:
+        - installed_version_ansible_vmware_alb is ansible.builtin.version(SDDCLab_version_ansible_vmware_alb, '!=')
+
+    - name: Set warning flag if installed and SDDC.Lab recommended versions of 'vmware.alb' do not match
+      ansible.builtin.set_fact:
+        warningfound: true
+      when:
+        - installed_version_ansible_vmware_alb is ansible.builtin.version(SDDCLab_version_ansible_vmware_alb, '!=')
+
+
+##
+## Compare installed vs suggested PIP3 package version: Ansible
+##
+    - name: Obtain installed PIP3 version of Ansible package
+      ansible.builtin.shell: pip3 list | grep ansible\  | sed -rn 's/.* ([0-9]+.[0-9]+.[0-9]+)/\1 /pg'
+      register: result
+
+    - name: Extract installed PIP3 ansible package version
+      ansible.builtin.set_fact:
+        installed_pip3_ansible_version: "{{ result.stdout.strip() }}"
+
+    - name: Obtain PIP3 package version for ansible from SDDC.Lab requirements.yml file
+      ansible.builtin.shell: grep ansible {{ requirementsFile.pip3 }} | sed -rn 's/^.*==([0-9]+.[0-9]+.[0-9]+)/\1 /pg'
+      register: result
+
+    - name: Extract SDDC.Lab PIP3 ansible package version
+      ansible.builtin.set_fact:
+        SDDCLab_pip3_ansible_version: "{{ result.stdout.strip() }}"
+
+
+    - name: Check if SDDC.Lab and installed versions of PIP3 ansible package match
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          ========================= Warning Found - PIP3 Ansible Package Versions =========================
+
+                      Warning: Installed and SDDC.Lab recommended versions of PIP3 package 'ansible' do not match.
+
+             SDDC.Lab Version: {{ SDDCLab_pip3_ansible_version }}
+            Installed Version: {{ installed_pip3_ansible_version }}
+
+             Suggested Action: Run the following command to upgrade your PIP3 packages to the SDDC.Lab
+                               recommended versions:
+
+                                  pip3 install --upgrade -r ~/git/SDDC.Lab/pip3_requirements.txt
+
+          =================================================================================================
+      when:
+        - installed_pip3_ansible_version is ansible.builtin.version(SDDCLab_pip3_ansible_version, '!=')
+
+    - name: Set warning flag if installed and SDDC.Lab recommended versions of PIP3 packages do not match
+      ansible.builtin.set_fact:
+        warningfound: true
+      when:
+        - installed_pip3_ansible_version is ansible.builtin.version(SDDCLab_pip3_ansible_version, '!=')
+
+
+
+##
+########################################################################################################################
+##                   Done with Validation Checks.  Display Issue/Warning message(s), as appropriate                   ##
+########################################################################################################################
+##
+
     - name: Issue found, so tell user to quit and correct issue before re-running
       ansible.builtin.pause:
         seconds: 99999
@@ -1057,6 +1217,35 @@
           =====================================================================================================
       when:
         - issuefound
+
+    - name: Warning found, so notify user to of warning, and suggest they update their modules
+      ansible.builtin.pause:
+        seconds: 90
+        prompt: |
+          =====================================================================================================
+          =======================================  WARNINGS(S) FOUND  =========================================
+          =====================================================================================================
+
+              *FYI*   *FYI*   *FYI*   *FYI*   *FYI*   *FYI*   *FYI*   *FYI*   *FYI*   *FYI*   *FYI*   *FYI*
+
+          While validating the deployment environment, some inconsistencies were identified that caused warning
+          messages.  Although your SDDC.Lab deployment may still succeed, it's suggested that you follow the
+          'Suggested Action' listed in each warning message to resolve the warning.  You can scroll up to see
+          the warning messages.
+
+          As the item(s) identified are just warnings, your SDDC.Lab Pod deployment will continue in a moment.
+
+          Should you want to resolve those warnings before the Pod deployment continues, you can optionally
+          abort the Pod deployment and implement the 'Suggested Action(s)' by:
+
+                                    PRESSING CONTROL-C, FOLLOWED BY THE LETTER "A"
+
+              *FYI*   *FYI*   *FYI*   *FYI*   *FYI*   *FYI*   *FYI*   *FYI*   *FYI*   *FYI*   *FYI*   *FYI*
+
+          =====================================================================================================
+      when:
+        - warningfound
+
 
 
 ##

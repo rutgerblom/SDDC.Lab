@@ -35,7 +35,7 @@
     issuefound: false
     requirementsFile:
       ansible: ../requirements.yml
-      pip3: ../pip3_requirements.yml
+      pip3: ../pip3_requirements.txt
 
   tasks:
     - name: ValidateVersions_Playbook
@@ -45,7 +45,7 @@
 
 ##
 ########################################################################################################################
-##                         Perform basic validation checking of config file settings                                  ##
+##                                         Version Checking - Ansible Modules                                         ##
 ########################################################################################################################
 ##
 
@@ -86,12 +86,9 @@
       ansible.builtin.set_fact:
         SDDCLab_vmware_alb_version: "{{ result.stdout.strip() }}"
 
-
-
-
     - name: Display Variables
       ansible.builtin.pause:
-        seconds: 5
+        seconds: 1
         prompt: |
           ============================================ Variables ============================================
 
@@ -106,4 +103,48 @@
 
           ==================================================================================================
 
+
+
+
+##
+########################################################################################################################
+##                                          Version Checking - PIP3 Packages                                          ##
+########################################################################################################################
+##
+
+
+##
+## Verify PIP3 package version: Ansible
+##
+    - name: Obtain installed version of Ansible
+      ansible.builtin.shell: pip3 list | grep ansible\  | sed -rn 's/.* ([0-9]+.[0-9]+.[0-9]+)/\1 /pg'
+      register: result
+
+    - name: Extract Ansible version
+      ansible.builtin.set_fact:
+        installed_pip3_ansible_version: "{{ result.stdout.strip() }}"
+
+
+
+    - name: Obtain pip3 package version for ansible from SDDC.Lab requirements.yml file
+      ansible.builtin.shell: grep ansible {{ requirementsFile.pip3 }} | sed -rn 's/^.*==([0-9]+.[0-9]+.[0-9]+)/\1 /pg'
+      register: result
+
+    - name: Extract SDDC.Lab community.vmware version
+      ansible.builtin.set_fact:
+        SDDCLab_pip3_ansible_version: "{{ result.stdout.strip() }}"
+
+
+
+    - name: Display PIP3 Variables
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          ============================================ Variables ============================================
+
+            installed_pip3_ansible_version: {{ installed_pip3_ansible_version }}
+
+              SDDCLab_pip3_ansible_version: {{ SDDCLab_pip3_ansible_version }}
+
+          ==================================================================================================
 
