@@ -3017,3 +3017,10 @@
   - Modified ```config_sample.yml``` file so that Tier-1 Gateways NSX Edge Cluster names are empty, and no longer require a ```""```.  Additionally comments were added explaining that the field can be left blank.
   - Converted playbook ```vars:``` entries from list to dictionary.  This is to address deprecation of ```vars:``` list support starting in Ansible Core v2.18.
   - Updated SDDC.Lab version from 7 to 8 in SDDC.Lab version verification play within ```ValidateConfiguration.yml``` playbook.
+
+## Dev-v8.0.0 31-DECEMBER-2024
+
+### Added by Luis Chanu
+  - Added Ansible module version checking to ```playbooks/ValidateConfiguration.yml``` playbook.
+    - Mismatched Ansible module versions triggers a 'WARNING' message instead of an 'ISSUE' message.
+    - Warnings serve only to notify the user, and do not stop the Pod deployment after a short delay.
