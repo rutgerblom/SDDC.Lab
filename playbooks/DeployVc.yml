@@ -204,12 +204,12 @@
       when: vcenter_check.status != 200
 
     - name: Create Clusters
-      community.vmware.vmware_cluster:
+      vmware.vmware.cluster:
         hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        datacenter_name: "{{ Nested_vCenter.DataCenter }}"
-        cluster_name: "{{ item.key }}"
+        datacenter: "{{ Nested_vCenter.DataCenter }}"
+        cluster: "{{ item.key }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
       loop: "{{ Nested_Cluster | dict2items }}"
       when:
@@ -217,14 +217,14 @@
         - item.value.DeployHosts
 
     - name: Enable DRS on each Cluster, if applicable
-      community.vmware.vmware_cluster_drs:
+      vmware.vmware.cluster_drs:
         hostname: "{{ Nested_vCenter.FQDN | lower }}"
         username: "{{ Nested_vCenter.User }}"
         password: "{{ Nested_vCenter.Password }}"
-        datacenter_name: "{{ Nested_vCenter.DataCenter }}"
-        cluster_name: "{{ item.key }}"
-        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datacenter: "{{ Nested_vCenter.DataCenter }}"
+        cluster: "{{ item.key }}"
         enable: "{{ item.value.DRS }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
       loop: "{{ Nested_Cluster | dict2items }}"
       when:
         - vcenter_check.status != 200
