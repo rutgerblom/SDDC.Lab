@@ -3027,3 +3027,10 @@
   - Added PIP3 'ansible' package version checking to ```playbooks/ValidateConfiguration.yml``` playbook.
     - Mismatched PIP3 package versions triggers a 'WARNING' message instead of an 'ISSUE' message.
     - Warnings serve only to notify the user, and do not stop the Pod deployment after a short delay.
+
+## Dev-v8.0.0 04-JANUARY-2025
+
+### Added by Luis Chanu
+  - Removed all ```Patches: []``` entries from ```software_sample.yml``` file as the feature to patch deployed solutions was never implemented.
+  - Be sure to update your:
+    - ```software.yml```
