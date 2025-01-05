@@ -3032,5 +3032,6 @@
 
 ### Added by Luis Chanu
   - Removed all ```Patches: []``` entries from ```software_sample.yml``` file as the feature to patch deployed solutions was never implemented.
+  - Converted deprecated ```community.vmware.cluster``` and ```community.vmware.cluster_drs``` modules in ```playbooks/DeployVc.yml``` to use newer modules from the ```vmware.vmware``` collection.  Specifically, the ```cluster``` and ```cluster_drs``` modules were updated.
   - Be sure to update your:
     - ```software.yml```
