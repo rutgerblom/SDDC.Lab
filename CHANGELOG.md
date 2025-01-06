@@ -3035,3 +3035,8 @@
   - Converted deprecated ```community.vmware.cluster``` and ```community.vmware.cluster_drs``` modules in ```playbooks/DeployVc.yml``` to use newer modules from the ```vmware.vmware``` collection.  Specifically, the ```cluster``` and ```cluster_drs``` modules were updated.
   - Be sure to update your:
     - ```software.yml```
+
+## Dev-v8.0.0 06-JANUARY-2025
+
+### Added by Rutger Blom
+  - Added Cloud Builder and SDDC Manager to the ```templates/Pod_Doc.j2``` template.
