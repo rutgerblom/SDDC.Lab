@@ -384,6 +384,45 @@ tr:nth-child(even) {
     <td>{{ Nested_ALB.Credential.root.Password }}</td>
   </tr>
 {% endif %}{# Deploy.Product.ALB.Deploy #}
+{% if Deploy.Product.CloudBuilder.Deploy == True %}
+  <tr>
+    <td>Cloud Builder (admin)</td>
+    <td>{{ Nested_CloudBuilder.Credential.admin.Name }}</td>
+    <td>{{ Nested_CloudBuilder.Credential.admin.Password }}</td>
+  </tr>
+  <tr>
+    <td>Cloud Builder (root)</td>
+    <td>{{ Nested_CloudBuilder.Credential.root.Name }}</td>
+    <td>{{ Nested_CloudBuilder.Credential.root.Password }}</td>
+  </tr>
+{% endif %}{# Deploy.Product.CloudBuilder.Deploy #}
+{% if Deploy.Product.SDDCManager.Deploy == True %}
+  <tr>
+    <td>SDDC Manager (admin)</td>
+    <td>{{ Nested_SDDCManager.Credential.admin.Name }}</td>
+    <td>{{ Nested_SDDCManager.Credential.admin.Password }}</td>
+  </tr>
+  <tr>
+    <td>SDDC Manager (root)</td>
+    <td>{{ Nested_SDDCManager.Credential.root.Name }}</td>
+    <td>{{ Nested_SDDCManager.Credential.root.Password }}</td>
+  </tr>
+  <tr>
+    <td>SDDC Manager (local)</td>
+    <td>{{ Nested_SDDCManager.Credential.local.Name }}</td>
+    <td>{{ Nested_SDDCManager.Credential.local.Password }}</td>
+  </tr>
+  <tr>
+    <td>SDDC Manager (backup)</td>
+    <td>{{ Nested_SDDCManager.Credential.backup.Name }}</td>
+    <td>{{ Nested_SDDCManager.Credential.backup.Password }}</td>
+  </tr>
+  <tr>
+    <td>SDDC Manager (vcf)</td>
+    <td>{{ Nested_SDDCManager.Credential.vcf.Name }}</td>
+    <td>{{ Nested_SDDCManager.Credential.vcf.Password }}</td>
+  </tr>
+{% endif %}{# Deploy.Product.SDDCManager.Deploy #}
 {% if Deploy.Product.vRLI.Deploy == True %}
   <tr>
     <td>Aria Operations for Logs (admin)</td>
