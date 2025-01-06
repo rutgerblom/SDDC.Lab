@@ -99,6 +99,14 @@ tr:nth-child(even) {
     <td>{{ Deploy.Product.ALB.Deploy }}</td>
   </tr>
   <tr>
+    <td>Cloud Builder deployed</td>
+    <td>{{ Deploy.Product.CloudBuilder.Deploy }}</td>
+  </tr>
+  <tr>
+    <td>SDDC Manager deployed</td>
+    <td>{{ Deploy.Product.SDDCManager.Deploy }}</td>
+  </tr>
+  <tr>
     <td>Aria Operations for Logs deployed</td>
     <td>{{ Deploy.Product.vRLI.Deploy }}</td>
   </tr>
@@ -269,6 +277,32 @@ tr:nth-child(even) {
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
 {% endif %}{# Deploy.Product.ALB.Deploy #}
+{% if Deploy.Product.CloudBuilder.Deploy == True %}
+  <tr>
+    <td>{{ Deploy.Software.CloudBuilder.Product }}</td>
+    <td>{{ Deploy.Software.CloudBuilder.Version }}</td>
+    <td><a href="https://{{ Nested_CloudBuilder.Component.Appliance.FQDN }}">https://{{ Nested_CloudBuilder.Component.Appliance.FQDN }}</a></td>
+{% if Deploy.Setting.IPv4 %}
+    <td><a href="https://{{ Nested_CloudBuilder.Component.Appliance.Address.IPv4.Address }}">https://{{ Nested_CloudBuilder.Component.Appliance.Address.IPv4.Address }}</a></td>
+{% endif %}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 %}
+    <td><a href="https://{{Nested_CloudBuilder.Component.Appliance.Address.IPv6.Address }}">https://{{ Nested_CloudBuilder.Component.Appliance.Address.IPv6.Address }}</a></td>
+{% endif %}{# Deploy.Setting.IPv6 #}
+  </tr>
+{% endif %}{# Deploy.Product.CloudBuilder.Deploy #}
+{% if Deploy.Product.SDDCManager.Deploy == True %}
+  <tr>
+    <td>{{ Deploy.Software.SDDCManager.Product }}</td>
+    <td>{{ Deploy.Software.SDDCManager.Version }}</td>
+    <td><a href="https://{{ Nested_SDDCManager.Component.Appliance.FQDN }}">https://{{ Nested_SDDCManager.Component.Appliance.FQDN }}</a></td>
+{% if Deploy.Setting.IPv4 %}
+    <td><a href="https://{{ Nested_SDDCManager.Component.Appliance.Address.IPv4.Address }}">https://{{ Nested_SDDCManager.Component.Appliance.Address.IPv4.Address }}</a></td>
+{% endif %}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 %}
+    <td><a href="https://{{Nested_SDDCManager.Component.Appliance.Address.IPv6.Address }}">https://{{ Nested_SDDCManager.Component.Appliance.Address.IPv6.Address }}</a></td>
+{% endif %}{# Deploy.Setting.IPv6 #}
+  </tr>
+{% endif %}{# Deploy.Product.SDDCManager.Deploy #}
 {% if Deploy.Product.vRLI.Deploy == True %}
   <tr>
     <td>{{ Deploy.Software.vRLI.Product }}</td>
