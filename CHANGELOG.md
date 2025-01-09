@@ -3040,3 +3040,10 @@
 
 ### Added by Rutger Blom
   - Added Cloud Builder and SDDC Manager to the ```templates/Pod_Doc.j2``` template.
+
+## Dev-v8.0.0 08-JANUARY-2025
+
+### Added by Luis Chanu
+  - Correct NSX-T v3.2.4.1 filename in ```software_sample.yml``` file.
+  - Be sure to update your:
+    - ```software.yml```
