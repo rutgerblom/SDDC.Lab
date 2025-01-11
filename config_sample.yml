@@ -230,6 +230,10 @@ Common:
     Server2:
       IPv4: "{{ Net.Management.IPv4.Network }}.1"                             
       IPv6: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(1) }}"       
+  Question:
+    CEIP:
+      Answer: true                                                            # Indicate if CEIP question should be automatically answered
+      Enabled: false                                                          # Valid options for CEIP are 'false' (Do not join CEIP), or 'true' (Join CEIP)
   Syslog:
     Protocol: udp
     Port: 514
@@ -683,6 +687,10 @@ Nested_Router:
 ##
 
 Nested_vRLI:
+  Question:
+    CEIP:
+      Answer: "{{ Common.Question.CEIP.Answer }}"                                                       # Indicate if CEIP question should be automatically answered
+      Enabled: "{{ Common.Question.CEIP.Enabled }}"                                                     # Valid options for CEIP are 'false' (Do not join CEIP), or 'true' (Join CEIP)
   Credential:
     root:
       Name: root
@@ -1993,8 +2001,8 @@ Nested_vCenter:
       Answer: true
       Enabled: true
     CEIP:
-      Answer: true
-      Enabled: false
+      Answer: "{{ Common.Question.CEIP.Answer }}"                                                       # Indicate if CEIP question should be automatically answered
+      Enabled: "{{ Common.Question.CEIP.Enabled }}"                                                     # Valid options for CEIP are 'false' (Do not join CEIP), or 'true' (Join CEIP)
   User: administrator@vsphere.local
   Password: "{{ Common.Password.Nested }}"
   DeploymentSize: small
@@ -2221,8 +2229,8 @@ Nested_NSXT:
     EULA:
       Accept: true                                                                     # If set to true, the EULA will be automatically accepted on your behalf
     CEIP:
-      Answer: true                                                                     # Indicate if CEIP question should be automatically answered
-      Accept: false                                                                    # Do not accept/join (check) the CEIP
+      Answer: "{{ Common.Question.CEIP.Answer }}"                                      # Indicate if CEIP question should be automatically answered
+      Enabled: "{{ Common.Question.CEIP.Enabled }}"                                    # Valid options for CEIP are 'false' (Do not join CEIP), or 'true' (Join CEIP)
       Schedule_Enabled: false
   Credential:
     root:

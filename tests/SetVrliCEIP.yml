@@ -1,0 +1,123 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/DeployVrli.yml
+##
+---
+- name: DeployVrli.yml
+  hosts: localhost
+  tasks:
+    - name: DeployVrli_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+
+                                         vRLI Version: {{ Deploy.Software.vRLI.Version }}
+                                        vRLI VIP FQDN: {{ Nested_vRLI.Component.Cluster_VIP.FQDN }}
+                                       vRLI Node FQDN: {{ Nested_vRLI.Component.Node.FQDN }}
+                                     vRLI Node VMName: {{ Nested_vRLI.Component.Node.VMName }}
+                                      vRLI Admin User: {{ Nested_vRLI.Credential.admin.Name }}
+                                  vRLI Admin Password: {{ Nested_vRLI.Credential.admin.Password }}
+
+                                                OVF Variables
+                                                =============
+
+                                            vRLI Size: {{ Nested_vRLI.Component.Node.Deployment.Size }}
+                                    Network PortGroup: {{ Target.PortGroup.Management.Name }}
+
+                                 Network IPv4 Address: {{ Nested_vRLI.Component.Node.Address.IPv4.Address }}
+                                      Network Netmask: {{ (Nested_vRLI.Component.Node.Address.IPv4.Address + '/' + Nested_vRLI.Component.Node.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
+                                      Network Gateway: {{ Nested_vRLI.Component.Node.Address.IPv4.Gateway }}
+
+                                   Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                   Network DNS Domain: {{ Common.DNS.Domain }}
+
+                                   vRLI Root Password: {{ Nested_vRLI.Credential.root.Password }}
+
+                                      vRLI Media Path: {{ Deploy.Software.vRLI.Directory }}
+                                      vRLI Media File: {{ Deploy.Software.vRLI.File }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+    - name: Obtain a session ID from the vRLI API
+      ansible.builtin.uri:
+        url: https://{{ Nested_vRLI.Component.Node.FQDN }}:9543/api/v1/sessions
+        validate_certs: false
+        method: POST
+        body:
+          username: "{{ Nested_vRLI.Credential.admin.Name }}"
+          password: "{{ Nested_vRLI.Credential.admin.Password }}"
+          provider: "Local"
+        body_format: json
+      register: vrli_session
+      when:
+        - Deploy.Product.vRLI.Deploy
+
+
+    - name: Configure Customer Experience Improvement Program (CEIP)
+      ansible.builtin.uri:
+        url: https://{{ Nested_vRLI.Component.Cluster_VIP.FQDN }}:9543/api/v2/ceip
+        validate_certs: false
+        method: PUT
+        timeout: 240
+        headers:
+          Authorization: "Bearer {{ vrli_session.json.sessionId }}"
+        body:
+          feedback: "{{ Nested_vRLI.Question.CEIP.Enabled }}"
+        body_format: json
+        status_code: 200
+      when:
+        - Deploy.Product.vRLI.Deploy
+        - Nested_vRLI.Question.CEIP.Answer
