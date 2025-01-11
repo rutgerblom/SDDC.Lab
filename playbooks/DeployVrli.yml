@@ -263,6 +263,23 @@
         - Deploy.Product.vRLI.Deploy
         - vrli_check.status != 200
 
+    - name: Configure Customer Experience Improvement Program (CEIP)
+      ansible.builtin.uri:
+        url: https://{{ Nested_vRLI.Component.Cluster_VIP.FQDN }}:9543/api/v2/ceip
+        validate_certs: false
+        method: PUT
+        timeout: 240
+        headers:
+          Authorization: "Bearer {{ vrli_session.json.sessionId }}"
+        body:
+          feedback: "{{ Nested_vRLI.Question.CEIP.Enabled }}"
+        body_format: json
+        status_code: 200
+      when:
+        - Deploy.Product.vRLI.Deploy
+        - Nested_vRLI.Question.CEIP.Answer
+        - vrli_check.status != 200
+
     - name: Apply Memory Reservation and Share Settings
       community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"

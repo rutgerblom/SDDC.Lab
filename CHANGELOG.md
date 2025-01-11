@@ -3047,3 +3047,14 @@
   - Correct NSX-T v3.2.4.1 filename in ```software_sample.yml``` file.
   - Be sure to update your:
     - ```software.yml```
+
+## Dev-v8.0.0 10-JANUARY-2025
+
+### Added by Luis Chanu
+  - Moved ```CEIP``` settings into ```Common``` in ```config_sample.yml``` file.
+  - Added ```CEIP``` to ```Nested_vRLI``` configuration.
+  - Updated other products with ```CEIP``` settings to use the ```Common``` settings.
+  - Added comments to ```Common.Question.CEIP``` section indicating how the options are set.
+  - Added ```CEIP``` configuration task to ```playbooks/DeployVrli.yml``` playbook.
+  - Be sure to update your:
+    - ```config.yml```
