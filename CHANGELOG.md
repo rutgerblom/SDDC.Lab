@@ -3058,3 +3058,8 @@
   - Added ```CEIP``` configuration task to ```playbooks/DeployVrli.yml``` playbook.
   - Be sure to update your:
     - ```config.yml```
+
+## Dev-v8.0.0 11-JANUARY-2025
+
+### Added by Luis Chanu
+  - Corrected ```CEIP``` variable error in ```playbooks/DeployNsxLocalManager.yml``` playbook.
