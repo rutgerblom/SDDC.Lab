@@ -25,6 +25,7 @@
   * [vSphere Content Libraries](#vsphere-content-libraries-v4--updated-in-v5)
   * [Deploy Test Workloads](#deploy-test-workloads-v4)
   * [Workload Management](#workload-management-v4)
+  * [Pod-Router User-Defined Configuration Commands](#pod-router-user-defined-configuration-commands-v4)
   * [NSX-T Segment IP Subnet Auto-Allocation](#nsx-t-segment-ip-subnet-auto-allocation-v5)
   * [Memory Reservation & Shares](#memory-reservation--shares-v6)
   * [Symbolic Link to 'Latest' VyOS Installation ISO Download](#symbolic-link-to-latest-vyos-installation-iso-download-v8)
@@ -423,11 +424,18 @@ SDDC.Lab can now enable Workload Management on nested vSphere Clusters during Po
 
 1. Make sure that ```Deploy.Product.NSXT.LocalManager.Deploy``` and ```Deploy.Product.NSXT.Edge.Deploy``` settings are set to ```true``` in your ```config.yml```.  By default, these settings are set to ```true```.
 
-1. Set the ```SupervisorCluster.Enable``` setting to ```true``` for a nested vSphere Cluster under the ```Nested_Cluster``` section in your ```config.yml```. By default, this setting is set to ```false```, thereby preventing Workload Management from being configured.
+2. Set the ```SupervisorCluster.Enable``` setting to ```true``` for a nested vSphere Cluster under the ```Nested_Cluster``` section in your ```config.yml```. By default, this setting is set to ```false```, thereby preventing Workload Management from being configured.
 
-2. Optionally, make changes to the other settings related to the Supervisor Cluster.
+3. Optionally, make changes to the other settings related to the Supervisor Cluster.
 
-3. After Pod deployment finishes you need to assign your Tanzu license to the Supervisor Cluster asset in the vCenter "Licenses" module. This is needed even when you have added a Tanzu license to your ```licenses.yml``` as currently it isn't possible to automate the Supervisor Cluster license assignment. 
+4. After Pod deployment finishes you need to assign your Tanzu license to the Supervisor Cluster asset in the vCenter "Licenses" module. This is needed even when you have added a Tanzu license to your ```licenses.yml``` as currently it isn't possible to automate the Supervisor Cluster license assignment. 
+
+### Pod-Router User-Defined Configuration Commands (v4)
+SDDC.Lab now enables users to add their own Pod specific router configuration to the Pod-Router during deployment of the Pod.  User specific VyOS commands are applied to the Pod-Router after the baseline configuration is applied.  No command checking is performed, so it's the user's responsibility to ensure that the commands do not cause issues to the Pod-Router baseline configuration.
+
+Users put the commands they want to be applied in a special Pod specific file.  By default (configured in ```Nested_Router.UserConfig```), the file containing the additional Pod specific router command is placed in the user's home directory, and is called ```{{ SiteCode }}-Router-UserConfig.j2```.  So, for example, the file for Pod #10 would be called ```Pod-010-Router-UserConfig.j2```.  This file is a Jinja2 template, so users can also utilize all the templating power of Jinja2 to generate their commands, should they desire.
+
+During Pod-Router deployment, the playbook checks to see if the file exists.  If so, the Jinja2 rendered contents of the file is applied to the Pod-Router.
 
 ### NSX-T Segment IP Subnet Auto-Allocation (v5)
 SDDC.Lab has a feature where it can automatically assign both IPv4 and IPv6 IP subnet addresses to NSX-T Segments included in your ```config.yml``` file.  The benefit of using this feature is that it permits you to easily deploy Pods without having to manually configure non-overlapping IP subnets for each NSX-T Segment.  Of course, if you have a need to manually specify the IP subnet used by a given NSX-T Segment, then you still have that flexibility, too, just as you continue to have the ability to create layer-2 only segments as well.
