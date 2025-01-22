@@ -3063,3 +3063,10 @@
 
 ### Added by Luis Chanu
   - Corrected ```CEIP``` variable error in ```playbooks/DeployNsxLocalManager.yml``` playbook.
+
+## Dev-v8.0.0 22-JANUARY-2025
+
+### Added by Rutger Blom
+  - Added NSX 4.2.1.2 to ```software_sample.yml``` (NOT TESTED)
+  - Be sure to update your:
+    - ```software.yml```
