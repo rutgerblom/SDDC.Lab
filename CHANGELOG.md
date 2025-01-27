@@ -3070,3 +3070,9 @@
   - Added NSX 4.2.1.2 to ```software_sample.yml``` (NOT TESTED)
   - Be sure to update your:
     - ```software.yml```
+
+## Dev-v8.0.0 27-JANUARY-2025
+
+### Added by Aaron Ellis
+  - updated ansible hosts file localhost vars to use the calling python exe path.  Supports python venvs.
+  
