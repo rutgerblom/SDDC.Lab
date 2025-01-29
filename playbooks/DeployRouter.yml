@@ -670,14 +670,66 @@
         - Deploy.Product.Router.Deploy
         - status is failed
 
-    - name: Shutdown VyOS VM
-      community.vmware.vmware_guest_powerstate:
+    - name: Shutdown VyOS VM in-guest (Enter 'poweroff' on cli)
+      community.vmware.vmware_guest_sendkey:
         hostname: "{{ Target.FQDN }}"
         username: "{{ Target.User }}"
         password: "{{ Target.Password }}"
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         name: "{{ Nested_Router.Name }}"
-        state: shutdown-guest
+        string_send: "poweroff"
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Wait 10 seconds
+      ansible.builtin.pause:
+        seconds: 10
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Shutdown VyOS vm in-guest Press 'ENTER' after 'poweroff' on cli)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Shutdown VyOS VM in-guest (Enter 'y' to are you sure prompt)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_Router.Name }}"
+        string_send: "y"
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Wait 10 seconds
+      ansible.builtin.pause:
+        seconds: 10
+      when:
+        - Deploy.Product.Router.Deploy
+        - status is failed
+
+    - name: Shutdown VyOS vm in-guest Press 'ENTER' after 'y' on cli)
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_Router.Name }}"
+        keys_send:
+          - ENTER
       when:
         - Deploy.Product.Router.Deploy
         - status is failed

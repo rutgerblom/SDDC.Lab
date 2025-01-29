@@ -3075,4 +3075,9 @@
 
 ### Added by Aaron Ellis
   - updated ansible hosts file localhost vars to use the calling python exe path.  Supports python venvs.
+
+## Dev-v8.0.0 28-JANUARY-2025
+
+### Added by Aaron Ellis
+  - Updated ```DeployRouter.yml``` to issue poweroff command in the cli instead of relying on vmtools guest shutdown.
   
