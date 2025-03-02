@@ -305,15 +305,23 @@ set system time-zone 'UTC'
 ##
 ## System - Syslog (IPv4 & IPv6)
 ##
-set system syslog global facility all level notice
-# set system syslog global facility protocols level debug
+# Syslog CLI configuration commands were changed in a recent VyOS build, causing the 
+# vyos.vyos.vyos_config moodule to fail when attempting to apply the configuration to 
+# the Pod-Router.  As we don't have a way of knowing what VyOS version the user is 
+# running, we are commenting all of the syslog commands below.  As one day we may 
+# re-enable these commands, the commands below have been updated to the commands 
+# to aid the SDDC.Lab development team in the future.  Should the user want to 
+# implement these (or other) commands, it's suggested that they leverage the 
+# Pod-Router UserConfig feature to enable them.
+#
+#set system syslog local facility all level notice
 {% if Deploy.Setting.IPv4 -%}
-set system syslog host {{ Common.Syslog.IPv4 }} facility all level notice
-set system syslog host {{ Common.Syslog.IPv4 }} protocol {{ Common.Syslog.Protocol }}
+#set system syslog remote {{ Common.Syslog.IPv4 }} facility all level notice
+#set system syslog remote {{ Common.Syslog.IPv4 }} protocol {{ Common.Syslog.Protocol }}
 {% endif -%}{# Deploy.Setting.IPv4 #}
 {% if Deploy.Setting.IPv6 -%}
-set system syslog host {{ Common.Syslog.IPv6 }} facility all level notice
-set system syslog host {{ Common.Syslog.IPv6 }} protocol {{ Common.Syslog.Protocol }}
+#set system syslog remote {{ Common.Syslog.IPv6 }} facility all level notice
+#set system syslog remote {{ Common.Syslog.IPv6 }} protocol {{ Common.Syslog.Protocol }}
 {% endif -%}{# Deploy.Setting.IPv6 #}
 
 
