@@ -3080,4 +3080,16 @@
 
 ### Added by Aaron Ellis
   - Updated ```DeployRouter.yml``` to issue poweroff command in the cli instead of relying on vmtools guest shutdown.
-  
+
+## Dev-v8.0.0 01-MARCH-2025
+
+### Added by Luis Chanu
+  - Recent ```vyos-rolling-latest.iso``` build version has changed the commands to configure syslog, which broke the Pod-Router apply configuration task in ```playbooks/ConfigureRouter.yml```.
+  - As there is no way of knowing which VyOS ISO users have in their ```/Software``` repository, the syslog configuration commands in ```templates/vyos_router.j2``` have been commented, and a note added explaining why.  Additionally, the syslog commands were updated to the newer command syntax before they were commented.  Below are the older (OLD) and newer (NEW) syslog commands:
+    - OLD: ```set system syslog global facility all level notice```  
+      NEW: ```set system syslog local facility all level notice```
+    - OLD: ```set system syslog host <IP-Address> facility all level notice```  
+      NEW: ```set system syslog remote <IP-Address> facility all level notice```
+    - OLD: ```set system syslog host <IP-Address> protocol udp```  
+      NEW: ```set system syslog remote <IP-Address> protocol udp```
+  - Added a ```comment``` to all ```vyos.vyos.vyos_config``` tasks in ```playbooks/ConfigureRouter.yml``` playbook to indicate the commit was performed by SDDC.Lab.  The comments can be viewed using the ```show system commit``` command on the VyOS Pod-Router.

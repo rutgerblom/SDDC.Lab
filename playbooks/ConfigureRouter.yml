@@ -129,6 +129,7 @@
     - name: Apply VyOS Baseline Router Configuration to {{ Nested_Router.Name }}
       vyos.vyos.vyos_config:
         src: "{{ Target.TempFolder }}/{{ Deploy.Software.Router.Config }}"
+        comment: "Configured VyOS bootstrap configuration settings by SDDC.Lab"
         save: true
       retries: 5
       delay: 30
@@ -198,6 +199,7 @@
     - name: Apply VyOS router UserConfig configuration to {{ Nested_Router.Name }}
       vyos.vyos.vyos_config:
         src: "{{ Target.TempFolder }}/{{ LOCAL_UserConfigTempFile }}"
+        comment: "Configured VyOS UserConfig settings by SDDC.Lab"
         save: true
       vars:
         ansible_connection: ansible.netcommon.network_cli
