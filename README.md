@@ -437,6 +437,8 @@ Users put the commands they want to be applied in a special Pod specific file.  
 
 During Pod-Router deployment, the playbook checks to see if the file exists.  If so, the Jinja2 rendered contents of the file is applied to the Pod-Router.
 
+An example Pod-Router UserConfig file called ```Pod-010-Router-UserConfig.j2``` has been placed in the ```misc/Router-UserConfig``` directory.  Although this example is a fully rendered configuration, Jinja2 variables can also be included in the UserConfig file.
+
 ### NSX-T Segment IP Subnet Auto-Allocation (v5)
 SDDC.Lab has a feature where it can automatically assign both IPv4 and IPv6 IP subnet addresses to NSX-T Segments included in your ```config.yml``` file.  The benefit of using this feature is that it permits you to easily deploy Pods without having to manually configure non-overlapping IP subnets for each NSX-T Segment.  Of course, if you have a need to manually specify the IP subnet used by a given NSX-T Segment, then you still have that flexibility, too, just as you continue to have the ability to create layer-2 only segments as well.
 
