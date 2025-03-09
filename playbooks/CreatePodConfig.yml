@@ -16,7 +16,9 @@
 
   vars:
     PodTemplate: "Pod_Config.j2"
-    IntermediateConfigFile: "Inter-{{ SiteCode }}-Config_{{ lookup('pipe', 'date +%Y%m%d') }}_VCSAv{{ Deploy.Software.vCenter.Version }}\
+    IntermediateConfigFile: "Inter-{{ SiteCode }}-Config_{{ lookup('pipe', 'date +%Y%m%d') }}\
+                             _VYOSv{{ Deploy.Software.Router.Version }}\
+                             _VCSAv{{ Deploy.Software.vCenter.Version }}\
                              _ESXIv{{ Deploy.Software.ESXi.Version }}\
                              _vRLIv{% if Deploy.Product.vRLI.Deploy == false %}NONE{% else %}{{ Deploy.Software.vRLI.Version }}{% endif %}\
                              _ALBv{% if Deploy.Product.ALB.Deploy == false %}NONE{% else %}{{ Deploy.Software.ALB.Version }}{% endif %}\
@@ -26,7 +28,9 @@
                              _NSXTv{% if Deploy.Product.NSXT.LocalManager.Deploy == false %}NONE{% else %}{{ Deploy.Software.NSXT.Version }}\
                              _Fed-{% if Deploy.Product.NSXT.Federation.Deploy %}Y_{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}\
                              {% else %}N{% endif %}{% endif %}.json"
-    PodTempConfigFile: "Temp-{{ SiteCode }}-Config_{{ lookup('pipe', 'date +%Y%m%d') }}_VCSAv{{ Deploy.Software.vCenter.Version }}\
+    PodTempConfigFile: "Temp-{{ SiteCode }}-Config_{{ lookup('pipe', 'date +%Y%m%d') }}\
+                        _VYOSv{{ Deploy.Software.Router.Version }}\
+                        _VCSAv{{ Deploy.Software.vCenter.Version }}\
                         _ESXIv{{ Deploy.Software.ESXi.Version }}\
                         _vRLIv{% if Deploy.Product.vRLI.Deploy == false %}NONE{% else %}{{ Deploy.Software.vRLI.Version }}{% endif %}\
                         _ALBv{% if Deploy.Product.ALB.Deploy == false %}NONE{% else %}{{ Deploy.Software.ALB.Version }}{% endif %}\
@@ -134,7 +138,9 @@
 # Filename development must come after the Pod Config variables are static via the workaround above, else it ends up taking a long time as it dereferences each variable
     - name: Develop filename of final Pod Config file
       ansible.builtin.set_fact:
-        PodConfigFile: "{{ SiteCode }}-Config_{{ lookup('pipe', 'date +%Y%m%d') }}_VCSAv{{ Deploy.Software.vCenter.Version }}~{{ Nested_vCenter.DeploymentSize[:1]|upper }}\
+        PodConfigFile: "{{ SiteCode }}-Config_{{ lookup('pipe', 'date +%Y%m%d') }}\
+                        _VYOSv{{ Deploy.Software.Router.Version[:1]|upper }}\
+                        _VCSAv{{ Deploy.Software.vCenter.Version }}~{{ Nested_vCenter.DeploymentSize[:1]|upper }}\
                         _ESXIv{{ Deploy.Software.ESXi.Version }}\
                         _vRLIv{% if Deploy.Product.vRLI.Deploy == false %}NONE{% else %}{{ Deploy.Software.vRLI.Version }}~{{ Nested_vRLI.Component.Node.Deployment.Size[:1]|upper }}{% endif %}\
                         _ALBv{% if Deploy.Product.ALB.Deploy == false %}NONE{% else %}{{ Deploy.Software.ALB.Version }}{% endif %}\

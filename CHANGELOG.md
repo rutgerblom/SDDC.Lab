@@ -3098,4 +3098,5 @@
 
 ### Added by Luis Chanu
   - Added an example Pod-Router UserConfig file to ```misc/Router-UserConfig``` directory.
-  - Updated ```README.md``` file to indicate that an example file has been added. 
+  - Updated ```README.md``` file to indicate that an example file has been added.
+  - Updated ```playbooks/CreatePodConfig.yml``` playbook to include ```VYOS_``` to static Pod Configuration file.
