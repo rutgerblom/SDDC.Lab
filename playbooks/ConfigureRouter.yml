@@ -288,3 +288,36 @@
 
           =====================================================================================================
       when: '" 0% packet loss" not in result.stdout'
+
+
+##
+## Install open-vm-tools from Internet (Ignoring failures)
+##
+    - name: Check to see if open-vm-tools is already running
+      vyos.vyos.vyos_command:
+        commands:
+          - systemctl status open-vm-tools
+      vars:
+        ansible_connection: ansible.netcommon.network_cli
+        ansible_host: "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
+        ansible_user: vyos
+        ansible_password: "{{ Common.Password.Nested }}"
+        ansible_network_os: vyos.vyos.vyos
+      register: result
+
+    - name: Install open-vm-tools on VyOS router if 'active (running)' state not found in 'result'
+      vyos.vyos.vyos_command:
+        commands:
+          - echo 'deb https://deb.debian.org/debian bookworm main non-free-firmware'     | sudo tee -a /etc/apt/sources.list
+          - echo 'deb-src https://deb.debian.org/debian bookworm main non-free-firmware' | sudo tee -a /etc/apt/sources.list
+          - sudo apt-get -y update
+          - sudo apt-get -y install open-vm-tools
+      vars:
+        ansible_connection: ansible.netcommon.network_cli
+        ansible_host: "{{ Nested_Router.Interface.Uplink.IPv4.Address }}"
+        ansible_user: vyos
+        ansible_password: "{{ Common.Password.Nested }}"
+        ansible_network_os: vyos.vyos.vyos
+      ignore_errors: true
+      when:
+        - '"active (running)" not in result.stdout[0]'
