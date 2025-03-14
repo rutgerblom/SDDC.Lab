@@ -3106,3 +3106,12 @@
 ### Added by Luis Chanu
   - VyOS recently removed ```open-vm-tools``` from the VyOS nightly-build ISO image.  Added tasks to re-install ```open-vm-tools``` as part of the VyOS Pod-Router deployment.
   - Added check for, and installation of, ```open-vm-tools``` to ```playbooks/ConfigureRouter.yml``` playbook.  In order to install ```open-vm-tools```, Internet access is required.  If Internet access is not available, the errors are ignored, and the SDDC.Lab installation proceeds without ```open-vm-tools``` installed.
+
+## Dev-v8.0.0 14-MARCH-2025
+
+### Added by Aaron Ellis
+  - Added Support for Deploying SSP Installer OVA
+  - Be sure to update your:
+    - ```software.yml```
+    - ```config.yml```
+
