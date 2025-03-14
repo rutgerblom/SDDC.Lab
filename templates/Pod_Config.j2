@@ -63,6 +63,8 @@ Deploy:
       Deploy: {{ Deploy.Product.CloudBuilder.Deploy }}
     SDDCManager:
       Deploy: {{ Deploy.Product.SDDCManager.Deploy }}
+    SSPI:
+      Deploy: {{ Deploy.Product.SSPI.Deploy }}
     VCFImportTool:
       Deploy: {{ Deploy.Product.VCFImportTool.Deploy }}
       Execute: {{ Deploy.Product.VCFImportTool.Execute }}
@@ -199,6 +201,16 @@ Deploy:
       Directory: "{{ Software[Deploy.Software.SDDCManager.Vendor][Deploy.Software.SDDCManager.Product]['Installers'][Deploy.Software.SDDCManager.Version]['Location'].Local }}"
       File:      "{{ Software[Deploy.Software.SDDCManager.Vendor][Deploy.Software.SDDCManager.Product]['Installers'][Deploy.Software.SDDCManager.Version].File }}"
       FileExt:   "{{ Software[Deploy.Software.SDDCManager.Vendor][Deploy.Software.SDDCManager.Product]['Installers'][Deploy.Software.SDDCManager.Version].FileExt }}"
+    SSPI:
+      Vendor:    "{{ Deploy.Software.SSPI.Vendor }}"
+      Product:   "{{ Deploy.Software.SSPI.Product }}"
+      Version:   "{{ Deploy.Software.SSPI.Version }}"
+      Patch:     {{ Deploy.Software.SSPI.Patch }}
+      Config:    "{{ Deploy.Software.SSPI.Config }}"
+      Installer: "{{ Deploy.Software.SSPI.Installer }}"
+      Directory: "{{ Software[Deploy.Software.SSPI.Vendor][Deploy.Software.SSPI.Product]['Installers'][Deploy.Software.SSPI.Version]['Location'].Local }}"
+      File:      "{{ Software[Deploy.Software.SSPI.Vendor][Deploy.Software.SSPI.Product]['Installers'][Deploy.Software.SSPI.Version].File }}"
+      FileExt:   "{{ Software[Deploy.Software.SSPI.Vendor][Deploy.Software.SSPI.Product]['Installers'][Deploy.Software.SSPI.Version].FileExt }}"
     VCFImportTool:
       Vendor:    "{{ Deploy.Software.VCFImportTool.Vendor }}"
       Product:   "{{ Deploy.Software.VCFImportTool.Product }}"
@@ -254,6 +266,9 @@ Nested_CloudBuilder:
 
 Nested_SDDCManager:
   {{ Nested_SDDCManager | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+Nested_SSPI:
+  {{ Nested_SSPI | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
 
 Nested_ALB:

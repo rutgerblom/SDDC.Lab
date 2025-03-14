@@ -3093,3 +3093,11 @@
     - OLD: ```set system syslog host <IP-Address> protocol udp```  
       NEW: ```set system syslog remote <IP-Address> protocol udp```
   - Added a ```comment``` to all ```vyos.vyos.vyos_config``` tasks in ```playbooks/ConfigureRouter.yml``` playbook to indicate the commit was performed by SDDC.Lab.  The comments can be viewed using the ```show system commit``` command on the VyOS Pod-Router.
+
+## Dev-v8.0.0 14-MARCH-2025
+
+### Added by Aaron Ellis
+  - Added Support for Deploying SSP Installer OVA
+  - Be sure to update your:
+    - ```software.yml```
+    - ```config.yml```

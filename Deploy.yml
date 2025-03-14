@@ -256,6 +256,12 @@
   when: 
     - Deploy.Product.SDDCManager.Deploy
     - not Deploy.Setting.DeployESXiOnly
+    
+# Deploy SSPI (Nested)
+- ansible.builtin.import_playbook: playbooks/DeploySSPI.yml
+  when: 
+    - Deploy.Product.SSPI.Deploy
+    - not Deploy.Setting.DeployESXiOnly
 
 # Deploy Cloud Builder (Nested)
 - ansible.builtin.import_playbook: playbooks/DeployCloudBuilder.yml

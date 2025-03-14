@@ -285,6 +285,7 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 25 | vSphere Replication | vSphere Replication Appliance | Pod-240-Replication | No |
 | 26 | SDDC Manager | SDDC Manager Appliance | Pod-240-SDDCManager | No |
 | 27 | Cloud Builder | Cloud Builder Appliance | Pod-240-CloudBuilder | No |
+| 28 | SSPI Appliance | Security Services Platform Installer Appliance | Pod-240-SSPI | No |
 | Thru 89 | Reserved | Reserved for Future Management VMs/Services | | |
 | 90 | Reserved | User Deployed 3rd Party Appliances | | |
 | Thru 100 | Reserved | User Deployed 3rd Party Appliances | | |
