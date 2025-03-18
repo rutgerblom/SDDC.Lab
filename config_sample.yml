@@ -78,6 +78,8 @@ Deploy:
       Deploy: false                                       # Cloud Builder - Deploy a Cloud Builder Appliance to the pod (usually only for the first pod or standalone, look for DeployESXiOnly to build out new VCF instances).
     SDDCManager:
       Deploy: false                                       # SDDC Manager - Deploy a SDDC Manager Appliance to the pod (usually only for the first pod or standalone, look for DeployESXiOnly to build out new WLDs).
+    SSPI:
+      Deploy: false                                       # SSPI Appliance - Deploy a SSPI Appliance to the pod to be consumed wiht NSX-T 4.2+.
     VCFImportTool:
       Deploy: false                                       # VCF Import Tool - Copy and extract VCF Import tool to SDDC Manager and vCenter.  Also executes prechecks on vCenter and copies output file next to pod documentation
       Execute: false                                      # Execute VCF Import automatically to convert this pod to a managment domain.
@@ -174,6 +176,13 @@ Deploy:
       Patch:   false
       Config:  "{{ SiteCode }}-SDDCManager"
       Installer: "{{ SiteCode }}-SDDCManager"
+    SSPI:                                                 # Label used for selection of which template to use during deployment (templates.yml)
+      Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
+      Product: SSPI                                       # Indicates software product you want to deploy from the software repository (software.yml)
+      Version: '5.0.0'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
+      Patch:   false
+      Config:  "{{ SiteCode }}-SSPI"
+      Installer: "{{ SiteCode }}-SSPI"
     VCFImportTool:                                        # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: VCFImportTool                              # Indicates software product you want to deploy from the software repository (software.yml)
@@ -918,6 +927,42 @@ Nested_SDDCManager:
           Gateway: "{{ Net.Management.IPv4.Network }}.1"
         IPv6:
           Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(26) }}"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+
+
+
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ███████ ███████ ██████  ██ 
+## ████   ██ ██      ██         ██    ██      ██   ██         ██      ██      ██   ██ ██ 
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ███████ ███████ ██████  ██ 
+## ██  ██ ██ ██           ██    ██    ██      ██   ██              ██      ██ ██      ██ 
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████ ███████ ███████ ██      ██ 
+##                                                                                                                                                                                                                                               
+
+Nested_SSPI:
+  Credential:
+    root:
+      Name: root
+      Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+    admin:
+      Name: admin
+      Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+    audit:
+      Name: audit
+      Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+ 
+  Component:
+    Appliance:
+      VMName: "{{ SiteCode }}-SSPI"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-SSPI.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.28{% endif %}"
+      FIPSEnable: false
+      Address:
+        IPv4:
+          Address: "{{ Net.Management.IPv4.Network }}.28"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+          Gateway: "{{ Net.Management.IPv4.Network }}.1"
+        IPv6:
+          Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(28) }}"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
 
 

@@ -107,6 +107,10 @@ tr:nth-child(even) {
     <td>{{ Deploy.Product.SDDCManager.Deploy }}</td>
   </tr>
   <tr>
+    <td>SSPI deployed</td>
+    <td>{{ Deploy.Product.SSPI.Deploy }}</td>
+  </tr>  
+  <tr>
     <td>Aria Operations for Logs deployed</td>
     <td>{{ Deploy.Product.vRLI.Deploy }}</td>
   </tr>
@@ -303,6 +307,19 @@ tr:nth-child(even) {
 {% endif %}{# Deploy.Setting.IPv6 #}
   </tr>
 {% endif %}{# Deploy.Product.SDDCManager.Deploy #}
+{% if Deploy.Product.SSPI.Deploy == True %}
+  <tr>
+    <td>{{ Deploy.Software.SSPI.Product }}</td>
+    <td>{{ Deploy.Software.SSPI.Version }}</td>
+    <td><a href="https://{{ Nested_SSPI.Component.Appliance.FQDN }}">https://{{ Nested_SSPI.Component.Appliance.FQDN }}</a></td>
+{% if Deploy.Setting.IPv4 %}
+    <td><a href="https://{{ Nested_SSPI.Component.Appliance.Address.IPv4.Address }}">https://{{ Nested_SSPI.Component.Appliance.Address.IPv4.Address }}</a></td>
+{% endif %}{# Deploy.Setting.IPv4 #}
+{% if Deploy.Setting.IPv6 %}
+    <td><a href="https://{{Nested_SSPI.Component.Appliance.Address.IPv6.Address }}">https://{{ Nested_SSPI.Component.Appliance.Address.IPv6.Address }}</a></td>
+{% endif %}{# Deploy.Setting.IPv6 #}
+  </tr>
+{% endif %}{# Deploy.Product.SSPI.Deploy #}
 {% if Deploy.Product.vRLI.Deploy == True %}
   <tr>
     <td>{{ Deploy.Software.vRLI.Product }}</td>
@@ -423,6 +440,23 @@ tr:nth-child(even) {
     <td>{{ Nested_SDDCManager.Credential.vcf.Password }}</td>
   </tr>
 {% endif %}{# Deploy.Product.SDDCManager.Deploy #}
+{% if Deploy.Product.SSPI.Deploy == True %}
+  <tr>
+    <td>SSPI (root)</td>
+    <td>{{ Nested_SSPI.Credential.root.Name }}</td>
+    <td>{{ Nested_SSPI.Credential.root.Password }}</td>
+  </tr>
+  <tr>
+    <td>SSPI (cli admin)</td>
+    <td>{{ Nested_SSPI.Credential.admin.Name }}</td>
+    <td>{{ Nested_SSPI.Credential.admin.Password }}</td>
+  </tr>
+  <tr>
+    <td>SSPI (cli audit)</td>
+    <td>{{ Nested_SSPI.Credential.audit.Name }}</td>
+    <td>{{ Nested_SSPI.Credential.audit.Password }}</td>
+  </tr>
+{% endif %}{# Deploy.Product.SSPI.Deploy #}
 {% if Deploy.Product.vRLI.Deploy == True %}
   <tr>
     <td>Aria Operations for Logs (admin)</td>

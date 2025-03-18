@@ -1,0 +1,169 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Aaron Ellis
+##   Filename: playbooks/DeploySSPI.yml
+##
+---
+- name: DeploySSPI.yml
+  hosts: localhost
+  tasks:
+    - name: DeploySSPI_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+
+                                          SSPI Version: {{ Deploy.Software.SSPI.Version }}
+                                  SSPI FQDN: {{ Nested_SSPI.Component.Appliance.FQDN }}
+                                SSPI VMName: {{ Nested_SSPI.Component.Appliance.VMName }}
+                                       SSPI root User: {{ Nested_SSPI.Credential.root.Name }}
+                                   SSPI root Password: {{ Nested_SSPI.Credential.root.Password }}
+                                      SSPI admin User: {{ Nested_SSPI.Credential.admin.Name }}
+                                  SSPI admin Password: {{ Nested_SSPI.Credential.admin.Password }}
+                                      SSPI audit User: {{ Nested_SSPI.Credential.audit.Name }}
+                                  SSPI audit Password: {{ Nested_SSPI.Credential.audit.Password }}
+
+
+                                                OVF Variables
+                                                =============
+
+                                    Network PortGroup: {{ Target.PortGroup.Management.Name }}
+
+                                 Network IPv4 Address: {{ Nested_SSPI.Component.Appliance.Address.IPv4.Address }}
+                                      Network Netmask: {{ (Nested_SSPI.Component.Appliance.Address.IPv4.Address + '/' +
+                                                       Nested_SSPI.Component.Appliance.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}
+                                      Network Gateway: {{ Nested_SSPI.Component.Appliance.Address.IPv4.Gateway }}
+
+                                   Network DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                   Network DNS Domain: {{ Common.DNS.Domain }}
+
+                                    SSPI Root Password: {{ Nested_SSPI.Credential.root.Password }}
+                                   SSPI admin Password: {{ Nested_SSPI.Credential.admin.Password }}
+                                   SSPI audit Password: {{ Nested_SSPI.Credential.audit.Password }}
+
+                                      SSPI FIPS_Enable: {{ Nested_SSPI.Component.Appliance.FIPSEnable }}
+
+                                       SSPI Media Path: {{ Deploy.Software.SSPI.Directory }}
+                                       SSPI Media File: {{ Deploy.Software.SSPI.File }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+    - name: Check if SSPI is already installed
+      ansible.builtin.uri:
+        url: https://{{ Nested_SSPI.Component.Appliance.FQDN }}
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        timeout: 5
+      register: sspi_check
+      ignore_errors: true
+      when:
+        - Deploy.Product.SSPI.Deploy
+
+    - name: Deploy SSPI from OVA
+      community.vmware.vmware_deploy_ovf:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        datastore: "{{ Target.Datastore }}"
+        allow_duplicates: false
+        # For vCenter deployment, VM Folder path must be the FULL path: /<DataCenter>/vm/<ParentFolder>/<ChildFolder>
+        folder: "{% if Target.Deployment == 'vCenter' %}/{{ Target.DataCenter }}/vm/{{ Target.VMFolder }}\
+                 {% else %}{{ Target.VMFolder }}{% endif %}"
+        datacenter: "{{ Target.DataCenter }}"
+        cluster: "{{ Target.Cluster }}"
+        name: "{{ Nested_SSPI.Component.Appliance.VMName }}"
+        ovf: "{{ Deploy.Software.SSPI.Directory }}/{{ Deploy.Software.SSPI.File }}"
+        networks:
+          "Network 1": "{{ Target.PortGroup.Management.Name }}"
+        disk_provisioning: "{{ Common.DiskProvisioning }}"
+        power_on: true
+        wait_for_ip_address: true
+        inject_ovf_env: true
+        properties:
+          vsx_passwd_0: "{{ Nested_SSPI.Credential.root.Password }}"
+          vsx_cli_passwd_0: "{{ Nested_SSPI.Credential.admin.Password }}"
+          vsx_cli_audit_passwd_0: "{{ Nested_SSPI.Credential.audit.Password }}"
+          vsx_fqdn: "{{ Nested_SSPI.Component.Appliance.FQDN }}"
+          vsx_ntp_0: "{{ Common.NTP.Server1.IPv4 }}"
+          vsx_ip_0: "{{ Nested_SSPI.Component.Appliance.Address.IPv4.Address }}"
+          vsx_netmask_0: "{{ (Nested_SSPI.Component.Appliance.Address.IPv4.Address + '/' +
+                                      Nested_SSPI.Component.Appliance.Address.IPv4.Prefix) | ansible.utils.ipaddr('netmask') }}"
+          vsx_gateway_0: "{{ Nested_SSPI.Component.Appliance.Address.IPv4.Gateway }}"
+          vsx_domain_0: "{{ Common.DNS.Domain }}"
+          vsx_dns1_0: "{{ Common.DNS.Server1.IPv4 }}"
+      when:
+        - Deploy.Product.SSPI.Deploy
+        - sspi_check.status != 200
+
+    - name: Write annotation on the SSPI VM
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        cluster: "{{ Target.Cluster }}"
+        datacenter: "{{ Target.DataCenter }}"
+        folder: "{{ Target.VMFolder }}"
+        name: "{{ Nested_SSPI.Component.Appliance.VMName }}"
+        annotation: |
+                    {{ Common.Annotation }}
+                    {{ Deploy.Software.SSPI.Vendor }} {{ Deploy.Software.SSPI.Product }} {{ Deploy.Software.SSPI.Version }}
+                    SSPI root User: {{ Nested_SSPI.Credential.root.Name }}
+                    SSPI root Password: {{ Nested_SSPI.Credential.root.Password }}
+                    SSPI admin User: {{ Nested_SSPI.Credential.admin.Name }}
+                    SSPI admin Password: {{ Nested_SSPI.Credential.admin.Password }}
+                    SSPI audit User: {{ Nested_SSPI.Credential.audit.Name }}
+                    SSPI audit Password: {{ Nested_SSPI.Credential.audit.Password }}
+
+      when:
+        - Deploy.Product.SSPI.Deploy
