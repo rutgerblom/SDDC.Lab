@@ -3115,3 +3115,9 @@
     - ```software.yml```
     - ```config.yml```
 
+## Dev-v8.0.0 18-MARCH-2025
+
+### Added by Luis Chanu
+  - Added NSX 4.2.1.3 to ```software_sample.yml``` (NOT TESTED)
+  - Be sure to update your:
+    - ```software.yml```
