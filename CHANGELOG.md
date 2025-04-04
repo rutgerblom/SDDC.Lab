@@ -3121,3 +3121,19 @@
   - Added NSX 4.2.1.3 to ```software_sample.yml``` (NOT TESTED)
   - Be sure to update your:
     - ```software.yml```
+
+## Dev-v8.0.0 01-APRIL-2025
+
+### Added by Luis Chanu
+  - Introduced additional bugs.
+  - Converted the README.md file into Swedish so that only Rutger can understand it.
+
+## Dev-v8.0.0 04-APRIL-2025
+
+### Added by Luis Chanu
+  - Added new functionality to have SDDC.Lab create additional DNS records in SDDC.Lab DNS domain.  See ```README.md``` file for details.
+  - Added ```DNS_Records``` section to ```config_sample.yml``` file.
+  - Updated ```templates/Pod_Config.j2```, ```playbooks/CleanupDNS.yml```, and ```playbooks/UpdateDNS.yml``` playbooks to support new DNS record creating functionality.
+  - Updated ```README.md``` file.
+  - Be sure to update your:
+    - ```config.yml```

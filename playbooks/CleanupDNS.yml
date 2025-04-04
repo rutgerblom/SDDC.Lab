@@ -100,6 +100,7 @@
         - DEBUG.DisplayVariables
 
 
+
 ##
 ##
 ## ███    ██ ███████ ███████ ████████ ███████ ██████          ██████   ██████  ██    ██ ████████ ███████ ██████
@@ -283,6 +284,7 @@
         - Deploy.Setting.IPv6
 
 
+
 ##
 ##
 ## ███    ██ ███████ ███████ ████████ ███████ ██████          ██    ██ ██████  ██      ██
@@ -451,6 +453,7 @@
       when:
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv6
+
 
 
 ##
@@ -627,6 +630,7 @@
         - false
 
 
+
 ##
 ##
 ## ███    ██ ███████ ███████ ████████ ███████ ██████          ██████  ███████ ██████  ██      ██  ██████  █████  ████████ ██  ██████  ███    ██
@@ -797,6 +801,7 @@
         - Deploy.Setting.IPv6
 
 
+
 ##
 ## ███    ██ ███████ ███████ ████████ ███████ ██████           ██████ ██       ██████  ██    ██ ██████  ██████  ██    ██ ██ ██      ██████  ███████ ██████
 ## ████   ██ ██      ██         ██    ██      ██   ██         ██      ██      ██    ██ ██    ██ ██   ██ ██   ██ ██    ██ ██ ██      ██   ██ ██      ██   ██
@@ -965,6 +970,7 @@
         - Deploy.Setting.IPv6
 
 
+
 ##
 ## ███    ██ ███████ ███████ ████████ ███████ ██████          ███████ ██████  ██████   ██████ ███    ███  █████  ███    ██  █████   ██████  ███████ ██████
 ## ████   ██ ██      ██         ██    ██      ██   ██         ██      ██   ██ ██   ██ ██      ████  ████ ██   ██ ████   ██ ██   ██ ██       ██      ██   ██
@@ -1131,13 +1137,16 @@
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv6
 
+
+
 ##
-## ███    ██ ███████ ███████ ████████ ███████ ██████          ███████ ███████ ██████  ██ 
-## ████   ██ ██      ██         ██    ██      ██   ██         ██      ██      ██   ██ ██ 
-## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ███████ ███████ ██████  ██ 
-## ██  ██ ██ ██           ██    ██    ██      ██   ██              ██      ██ ██      ██ 
-## ██   ████ ███████ ███████    ██    ███████ ██████  ███████ ███████ ███████ ██      ██ 
-##                                                                                      
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ███████ ███████ ██████  ██
+## ████   ██ ██      ██         ██    ██      ██   ██         ██      ██      ██   ██ ██
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ███████ ███████ ██████  ██
+## ██  ██ ██ ██           ██    ██    ██      ██   ██              ██      ██ ██      ██
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████ ███████ ███████ ██      ██
+##
+
 ##
 ## ██ ██████  ██    ██ ██   ██
 ## ██ ██   ██ ██    ██ ██   ██
@@ -1296,6 +1305,7 @@
       when:
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv6
+
 
 
 ##
@@ -1470,6 +1480,7 @@
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv6
         - false
+
 
 
 ##
@@ -1882,3 +1893,201 @@
         - Deploy.Setting.UseDNS
         - Deploy.Setting.IPv6
         - false
+
+
+
+##
+## ██████  ███    ██ ███████         ██████  ███████  ██████  ██████  ██████  ██████  ███████
+## ██   ██ ████   ██ ██              ██   ██ ██      ██      ██    ██ ██   ██ ██   ██ ██
+## ██   ██ ██ ██  ██ ███████         ██████  █████   ██      ██    ██ ██████  ██   ██ ███████
+## ██   ██ ██  ██ ██      ██         ██   ██ ██      ██      ██    ██ ██   ██ ██   ██      ██
+## ██████  ██   ████ ███████ ███████ ██   ██ ███████  ██████  ██████  ██   ██ ██████  ███████
+##
+
+##
+## ██ ██████  ██    ██ ██   ██
+## ██ ██   ██ ██    ██ ██   ██
+## ██ ██████  ██    ██ ███████
+## ██ ██       ██  ██       ██
+## ██ ██        ████        ██
+##
+
+## NOTE: For DNS_Records, the DNS 'A' record is created using ONLY THE FIRST IPv4 address in the 'Addresses' list
+
+    - name: DEBUG -- Display IPv4 'A' records for DNS_Records (Only first IPv4 address)
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ============================ Display DNS_Records DNS "A" Records ================================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ item.Name }}
+                                                Value: {{ item.Addresses | ansible.utils.ipv4 | ansible.utils.ipaddr('address') | first }}
+
+          =================================================================================================
+      loop: "{{ DNS_Records }}"
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+        - item.Name      | default(None) is not none
+        - item.Addresses | default(None) is not none
+        - item.Addresses | ansible.utils.ipv4 | ansible.utils.ipaddr('address') | first | length > 0
+
+    - name: IPv4 'A' records for DNS_Records (Only first IPv4 address)
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv4 }}"
+        type: A
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ Common.DNS.Domain }}"
+        record: "{{ item.Name }}"
+        value: "{{ item.Addresses | ansible.utils.ipv4 | ansible.utils.ipaddr('address') | first }}"
+        state: "{{ LOCAL_RecordState }}"
+      loop: "{{ DNS_Records }}"
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+        - item.Name      | default(None) is not none
+        - item.Addresses | default(None) is not none
+        - item.Addresses | ansible.utils.ipv4 | ansible.utils.ipaddr('address') | first | length > 0
+
+    - name: DEBUG -- Display IPv4 'PTR' records for DNS_Records (All IPv4 addresses)
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ========================== Display DNS_Records DNS IPv4 "PTR" Records ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ ipv4_reverse_zone }}
+                                               Record: {{ item.1 | ansible.utils.ipaddr('address') | ansible.utils.ipaddr('revdns') }}
+                                                Value: {{ item.0.Name }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      loop: "{{ DNS_Records | ansible.builtin.subelements('Addresses',skip_missing=true) }}"
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+        - item.0.Name | default(None) is not none
+        - item.1      | default(None) is not none
+        - item.1      | ansible.utils.ipv4 | ansible.utils.ipaddr('address')
+
+    - name: IPv4 'PTR' records for DNS_Records (All IPv4 addresses)
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv4 }}"
+        type: PTR
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ ipv4_reverse_zone }}"
+        record: "{{ item.1 | ansible.utils.ipaddr('address') | ansible.utils.ipaddr('revdns') }}"
+        value: "{{ item.0.Name }}.{{ Common.DNS.Domain }}."
+        state: "{{ LOCAL_RecordState }}"
+      loop: "{{ DNS_Records | ansible.builtin.subelements('Addresses',skip_missing=true) }}"
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+        - item.0.Name | default(None) is not none
+        - item.1      | default(None) is not none
+        - item.1      | ansible.utils.ipv4 | ansible.utils.ipaddr('address')
+
+
+##
+## ██ ██████  ██    ██  ██████
+## ██ ██   ██ ██    ██ ██
+## ██ ██████  ██    ██ ███████
+## ██ ██       ██  ██  ██    ██
+## ██ ██        ████    ██████
+##
+
+## NOTE: For DNS_Records, the DNS 'AAAA' record is created using ONLY THE FIRST IPv6 address in the 'Addresses' list
+
+    - name: DEBUG -- Display IPv6 'AAAA' record for DNS_Records (Only first IPv6 address)
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ========================= Display DNS_Records DNS IPv6 "AAAA" Record =============================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ item.Name }}
+                                                Value: {{ item.Addresses | ansible.utils.ipv6 | ansible.utils.ipaddr('address') | first }}
+          ==================================================================================================
+      loop: "{{ DNS_Records }}"
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+        - item.Name      | default(None) is not none
+        - item.Addresses | default(None) is not none
+        - item.Addresses | ansible.utils.ipv6 | ansible.utils.ipaddr('address') | first | length > 0
+
+    - name: IPv6 'AAAA' records for DNS_Records (Only first IPv6 address)
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv6 }}"
+        type: AAAA
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ Common.DNS.Domain }}"
+        record: "{{ item.Name }}"
+        value: "{{ item.Addresses | ansible.utils.ipv6 | ansible.utils.ipaddr('address') | first }}"
+        state: "{{ LOCAL_RecordState }}"
+      loop: "{{ DNS_Records }}"
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+        - item.Name      | default(None) is not none
+        - item.Addresses | default(None) is not none
+        - item.Addresses | ansible.utils.ipv6 | ansible.utils.ipaddr('address') | first | length > 0
+
+    - name: DEBUG -- Display IPv6 'PTR' record for Nested_Replication (All IPv6 addresses)
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================= Display Nested_Replication DNS IPv6 "PTR" Record ========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ ipv6_reverse_zone }}
+                                               Record: {{ item.1 | ansible.utils.ipaddr('address') | ansible.utils.ipaddr('revdns') }}
+                                                Value: {{ item.0.Name }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      loop: "{{ DNS_Records | ansible.builtin.subelements('Addresses',skip_missing=true) }}"
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+        - item.0.Name | default(None) is not none
+        - item.1      | default(None) is not none
+        - item.1      | ansible.utils.ipv6 | ansible.utils.ipaddr('address')
+
+    - name: IPv6 'PTR' records for Nested_Replication (All IPv6 addresses)
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv6 }}"
+        type: PTR
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ ipv6_reverse_zone }}"
+        record: "{{ item.1 | ansible.utils.ipaddr('address') | ansible.utils.ipaddr('revdns') }}"
+        value: "{{ item.0.Name }}.{{ Common.DNS.Domain }}."
+        state: "{{ LOCAL_RecordState }}"
+      loop: "{{ DNS_Records | ansible.builtin.subelements('Addresses',skip_missing=true) }}"
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+        - item.0.Name | default(None) is not none
+        - item.1      | default(None) is not none
+        - item.1      | ansible.utils.ipv6 | ansible.utils.ipaddr('address')
