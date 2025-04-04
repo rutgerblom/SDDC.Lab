@@ -31,6 +31,7 @@
   * [Symbolic Link to 'Latest' VyOS Installation ISO Download](#symbolic-link-to-latest-vyos-installation-iso-download-v8)
   * [SDDC Manager Appliance Deployment](#sddc-manager-appliance-deployment-v8)
   * [Cloud Builder Appliance Deployment](#cloud-builder-appliance-deployment-v8)
+  * [DNS Record Creation](#dns-record-creation-v8)
 * [Known Items](#known-items)
 * [Issues With Various Software Versions](#issues-with-various-software-versions)
 * [More Information](#more-information)
@@ -489,6 +490,9 @@ SDDC.Lab now allows you to deploy an SDDC manager appliance along with a pod.  T
 
 ### Cloud Builder Appliance Deployment (v8)
 SDDC.Lab now allows you to deploy a Cloud Builder appliance along with a pod.  This can be used to create greenfield VCF instances.
+
+### DNS Record Creation (v8)
+SDDC.Lab now allows users to automate the creation of additional DNS A, AAAA, and PTR records as part of a pod deployment.  A new ```DNS_Records``` section was added to the ```config_sample.yml``` file to support this feature.  Both IPv4 and IPv6 are supported.  If multiple IP addresses are listed in the ```Addresses``` list, then the first IPv4 and IPv6 address listed is used to create the IPv4 'A' and IPv6 'AAAA' DNS records, respectively.  DNS 'PTR' records are created for all IP addresses.  When SDDC.Lab pods are removed using the ```Undeploy.yml``` playbook, all DNS records are cleaned up.
 
 ## Known Items
 Here are some known items to be aware of:

@@ -232,6 +232,11 @@ Deploy:
       File:      "{{ Software[Deploy.Software.CloudBuilder.Vendor][Deploy.Software.CloudBuilder.Product]['Installers'][Deploy.Software.CloudBuilder.Version].File }}"
       FileExt:   "{{ Software[Deploy.Software.CloudBuilder.Vendor][Deploy.Software.CloudBuilder.Product]['Installers'][Deploy.Software.CloudBuilder.Version].FileExt }}"
 
+
+DNS_Records:
+  {{ DNS_Records | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+
 Common:
   {{ Common | to_nice_yaml(indent=2, width=99999) | indent(2) }}
 
