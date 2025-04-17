@@ -3137,3 +3137,8 @@
   - Updated ```README.md``` file.
   - Be sure to update your:
     - ```config.yml```
+
+## Dev-v8.0.0 16-APRIL-2025
+
+### Added by Luis Chanu
+  - Corrected issue in ```playbooks/UpdateDNS.yml``` and ```playbooks/CleanupDNS.yml``` playbooks when ```DNS_Records``` only contains IPv4 addresses.
