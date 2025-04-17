@@ -2031,6 +2031,7 @@
         - Deploy.Setting.IPv6
         - item.Name      | default(None) is not none
         - item.Addresses | default(None) is not none
+        - item.Addresses | ansible.utils.ipv6 | ansible.utils.ipaddr('address') | length > 0
         - item.Addresses | ansible.utils.ipv6 | ansible.utils.ipaddr('address') | first | length > 0
 
     - name: IPv6 'AAAA' records for DNS_Records (Only first IPv6 address)
@@ -2048,6 +2049,7 @@
         - Deploy.Setting.IPv6
         - item.Name      | default(None) is not none
         - item.Addresses | default(None) is not none
+        - item.Addresses | ansible.utils.ipv6 | ansible.utils.ipaddr('address') | length > 0
         - item.Addresses | ansible.utils.ipv6 | ansible.utils.ipaddr('address') | first | length > 0
 
     - name: DEBUG -- Display IPv6 'PTR' record for Nested_Replication (All IPv6 addresses)
