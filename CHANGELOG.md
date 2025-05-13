@@ -3142,3 +3142,10 @@
 
 ### Added by Luis Chanu
   - Corrected issue in ```playbooks/UpdateDNS.yml``` and ```playbooks/CleanupDNS.yml``` playbooks when ```DNS_Records``` only contains IPv4 addresses.
+  
+## Dev-v8.0.0 12-MAY-2025
+
+### Added by Aaron Ellis
+  - Added NSX 4.2.2.0, ALB 30.2.3, ALB 31.1.1 to ```software_sample.yml``` (NOT TESTED)
+  - Be sure to update your:
+    - ```software.yml```
