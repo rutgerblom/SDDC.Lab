@@ -49,5 +49,9 @@ esxcli network ip dns server add --server={{ Common.DNS.Server2.IPv4 }}
 esxcli system ntp set --server={{ Common.NTP.Server1.IPv4 }} --server={{ Common.NTP.Server2.IPv4 }}
 esxcli system ntp set --enabled=true
 
+# Change ESX acceptance level to CommunitySupported and install the Nested vSAN ESA Hardware Mock VIB
+esxcli software acceptance set --level CommunitySupported
+esxcli software vib install -v https://github.com/lamw/nested-vsan-esa-mock-hw-vib/releases/download/1.0/nested-vsan-esa-mock-hw.vib
+
 # Reboot ESX host
 reboot
