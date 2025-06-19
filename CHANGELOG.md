@@ -3149,3 +3149,11 @@
   - Added NSX 4.2.2.0, ALB 30.2.3, ALB 31.1.1 to ```software_sample.yml``` (NOT TESTED)
   - Be sure to update your:
     - ```software.yml```
+
+## Dev-v8.0.0 19-JUNE-2025
+
+### Added by Rutger Blom
+  - Added ESX 9.0.0, vCenter 9.0.0, NSX 9.0.0.0 to ```software_sample.yml``` (NOT TESTED)
+  - Be sure to update your:
+    - ```software.yml```
+    - ```templates.yml```
