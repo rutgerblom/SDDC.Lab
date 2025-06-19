@@ -3157,3 +3157,4 @@
   - Be sure to update your:
     - ```software.yml```
     - ```templates.yml```
+  - Added installation of the Nested vSAN ESA Hardware Mock VIB to ```templates/ESXi_v9.x.x_Kickstart.j2```
