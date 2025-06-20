@@ -56,7 +56,7 @@ esxcli software vib install -v https://github.com/lamw/nested-vsan-esa-mock-hw-v
 # Enable resync traffic optimization to prevent health warning triggered by running vSAN ESA with nested ESX (10GbE NICs)
 esxcli system settings advanced set -i 1 -o /VSAN/DOMNetworkSchedulerThrottleComponent
 
-# Generate new ESX TLS certificates
+# Generate new ESX TLS certificates containing the configured ESX hostname. This is required for successful host commissioning in VCF installer
 generate-certificates
 
 # Reboot ESX host
