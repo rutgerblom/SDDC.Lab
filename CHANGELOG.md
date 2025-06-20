@@ -3158,6 +3158,7 @@
     - ```software.yml```
     - ```templates.yml```
   - Added installation of the Nested vSAN ESA Hardware Mock VIB to ```templates/ESXi_v9.x.x_Kickstart.j2```
+  - Added ESX TLS certificate generation to ```templates/ESXi_v9.x.x_Kickstart.j2``` so that the certificate contains the correct ESX hostname. This is required by VCF 9 Installer.
 
 ## Dev-v8.0.0 20-JUNE-2025
 
