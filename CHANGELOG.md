@@ -3158,3 +3158,8 @@
     - ```software.yml```
     - ```templates.yml```
   - Added installation of the Nested vSAN ESA Hardware Mock VIB to ```templates/ESXi_v9.x.x_Kickstart.j2```
+
+## Dev-v8.0.0 20-JUNE-2025
+
+### Added by Rutger Blom
+  - Added esxcli command to ```templates/ESXi_v9.x.x_Kickstart.j2``` to enable vSAN resync traffic optimization. This prevents a health warning from being triggered when running vSAN ESA on ESX with 10GbE NICs.
