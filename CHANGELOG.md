@@ -3170,6 +3170,7 @@
 
 ### Added by Rutger Blom
   - Converted names of VMs and domains to lower case in ```config_sample.yml``` as mixed case DNS records are not handled well by VCF Installer / SDDC Manager
+  - Added new product VCF Installer
   - Be sure to update your:
     - ```config.yml```
-  - Added new product VCF Installer
+    - ```software.yml```
