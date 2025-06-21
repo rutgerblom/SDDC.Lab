@@ -115,7 +115,18 @@
         force: true
         state: absent
       ignore_errors: true
-      
+
+    - name: Remove VCFInstaller VM
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ Nested_VCFInstaller.Component.Appliance.VMName }}"
+        force: true
+        state: absent
+      ignore_errors: true
+
     - name: Remove SSPI VM
       community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
