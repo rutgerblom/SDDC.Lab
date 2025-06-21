@@ -63,6 +63,8 @@ Deploy:
       Deploy: {{ Deploy.Product.CloudBuilder.Deploy }}
     SDDCManager:
       Deploy: {{ Deploy.Product.SDDCManager.Deploy }}
+    VCFInstaller:
+      Deploy: {{ Deploy.Product.VCFInstaller.Deploy }}
     SSPI:
       Deploy: {{ Deploy.Product.SSPI.Deploy }}
     VCFImportTool:
@@ -201,6 +203,16 @@ Deploy:
       Directory: "{{ Software[Deploy.Software.SDDCManager.Vendor][Deploy.Software.SDDCManager.Product]['Installers'][Deploy.Software.SDDCManager.Version]['Location'].Local }}"
       File:      "{{ Software[Deploy.Software.SDDCManager.Vendor][Deploy.Software.SDDCManager.Product]['Installers'][Deploy.Software.SDDCManager.Version].File }}"
       FileExt:   "{{ Software[Deploy.Software.SDDCManager.Vendor][Deploy.Software.SDDCManager.Product]['Installers'][Deploy.Software.SDDCManager.Version].FileExt }}"
+    VCFInstaller:
+      Vendor:    "{{ Deploy.Software.VCFInstaller.Vendor }}"
+      Product:   "{{ Deploy.Software.VCFInstaller.Product }}"
+      Version:   "{{ Deploy.Software.VCFInstaller.Version }}"
+      Patch:     {{ Deploy.Software.VCFInstaller.Patch }}
+      Config:    "{{ Deploy.Software.VCFInstaller.Config }}"
+      Installer: "{{ Deploy.Software.VCFInstaller.Installer }}"
+      Directory: "{{ Software[Deploy.Software.VCFInstaller.Vendor][Deploy.Software.VCFInstaller.Product]['Installers'][Deploy.Software.VCFInstaller.Version]['Location'].Local }}"
+      File:      "{{ Software[Deploy.Software.VCFInstaller.Vendor][Deploy.Software.VCFInstaller.Product]['Installers'][Deploy.Software.VCFInstaller.Version].File }}"
+      FileExt:   "{{ Software[Deploy.Software.VCFInstaller.Vendor][Deploy.Software.VCFInstaller.Product]['Installers'][Deploy.Software.VCFInstaller.Version].FileExt }}"
     SSPI:
       Vendor:    "{{ Deploy.Software.SSPI.Vendor }}"
       Product:   "{{ Deploy.Software.SSPI.Product }}"
@@ -271,6 +283,11 @@ Nested_CloudBuilder:
 
 Nested_SDDCManager:
   {{ Nested_SDDCManager | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
+
+Nested_VCFInstaller:
+  {{ Nested_VCFInstaller | to_nice_yaml(indent=2, width=99999) | indent(2) }}
+
 
 Nested_SSPI:
   {{ Nested_SSPI | to_nice_yaml(indent=2, width=99999) | indent(2) }}
