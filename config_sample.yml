@@ -78,6 +78,8 @@ Deploy:
       Deploy: false                                       # Cloud Builder - Deploy a Cloud Builder Appliance to the pod (usually only for the first pod or standalone, look for DeployESXiOnly to build out new VCF instances).
     SDDCManager:
       Deploy: false                                       # SDDC Manager - Deploy a SDDC Manager Appliance to the pod (usually only for the first pod or standalone, look for DeployESXiOnly to build out new WLDs).
+    VCFInstaller:
+      Deploy: false                                       # VCF Installer - Deploy a VCF Installer Appliance to the pod (usually only for the first pod or standalone, look for DeployESXiOnly to build out new WLDs).
     SSPI:
       Deploy: false                                       # SSPI Appliance - Deploy a SSPI Appliance to the pod to be consumed with NSX-T 4.2+.
     VCFImportTool:
@@ -176,6 +178,13 @@ Deploy:
       Patch:   false
       Config:  "{{ SiteCode }}-SDDCManager"
       Installer: "{{ SiteCode }}-SDDCManager"
+    VCFInstaller:                                         # Label used for selection of which template to use during deployment (templates.yml)
+      Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
+      Product: VCFInstaller                               # Indicates software product you want to deploy from the software repository (software.yml)
+      Version: '9.0.0'                                    # Indicates which software version you want to deploy from the software repository (software.yml)
+      Patch:   false
+      Config:  "{{ SiteCode }}-VCFInstaller"
+      Installer: "{{ SiteCode }}-VCFInstaller"
     SSPI:                                                 # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: SSPI                                       # Indicates software product you want to deploy from the software repository (software.yml)
@@ -947,6 +956,48 @@ Nested_SDDCManager:
           Gateway: "{{ Net.Management.IPv4.Network }}.1"
         IPv6:
           Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(26) }}"
+          Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+
+
+
+
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ██    ██  ██████ ███████ ██ ███    ██ ███████ ████████  █████  ██      ██      ███████ ██████  
+## ████   ██ ██      ██         ██    ██      ██   ██         ██    ██ ██      ██      ██ ████   ██ ██         ██    ██   ██ ██      ██      ██      ██   ██ 
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██    ██ ██      █████   ██ ██ ██  ██ ███████    ██    ███████ ██      ██      █████   ██████  
+## ██  ██ ██ ██           ██    ██    ██      ██   ██          ██  ██  ██      ██      ██ ██  ██ ██      ██    ██    ██   ██ ██      ██      ██      ██   ██ 
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████   ████    ██████ ██      ██ ██   ████ ███████    ██    ██   ██ ███████ ███████ ███████ ██   ██ 
+##
+
+Nested_VCFInstaller:
+  Credential:
+    root:
+      Name: root
+      Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+    admin:
+      Name: admin
+      Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+    local:
+      Name: local
+      Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+    backup:
+      Name: backup
+      Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+    vcf:
+      Name: vcf
+      Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+  Component:
+    Appliance:
+      VMName: "{{ SiteCode }}-vcfinstaller"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-vcfinstaller.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.29{% endif %}"
+      FIPSEnable: false
+      Address:
+        IPv4:
+          Address: "{{ Net.Management.IPv4.Network }}.29"
+          Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+          Gateway: "{{ Net.Management.IPv4.Network }}.1"
+        IPv6:
+          Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(29) }}"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
 
 
