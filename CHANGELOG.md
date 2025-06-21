@@ -3165,3 +3165,10 @@
 ### Added by Rutger Blom
   - Added esxcli command to ```templates/ESXi_v9.x.x_Kickstart.j2``` to enable vSAN resync traffic optimization. This prevents a health warning from being triggered when running vSAN ESA on ESX with 10GbE NICs.
   - Set the vSwitch version to 9.0.0 for ESX 9.0.0 in ```software_sample.yml```
+
+## Dev-v8.0.0 20-JUNE-2025
+
+### Added by Rutger Blom
+  - Converted names of VMs and domains to lower case in ```config_sample.yml``` as mixed case DNS records are not handled well by VCF Installer / SDDC Manager
+  - Be sure to update your:
+    - ```config.yml```
