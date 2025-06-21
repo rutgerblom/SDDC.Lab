@@ -259,59 +259,60 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 
 | IPv4 Address | Component | Description | DNS Name | Part of Default Deployment |
 |--------------|-----------|-------------|----------|----------------------------|
-| 1 | Gateway | VyOS Router | Pod-240-Router | Yes |
+| 1 | Gateway | VyOS Router | pod-240-router | Yes |
 | 2 | Reserved | Reserved for Future Use | | |
 | 3 | Reserved | Reserved for Future Use | | |
 | 4 | Reserved | Reserved for Future Use | | |
-| 5 | vCenter Server | vCenter Server Appliance | Pod-240-vCenter | Yes |
+| 5 | vCenter Server | vCenter Server Appliance | pod-240-vcenter | Yes |
 | 6 | Reserved | Reserved for Future Use  | | |
-| 7 | GM VIP | NSX-T Global Manager VIP | Pod-240-NSXT-GM | Only if deploying NSX-T Federation |
-| 8 | GM-1 | NSX-T Global Manager Node 1 | Pod-240-NSXT-GM-1 | Only if deploying NSX-T Federation |
-| 9 | GM-2 | NSX-T Global Manager Node 2 | Pod-240-NSXT-GM-2 | No |
-| 10 | GM-3 | NSX-T Global Manager Node 3 | Pod-240-NSXT-GM-3 | No |
-| 11 | LM VIP | NSX-T Local Manager VIP | Pod-240-NSXT-LM | Yes |
-| 12 | LM-1 | NSX-T Local Manager Node 1 | Pod-240-NSXT-LM-1 | Yes |
-| 13 | LM-2 | NSX-T Local Manager Node 2 | Pod-240-NSXT-LM-2 | No |
-| 14 | LM-3 | NSX-T Local Manager Node 3 | Pod-240-NSXT-LM-3 | No |
-| 15 | ALB VIP | NSX-T Advanced Load Balancer (ALB) Controller VIP | Pod-240-ALB-Controller | No |
-| 16 | ALB Controller-1 | NSX Advanced Load Balancer (ALB) Controller 1 | Pod-240-ALB-Controller-1 | No |
-| 17 | ALB Controller-2 | NSX Advanced Load Balancer (ALB) Controller 2 | Pod-240-ALB-Controller-2 | No |
-| 18 | ALB Controller-3 | NSX Advanced Load Balancer (ALB) Controller 3 | Pod-240-ALB-Controller-3 | No |
-| 19 | vRLI VIP | Aria Operations for Logs Cluster VIP | Pod-240-vRLI | Yes |
-| 20 | vRLI-1 | Aria Operations for Logs Appliance Node 1 | Pod-240-vRLI-1 | Yes |
-| 21 | vRLI-2 | Aria Operations for Logs Appliance Node 2 | Pod-240-vRLI-2 | No |
-| 22 | vRLI-3 | Aria Operations for Logs Appliance Node 3 | Pod-240-vRLI-3 | No |
-| 23 | vRNI Platform | vRealize Network Insight Platform Appliance | Pod-240-vRNI | No |
-| 24 | vRNI Collector | vRealize Network Insight Collector Node | Pod-240-vRNI-Collector | No |
-| 25 | vSphere Replication | vSphere Replication Appliance | Pod-240-Replication | No |
-| 26 | SDDC Manager | SDDC Manager Appliance | Pod-240-SDDCManager | No |
-| 27 | Cloud Builder | Cloud Builder Appliance | Pod-240-CloudBuilder | No |
-| 28 | SSPI Appliance | Security Services Platform Installer Appliance | Pod-240-SSPI | No |
+| 7 | GM VIP | NSX-T Global Manager VIP | pod-240-nsxt-gm | Only if deploying NSX-T Federation |
+| 8 | GM-1 | NSX-T Global Manager Node 1 | pod-240-nsxt-gm-1 | Only if deploying NSX-T Federation |
+| 9 | GM-2 | NSX-T Global Manager Node 2 | pod-240-nsxt-gm-2 | No |
+| 10 | GM-3 | NSX-T Global Manager Node 3 | pod-240-nsxt-gm-3 | No |
+| 11 | LM VIP | NSX-T Local Manager VIP | pod-240-nsxt-lm | Yes |
+| 12 | LM-1 | NSX-T Local Manager Node 1 | pod-240-nsxt-lm-1 | Yes |
+| 13 | LM-2 | NSX-T Local Manager Node 2 | pod-240-nsxt-lm-2 | No |
+| 14 | LM-3 | NSX-T Local Manager Node 3 | pod-240-nsxt-lm-3 | No |
+| 15 | ALB VIP | NSX-T Advanced Load Balancer (ALB) Controller VIP | pod-240-alb-controller | No |
+| 16 | ALB Controller-1 | NSX Advanced Load Balancer (ALB) Controller 1 | pod-240-alb-controller-1 | No |
+| 17 | ALB Controller-2 | NSX Advanced Load Balancer (ALB) Controller 2 | pod-240-alb-controller-2 | No |
+| 18 | ALB Controller-3 | NSX Advanced Load Balancer (ALB) Controller 3 | pod-240-alb-controller-3 | No |
+| 19 | vRLI VIP | Aria Operations for Logs Cluster VIP | pod-240-vRLI | Yes |
+| 20 | vRLI-1 | Aria Operations for Logs Appliance Node 1 | pod-240-vrli-1 | Yes |
+| 21 | vRLI-2 | Aria Operations for Logs Appliance Node 2 | pod-240-vrli-2 | No |
+| 22 | vRLI-3 | Aria Operations for Logs Appliance Node 3 | pod-240-vrli-3 | No |
+| 23 | vRNI Platform | vRealize Network Insight Platform Appliance | pod-240-vrni | No |
+| 24 | vRNI Collector | vRealize Network Insight Collector Node | pod-240-vrni-collector | No |
+| 25 | vSphere Replication | vSphere Replication Appliance | pod-240-replication | No |
+| 26 | SDDC Manager | SDDC Manager Appliance | pod-240-sddcmanager | No |
+| 27 | Cloud Builder | Cloud Builder Appliance | pod-240-cloudbuilder | No |
+| 28 | SSPI Appliance | Security Services Platform Installer Appliance | pod-240-sspi | No |
+| 29 | VCF Installer | VCF Installer Appliance | pod-240-vcfinstaller | No |
 | Thru 89 | Reserved | Reserved for Future Management VMs/Services | | |
 | 90 | Reserved | User Deployed 3rd Party Appliances | | |
 | Thru 100 | Reserved | User Deployed 3rd Party Appliances | | |
-| 101 | Mgmt-1 | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-1 | No |
-| 102 | Mgmt-2 | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-2 | No |
-| 103 | Mgmt-3 | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-3 | No |
-| 104-109 | Mgmt-*X* | Nested ESXi Host in vSphere Management Cluster | Pod-240-Mgmt-*X* | No |
-| 111 | ComputeA-1 | Nested ESXi Host in vSphere ComputeA Cluster | Pod-240-ComputeA-1 | Yes |
-| 112 | ComputeA-2 | Nested ESXi Host in vSphere ComputeA Cluster | Pod-240-ComputeA-2 | Yes |
-| 113 | ComputeA-3 | Nested ESXi Host in vSphere ComputeA Cluster | Pod-240-ComputeA-3 | Yes |
-| 114-119 | ComputeA-*X* | Nested ESXi Host in vSphere ComputeA Cluster | Pod-240-ComputeA-*X* | No |
-| 121 | ComputeB-1 | Nested ESXi Host in vSphere ComputeB Cluster | Pod-240-ComputeB-1 | No |
-| 122 | ComputeB-2 | Nested ESXi Host in vSphere ComputeB Cluster | Pod-240-ComputeB-2 | No |
-| 123 | ComputeB-3 | Nested ESXi Host in vSphere ComputeB Cluster | Pod-240-ComputeB-3 | No |
-| 124-129 | ComputeB-*X* | Nested ESXi Host in vSphere ComputeB Cluster | Pod-240-ComputeB-*X* | No |
+| 101 | Mgmt-1 | Nested ESXi Host in vSphere Management Cluster | pod-240-mgmt-1 | No |
+| 102 | Mgmt-2 | Nested ESXi Host in vSphere Management Cluster | pod-240-mgmt-2 | No |
+| 103 | Mgmt-3 | Nested ESXi Host in vSphere Management Cluster | pod-240-mgmt-3 | No |
+| 104-109 | Mgmt-*X* | Nested ESXi Host in vSphere Management Cluster | pod-240-mgmt-*X* | No |
+| 111 | ComputeA-1 | Nested ESXi Host in vSphere ComputeA Cluster | pod-240-computea-1 | Yes |
+| 112 | ComputeA-2 | Nested ESXi Host in vSphere ComputeA Cluster | pod-240-computea-2 | Yes |
+| 113 | ComputeA-3 | Nested ESXi Host in vSphere ComputeA Cluster | pod-240-computea-3 | Yes |
+| 114-119 | ComputeA-*X* | Nested ESXi Host in vSphere ComputeA Cluster | pod-240-computea-*X* | No |
+| 121 | ComputeB-1 | Nested ESXi Host in vSphere ComputeB Cluster | pod-240-computeb-1 | No |
+| 122 | ComputeB-2 | Nested ESXi Host in vSphere ComputeB Cluster | pod-240-computeb-2 | No |
+| 123 | ComputeB-3 | Nested ESXi Host in vSphere ComputeB Cluster | pod-240-computeb-3 | No |
+| 124-129 | ComputeB-*X* | Nested ESXi Host in vSphere ComputeB Cluster | pod-240-computeb-*X* | No |
 | 131-139 | Reserved  | Future vSphere Cluster | | |
 | 141-149 | Reserved  | Future vSphere Cluster | | |
 | 151-159 | Reserved  | Future vSphere Cluster | | |
 | 161-169 | Reserved  | Future vSphere Cluster | | |
 | 171-179 | Reserved  | Future vSphere Cluster | | |
 | 181-189 | Reserved  | Future vSphere Cluster | | |
-| 191 | Edge-1 | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-1 | Yes |
-| 192 | Edge-2 | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-2 | Yes |
-| 193 | Edge-3 | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-3 | Yes |
-| 194-199 | Edge-*X* | Nested ESXi Host in vSphere Edge Cluster | Pod-240-Edge-*X* | No |
+| 191 | Edge-1 | Nested ESXi Host in vSphere Edge Cluster | pod-240-edge-1 | Yes |
+| 192 | Edge-2 | Nested ESXi Host in vSphere Edge Cluster | pod-240-edge-2 | Yes |
+| 193 | Edge-3 | Nested ESXi Host in vSphere Edge Cluster | pod-240-edge-3 | Yes |
+| 194-199 | Edge-*X* | Nested ESXi Host in vSphere Edge Cluster | pod-240-edge-*X* | No |
 | 201-205 | Reserved | Tanzu Supervisor Cluster Control Plane (Management) | | No |
 | 206-210 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeA) | | No |
 | 211-215 | Reserved | Tanzu Supervisor Cluster Control Plane (ComputeB)|  | No |
@@ -332,8 +333,8 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 250 | Reserved  | NSX-T Edge Transport Node  | | No |
 | 251 | Reserved  | NSX-T Edge Transport Node  | | No |
 | 252 | Reserved  | NSX-T Edge Transport Node  | | No |
-| 253 | EdgeVM-02 | NSX-T Tier-0 Edge Transport Node 2 | Pod-240-T0-EdgeVM-02 | Yes |
-| 254 | EdgeVM-01 | NSX-T Tier-0 Edge Transport Node 1 | Pod-240-T0-EdgeVM-01 | Yes |
+| 253 | EdgeVM-02 | NSX-T Tier-0 Edge Transport Node 2 | pod-240-t0-edgevm-02 | Yes |
+| 254 | EdgeVM-01 | NSX-T Tier-0 Edge Transport Node 1 | pod-240-t0-edgevm-01 | Yes |
 
 ### Overlay Network
 When a Pod is deployed, the IP space for the NSX overlay is derived from the settings located under ```Pod.BaseOverlay``` in the Pod configuration file.
