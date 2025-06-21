@@ -22,7 +22,7 @@ DEBUG:
 ## ███████ ██    ██    ███████  ██████  ██████  ██████  ███████
 ##
 
-SiteCode: "Pod-{{ '%03d'|format(Pod.Number|int) }}"       # SiteCode defaults to 'Pod-###'.  This should NOT include the trailing '-', and can be changed, if needed, to represent a textual SiteCode like SFO or NYC.
+SiteCode: "pod-{{ '%03d'|format(Pod.Number|int) }}"       # SiteCode defaults to 'Pod-###'.  This should NOT include the trailing '-', and can be changed, if needed, to represent a textual SiteCode like SFO or NYC.
 
 
 
@@ -241,7 +241,7 @@ Common:
   DHCP:
     LeaseTime: 3600                                                           # DHCP Lease Time (in seconds) for Overlay Segments
   DNS:
-    Domain: SDDC.Lab                                                          # Domain - Default DNS Domain used by all nested components.
+    Domain: sddc.lab                                                          # Domain - Default DNS Domain used by all nested components.
     Forwarder:
       IPv4: 8.8.8.8                                                           # Forwarder - Default DNS forwarding address used by nested routers.
       IPv6: 2001:4860:4860::8888                                              # Forwarderv6 - Default DNS IPv6 forwarding address used by nested routers.  
@@ -542,7 +542,7 @@ Net:
 ##
 
 Nested_Router:
-  Name: "{{ SiteCode }}-Router"
+  Name: "{{ SiteCode }}-router"
   UserConfig:                                                         # Optional user specific Pod-Router configuration commands to send to router after SDDC.Lab configuration
     Directory: "~"                                                    # Must specify either '~' for home directory, a '.' for current directory, or an absolute directory path (without a '/' at the end)
     Template: "{{ SiteCode }}-Router-UserConfig.j2"                   # Filename where users place their Pod-Router configuration commands.  For VyOS, these should be 'SET' or 'DELETE' commands.  There is no syntax or command checking performed, so it is up to the user to ensure the commands are correct.
@@ -734,8 +734,8 @@ Nested_vRLI:
         ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"   # Reserve guest VM memory.  Valid options are 'false', 'true', or inherit from 'Common'.
   Component:
     Cluster_VIP:
-      VMName: "{{ SiteCode }}-vRLI"
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-vRLI.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.19{% endif %}"
+      VMName: "{{ SiteCode }}-vrli"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-vrli.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.19{% endif %}"
       Address:
         IPv4:
           Address: "{{ Net.Management.IPv4.Network }}.19"
@@ -745,8 +745,8 @@ Nested_vRLI:
           Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(19) }}"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     Node:
-      VMName: "{{ SiteCode }}-vRLI-1"
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-vRLI-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.20{% endif %}"
+      VMName: "{{ SiteCode }}-vrli-1"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-vrli-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.20{% endif %}"
       Deployment:
         Size: small
         EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -794,8 +794,8 @@ Nested_ALB:
         ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"   # Reserve guest VM memory.  Valid options are 'false', 'true', or inherit from 'Common'.
   Component:
     Controller_VIP:
-      VMName: "{{ SiteCode }}-ALB-Controller"
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ALB-Controller.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.15{% endif %}"
+      VMName: "{{ SiteCode }}-alb-controller"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-alb-controller.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.15{% endif %}"
       Address:
         IPv4:
           Address: "{{ Net.Management.IPv4.Network }}.15"
@@ -805,8 +805,8 @@ Nested_ALB:
           Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(15) }}"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     Controller:
-      VMName: "{{ SiteCode }}-ALB-Controller-1"
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ALB-Controller-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.16{% endif %}"
+      VMName: "{{ SiteCode }}-alb-controller-1"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-alb-controller-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.16{% endif %}"
       Deployment:
         EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
         AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -830,7 +830,7 @@ Nested_ALB:
             BasicSetting:
               MemoryReserve: false
             AdvancedSetting:
-              ServiceEngineNamePrefix: ALB-SE               # The name prefix for the Service Engine VMs
+              ServiceEngineNamePrefix: alb-se               # The name prefix for the Service Engine VMs
               ServiceEngineFolder: ALB Service Engines      # The nested VM Folder in which the Service Engine VMs will be deployed
               Cluster: ComputeA                             # The nested vSphere Cluster in which the Service Engine VMs will be deployed
 
@@ -859,8 +859,8 @@ Nested_Replication:
     ClockToleranceSeconds: 3                                # Maximum time tolerance between vSphere Replication and vCenter Server.  Default is 3 seconds.
   Component:
     Appliance:
-      VMName: "{{ SiteCode }}-Replication-Appliance"
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Replication-Appliance.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.25{% endif %}"
+      VMName: "{{ SiteCode }}-replication-appliance"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-replication-appliance.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.25{% endif %}"
       Deployment:
         EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
         AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -895,8 +895,8 @@ Nested_CloudBuilder:
       Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
   Component:
     Appliance:
-      VMName: "{{ SiteCode }}-CloudBuilder"
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-CloudBuilder.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.27{% endif %}"
+      VMName: "{{ SiteCode }}-cloudbuilder"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-cloudbuilder.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.27{% endif %}"
       FIPSEnable: false
       Address:
         IPv4:
@@ -937,8 +937,8 @@ Nested_SDDCManager:
       Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
   Component:
     Appliance:
-      VMName: "{{ SiteCode }}-SDDCManager"
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-SDDCManager.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.26{% endif %}"
+      VMName: "{{ SiteCode }}-sddcmanager"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-sddcmanager.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.26{% endif %}"
       FIPSEnable: false
       Address:
         IPv4:
@@ -973,8 +973,8 @@ Nested_SSPI:
  
   Component:
     Appliance:
-      VMName: "{{ SiteCode }}-SSPI"
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-SSPI.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.28{% endif %}"
+      VMName: "{{ SiteCode }}-sspi"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-sspi.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.28{% endif %}"
       FIPSEnable: false
       Address:
         IPv4:
@@ -1012,9 +1012,9 @@ Execute_VCFImportTool:
 ##
 
 Nested_DNSServer:
-  FQDN: "DNS.{{ Common.DNS.Domain }}"
+  FQDN: "dns.{{ Common.DNS.Domain }}"
   VM:
-    VMName: SDDC-Lab-DNS
+    VMName: sddc-lab-dns
     HardwareSettings:
       Version: 13
       CPU: 1
@@ -1271,8 +1271,8 @@ Nested_ESXi:
   Host:
     Mgmt1:
       Cluster: Management
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Mgmt-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.101{% endif %}"
-      VMName: "{{ SiteCode }}-Mgmt-1"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-mgmt-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.101{% endif %}"
+      VMName: "{{ SiteCode }}-mgmt-1"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -1336,8 +1336,8 @@ Nested_ESXi:
 
     Mgmt2:
       Cluster: Management
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Mgmt-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.102{% endif %}"
-      VMName: "{{ SiteCode }}-Mgmt-2"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-mgmt-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.102{% endif %}"
+      VMName: "{{ SiteCode }}-mgmt-2"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -1401,8 +1401,8 @@ Nested_ESXi:
 
     Mgmt3:
       Cluster: Management
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Mgmt-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.103{% endif %}"
-      VMName: "{{ SiteCode }}-Mgmt-3"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-mgmt-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.103{% endif %}"
+      VMName: "{{ SiteCode }}-mgmt-3"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -1466,8 +1466,8 @@ Nested_ESXi:
 
     ComputeA1:
       Cluster: ComputeA
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeA-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.111{% endif %}"
-      VMName: "{{ SiteCode }}-ComputeA-1"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-computea-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.111{% endif %}"
+      VMName: "{{ SiteCode }}-computea-1"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -1531,8 +1531,8 @@ Nested_ESXi:
 
     ComputeA2:
       Cluster: ComputeA
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeA-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.112{% endif %}"
-      VMName: "{{ SiteCode }}-ComputeA-2"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-computea-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.112{% endif %}"
+      VMName: "{{ SiteCode }}-computea-2"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -1596,8 +1596,8 @@ Nested_ESXi:
 
     ComputeA3:
       Cluster: ComputeA
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeA-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.113{% endif %}"
-      VMName: "{{ SiteCode }}-ComputeA-3"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-computea-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.113{% endif %}"
+      VMName: "{{ SiteCode }}-computea-3"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -1661,8 +1661,8 @@ Nested_ESXi:
 
     ComputeB1:
       Cluster: ComputeB
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeB-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.121{% endif %}"
-      VMName: "{{ SiteCode }}-ComputeB-1"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-computeb-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.121{% endif %}"
+      VMName: "{{ SiteCode }}-computeb-1"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -1726,8 +1726,8 @@ Nested_ESXi:
 
     ComputeB2:
       Cluster: ComputeB
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeB-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.122{% endif %}"
-      VMName: "{{ SiteCode }}-ComputeB-2"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-computeb-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.122{% endif %}"
+      VMName: "{{ SiteCode }}-computeb-2"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -1791,8 +1791,8 @@ Nested_ESXi:
 
     ComputeB3:
       Cluster: ComputeB
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-ComputeB-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.123{% endif %}"
-      VMName: "{{ SiteCode }}-ComputeB-3"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-computeb-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.123{% endif %}"
+      VMName: "{{ SiteCode }}-computeb-3"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -1856,8 +1856,8 @@ Nested_ESXi:
 
     Edge1:
       Cluster: Edge
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Edge-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.191{% endif %}"
-      VMName: "{{ SiteCode }}-Edge-1"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-adge-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.191{% endif %}"
+      VMName: "{{ SiteCode }}-edge-1"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -1921,8 +1921,8 @@ Nested_ESXi:
 
     Edge2:
       Cluster: Edge
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Edge-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.192{% endif %}"
-      VMName: "{{ SiteCode }}-Edge-2"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-edge-2.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.192{% endif %}"
+      VMName: "{{ SiteCode }}-edge-2"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -1986,8 +1986,8 @@ Nested_ESXi:
 
     Edge3:
       Cluster: Edge
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-Edge-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.193{% endif %}"
-      VMName: "{{ SiteCode }}-Edge-3"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-edge-3.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.193{% endif %}"
+      VMName: "{{ SiteCode }}-edge-3"
       User: root
       Password: "{{ Common.Password.Nested }}"
       EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -2071,8 +2071,8 @@ Nested_vCenter:
   User: administrator@vsphere.local
   Password: "{{ Common.Password.Nested }}"
   DeploymentSize: small
-  VMName: "{{ SiteCode }}-vCenter"
-  FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-vCenter.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.5{% endif %}"
+  VMName: "{{ SiteCode }}-vcenter"
+  FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-vcenter.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.5{% endif %}"
   Address:
     IPv4:
       Address: "{{ Net.Management.IPv4.Network }}.5"
@@ -2320,8 +2320,8 @@ Nested_NSXT:
         ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"   # Reserve guest VM memory.  Valid options are 'false', 'true', or inherit from 'Common'.
   Component:
     GlobalManager_VIP:
-      VMName: "{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-NSXT-GM"
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-NSXT-GM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.7{% endif %}"
+      VMName: "{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-nsxt-gm"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-nsxt-gm.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.7{% endif %}"
       Address:
         IPv4:
           Address: "{{ Net.Management.IPv4.Network }}.7"
@@ -2331,8 +2331,8 @@ Nested_NSXT:
           Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(7) }}"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     GlobalManager:
-      VMName: "{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-NSXT-GM-1"
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-NSXT-GM-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.8{% endif %}"
+      VMName: "{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-nsxt-gm-1"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ Deploy.Product.NSXT.GlobalManager.SiteCode }}-nsxt-gm-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.8{% endif %}"
       Deployment:
         Size: medium                                                                   # Valid size options are 'small', 'medium', 'large', or 'xlarge'
         Role: NSX Global Manager
@@ -2347,8 +2347,8 @@ Nested_NSXT:
           Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(8) }}"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     LocalManager_VIP:
-      VMName: "{{ SiteCode }}-NSXT-LM"
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-NSXT-LM.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.11{% endif %}"
+      VMName: "{{ SiteCode }}-nsxt-lm"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-nsxt-lm.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.11{% endif %}"
       Address:
         IPv4:
           Address: "{{ Net.Management.IPv4.Network }}.11"
@@ -2358,8 +2358,8 @@ Nested_NSXT:
           Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(11) }}"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
     LocalManager:
-      VMName: "{{ SiteCode }}-NSXT-LM-1"
-      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-NSXT-LM-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.12{% endif %}"
+      VMName: "{{ SiteCode }}-nsxt-lm-1"
+      FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-nsxt-lm-1.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.12{% endif %}"
       Deployment:
         Size: medium                                                                   # Valid size options are 'small', 'medium', 'large', or 'xlarge'
         Role: NSX Manager
@@ -2922,7 +2922,7 @@ Nested_NSXT:
       Nodes:
         vSphereEdgeCluster: Edge                                                                # vSphere cluster where NSX-T Edge Transport Nodes are deployed (If changed, update datastore on ETNs)
         EdgeTransportNodes:
-          - Name: "{{ SiteCode }}-T0-EdgeVM-01"
+          - Name: "{{ SiteCode }}-t0-edgevm-01"
             Description: Tier-0 Edge Transport Node
             HostSwitches:
               - Name: NVDS-1
@@ -2941,7 +2941,7 @@ Nested_NSXT:
                   - NSXUplinkName: uplink-2
                     DeviceName: fp-eth1
             Deployment:
-              VMName: "{{ SiteCode }}-T0-EdgeVM-01"
+              VMName: "{{ SiteCode }}-t0-edgevm-01"
               FormFactor: MEDIUM                                                                # Valid form factor options are 'SMALL', 'MEDIUM', 'LARGE', 'XLARGE'
               EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
               AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -2959,7 +2959,7 @@ Nested_NSXT:
               ManagementIPAddress: "{{ Net.Management.IPv4.Network }}.254"
               ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
-              Hostname: "{{ SiteCode }}-T0-EdgeVM-01.{{ Common.DNS.Domain }}" 
+              Hostname: "{{ SiteCode }}-t0-edgevm-01.{{ Common.DNS.Domain }}" 
               Datastore: "{{ Nested_Cluster.Edge.vsanDatastore }}"
               Reservations:
                 CPU:
@@ -2970,7 +2970,7 @@ Nested_NSXT:
             Tags:
               - Tag: Auto-Created
                 Scope: SDDC.Lab
-          - Name: "{{ SiteCode }}-T0-EdgeVM-02"
+          - Name: "{{ SiteCode }}-t0-edgevm-02"
             Description: Tier-0 Edge Transport Node
             HostSwitches:
               - Name: NVDS-1
@@ -2989,7 +2989,7 @@ Nested_NSXT:
                   - NSXUplinkName: uplink-2
                     DeviceName: fp-eth1
             Deployment:
-              VMName: "{{ SiteCode }}-T0-EdgeVM-02"
+              VMName: "{{ SiteCode }}-t0-edgevm-02"
               FormFactor: MEDIUM                                                                # Valid form factor options are 'SMALL', 'MEDIUM', 'LARGE', 'XLARGE'
               EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
               AllowRootSSH: "{{ Deploy.Setting.EnableSSH }}"
@@ -3007,7 +3007,7 @@ Nested_NSXT:
               ManagementIPAddress: "{{ Net.Management.IPv4.Network }}.253"
               ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
-              Hostname: "{{ SiteCode }}-T0-EdgeVM-02.{{ Common.DNS.Domain }}" 
+              Hostname: "{{ SiteCode }}-t0-edgevm-02.{{ Common.DNS.Domain }}" 
               Datastore: "{{ Nested_Cluster.Edge.vsanDatastore }}"
               Reservations:
                 CPU:
@@ -3025,8 +3025,8 @@ Nested_NSXT:
             ClusterProfiles:
               - nsx-default-edge-high-availability-profile
             Members:
-              - "{{ SiteCode }}-T0-EdgeVM-01"
-              - "{{ SiteCode }}-T0-EdgeVM-02"
+              - "{{ SiteCode }}-t0-rdgevm-01"
+              - "{{ SiteCode }}-t0-edgevm-02"
             Tags:
               - Tag: Auto-Created
                 Scope: SDDC.Lab
@@ -3060,7 +3060,7 @@ Nested_NSXT:
 ## all of the VM/OVF Templates in the Content Library of the Physical vCenter Server.
 ##
 WorkloadVMs:
-  - VMName: TinyVM-1_SEG-Web                                                            # VM Name of the GuestVM being created
+  - VMName: tinyvm-1_seg-web                                                            # VM Name of the GuestVM being created
     ContentLibrary: "{{ Nested_vCenter.ContentLibrary.WorkloadVMs.Name }}"              # Content Library Name where template is located
     Template:
       Type: OVF_TEMPLATE                                                                # Valid options: OVF_TEMPLATE or VM_TEMPLATE
@@ -3086,7 +3086,7 @@ WorkloadVMs:
             Scope: SDDC.Lab
           - Tag: TinyVM
             Scope: Demo
-  - VMName: TinyVM-2_SEG-Web                                                            # VM Name of the GuestVM being created
+  - VMName: tinyvm-2_seg-web                                                            # VM Name of the GuestVM being created
     ContentLibrary: "{{ Nested_vCenter.ContentLibrary.WorkloadVMs.Name }}"              # Content Library Name where template is located
     Template:
       Type: OVF_TEMPLATE                                                                # Valid options: OVF_TEMPLATE or VM_TEMPLATE
@@ -3112,7 +3112,7 @@ WorkloadVMs:
             Scope: SDDC.Lab
           - Tag: TinyVM
             Scope: Demo
-  - VMName: TinyVM-3_SEG-Web                                                            # VM Name of the GuestVM being created
+  - VMName: tinyvm-3_seg-web                                                            # VM Name of the GuestVM being created
     ContentLibrary: "{{ Nested_vCenter.ContentLibrary.WorkloadVMs.Name }}"              # Content Library Name where template is located
     Template:
       Type: OVF_TEMPLATE                                                                # Valid options: OVF_TEMPLATE or VM_TEMPLATE
