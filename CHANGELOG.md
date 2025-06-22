@@ -3174,3 +3174,14 @@
   - Be sure to update your:
     - ```config.yml```
     - ```software.yml```
+
+## Dev-v8.0.0 22-JUNE-2025
+
+### Added by Rutger Blom
+  - Added a new playbook ```playbooks/ConfigureVCFInstaller.yml``` that for now only contains (working) tasks that configure a online depot in VCF Installer. This playbook is still work-in-progress and more tasks may be added.
+  - Added ```playbooks/DeployVCFInstaller.yml```and ```playbooks/ConfigureVCFInstaller.yml``` to ```Deploy.yml```.
+  - Added a validation task for VCF Installer to ```playbooks/ValidateConfiguration.yml```.
+  - Added a new field ```DownloadToken``` to the VCF Installer dictionary in ```software_sample.yml``` and ```templates/Pod_Config.j2```.
+  - Made several smaller updates/fixes to texts.
+  - Be sure to update your:
+    - ```software.yml```
