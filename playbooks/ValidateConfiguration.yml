@@ -991,12 +991,51 @@
         - sddcmanager_installer.stat.isreg is not defined or not sddcmanager_installer.stat.isreg
         - not Deploy.Setting.DeployESXiOnly
 
-    - name: Set flag if issue found locating vRLI installer file
+    - name: Set flag if issue found locating SDDC Manager installer file
       ansible.builtin.set_fact:
         issuefound: true
       when:
         - Deploy.Product.SDDCManager.Deploy
         - sddcmanager_installer.stat.isreg is not defined or not sddcmanager_installer.stat.isreg
+        - not Deploy.Setting.DeployESXiOnly
+
+##
+## Verify VCF Installer installation files exist
+##
+    - name: Check if VCF Installer file exists
+      ansible.builtin.stat:
+        path: "{{ Deploy.Software.VCFInstaller.Directory }}/{{ Deploy.Software.VCFInstaller.File }}"
+        get_checksum: false
+        get_attributes: false
+        get_mime: false
+        follow: false
+      register: vcf_installer
+      when:
+        - Deploy.Product.VCFInstaller.Deploy
+        - not Deploy.Setting.DeployESXiOnly
+
+    - name: Verify VCF Installer exists
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          =================================== Configuration Issue Found ===================================
+
+                        Issue: VCF Installer file could not be found at specified path
+
+            Full Path To File: {{ Deploy.Software.VCFInstaller.Directory }}/{{ Deploy.Software.VCFInstaller.File }}
+
+          =================================================================================================
+      when:
+        - Deploy.Product.VCFInstaller.Deploy
+        - vcf_installer.stat.isreg is not defined or not vcf_installer.stat.isreg
+        - not Deploy.Setting.DeployESXiOnly
+
+    - name: Set flag if issue found locating VCF Installer file
+      ansible.builtin.set_fact:
+        issuefound: true
+      when:
+        - Deploy.Product.VCFInstaller.Deploy
+        - vcf_installer.stat.isreg is not defined or not vcf__installer.stat.isreg
         - not Deploy.Setting.DeployESXiOnly
 
 ##
