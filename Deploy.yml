@@ -256,6 +256,12 @@
   when: 
     - Deploy.Product.SDDCManager.Deploy
     - not Deploy.Setting.DeployESXiOnly
+
+# Deploy VCF Installer (Nested)
+- ansible.builtin.import_playbook: playbooks/DeployVCFInstaller.yml
+  when: 
+    - Deploy.Product.VCFInstaller.Deploy
+    - not Deploy.Setting.DeployESXiOnly
     
 # Deploy SSPI (Nested)
 - ansible.builtin.import_playbook: playbooks/DeploySSPI.yml
