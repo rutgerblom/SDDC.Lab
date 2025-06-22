@@ -66,14 +66,8 @@
                                 VCFInstaller VMName: {{ Nested_VCFInstaller.Component.Appliance.VMName }}
                                        VCFInstaller root User: {{ Nested_VCFInstaller.Credential.root.Name }}
                                    VCFInstaller root Password: {{ Nested_VCFInstaller.Credential.root.Password }}
-                                      VCFInstaller admin User: {{ Nested_VCFInstaller.Credential.admin.Name }}
-                                  VCFInstaller admin Password: {{ Nested_VCFInstaller.Credential.admin.Password }}
                                       VCFInstaller local User: {{ Nested_VCFInstaller.Credential.local.Name }}
                                   VCFInstaller local Password: {{ Nested_VCFInstaller.Credential.local.Password }}
-                                     VCFInstaller backup User: {{ Nested_VCFInstaller.Credential.backup.Name }}
-                                 VCFInstaller backup Password: {{ Nested_VCFInstaller.Credential.backup.Password }}
-                                        VCFInstaller vcf User: {{ Nested_VCFInstaller.Credential.vcf.Name }}
-                                    VCFInstaller vcf Password: {{ Nested_VCFInstaller.Credential.vcf.Password }}
 
                                                 OVF Variables
                                                 =============
@@ -107,7 +101,7 @@
         url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}
         validate_certs: "{{ Common.PKI.ValidateCerts }}"
         timeout: 5
-      register: sddcmgr_check
+      register: vcfinstaller_check
       ignore_errors: true
       when:
         - Deploy.Product.VCFInstaller.Deploy
@@ -148,7 +142,7 @@
           vami.DNS.SDDC-Manager: "{{ Common.DNS.Server1.IPv4 }}"
       when:
         - Deploy.Product.VCFInstaller.Deploy
-        - sddcmgr_check.status != 200
+        - vcfinstaller_check.status != 200
 
     - name: Write annotation on the VCFInstaller VM
       community.vmware.vmware_guest:
