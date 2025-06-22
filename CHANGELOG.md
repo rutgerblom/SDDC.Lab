@@ -3182,6 +3182,8 @@
   - Added ```playbooks/DeployVCFInstaller.yml```and ```playbooks/ConfigureVCFInstaller.yml``` to ```Deploy.yml```.
   - Added a validation task for VCF Installer to ```playbooks/ValidateConfiguration.yml```.
   - Added a new field ```DownloadToken``` to the VCF Installer dictionary in ```software_sample.yml``` and ```templates/Pod_Config.j2```.
+  - Removed unused credentials from the VCF Installer data structure in ```config_sample.yml```.
   - Made several smaller updates/fixes to texts.
   - Be sure to update your:
+    - ```config.yml```
     - ```software.yml```
