@@ -1,0 +1,165 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/ConfigureVCFInstaller.yml
+##
+---
+- name: ConfigureVCFInstaller.yml
+  hosts: localhost
+  tasks:
+    - name: ConfigureVCFInstaller_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+
+                                          VCFInstaller Version: {{ Deploy.Software.VCFInstaller.Version }}
+                                  VCFInstaller FQDN: {{ Nested_VCFInstaller.Component.Appliance.FQDN }}
+                                VCFInstaller VMName: {{ Nested_VCFInstaller.Component.Appliance.VMName }}
+                                       VCFInstaller root User: {{ Nested_VCFInstaller.Credential.root.Name }}
+                                   VCFInstaller root Password: {{ Nested_VCFInstaller.Credential.root.Password }}
+                                      VCFInstaller local User: {{ Nested_VCFInstaller.Credential.local.Name }}
+                                  VCFInstaller local Password: {{ Nested_VCFInstaller.Credential.local.Password }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+    - name: Start checking if the VCF Installer Web UI is available
+      ansible.builtin.uri:
+        url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}
+        validate_certs: false
+        timeout: 15
+      register: vcfinstaller_webui_check
+      until: vcfinstaller_webui_check.status == 200
+      retries: 10
+      delay: 60
+      when:
+        - Deploy.Product.VCFInstaller.Deploy
+
+    - name: Obtain a API tokens from the VCF Installer API
+      ansible.builtin.uri:
+        url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/tokens
+        validate_certs: false
+        timeout: 15
+        method: POST
+        body_format: json
+        body: |
+          {
+          "username": "admin@local",
+          "password": "{{ Nested_VCFInstaller.Credential.local.Password }}"
+          }
+        return_content: true
+        status_code: 200
+      register: vcfinst_token
+      when:
+        - Deploy.Product.VCFInstaller.Deploy
+
+    - name: Configure online depot
+      ansible.builtin.uri:
+        url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/system/settings/depot
+        validate_certs: false
+        timeout: 15
+        method: PUT
+        headers:
+          Authorization: "Bearer {{ vcfinst_token.json.accessToken }}"
+        body_format: json
+        body: |
+          {
+              "vmwareAccount": {
+                  "downloadToken": "{{ Deploy.Software.VCFInstaller.DownloadToken }}"
+              }
+          }
+        return_content: true
+        status_code: 202
+      when:
+        - Deploy.Product.VCFInstaller.Deploy
+
+    - name: Wait until the online depot connection is successful
+      ansible.builtin.uri:
+        url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/system/settings/depot
+        validate_certs: false
+        timeout: 15
+        method: GET
+        headers:
+          Authorization: "Bearer {{ vcfinst_token.json.accessToken }}"
+        body_format: json
+        return_content: true
+        status_code: 200
+      register: vcfinstaller_depotconnection_check
+      until: vcfinstaller_depotconnection_check.json.vmwareAccount.status == 'DEPOT_CONNECTION_SUCCESSFUL'
+      retries: 10
+      delay: 60
+      when:
+        - Deploy.Product.VCFInstaller.Deploy
+
+##
+##  Work-in-Progress tasks below
+##
+
+    - name: Get information on available bundles
+      ansible.builtin.uri:
+        url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/bundles
+        validate_certs: false
+        timeout: 15
+        method: GET
+        headers:
+          Authorization: "Bearer {{ vcfinst_token.json.accessToken }}"
+        body_format: json
+        return_content: true
+        status_code: 200
+      register: vcfinstaller_bundleinfo_check
+      when:
+        - Deploy.Product.VCFInstaller.Deploy
+
+    - name: Print debug info
+      ansible.builtin.debug:
+        msg: "{{ vcfinstaller_bundleinfo_check.json }}"
