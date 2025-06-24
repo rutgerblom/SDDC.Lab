@@ -122,6 +122,7 @@
         status_code: 202
       when:
         - Deploy.Product.VCFInstaller.Deploy
+        - Nested_VCFInstaller.DepotSettings.OnlineDepot.Configure
 
     - name: Wait until the online depot connection is successful
       ansible.builtin.uri:
@@ -140,26 +141,30 @@
       delay: 60
       when:
         - Deploy.Product.VCFInstaller.Deploy
+        - Nested_VCFInstaller.DepotSettings.OnlineDepot.Configure
 
 ##
 ##  Work-in-Progress tasks below
 ##
 
-    - name: Get information on available bundles
+    - name: Download VCF binaries
       ansible.builtin.uri:
-        url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/bundles
+        url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/bundles/{{ item.ID }}
         validate_certs: false
         timeout: 15
-        method: GET
+        method: PATCH
         headers:
           Authorization: "Bearer {{ vcfinst_token.json.accessToken }}"
         body_format: json
+        body: |
+          {
+              "bundleDownloadSpec": {
+                  "downloadNow": true
+              }
+          }
         return_content: true
-        status_code: 200
-      register: vcfinstaller_bundleinfo_check
+        status_code: 202
+      loop: "{{ Nested_VCFInstaller.BinaryManagement.VCF.Binaries }}"
       when:
         - Deploy.Product.VCFInstaller.Deploy
-
-    - name: Print debug info
-      ansible.builtin.debug:
-        msg: "{{ vcfinstaller_bundleinfo_check.json }}"
+        - Nested_VCFInstaller.DepotSettings.OnlineDepot.Configure
