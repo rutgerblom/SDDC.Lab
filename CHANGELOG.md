@@ -3195,5 +3195,7 @@
   - Added conditional to the tasks in ```playbooks/ConfigureVCFInstaller.yml``` that configure a online depot. Configuring a online depot (or not) is now controlled by a boolean.
   - Added a task to ```playbooks/ConfigureVCFInstaller.yml``` that initiates downloading of VCF 9 binaries.
   - Playbook ```playbooks/ConfigureVCFInstaller.yml``` and the associated data structure in ```config_sample.yml``` are still work-in-progress. Tasks and data structure may change over time.
+  - Added a task to ```playbooks/ValidateConfiguration.yml``` that checks if the user has changed the default value for the download token in their ```software.yml```.
+  - Added items to the VCF Installer data structure in ```config_sample.yml``` in preparation for configuring a offline depot.
   - Be sure to update your:
     - ```config.yml```
