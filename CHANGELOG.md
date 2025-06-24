@@ -3187,3 +3187,13 @@
   - Be sure to update your:
     - ```config.yml```
     - ```software.yml```
+
+## Dev-v8.0.0 24-JUNE-2025
+
+### Added by Rutger Blom
+  - Added additional items to the Nested_VCFInstaller data structure in ```config_sample.yml```.
+  - Added conditional to the tasks in ```playbooks/ConfigureVCFInstaller.yml``` that configure a online depot. Configuring a online depot (or not) is now controlled by a boolean.
+  - Added a task to ```playbooks/ConfigureVCFInstaller.yml``` that initiates downloading of VCF 9 binaries.
+  - Playbook ```playbooks/ConfigureVCFInstaller.yml``` and the associated data structure in ```config_sample.yml``` are still work-in-progress. Tasks and data structure may change over time.
+  - Be sure to update your:
+    - ```config.yml```
