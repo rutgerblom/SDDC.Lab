@@ -3205,3 +3205,6 @@
 ### Added by Rutger Blom
   - Added VCF Installer to ```utils/Util_CreateSoftwareDir.yml```.
   - Added a task to ```playbooks/ConfigureVCFInstaller.yml``` for offline depot configuration.
+  - Added ESXi and vCenter 8.00 U3E to ```software_sample.yml````
+  - Be sure to update your:
+    - ```software.yml```
