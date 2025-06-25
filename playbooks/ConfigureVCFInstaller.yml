@@ -143,6 +143,32 @@
         - Deploy.Product.VCFInstaller.Deploy
         - Nested_VCFInstaller.DepotSettings.OnlineDepot.Configure
 
+    - name: Configure offline depot
+      ansible.builtin.uri:
+        url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/system/settings/depot
+        validate_certs: false
+        timeout: 15
+        method: PUT
+        headers:
+          Authorization: "Bearer {{ vcfinst_token.json.accessToken }}"
+        body_format: json
+        body: |
+          {
+              "offlineAccount": {
+                  "username": "{{ Nested_VCFInstaller.DepotSettings.OfflineDepot.Username }}",
+                  "password": "{{ Nested_VCFInstaller.DepotSettings.OfflineDepot.Password }}"
+              },
+              "depotConfiguration": {
+                  "hostname": "{{ Nested_VCFInstaller.DepotSettings.OfflineDepot.FQDN }}",
+                  "isOfflineDepot": true,
+                  "port": {{ Nested_VCFInstaller.DepotSettings.OfflineDepot.Port }}
+              }
+          }
+        return_content: true
+        status_code: 202
+      when:
+        - Deploy.Product.VCFInstaller.Deploy
+        - Nested_VCFInstaller.DepotSettings.OfflineDepot.Configure
 ##
 ##  Work-in-Progress tasks below
 ##
