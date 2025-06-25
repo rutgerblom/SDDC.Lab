@@ -3204,3 +3204,4 @@
 
 ### Added by Rutger Blom
   - Added VCF Installer to ```utils/Util_CreateSoftwareDir.yml```.
+  - Added a task to ```playbooks/ConfigureVCFInstaller.yml``` for offline depot configuration.
