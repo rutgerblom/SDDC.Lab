@@ -126,6 +126,15 @@
       loop: "{{ Software.VMware.SDDCManager.Installers | dict2items }}"
       when: Software.VMware.SDDCManager.Installers is defined
 
+    - name: Create VMware VCF Installer directories
+      ansible.builtin.file:
+        path: "{{ item.value.Location.Local }}"
+        state: directory
+        mode: "0777"
+      become: true
+      loop: "{{ Software.VMware.VCFInstaller.Installers | dict2items }}"
+      when: Software.VMware.VCFInstaller.Installers is defined
+
     - name: Create VMware VCF Import Tool directories
       ansible.builtin.file:
         path: "{{ item.value.Location.Local }}"
