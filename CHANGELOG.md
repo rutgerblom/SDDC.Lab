@@ -3199,3 +3199,8 @@
   - Added items to the VCF Installer data structure in ```config_sample.yml``` in preparation for configuring a offline depot.
   - Be sure to update your:
     - ```config.yml```
+
+## Dev-v8.0.0 25-JUNE-2025
+
+### Added by Rutger Blom
+  - Added VCF Installer to ```utils/Util_CreateSoftwareDir.yml```.
