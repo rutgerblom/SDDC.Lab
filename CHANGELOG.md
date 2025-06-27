@@ -3208,3 +3208,23 @@
   - Added ESXi and vCenter 8.00 U3E to ```software_sample.yml````
   - Be sure to update your:
     - ```software.yml```
+
+## Dev-v8.0.0 27-JUNE-2025
+
+### Added by Rutger Blom
+  - Expanded the VCFInstaller data structure in ```config_sample.yml``` with entries and settings for VCF products and ESX hosts consumed by VCF.
+  - Added new setting ```Deploy.Setting.DeployVCF``` in ```config_sample.yml``` which allows the user to deploy a Pod with a router, an optional DNS server, and a VCF instance deployed by VCF Installer.
+  - Added tasks to ```playbooks/CleanupDNS.yml``` and ```playbooks/UpdateDNS.yml``` that process VCF related DNS records.
+  - Added new template ```templates/ESX_v9.x.x_Kickstart.j2``` specifically for ESX 9 hosts to be cobsumed by VCF.
+  - Added new playbook ```playbooks/PrepareVCFEsxISOInstaller.yml``` for preparing ESX ISO installation media used by nested ESX hosts that are to be consumed by VCF.
+  - Added new playbook ```playbooks/DeployNestedVCFEsx.yml``` for deploying nested ESX hosts to be consumed by VCF.
+  - Added new playbook ```playbooks/DeployVCFInstallerSddc.yml``` for deploying VCF instances.
+  - Added new template ```templates/VCF_v9.0.0.0.j2``` used by ```playbooks/DeployVCFInstallerSddc.yml```.
+  - Added a template entry for VCF Installer to ```templates_sample.yml```.
+  - Updated ```Deploy.yml```and ```Undeploy.yml``` with new playbooks and conditionals.
+  - NOTE: Deploying VCF 9 using this project is still work-in-progress. Data structure and playbooks may change over time and the actual VCF 9 deployment might encounter issues that we still need to work out.
+  - Be sure to update your:
+    - ```config.yml```
+    - ```templates.yml```
+
+  
