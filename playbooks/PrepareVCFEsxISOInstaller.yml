@@ -72,6 +72,20 @@
       when:
         - DEBUG.DisplayVariables
 
+    - name: Check if the ESX hosts are already deployed
+      ansible.builtin.wait_for:
+        host: "{{ item.FQDN }}"
+        port: 443
+        timeout: 3
+        state: started
+      register: reachability_check
+      ignore_errors: true
+      loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
+      loop_control:
+        label: "{{ item.FQDN }}"
+      when:
+        - item.Deploy
+
     - name: Create temp directory
       ansible.builtin.file:
         path: "{{ Target.TempFolder }}"
@@ -108,7 +122,12 @@
         state: directory
         mode: "755"
       loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
-      when: item.Deploy
+      loop_control:
+        index_var: idx
+      when:
+        - item.Deploy
+        - reachability_check.results[idx].failed
+
 
     - name: Create kickstart file for each nested ESXi host
       ansible.builtin.template:
@@ -116,17 +135,27 @@
         dest: "{{ Target.TempFolder }}/{{ item.VMName }}/{{ Deploy.Software.ESXi.Config }}"
         mode: "666"
       loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
-      when: item.Deploy
+      loop_control:
+        index_var: idx
+      when:
+        - item.Deploy
+        - reachability_check.results[idx].failed
+
 
     - name: Create custom ESXi ISO for each nested ESXi host
-      ansible.builtin.command: "xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ item.VMName }}.iso \
-                              -b ISOLINUX.BIN -c BOOT.CAT -no-emul-boot -boot-load-size 4 -boot-info-table {{ isoextractpoint }}/ \
-                              {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/ \
-                              {{ Target.TempFolder }}/{{ item.VMName }}/{{ Deploy.Software.ESXi.Config }}"
+      ansible.builtin.command: >
+        xorrisofs -relaxed-filenames -J -R -o {{ Target.TempFolder }}/{{ item.VMName }}.iso
+        -b ISOLINUX.BIN -c BOOT.CAT -no-emul-boot -boot-load-size 4 -boot-info-table {{ isoextractpoint }}/
+        {{ Target.TempFolder }}/{{ Deploy.Software.ESXi.Installer }}/
+        {{ Target.TempFolder }}/{{ item.VMName }}/{{ Deploy.Software.ESXi.Config }}
       args:
         chdir: "{{ Target.TempFolder }}/{{ item.VMName }}/"
       loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
-      when: item.Deploy
+      loop_control:
+        index_var: idx
+      when:
+        - item.Deploy
+        - reachability_check.results[idx].failed
 
     - name: Upload the ESXi ISO to the datastore
       community.vmware.vsphere_copy:
@@ -139,7 +168,11 @@
         datastore: "{{ Target.Datastore }}"
         path: "{{ Target.ISOFolder }}/{{ item.VMName }}.iso"
       loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
-      when: item.Deploy
+      loop_control:
+        index_var: idx
+      when:
+        - item.Deploy
+        - reachability_check.results[idx].failed
 
     - name: Delete local isoextractpoint directory
       ansible.builtin.file:
@@ -158,8 +191,11 @@
         path: "{{ Target.TempFolder }}/{{ item.VMName }}"
         state: absent
       loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
+      loop_control:
+        index_var: idx
       when:
         - item.Deploy
+        - reachability_check.results[idx].failed
         - not DEBUG.KeepInstallerFiles
 
     - name: Delete the ESXi ISO files
@@ -167,6 +203,9 @@
         path: "{{ Target.TempFolder }}/{{ item.VMName }}.iso"
         state: absent
       loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
+      loop_control:
+        index_var: idx
       when:
         - item.Deploy
+        - reachability_check.results[idx].failed
         - not DEBUG.KeepInstallerFiles

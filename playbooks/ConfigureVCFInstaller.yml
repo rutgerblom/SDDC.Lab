@@ -197,7 +197,7 @@
 
     - name: Download VCF binaries (only if not already downloaded)
       ansible.builtin.uri:
-        url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/bundles/{{ item.0.ID }}
+        url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/bundles/{{ item.ID }}
         validate_certs: false
         timeout: 15
         method: PATCH
@@ -212,10 +212,16 @@
           }
         return_content: true
         status_code: 202
-      loop: "{{ zip(Nested_VCFInstaller.BinaryManagement.VCF.Binaries, vcfinstaller_downloadstatus_check.results) | list }}"
+      loop: "{{ Nested_VCFInstaller.BinaryManagement.VCF.Binaries }}"
+      loop_control:
+        index_var: idx
       when:
         - Deploy.Product.VCFInstaller.Deploy
-        - item.0.Download | default(true)  # Only run if explicitly marked for download
-        - item.1.json.elements is defined
-        - item.1.json.elements | length > 0
-        - item.1.json.elements[0].downloadStatus != 'SUCCESS'
+        - item.Download | default(true)
+        - vcfinstaller_downloadstatus_check.results[idx] is defined
+        - vcfinstaller_downloadstatus_check.results[idx].json is defined
+        - vcfinstaller_downloadstatus_check.results[idx].json.elements is defined
+        - vcfinstaller_downloadstatus_check.results[idx].json.elements | length > 0
+        - vcfinstaller_downloadstatus_check.results[idx].json.elements[0].downloadStatus != 'SUCCESS'
+
+
