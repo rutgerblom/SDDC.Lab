@@ -110,6 +110,7 @@ Deploy:
     UseDNS: true                                          # UseDNS - Use DNS name resolution within the Pod (recommended). This requires that either "Deploy.Product.DNSServer.Deploy" is set to "True" (recommended) or that a pre-existing, pre-configured DNS server is available.
     EnableSSH: true                                       # EnableSSH - Allow SSH access to the deployed components.
     DeployESXiOnly: false                                 # DeployESXiOnly - Set to "True" if you want to deploy a Pod with a router, the optional DNS server, and ESXi Hosts only.
+    DeployVCF: true                                       # DeployVCF - Set to "true" if you want to deploy a Pod with a router, the optional DNS server, and a VCF instance
   Software:
     Options:
       UseLocalInstaller: true
@@ -962,11 +963,11 @@ Nested_SDDCManager:
 
 
 ##
-## ███    ██ ███████ ███████ ████████ ███████ ██████          ██    ██  ██████ ███████ ██ ███    ██ ███████ ████████  █████  ██      ██      ███████ ██████
-## ████   ██ ██      ██         ██    ██      ██   ██         ██    ██ ██      ██      ██ ████   ██ ██         ██    ██   ██ ██      ██      ██      ██   ██
-## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██    ██ ██      █████   ██ ██ ██  ██ ███████    ██    ███████ ██      ██      █████   ██████
-## ██  ██ ██ ██           ██    ██    ██      ██   ██          ██  ██  ██      ██      ██ ██  ██ ██      ██    ██    ██   ██ ██      ██      ██      ██   ██
-## ██   ████ ███████ ███████    ██    ███████ ██████  ███████   ████    ██████ ██      ██ ██   ████ ███████    ██    ██   ██ ███████ ███████ ███████ ██   ██
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ██    ██  ██████ ███████ ██ ███    ██ ███████ ████████  █████  ██      ██      ███████ ██████  
+## ████   ██ ██      ██         ██    ██      ██   ██         ██    ██ ██      ██      ██ ████   ██ ██         ██    ██   ██ ██      ██      ██      ██   ██ 
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██    ██ ██      █████   ██ ██ ██  ██ ███████    ██    ███████ ██      ██      █████   ██████  
+## ██  ██ ██ ██           ██    ██    ██      ██   ██          ██  ██  ██      ██      ██ ██  ██ ██      ██    ██    ██   ██ ██      ██      ██      ██   ██ 
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████   ████    ██████ ██      ██ ██   ████ ███████    ██    ██   ██ ███████ ███████ ███████ ██   ██ 
 ##
 
 Nested_VCFInstaller:
@@ -975,7 +976,7 @@ Nested_VCFInstaller:
       Name: root
       Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
     local:
-      Name: local
+      Name: admin@local
       Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
   Component:
     Appliance:
@@ -1022,7 +1023,7 @@ Nested_VCFInstaller:
         - Type: NSX_T_MANAGER
           ID: 094257b5-5b54-5199-9ebb-562c59a1f47a
           Download: true
-        - Type: VCENTER
+        - Type: vCenter
           ID: c90008b8-3e0d-5556-a264-3cfdb4367286
           Download: true
     VVF:
@@ -1033,9 +1034,432 @@ Nested_VCFInstaller:
         - Type: VROPS
           ID: 28ca23b6-4688-53ae-af9c-ae1d4d50d9f1
           Download: true
-        - Type: VCENTER
+        - Type: vCenter
           ID: c90008b8-3e0d-5556-a264-3cfdb4367286
           Download: true
+    
+  Deploy:
+    WorkflowType: VCF
+    ExcludeVCFAutomation: true
+    General:
+      VCFInstanceName: VCF1
+      ManagementDomainName: mgmt
+      CEIPEnabled: "{{ Common.Question.CEIP.Enabled }}"
+      DNS:
+        Server:  "{{ Common.DNS.Server1.IPv4 }}"
+        Domain:  "{{ Common.DNS.Domain }}"
+      NTP:
+        Server:  "{{ Common.NTP.Server1.IPv4 }}"
+    Product:
+      VCFOperations:
+        Credential:
+          root:
+            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          admin: 
+            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        Component:
+          Appliance:
+            FQDN: "{{ SiteCode }}-vcfops.{{ Common.DNS.Domain }}"
+            VMName: "{{ SiteCode }}-vcfops"
+            Deployment:
+              Size:  xsmall
+            Address:
+              IPv4:
+                Address: "{{ Net.Management.IPv4.Network }}.30"
+              IPv6:
+                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(30) }}"
+      FleetManagement:
+        Credential:
+          root:
+            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          admin: 
+            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        Component:
+          Appliance:
+            FQDN: "{{ SiteCode }}-fleetmgmt.{{ Common.DNS.Domain }}"
+            VMName: "{{ SiteCode }}-fleetmgmt"
+            Address:
+              IPv4:
+                Address: "{{ Net.Management.IPv4.Network }}.32"
+              IPv6:
+                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(32) }}"
+      OperationsCollector:
+        Credential:
+          root:
+            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        Component:
+          Appliance:
+            FQDN: "{{ SiteCode }}-vcfopscollector.{{ Common.DNS.Domain }}"
+            VMName: "{{ SiteCode }}-vcfopscollector"
+            Address:
+              IPv4:
+                Address: "{{ Net.Management.IPv4.Network }}.31"
+              IPv6:
+                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(31) }}"
+      VCFAutomation:
+        Credential:
+          admin: 
+            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        Component:
+          Appliance:
+            FQDN: "{{ SiteCode }}-vcfautomation.{{ Common.DNS.Domain }}"
+            VMName: "{{ SiteCode }}-vcfautomation"
+            Address:
+              IPv4:
+                Address: "{{ Net.Management.IPv4.Network }}.33"
+              IPv6:
+                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(33) }}"
+          Node:
+            NodeNamePrefix: vcfa
+            InternalClusterCIDR: 198.18.0.0/15
+            Address:
+              IPv4:
+                Address1: "{{ Net.Management.IPv4.Network }}.34"
+                Address2: "{{ Net.Management.IPv4.Network }}.35"
+              IPv6:
+                Address1: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(34) }}"
+                Address2: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(35) }}"
+      vCenter:
+        Credential:
+          root:
+            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          admin: 
+            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        Component:
+          Appliance:
+            FQDN: "{{ SiteCode }}-vcenter.{{ Common.DNS.Domain }}"
+            VMName: "{{ SiteCode }}-vcenter"
+            Deployment:
+              Size:  small
+            Address:
+              IPv4:
+                Address: "{{ Net.Management.IPv4.Network }}.5"
+              IPv6:
+                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(31) }}"
+        DataCenter: "{{ SiteCode }}-mgmt-datacenter"
+        Cluster: "{{ SiteCode }}-mgmt-cluster1"
+        SSODomain: vsphere.local
+      NSX:
+        Credential:
+          root:
+            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          admin: 
+            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          audit:
+            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        Component:
+          Appliance:
+            FQDN: "{{ SiteCode }}-nsxt-lm-1.{{ Common.DNS.Domain }}"
+            VMName: "{{ SiteCode }}-nsxt-lm-1"
+            Deployment:
+              Size:  medium
+            Address:
+              IPv4:
+                Address: "{{ Net.Management.IPv4.Network }}.12"
+              IPv6:
+                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(12) }}"
+          Cluster:
+            FQDN: "{{ SiteCode }}-nsxt-lm.{{ Common.DNS.Domain }}"
+            VMName: "{{ SiteCode }}-nsxt-lm"
+            Address:
+              IPv4:
+                Address: "{{ Net.Management.IPv4.Network }}.11"
+              IPv6:
+                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(11) }}"
+          TEP:
+            PoolName:       "{{ SiteCode }}-TEP-Pool"
+            CIDR:           "{{ Net.Transport.IPv4.Network }}.0/{{ Net.Transport.IPv4.Prefix }}"
+            Gateway:        "{{ Net.Transport.IPv4.Network }}.1"
+            StartIPAddress: "{{ Net.Transport.IPv4.Network }}.10"
+            EndIPAddress:   "{{ Net.Transport.IPv4.Network }}.99"
+            VLAN:           "{{ Net.Transport.VLAN }}"
+      SDDCManager:
+        Credential:
+          root:
+            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          admin: 
+            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          vcf:
+            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"      
+        Component:
+          Appliance:
+            FQDN: "{{ SiteCode }}-sddcmanager.{{ Common.DNS.Domain }}"
+            VMName: "{{ SiteCode }}-sddcmanager"
+            Address:
+              IPv4:
+                Address: "{{ Net.Management.IPv4.Network }}.26"
+              IPv6:
+                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(26) }}"
+      vSAN:
+        Datastore: "{{ SiteCode }}-mgmt-cluster1-ds-vsan01"
+
+      Hosts:
+        - VMName: "{{ SiteCode }}-esx-1"
+          FQDN: "{{ SiteCode }}-esx-1.{{ Common.DNS.Domain }}"
+          VCFDomain: management
+          Deploy: true
+          User: root
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
+          HardwareSettings:
+            CPU: 24
+            CoresPerSocket: 24
+            Memory: 98304
+            Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"
+            ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"
+            BootDiskSize: 32
+            CapacityDiskSize: 500
+          vmk:
+            vmk0:
+              PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+              VLAN: "{{ Net.Management.VLAN }}"
+              MTU: "{{ Net.Management.MTU }}"
+              IPSettings: ipv4
+              Stack: default
+              Address:
+                IPv4:
+                  Address: "{{ Net.Management.IPv4.Network }}.181"
+                  Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+                  Gateway: "{{ Net.Management.IPv4.Network }}.1"
+                IPv6:
+                  Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(181) }}"
+                  Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+        - VMName: "{{ SiteCode }}-esx-2"
+          FQDN: "{{ SiteCode }}-esx-2.{{ Common.DNS.Domain }}"
+          VCFDomain: management
+          Deploy: true
+          User: root
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
+          HardwareSettings:
+            CPU: 24
+            CoresPerSocket: 24
+            Memory: 98304
+            Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"
+            ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"
+            BootDiskSize: 32
+            CapacityDiskSize: 500
+          vmk:
+            vmk0:
+              PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+              VLAN: "{{ Net.Management.VLAN }}"
+              MTU: "{{ Net.Management.MTU }}"
+              IPSettings: ipv4
+              Stack: default
+              Address:
+                IPv4:
+                  Address: "{{ Net.Management.IPv4.Network }}.182"
+                  Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+                  Gateway: "{{ Net.Management.IPv4.Network }}.1"
+                IPv6:
+                  Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(182) }}"
+                  Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+        - VMName: "{{ SiteCode }}-esx-3"
+          FQDN: "{{ SiteCode }}-esx-3.{{ Common.DNS.Domain }}"
+          VCFDomain: management
+          Deploy: true
+          User: root
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
+          HardwareSettings:
+            CPU: 24
+            CoresPerSocket: 24
+            Memory: 98304
+            Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"
+            ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"
+            BootDiskSize: 32
+            CapacityDiskSize: 500
+          vmk:
+            vmk0:
+              PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+              VLAN: "{{ Net.Management.VLAN }}"
+              MTU: "{{ Net.Management.MTU }}"
+              IPSettings: ipv4
+              Stack: default
+              Address:
+                IPv4:
+                  Address: "{{ Net.Management.IPv4.Network }}.183"
+                  Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+                  Gateway: "{{ Net.Management.IPv4.Network }}.1"
+                IPv6:
+                  Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(183) }}"
+                  Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+        - VMName: "{{ SiteCode }}-esx-4"
+          FQDN: "{{ SiteCode }}-esx-4.{{ Common.DNS.Domain }}"
+          VCFDomain: management
+          Deploy: true
+          User: root
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
+          HardwareSettings:
+            CPU: 24
+            CoresPerSocket: 24
+            Memory: 98304
+            Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"
+            ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"
+            BootDiskSize: 32
+            CapacityDiskSize: 500
+          vmk:
+            vmk0:
+              PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+              VLAN: "{{ Net.Management.VLAN }}"
+              MTU: "{{ Net.Management.MTU }}"
+              IPSettings: ipv4
+              Stack: default
+              Address:
+                IPv4:
+                  Address: "{{ Net.Management.IPv4.Network }}.184"
+                  Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+                  Gateway: "{{ Net.Management.IPv4.Network }}.1"
+                IPv6:
+                  Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(184) }}"
+                  Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+        - VMName: "{{ SiteCode }}-esx-5"
+          FQDN: "{{ SiteCode }}-esx-5.{{ Common.DNS.Domain }}"
+          VCFDomain: workload
+          Deploy: false
+          User: root
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
+          HardwareSettings:
+            CPU: 24
+            CoresPerSocket: 24
+            Memory: 98304
+            Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"
+            ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"
+            BootDiskSize: 32
+            CapacityDiskSize: 500
+          vmk:
+            vmk0:
+              PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+              VLAN: "{{ Net.Management.VLAN }}"
+              MTU: "{{ Net.Management.MTU }}"
+              IPSettings: ipv4
+              Stack: default
+              Address:
+                IPv4:
+                  Address: "{{ Net.Management.IPv4.Network }}.185"
+                  Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+                  Gateway: "{{ Net.Management.IPv4.Network }}.1"
+                IPv6:
+                  Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(185) }}"
+                  Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+        - VMName: "{{ SiteCode }}-esx-6"
+          FQDN: "{{ SiteCode }}-esx-6.{{ Common.DNS.Domain }}"
+          VCFDomain: workload
+          Deploy: false
+          User: root
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
+          HardwareSettings:
+            CPU: 24
+            CoresPerSocket: 24
+            Memory: 98304
+            Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"
+            ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"
+            BootDiskSize: 32
+            CapacityDiskSize: 500
+          vmk:
+            vmk0:
+              PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+              VLAN: "{{ Net.Management.VLAN }}"
+              MTU: "{{ Net.Management.MTU }}"
+              IPSettings: ipv4
+              Stack: default
+              Address:
+                IPv4:
+                  Address: "{{ Net.Management.IPv4.Network }}.186"
+                  Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+                  Gateway: "{{ Net.Management.IPv4.Network }}.1"
+                IPv6:
+                  Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(186) }}"
+                  Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+        - VMName: "{{ SiteCode }}-esx-7"
+          FQDN: "{{ SiteCode }}-esx-7.{{ Common.DNS.Domain }}"
+          VCFDomain: workload
+          Deploy: false
+          User: root
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
+          HardwareSettings:
+            CPU: 24
+            CoresPerSocket: 24
+            Memory: 98304
+            Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"
+            ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"
+            BootDiskSize: 32
+            CapacityDiskSize: 500
+          vmk:
+            vmk0:
+              PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+              VLAN: "{{ Net.Management.VLAN }}"
+              MTU: "{{ Net.Management.MTU }}"
+              IPSettings: ipv4
+              Stack: default
+              Address:
+                IPv4:
+                  Address: "{{ Net.Management.IPv4.Network }}.187"
+                  Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+                  Gateway: "{{ Net.Management.IPv4.Network }}.1"
+                IPv6:
+                  Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(187) }}"
+                  Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+        - VMName: "{{ SiteCode }}-esx-8"
+          FQDN: "{{ SiteCode }}-esx-8.{{ Common.DNS.Domain }}"
+          VCFDomain: workload
+          Deploy: false
+          User: root
+          Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+          EnableSSH: "{{ Deploy.Setting.EnableSSH }}"
+          HardwareSettings:
+            CPU: 24
+            CoresPerSocket: 24
+            Memory: 98304
+            Shares: "{{ Common.DeploymentSetting.Hardware.Memory.Shares }}"
+            ReserveAllGuestMemory: "{{ Common.DeploymentSetting.Hardware.Memory.ReserveAllGuestMemory }}"
+            BootDiskSize: 32
+            CapacityDiskSize: 500
+          vmk:
+            vmk0:
+              PortGroup: "{{ Nested_vCenter.Networking.vSwitch.PortGroup.Management.Name }}"
+              VLAN: "{{ Net.Management.VLAN }}"
+              MTU: "{{ Net.Management.MTU }}"
+              IPSettings: ipv4
+              Stack: default
+              Address:
+                IPv4:
+                  Address: "{{ Net.Management.IPv4.Network }}.188"
+                  Prefix:  "{{ Net.Management.IPv4.Prefix }}"
+                  Gateway: "{{ Net.Management.IPv4.Network }}.1"
+                IPv6:
+                  Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(188) }}"
+                  Prefix:  "{{ Net.Management.IPv6.Prefix }}"
+    
+    Network:
+      ESXManagement:
+        VLAN:           "{{ Net.Management.VLAN }}"
+        CIDR:           "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}"
+        Gateway:        "{{ Net.Management.IPv4.Network }}.1"
+        MTU:            "{{ Net.Management.MTU }}"
+      VMManagement:
+        VLAN:           "{{ Net.Management.VLAN }}"
+        CIDR:           "{{ Net.Management.IPv4.Network }}.0/{{ Net.Management.IPv4.Prefix }}"
+        Gateway:        "{{ Net.Management.IPv4.Network }}.1"
+        MTU:            "{{ Net.Management.MTU }}"
+      vMotion:
+        VLAN:           "{{ Net.vMotion.VLAN }}"
+        CIDR:           "{{ Net.vMotion.IPv4.Network }}.0/{{ Net.vMotion.IPv4.Prefix }}"
+        Gateway:        "{{ Net.vMotion.IPv4.Network }}.1"
+        MTU:            "{{ Net.vMotion.MTU }}"
+        StartIPAddress: "{{ Net.vMotion.IPv4.Network }}.181"
+        EndIPAddress:   "{{ Net.vMotion.IPv4.Network }}.184"
+      vSAN:
+        VLAN:           "{{ Net.vSAN.VLAN }}"
+        CIDR:           "{{ Net.vSAN.IPv4.Network }}.0/{{ Net.vSAN.IPv4.Prefix }}"
+        Gateway:        "{{ Net.vSAN.IPv4.Network }}.1"
+        MTU:            "{{ Net.vSAN.MTU }}"
+        StartIPAddress: "{{ Net.vSAN.IPv4.Network }}.181"
+        EndIPAddress:   "{{ Net.vSAN.IPv4.Network }}.184"
 
 
 
