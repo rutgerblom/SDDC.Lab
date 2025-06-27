@@ -1,0 +1,131 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/DeployVCFInstallerSddc.yml
+##
+---
+- name: DeployVCFInstallerSddc.yml
+  hosts: localhost
+  vars:
+    local_sddcpayload: "{{ Target.TemplateFolder }}/{{ Deploy.Software.VCFInstaller.Template }}"
+  tasks:
+    - name: DeployVCFInstallerSddc_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+    - name: Exit Ansible playbook if Pod-XXX-Config.yml file is not valid or provided
+      ansible.builtin.meta: end_play
+      when: Valid_Pod_Config_File is not defined
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+
+                                          VCFInstaller Version: {{ Deploy.Software.VCFInstaller.Version }}
+                                  VCFInstaller FQDN: {{ Nested_VCFInstaller.Component.Appliance.FQDN }}
+                                VCFInstaller VMName: {{ Nested_VCFInstaller.Component.Appliance.VMName }}
+                                       VCFInstaller root User: {{ Nested_VCFInstaller.Credential.root.Name }}
+                                   VCFInstaller root Password: {{ Nested_VCFInstaller.Credential.root.Password }}
+                                      VCFInstaller local User: {{ Nested_VCFInstaller.Credential.local.Name }}
+                                  VCFInstaller local Password: {{ Nested_VCFInstaller.Credential.local.Password }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+    - name: Start checking if the nested ESX hosts are available
+      ansible.builtin.uri:
+        url: https://{{ item.FQDN }}
+        validate_certs: false
+        timeout: 15
+      register: esx_webui_check
+      until: esx_webui_check.status == 200
+      retries: 20
+      delay: 60
+      loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
+      when:
+        - Deploy.Product.VCFInstaller.Deploy
+        - item.Deploy
+
+    - name: Create SDDC JSON specification from template
+      ansible.builtin.template:
+        src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.VCFInstaller.Template }}"
+        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.VCFInstaller.Config }}"
+        mode: "666"
+      when:
+        - Deploy.Product.VCFInstaller.Deploy
+
+    - name: Obtain API tokens from the VCF Installer API
+      ansible.builtin.uri:
+        url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/tokens
+        validate_certs: false
+        timeout: 15
+        method: POST
+        body_format: json
+        body: |
+          {
+          "username": "admin@local",
+          "password": "{{ Nested_VCFInstaller.Credential.local.Password }}"
+          }
+        return_content: true
+        status_code: 200
+      register: vcfinst_token
+      when:
+        - Deploy.Product.VCFInstaller.Deploy
+
+    - name: Deploy VCF SDDC
+      ansible.builtin.uri:
+        url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/sddcs
+        validate_certs: false
+        timeout: 15
+        method: POST
+        headers:
+          Authorization: "Bearer {{ vcfinst_token.json.accessToken }}"
+        body_format: json
+        body: "{{ lookup('template', local_sddcpayload) }}"
+        return_content: true
+        status_code: 202
+      when:
+        - Deploy.Product.VCFInstaller.Deploy
