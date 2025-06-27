@@ -39,6 +39,8 @@
     - not Deploy.Setting.DeployVCF
 
 - ansible.builtin.import_playbook: playbooks/DeployNestedEsxi.yml
+  when:
+    - not Deploy.Setting.DeployVCF
 
 - name: Verify Replication Partner vCenter Server is ready
   ansible.builtin.import_playbook: playbooks/CheckVcReplicationPartner.yml
@@ -81,6 +83,17 @@
   when:
     - not Deploy.Setting.DeployESXiOnly
     - not Deploy.Setting.DeployVCF
+
+# Deploy nested ESX hosts for VCF
+- ansible.builtin.import_playbook: playbooks/PrepareVCFEsxISOInstaller.yml
+  when:
+    - Deploy.Setting.DeployVCF
+    - not Deploy.Setting.DeployESXiOnly
+
+- ansible.builtin.import_playbook: playbooks/DeployNestedVCFEsx.yml
+  when:
+    - Deploy.Setting.DeployVCF
+    - not Deploy.Setting.DeployESXiOnly
 
 # Deploy NSX-T
 - ansible.builtin.import_playbook: playbooks/DeployNsxGlobalManager.yml
@@ -316,6 +329,7 @@
 - ansible.builtin.import_playbook: playbooks/DeployVCFInstallerSddc.yml
   when: 
     - Deploy.Product.VCFInstaller.Deploy
+    - Deploy.Setting.DeployVCF
     - not Deploy.Setting.DeployESXiOnly
     
 # Deploy SSPI (Nested)
