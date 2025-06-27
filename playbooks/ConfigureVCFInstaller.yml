@@ -143,11 +143,6 @@
         - Deploy.Product.VCFInstaller.Deploy
         - Nested_VCFInstaller.DepotSettings.OnlineDepot.Configure
 
-
-    - name: Print the gateway for each host when defined
-      ansible.builtin.debug:
-        msg: "{{ vcfinstaller_depotconnection_check.json }}"
-
     - name: Configure offline depot
       ansible.builtin.uri:
         url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/system/settings/depot
