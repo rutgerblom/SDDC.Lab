@@ -124,14 +124,19 @@
         body_format: json
         return_content: true
         status_code: 200
-      register: vcfinstaller_downloadstatus_check
-      until: vcfinstaller_downloadstatus_check.json.elements[0].downloadStatus == 'SUCCESS'
+      register: download_status_result
+      until: download_status_result.json.elements is defined and
+             download_status_result.json.elements | length > 0 and
+             download_status_result.json.elements[0].downloadStatus == 'SUCCESS'
       retries: 30
       delay: 60
       loop: "{{ Nested_VCFInstaller.BinaryManagement.VCF.Binaries }}"
+      loop_control:
+        label: "{{ item.ID }}"
       when:
         - Deploy.Product.VCFInstaller.Deploy
         - Nested_VCFInstaller.DepotSettings.OnlineDepot.Configure
+        - item.Download | default(true)
 
     - name: Deploy VCF SDDC
       ansible.builtin.uri:
