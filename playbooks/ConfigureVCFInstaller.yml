@@ -170,6 +170,12 @@
         - Deploy.Product.VCFInstaller.Deploy
         - Nested_VCFInstaller.DepotSettings.OfflineDepot.Configure
 
+    - name: Wait 5 minutes
+      ansible.builtin.pause:
+        seconds: 300
+      when:
+        - Deploy.Product.VCFInstaller.Deploy
+
     - name: Download VCF binaries
       ansible.builtin.uri:
         url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/bundles/{{ item.ID }}
