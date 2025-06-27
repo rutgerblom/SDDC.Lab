@@ -113,6 +113,26 @@
       when:
         - Deploy.Product.VCFInstaller.Deploy
 
+    - name: Wait until the VCF binaries are downloaded
+      ansible.builtin.uri:
+        url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/bundles/download-status?bundleId={{ item.ID }}
+        validate_certs: false
+        timeout: 15
+        method: GET
+        headers:
+          Authorization: "Bearer {{ vcfinst_token.json.accessToken }}"
+        body_format: json
+        return_content: true
+        status_code: 200
+      register: vcfinstaller_downloadstatus_check
+      until: vcfinstaller_downloadstatus_check.json.elements[0].downloadStatus == 'SUCCESS'
+      retries: 30
+      delay: 60
+      loop: "{{ Nested_VCFInstaller.BinaryManagement.VCF.Binaries }}"
+      when:
+        - Deploy.Product.VCFInstaller.Deploy
+        - Nested_VCFInstaller.DepotSettings.OnlineDepot.Configure
+
     - name: Deploy VCF SDDC
       ansible.builtin.uri:
         url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/sddcs
