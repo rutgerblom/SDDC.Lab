@@ -89,11 +89,9 @@
         - Deploy.Product.VCFInstaller.Deploy
         - item.Deploy
 
-    - name: Create SDDC JSON specification from template
-      ansible.builtin.template:
-        src: "{{ Target.TemplateFolder }}/{{ Deploy.Software.VCFInstaller.Template }}"
-        dest: "{{ Target.TempFolder }}/{{ Deploy.Software.VCFInstaller.Config }}"
-        mode: "666"
+    - name: Wait an additional 5 minutes 
+      ansible.builtin.pause:
+        seconds: 300
       when:
         - Deploy.Product.VCFInstaller.Deploy
 
