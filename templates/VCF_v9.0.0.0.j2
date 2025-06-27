@@ -1,0 +1,264 @@
+{
+  "sddcId": "{{ Nested_VCFInstaller.Deploy.General.ManagementDomainName }}",
+  "vcfInstanceName": "{{ Nested_VCFInstaller.Deploy.General.VCFInstanceName }}",
+  "workflowType": "{{ Nested_VCFInstaller.Deploy.WorkflowType }}",
+  "version": "9.0.0.0",
+  "ceipEnabled": {{ Nested_VCFInstaller.Deploy.General.CEIPEnabled | lower }},
+  "skipEsxThumbprintValidation": true,
+  "dnsSpec": {
+    "nameservers": [
+      "{{ Nested_VCFInstaller.Deploy.General.DNS.Server }}"
+    ],
+    "subdomain": "{{ Nested_VCFInstaller.Deploy.General.DNS.Domain }}"
+  },
+  "ntpServers": [
+    "{{ Nested_VCFInstaller.Deploy.General.NTP.Server }}"
+  ],
+  "vcenterSpec": {
+    "vcenterHostname": "{{ Nested_VCFInstaller.Deploy.Product.vCenter.Component.Appliance.FQDN }}",
+    "rootVcenterPassword": "{{ Nested_VCFInstaller.Deploy.Product.vCenter.Credential.root.Password }}",
+    "vmSize": "{{ Nested_VCFInstaller.Deploy.Product.vCenter.Component.Appliance.Deployment.Size }}",
+    "storageSize": "",
+    "adminUserSsoPassword": "{{ Nested_VCFInstaller.Deploy.Product.vCenter.Credential.admin.Password }}",
+    "ssoDomain": "{{ Nested_VCFInstaller.Deploy.Product.vCenter.SSODomain }}",
+    "useExistingDeployment": false
+  },
+  "clusterSpec": {
+    "clusterName": "{{ Nested_VCFInstaller.Deploy.Product.vCenter.Cluster }}",
+    "datacenterName": "{{ Nested_VCFInstaller.Deploy.Product.vCenter.DataCenter }}"
+  },
+  "datastoreSpec": {
+    "vsanSpec": {
+      "esaConfig": {
+        "enabled": true
+      },
+      "datastoreName": "{{ Nested_VCFInstaller.Deploy.Product.vSAN.Datastore }}"
+    }
+  },
+  "nsxtSpec": {
+    "nsxtManagerSize": "medium",
+    "nsxtManagers": [
+      {
+        "hostname": "{{ Nested_VCFInstaller.Deploy.Product.NSX.Component.Appliance.FQDN }}"
+      }
+    ],
+    "vipFqdn": "{{ Nested_VCFInstaller.Deploy.Product.NSX.Component.Cluster.FQDN }}",
+    "useExistingDeployment": false,
+    "nsxtAdminPassword": "{{ Nested_VCFInstaller.Deploy.Product.NSX.Credential.admin.Password }}",
+    "nsxtAuditPassword": "{{ Nested_VCFInstaller.Deploy.Product.NSX.Credential.audit.Password }}",
+    "rootNsxtManagerPassword": "{{ Nested_VCFInstaller.Deploy.Product.NSX.Credential.root.Password }}",
+    "skipNsxOverlayOverManagementNetwork": true,
+    "ipAddressPoolSpec": {
+      "name": "{{ Nested_VCFInstaller.Deploy.Product.NSX.Component.TEP.PoolName }}",
+      "subnets": [
+        {
+          "cidr": "{{ Nested_VCFInstaller.Deploy.Product.NSX.Component.TEP.CIDR }}",
+          "gateway": "{{ Nested_VCFInstaller.Deploy.Product.NSX.Component.TEP.Gateway }}",
+          "ipAddressPoolRanges": [
+            {
+              "start": "{{ Nested_VCFInstaller.Deploy.Product.NSX.Component.TEP.StartIPAddress }}",
+              "end": "{{ Nested_VCFInstaller.Deploy.Product.NSX.Component.TEP.EndIPAddress }}"
+            }
+          ]
+        }
+      ]
+    },
+    "transportVlanId": "{{ Nested_VCFInstaller.Deploy.Product.NSX.Component.TEP.VLAN }}"
+  },
+  "vcfOperationsSpec": {
+    "nodes": [
+      {
+        "hostname": "{{ Nested_VCFInstaller.Deploy.Product.VCFOperations.Component.Appliance.FQDN }}",
+        "rootUserPassword": "{{ Nested_VCFInstaller.Deploy.Product.VCFOperations.Credential.root.Password }}",
+        "type": "master"
+      }
+    ],
+    "adminUserPassword": "{{ Nested_VCFInstaller.Deploy.Product.VCFOperations.Credential.admin.Password }}",
+    "applianceSize": "{{ Nested_VCFInstaller.Deploy.Product.VCFOperations.Component.Appliance.Deployment.Size }}",
+    "useExistingDeployment": false,
+    "loadBalancerFqdn": null
+  },
+  "vcfOperationsFleetManagementSpec": {
+    "hostname": "{{ Nested_VCFInstaller.Deploy.Product.FleetManagement.Component.Appliance.FQDN }}",
+    "rootUserPassword": "{{ Nested_VCFInstaller.Deploy.Product.FleetManagement.Credential.root.Password }}",
+    "adminUserPassword": "{{ Nested_VCFInstaller.Deploy.Product.FleetManagement.Credential.admin.Password }}",
+    "useExistingDeployment": false
+  },
+  "vcfOperationsCollectorSpec": {
+    "hostname": "{{ Nested_VCFInstaller.Deploy.Product.OperationsCollector.Component.Appliance.FQDN }}",
+    "applicationSize": "small",
+    "rootUserPassword": "{{ Nested_VCFInstaller.Deploy.Product.OperationsCollector.Credential.root.Password }}",
+    "useExistingDeployment": false
+  },
+{% if not Nested_VCFInstaller.Deploy.ExcludeVCFAutomation %}
+  "vcfAutomationSpec": {
+    "hostname": "{{ Nested_VCFInstaller.Deploy.Product.VCFAutomation.Component.Appliance.FQDN }}",
+    "adminUserPassword": "{{ Nested_VCFInstaller.Deploy.Product.VCFAutomation.Credential.admin.Password }}",
+    "ipPool": [
+      "{{ Nested_VCFInstaller.Deploy.Product.VCFAutomation.Component.Node.Address.IPv4.Address1 }}",
+      "{{ Nested_VCFInstaller.Deploy.Product.VCFAutomation.Component.Node.Address.IPv4.Address2 }}"
+    ],
+    "nodePrefix": "{{ Nested_VCFInstaller.Deploy.Product.VCFAutomation.Component.Node.NodeNamePrefix }}",
+    "internalClusterCidr": "{{ Nested_VCFInstaller.Deploy.Product.VCFAutomation.Component.Node.InternalClusterCIDR }}",
+    "useExistingDeployment": false
+  },
+{% endif %}{# Nested_VCFInstaller.Deploy.ExcludeVCFAutomation #}
+  "hostSpecs": [
+{% for Host in Nested_VCFInstaller.Deploy.Product.Hosts if Host.VCFDomain == 'management'%}
+    {
+      "hostname": "{{ Host.FQDN }}",
+      "credentials": {
+        "username": "{{ Host.User }}",
+        "password": "{{ Host.Password }}"
+      }
+    }{% if not loop.last %},{% endif %}
+
+{% endfor %}{# Host #}
+  ],
+  "networkSpecs": [
+    {
+      "networkType": "MANAGEMENT",
+      "subnet": "{{ Nested_VCFInstaller.Deploy.Network.ESXManagement.CIDR }}",
+      "gateway": "{{ Nested_VCFInstaller.Deploy.Network.ESXManagement.Gateway }}",
+      "subnetMask": null,
+      "includeIpAddress": null,
+      "includeIpAddressRanges": null,
+      "vlanId": "{{ Nested_VCFInstaller.Deploy.Network.ESXManagement.VLAN }}",
+      "mtu": {{ Nested_VCFInstaller.Deploy.Network.ESXManagement.MTU }},
+      "teamingPolicy": "loadbalance_loadbased",
+      "activeUplinks": [
+        "uplink1",
+        "uplink2"
+      ],
+      "standbyUplinks": null,
+      "portGroupKey": "{{ Nested_VCFInstaller.Deploy.Product.vCenter.Cluster }}-vds01-pg-esx-mgmt"
+    },
+    {
+      "networkType": "VM_MANAGEMENT",
+      "subnet": "{{ Nested_VCFInstaller.Deploy.Network.VMManagement.CIDR }}",
+      "gateway": "{{ Nested_VCFInstaller.Deploy.Network.VMManagement.Gateway }}",
+      "subnetMask": null,
+      "includeIpAddress": null,
+      "includeIpAddressRanges": null,
+      "vlanId": "{{ Nested_VCFInstaller.Deploy.Network.VMManagement.VLAN }}",
+      "mtu": {{ Nested_VCFInstaller.Deploy.Network.VMManagement.MTU }},
+      "teamingPolicy": "loadbalance_loadbased",
+      "activeUplinks": [
+        "uplink1",
+        "uplink2"
+      ],
+      "standbyUplinks": null,
+      "portGroupKey": "{{ Nested_VCFInstaller.Deploy.Product.vCenter.Cluster }}-vds01-pg-vm-mgmt"
+    },
+    {
+      "networkType": "VMOTION",
+      "subnet": "{{ Nested_VCFInstaller.Deploy.Network.vMotion.CIDR }}",
+      "gateway": "{{ Nested_VCFInstaller.Deploy.Network.vMotion.Gateway }}",
+      "subnetMask": null,
+      "includeIpAddress": null,
+      "includeIpAddressRanges": [
+        {
+          "startIpAddress": "{{ Nested_VCFInstaller.Deploy.Network.vMotion.StartIPAddress }}",
+          "endIpAddress": "{{ Nested_VCFInstaller.Deploy.Network.vMotion.EndIPAddress }}"
+        }
+      ],
+      "vlanId": "{{ Nested_VCFInstaller.Deploy.Network.vMotion.VLAN }}",
+      "mtu": {{ Nested_VCFInstaller.Deploy.Network.vMotion.MTU }},
+      "teamingPolicy": "loadbalance_loadbased",
+      "activeUplinks": [
+        "uplink1",
+        "uplink2"
+      ],
+      "standbyUplinks": null,
+      "portGroupKey": "{{ Nested_VCFInstaller.Deploy.Product.vCenter.Cluster }}-vds01-pg-vmotion"
+    },
+    {
+      "networkType": "VSAN",
+      "subnet": "{{ Nested_VCFInstaller.Deploy.Network.vSAN.CIDR }}",
+      "gateway": "{{ Nested_VCFInstaller.Deploy.Network.vSAN.Gateway }}",
+      "subnetMask": null,
+      "includeIpAddress": null,
+      "includeIpAddressRanges": [
+        {
+          "startIpAddress": "{{ Nested_VCFInstaller.Deploy.Network.vSAN.StartIPAddress }}",
+          "endIpAddress": "{{ Nested_VCFInstaller.Deploy.Network.vSAN.EndIPAddress }}"
+        }
+      ],
+      "vlanId": "{{ Nested_VCFInstaller.Deploy.Network.vSAN.VLAN }}",
+      "mtu": {{ Nested_VCFInstaller.Deploy.Network.vSAN.MTU }},
+      "teamingPolicy": "loadbalance_loadbased",
+      "activeUplinks": [
+        "uplink1",
+        "uplink2"
+      ],
+      "standbyUplinks": null,
+      "portGroupKey": "{{ Nested_VCFInstaller.Deploy.Product.vCenter.Cluster }}-vds01-pg-vsan"
+    }
+  ],
+  "dvsSpecs": [
+    {
+      "dvsName": "{{ Nested_VCFInstaller.Deploy.Product.vCenter.Cluster }}-vds01",
+      "networks": [
+        "MANAGEMENT",
+        "VM_MANAGEMENT",
+        "VMOTION",
+        "VSAN"
+      ],
+      "mtu": 9000,
+      "nsxtSwitchConfig": null,
+      "vmnicsToUplinks": [
+        {
+          "id": "vmnic0",
+          "uplink": "uplink1"
+        },
+        {
+          "id": "vmnic1",
+          "uplink": "uplink2"
+        }
+      ],
+      "nsxTeamings": null,
+      "lagSpecs": null
+    },
+    {
+      "dvsName": "{{ Nested_VCFInstaller.Deploy.Product.vCenter.Cluster }}-vds02",
+      "networks": null,
+      "mtu": 9000,
+      "nsxtSwitchConfig": {
+        "transportZones": [
+          {
+            "transportType": "OVERLAY",
+            "name": "VCF-Created-Overlay-Zone"
+          }
+        ]
+      },
+      "vmnicsToUplinks": [
+        {
+          "id": "vmnic2",
+          "uplink": "uplink1"
+        },
+        {
+          "id": "vmnic3",
+          "uplink": "uplink2"
+        }
+      ],
+      "nsxTeamings": [
+        {
+          "policy": "LOADBALANCE_SRCID",
+          "activeUplinks": [
+            "uplink1",
+            "uplink2"
+          ],
+          "standByUplinks": []
+        }
+      ],
+      "lagSpecs": null
+    }
+  ],
+  "sddcManagerSpec": {
+    "hostname": "{{ Nested_VCFInstaller.Deploy.Product.SDDCManager.Component.Appliance.FQDN }}",
+    "useExistingDeployment": false,
+    "rootPassword": "{{ Nested_VCFInstaller.Deploy.Product.SDDCManager.Credential.root.Password }}",
+    "sshPassword": "{{ Nested_VCFInstaller.Deploy.Product.SDDCManager.Credential.admin.Password }}",
+    "localUserPassword": "{{ Nested_VCFInstaller.Deploy.Product.SDDCManager.Credential.vcf.Password }}"
+  }
+}
