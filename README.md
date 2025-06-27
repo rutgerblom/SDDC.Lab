@@ -292,8 +292,8 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 31 | VCF Operations Collector | VCF Operations Collector Appliance | pod-240-vcfopscollector | No |
 | 32 | VCF Fleet Management | VCF Fleet Management Appliance | pod-240-fleetmgmt | No |
 | 33 | VCF Automation | VCF Automation Appliance | pod-240-vcautomation | No |
-| 34 | VCF Automation Node IP 1 | VCF Automation Appliance IP 1 | pod-240-vcautomation-ip1 | No |
-| 35 | VCF Automation Node IP 2 | VCF Automation Appliance IP 2 | pod-240-vcautomation-ip2 | No |
+| 34 | VCF Automation Node IP 1 | VCF Automation Appliance IP 1 | pod-240-vcfautomation-ip1 | No |
+| 35 | VCF Automation Node IP 2 | VCF Automation Appliance IP 2 | pod-240-vcfautomation-ip2 | No |
 | Thru 89 | Reserved | Reserved for Future Management VMs/Services | | |
 | 90 | Reserved | User Deployed 3rd Party Appliances | | |
 | Thru 100 | Reserved | User Deployed 3rd Party Appliances | | |
