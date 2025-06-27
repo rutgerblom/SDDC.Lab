@@ -3215,7 +3215,7 @@
   - Expanded the VCFInstaller data structure in ```config_sample.yml``` with entries and settings for VCF products and ESX hosts consumed by VCF.
   - Added new setting ```Deploy.Setting.DeployVCF``` in ```config_sample.yml``` which allows the user to deploy a Pod with a router, an optional DNS server, and a VCF instance deployed by VCF Installer.
   - Added tasks to ```playbooks/CleanupDNS.yml``` and ```playbooks/UpdateDNS.yml``` that process VCF related DNS records.
-  - Added new template ```templates/ESX_v9.x.x_Kickstart.j2``` specifically for ESX 9 hosts to be cobsumed by VCF.
+  - Added new template ```templates/ESX_v9.x.x_Kickstart.j2``` specifically for ESX 9 hosts that are to be consumed by VCF.
   - Added new playbook ```playbooks/PrepareVCFEsxISOInstaller.yml``` for preparing ESX ISO installation media used by nested ESX hosts that are to be consumed by VCF.
   - Added new playbook ```playbooks/DeployNestedVCFEsx.yml``` for deploying nested ESX hosts to be consumed by VCF.
   - Added new playbook ```playbooks/DeployVCFInstallerSddc.yml``` for deploying VCF instances.
