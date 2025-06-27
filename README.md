@@ -288,6 +288,12 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 27 | Cloud Builder | Cloud Builder Appliance | pod-240-cloudbuilder | No |
 | 28 | SSPI Appliance | Security Services Platform Installer Appliance | pod-240-sspi | No |
 | 29 | VCF Installer | VCF Installer Appliance | pod-240-vcfinstaller | No |
+| 30 | VCF Operations | VCF Operations Appliance | pod-240-vcfops | No |
+| 31 | VCF Operations Collector | VCF Operations Collector Appliance | pod-240-vcfopscollector | No |
+| 32 | VCF Fleet Management | VCF Fleet Management Appliance | pod-240-fleetmgmt | No |
+| 33 | VCF Automation | VCF Automation Appliance | pod-240-vcautomation | No |
+| 34 | VCF Automation Node IP 1 | VCF Automation Appliance IP 1 | pod-240-vcautomation-ip1 | No |
+| 35 | VCF Automation Node IP 2 | VCF Automation Appliance IP 2 | pod-240-vcautomation-ip2 | No |
 | Thru 89 | Reserved | Reserved for Future Management VMs/Services | | |
 | 90 | Reserved | User Deployed 3rd Party Appliances | | |
 | Thru 100 | Reserved | User Deployed 3rd Party Appliances | | |
@@ -308,7 +314,15 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 151-159 | Reserved  | Future vSphere Cluster | | |
 | 161-169 | Reserved  | Future vSphere Cluster | | |
 | 171-179 | Reserved  | Future vSphere Cluster | | |
-| 181-189 | Reserved  | Future vSphere Cluster | | |
+| 181 | ESX-1 | Nested ESX Host for VCF | pod-240-esx-1 | No |
+| 182 | ESX-2 | Nested ESX Host for VCF | pod-240-esx-2 | No |
+| 183 | ESX-3 | Nested ESX Host for VCF | pod-240-esx-3 | No |
+| 184 | ESX-4 | Nested ESX Host for VCF | pod-240-esx-4 | No |
+| 185 | ESX-5 | Nested ESX Host for VCF | pod-240-esx-5 | No |
+| 186 | ESX-6 | Nested ESX Host for VCF | pod-240-esx-6 | No |
+| 187 | ESX-7 | Nested ESX Host for VCF | pod-240-esx-7 | No |
+| 188 | ESX-8 | Nested ESX Host for VCF | pod-240-esx-8 | No |
+| 189 | ESX-*X* | Nested ESX Host for VCF | pod-240-esx-*X* | No |
 | 191 | Edge-1 | Nested ESXi Host in vSphere Edge Cluster | pod-240-edge-1 | Yes |
 | 192 | Edge-2 | Nested ESXi Host in vSphere Edge Cluster | pod-240-edge-2 | Yes |
 | 193 | Edge-3 | Nested ESXi Host in vSphere Edge Cluster | pod-240-edge-3 | Yes |
