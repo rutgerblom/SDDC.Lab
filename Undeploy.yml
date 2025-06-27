@@ -163,6 +163,20 @@
       loop: "{{ Nested_ESXi.Host | dict2items }}"
       ignore_errors: true
 
+    - name: Remove VCF ESX VMs
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ item.VMName }}"
+        force: true
+        state: absent
+      async: 7200
+      poll: 0
+      loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
+      ignore_errors: true
+
     - name: Remove vCenter VM
       community.vmware.vmware_guest:
         hostname: "{{ Target.FQDN }}"
