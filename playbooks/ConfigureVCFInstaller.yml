@@ -176,9 +176,28 @@
       when:
         - Deploy.Product.VCFInstaller.Deploy
 
-    - name: Download VCF binaries
+    - name: Check if the VCF binaries are already downloaded
       ansible.builtin.uri:
-        url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/bundles/{{ item.ID }}
+        url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/bundles/download-status?bundleId={{ item.ID }}
+        validate_certs: false
+        timeout: 15
+        method: GET
+        headers:
+          Authorization: "Bearer {{ vcfinst_token.json.accessToken }}"
+        body_format: json
+        return_content: true
+        status_code: 200
+      register: vcfinstaller_downloadstatus_check
+      retries: 30
+      delay: 60
+      loop: "{{ Nested_VCFInstaller.BinaryManagement.VCF.Binaries }}"
+      when:
+        - Deploy.Product.VCFInstaller.Deploy
+
+
+    - name: Download VCF binaries (only if not already downloaded)
+      ansible.builtin.uri:
+        url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/bundles/{{ item.0.ID }}
         validate_certs: false
         timeout: 15
         method: PATCH
@@ -193,8 +212,10 @@
           }
         return_content: true
         status_code: 202
-      loop: "{{ Nested_VCFInstaller.BinaryManagement.VCF.Binaries }}"
+      loop: "{{ zip(Nested_VCFInstaller.BinaryManagement.VCF.Binaries, vcfinstaller_downloadstatus_check.results) | list }}"
       when:
         - Deploy.Product.VCFInstaller.Deploy
-        - Nested_VCFInstaller.DepotSettings.OnlineDepot.Configure
-        - item.Download
+        - item.0.Download | default(true)  # Only run if explicitly marked for download
+        - item.1.json.elements is defined
+        - item.1.json.elements | length > 0
+        - item.1.json.elements[0].downloadStatus != 'SUCCESS'
