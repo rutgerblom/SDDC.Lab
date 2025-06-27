@@ -1138,6 +1138,495 @@
         - Deploy.Setting.IPv6
 
 
+##
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ██    ██  ██████ ███████ ██ ███    ██ ███████ ████████  █████  ██      ██      ███████ ██████
+## ████   ██ ██      ██         ██    ██      ██   ██         ██    ██ ██      ██      ██ ████   ██ ██         ██    ██   ██ ██      ██      ██      ██   ██
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██    ██ ██      █████   ██ ██ ██  ██ ███████    ██    ███████ ██      ██      █████   ██████
+## ██  ██ ██ ██           ██    ██    ██      ██   ██          ██  ██  ██      ██      ██ ██  ██ ██      ██    ██    ██   ██ ██      ██      ██      ██   ██
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████   ████    ██████ ██      ██ ██   ████ ███████    ██    ██   ██ ███████ ███████ ███████ ██   ██
+##
+
+##
+## ██ ██████  ██    ██ ██   ██
+## ██ ██   ██ ██    ██ ██   ██
+## ██ ██████  ██    ██ ███████
+## ██ ██       ██  ██       ██
+## ██ ██        ████        ██
+##
+    - name: DEBUG -- Display IPv4 'A' record for Nested_VCFInstaller Component
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================= Display Nested_VCFInstaller DNS IPv4 "A" Record ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ item.value.VMName }}
+                                                Value: {{ item.value.Address.IPv4.Address }}
+
+          =================================================================================================
+      loop: "{{ Nested_VCFInstaller.Component | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+
+    - name: DEBUG -- Display IPv4 'A' record for Nested_VCFInstaller Product
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================= Display Nested_VCFInstaller DNS IPv4 "A" Record ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ item.value.Component.Appliance.VMName }}
+                                                Value: {{ item.value.Component.Appliance.Address.IPv4.Address }}
+
+          =================================================================================================
+      loop: "{{ Nested_VCFInstaller.Deploy.Product | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+        - item.value.Component is defined
+        - item.value.Component.Appliance is defined
+        - item.value.Component.Appliance.VMName is defined
+        - item.value.Component.Appliance.Address is defined
+        - item.value.Component.Appliance.Address.IPv4 is defined
+
+    - name: DEBUG -- Display IPv4 'A' record for Nested_VCFInstaller Hosts
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================= Display Nested_VCFInstaller DNS IPv4 "A" Record ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ item.VMName }}
+                                                Value: {{ item.vmk.vmk0.Address.IPv4 }}
+
+          =================================================================================================
+      loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+
+    - name: Remove IPv4 'A' records for Nested_VCFInstaller Component
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv4 }}"
+        type: A
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ Common.DNS.Domain }}"
+        record: "{{ item.value.VMName }}"
+        value: "{{ item.value.Address.IPv4.Address }}"
+        state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_VCFInstaller.Component | dict2items }}"
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+
+    - name: Remove IPv4 'A' records for Nested_VCFInstaller Product
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv4 }}"
+        type: A
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ Common.DNS.Domain }}"
+        record: "{{ item.value.Component.Appliance.VMName }}"
+        value: "{{ item.value.Component.Appliance.Address.IPv4.Address }}"
+        state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_VCFInstaller.Deploy.Product | dict2items }}"
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+        - item.value.Component is defined
+        - item.value.Component.Appliance is defined
+        - item.value.Component.Appliance.Address is defined
+        - item.value.Component.Appliance.Address.IPv4 is defined
+
+    - name: Remove IPv4 'A' records for Nested_VCFInstaller Hosts
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv4 }}"
+        type: A
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ Common.DNS.Domain }}"
+        record: "{{ item.VMName }}"
+        value: "{{ item.vmk.vmk0.Address.IPv4.Address }}"
+        state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+
+    - name: DEBUG -- Display IPv4 'PTR' record for Nested_VCFInstaller Component
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ====================== Display Nested_VCFInstaller DNS IPv4 "PTR" Record =========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ ipv4_reverse_zone }}
+                                               Record: {{ item.value.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}
+                                                Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      loop: "{{ Nested_VCFInstaller.Component | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+
+    - name: DEBUG -- Display IPv4 'PTR' record for Nested_VCFInstaller Product
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ====================== Display Nested_VCFInstaller DNS IPv4 "PTR" Record =========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ ipv4_reverse_zone }}
+                                               Record: {{ item.value.Component.Appliance.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}
+                                                Value: {{ item.value.Component.Appliance.VMName }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      loop: "{{ Nested_VCFInstaller.Deploy.Product | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+        - item.value.Component is defined
+        - item.value.Component.Appliance is defined
+        - item.value.Component.Appliance.Address is defined
+        - item.value.Component.Appliance.Address.IPv4 is defined
+
+    - name: DEBUG -- Display IPv4 'PTR' record for Nested_VCFInstaller Hosts
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ====================== Display Nested_VCFInstaller DNS IPv4 "PTR" Record =========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv4 }}
+                                                 Zone: {{ ipv4_reverse_zone }}
+                                               Record: {{ item.vmk.vmk0.Address.IPv4 | ansible.utils.ipaddr('revdns') }}
+                                                Value: {{ item.VMName }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+
+    - name: Remove IPv4 'PTR' records for Nested_VCFInstaller Component
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv4 }}"
+        type: PTR
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ ipv4_reverse_zone }}"
+        record: "{{ item.value.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
+        value: "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
+        state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_VCFInstaller.Component | dict2items }}"
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+
+    - name: Remove IPv4 'PTR' records for Nested_VCFInstaller Product
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv4 }}"
+        type: PTR
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ ipv4_reverse_zone }}"
+        record: "{{ item.value.Component.Appliance.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
+        value: "{{ item.value.Component.Appliance.VMName }}.{{ Common.DNS.Domain }}."
+        state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_VCFInstaller.Deploy.Product | dict2items }}"
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+        - item.value.Component is defined
+        - item.value.Component.Appliance is defined
+        - item.value.Component.Appliance.Address is defined
+        - item.value.Component.Appliance.Address.IPv4 is defined
+
+    - name: Remove IPv4 'PTR' records for Nested_VCFInstaller Hosts
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv4 }}"
+        type: PTR
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ ipv4_reverse_zone }}"
+        record: "{{ item.vmk.vmk0.Address.IPv4.Address | ansible.utils.ipaddr('revdns') }}"
+        value: "{{ item.VMName }}.{{ Common.DNS.Domain }}."
+        state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv4
+
+
+##
+## ██ ██████  ██    ██  ██████
+## ██ ██   ██ ██    ██ ██
+## ██ ██████  ██    ██ ███████
+## ██ ██       ██  ██  ██    ██
+## ██ ██        ████    ██████
+##
+    - name: DEBUG -- Display IPv6 'AAAA' record for Nested_VCFInstaller Component
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ===================== Display Nested_VCFInstaller DNS IPv6 "AAAA" Record =========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ item.value.VMName }}
+                                                Value: {{ item.value.Address.IPv6.Address }}
+
+          =================================================================================================
+      loop: "{{ Nested_VCFInstaller.Component | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+
+    - name: DEBUG -- Display IPv6 'AAAA' record for Nested_VCFInstaller Product
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================= Display Nested_VCFInstaller DNS IPv6 "AAAA" Record ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ item.value.Component.Appliance.VMName }}
+                                                Value: {{ item.value.Component.Appliance.Address.IPv6.Address }}
+
+          =================================================================================================
+      loop: "{{ Nested_VCFInstaller.Deploy.Product | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+        - item.value.Component is defined
+        - item.value.Component.Appliance is defined
+        - item.value.Component.Appliance.VMName is defined
+        - item.value.Component.Appliance.Address is defined
+        - item.value.Component.Appliance.Address.IPv6 is defined
+
+    - name: DEBUG -- Display IPv6 'AAAA' record for Nested_VCFInstaller Hosts
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================= Display Nested_VCFInstaller DNS IPv6 "AAAA" Record ===========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ Common.DNS.Domain }}
+                                               Record: {{ item.VMName }}
+                                                Value: {{ item.vmk.vmk0.Address.IPv6 }}
+
+          =================================================================================================
+      loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+
+    - name: Remove IPv6 'AAAA' records for Nested_VCFInstaller Component
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv6 }}"
+        type: AAAA
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ Common.DNS.Domain }}"
+        record: "{{ item.value.VMName }}"
+        value: "{{ item.value.Address.IPv6.Address }}"
+        state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_VCFInstaller.Component | dict2items }}"
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+
+    - name: Remove IPv6 'AAAA' records for Nested_VCFInstaller Product
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv6 }}"
+        type: AAAA
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ Common.DNS.Domain }}"
+        record: "{{ item.value.Component.Appliance.VMName }}"
+        value: "{{ item.value.Component.Appliance.Address.IPv6.Address }}"
+        state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_VCFInstaller.Deploy.Product | dict2items }}"
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+        - item.value.Component is defined
+        - item.value.Component.Appliance is defined
+        - item.value.Component.Appliance.Address is defined
+        - item.value.Component.Appliance.Address.IPv6 is defined
+
+    - name: Remove IPv6 'AAAA' records for Nested_VCFInstaller Hosts
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv6 }}"
+        type: AAAA
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ Common.DNS.Domain }}"
+        record: "{{ item.VMName }}"
+        value: "{{ item.vmk.vmk0.Address.IPv6.Address }}"
+        state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+
+    - name: DEBUG -- Display IPv6 'PTR' record for Nested_VCFInstaller Component
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ======================= Display Nested_VCFInstaller DNS IPv6 "PTR" Record ========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ ipv6_reverse_zone }}
+                                               Record: {{ item.value.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}
+                                                Value: {{ item.value.VMName }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      loop: "{{ Nested_VCFInstaller.Component | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+
+    - name: DEBUG -- Display IPv6 'PTR' record for Nested_VCFInstaller Product
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ====================== Display Nested_VCFInstaller DNS IPv6 "PTR" Record =========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ ipv6_reverse_zone }}
+                                               Record: {{ item.value.Component.Appliance.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}
+                                                Value: {{ item.value.Component.Appliance.VMName }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      loop: "{{ Nested_VCFInstaller.Deploy.Product | dict2items }}"
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+        - item.value.Component is defined
+        - item.value.Component.Appliance is defined
+        - item.value.Component.Appliance.Address is defined
+        - item.value.Component.Appliance.Address.IPv6 is defined
+
+    - name: DEBUG -- Display IPv6 'PTR' record for Nested_VCFInstaller Hosts
+      ansible.builtin.pause:
+        seconds: 1
+        prompt: |
+          ====================== Display Nested_VCFInstaller DNS IPv6 "PTR" Record =========================
+
+                                Deploy.Setting.UseDNS: {{ Deploy.Setting.UseDNS }}
+                                    LOCAL_RecordState: {{ LOCAL_RecordState }}
+
+                                           DNS Server: {{ Common.DNS.Server1.IPv6 }}
+                                                 Zone: {{ ipv6_reverse_zone }}
+                                               Record: {{ item.vmk.vmk0.Address.IPv6 | ansible.utils.ipaddr('revdns') }}
+                                                Value: {{ item.VMName }}.{{ Common.DNS.Domain }}.
+
+          =================================================================================================
+      loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
+      when:
+        - DEBUG.DisplayVariables_DNS
+        - DEBUG.DisplayVariables
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+
+    - name: Remove IPv6 'PTR' records for Nested_VCFInstaller Component
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv6 }}"
+        type: PTR
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ ipv6_reverse_zone }}"
+        record: "{{ item.value.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
+        value: "{{ item.value.VMName }}.{{ Common.DNS.Domain }}."
+        state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_VCFInstaller.Component | dict2items }}"
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+
+    - name: Remove IPv6 'PTR' records for Nested_VCFInstaller Product
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv6 }}"
+        type: PTR
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ ipv6_reverse_zone }}"
+        record: "{{ item.value.Component.Appliance.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
+        value: "{{ item.value.Component.Appliance.VMName }}.{{ Common.DNS.Domain }}."
+        state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_VCFInstaller.Deploy.Product | dict2items }}"
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+        - item.value.Component is defined
+        - item.value.Component.Appliance is defined
+        - item.value.Component.Appliance.Address is defined
+        - item.value.Component.Appliance.Address.IPv6 is defined
+
+    - name: Remove IPv6 'PTR' records for Nested_VCFInstaller Hosts
+      community.general.nsupdate:
+        server: "{{ Common.DNS.Server1.IPv6 }}"
+        type: PTR
+        protocol: "{{ Common.DNS.Protocol }}"
+        zone: "{{ ipv6_reverse_zone }}"
+        record: "{{ item.vmk.vmk0.Address.IPv6.Address | ansible.utils.ipaddr('revdns') }}"
+        value: "{{ item.VMName }}.{{ Common.DNS.Domain }}."
+        state: "{{ LOCAL_RecordState }}"
+      loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
+      when:
+        - Deploy.Setting.UseDNS
+        - Deploy.Setting.IPv6
+
 
 ##
 ## ███    ██ ███████ ███████ ████████ ███████ ██████          ███████ ███████ ██████  ██
