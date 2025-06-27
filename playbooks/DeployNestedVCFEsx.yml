@@ -1,0 +1,130 @@
+##
+##    Project: SDDC.Lab
+##    Authors: Luis Chanu & Rutger Blom
+##   Filename: playbooks/DeployNestedVCFEsx.yml
+##
+---
+- name: DeployNestedVCFEsx.yml
+  hosts: localhost
+  tasks:
+    - name: DeployNestedVCFEsx_Playbook
+      ansible.builtin.debug:
+        msg: "Starting playbook: {{ ansible_play_name }}"
+
+    - name: Display error message if Pod-XXX-Config file is not valid or provided
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          *****************************************************************************************************
+          ****************************************** ERROR MESSAGE ********************************************
+          *****************************************************************************************************
+
+            A valid "Pod-XXX-Config.yml" file is required in order for this playbook to run.
+
+            Please verify:
+            ==============
+              1) You supplied a valid Pod-XXX-Config.yml file via the ansible-playbook -e "@Pod-XXX-Config.yml"
+                 command-line option.  Here is an example of a how to load a Pod-XXX-Config.yml file that is
+                 located in your home directory:
+                                    ansible-playbook -e "@~/Pod-XXX-Config.yml" Deploy.yml
+
+              2) The Pod-XXX-Config.yml file provided was created using the playbooks/CreatePodConfig.yml script.
+                 All Pod configuration files used to deploy labs MUST be generated using that script.
+
+              3) You included the proper path with the "-e" option to the Pod-XXX-Config.yml file.
+
+              4) You prefaced the file name in the "-e" option with a '@', as shown in the example above.
+
+          *****************************************************************************************************
+      when:
+        - Valid_Pod_Config_File is not defined
+
+
+    - name: DEBUG -- Display Target Variables (Pause)
+      ansible.builtin.pause:
+        seconds: "{{ DEBUG.DisplayDelayInSeconds }}"
+        prompt: |
+          ================================ Display Variables For Pod {{ '%03d' | format(Pod.Number | int) }} ==================================
+
+                                     Ansible Playbook: {{ ansible_play_name }}
+
+                                    Target.Deployment: {{ Target.Deployment }}
+
+                                          Target.FQDN: {{ Target.FQDN }}
+                                          Target.User: {{ Target.User }}
+                                      Target.Password: {{ Target.Password }}
+                                       Target.Cluster: {{ Target.Cluster }}
+                                    Target.DataCenter: {{ Target.DataCenter }}
+                                     Target.Datastore: {{ Target.Datastore }}
+                                      Target.VMFolder: {{ Target.VMFolder }}
+                                     Target.ISOFolder: {{ Target.ISOFolder }}
+                          Target.PortGroup.Trunk.Name: {{ Target.PortGroup.Trunk.Name }}
+
+                         Deploy.Software.ESXi.Version: {{ Deploy.Software.ESXi.Version }}
+                       Deploy.Software.ESXi.Installer: {{ Deploy.Software.ESXi.Installer }}
+
+          =================================================================================================
+      when:
+        - DEBUG.DisplayVariables
+
+    - name: Deploy nested ESX hosts
+      community.vmware.vmware_guest:
+        hostname: "{{ Target.FQDN }}"
+        username: "{{ Target.User }}"
+        password: "{{ Target.Password }}"
+        validate_certs: "{{ Common.PKI.ValidateCerts }}"
+        name: "{{ item.VMName }}"
+        state: poweredon
+        guest_id: vmkernel65Guest
+        datacenter: "{{ Target.DataCenter }}"
+        cluster: "{{ Target.Cluster }}"
+        datastore: "{{ Target.Datastore }}"
+        folder: "{{ Target.VMFolder }}"
+        disk:
+          - size_gb: "{{ item.HardwareSettings.BootDiskSize }}"
+            type: "{{ Common.DiskProvisioning }}"
+            controller_type: 'nvme'
+            controller_number: 0
+            unit_number: 0
+          - size_gb: "{{ item.HardwareSettings.CapacityDiskSize }}"
+            type: "{{ Common.DiskProvisioning }}"
+            controller_type: 'nvme'
+            controller_number: 0
+            unit_number: 1
+        hardware:
+          nested_virt: true
+          memory_mb: "{{ item.HardwareSettings.Memory }}"
+          num_cpus: "{{ item.HardwareSettings.CPU }}"
+          num_cpu_cores_per_socket: "{{ item.HardwareSettings.CoresPerSocket }}"
+          mem_shares_level: "{{ item.HardwareSettings.Shares }}"
+          memory_reservation_lock: "{{ item.HardwareSettings.ReserveAllGuestMemory }}"
+        networks:
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
+            device_type: vmxnet3
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
+            device_type: vmxnet3
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
+            device_type: vmxnet3
+          - name: "{{ Target.PortGroup.Trunk.Name }}"
+            device_type: vmxnet3
+        cdrom:
+          - controller_number: 0
+            unit_number: 0
+            controller_type: sata
+            type: iso
+            iso_path: "[{{ Target.Datastore }}] {{ Target.ISOFolder }}/{{ item.VMName }}.iso"
+            state: present
+        advanced_settings:
+          # Enable 1GB page support on the nested ESXi hosts. Required with older physical CPUs in order to run NSX-T ≥3.2 Edge VMs on the nested ESXi hosts.
+          - key: "featMask.vm.cpuid.pdpe1gb"
+            value: "Val:1"
+        annotation: |
+                    {{ Common.Annotation }}
+                    {{ Deploy.Software.ESXi.Vendor }} {{ Deploy.Software.ESXi.Product }} {{ Deploy.Software.ESXi.Version }}
+                    Username: {{ item.User }}
+                    Password: {{ item.Password }}
+      loop: "{{ Nested_VCFInstaller.Deploy.Product.Hosts }}"
+      async: 1800
+      poll: 0
+      when:
+        - item.Deploy
