@@ -91,9 +91,9 @@
         - Deploy.Product.VCFInstaller.Deploy
         - item.Deploy
 
-    - name: Wait an additional 3 minutes
+    - name: Wait an additional 1 minutes
       ansible.builtin.pause:
-        seconds: 180
+        seconds: 60
       when:
         - Deploy.Product.VCFInstaller.Deploy
 
@@ -115,7 +115,7 @@
       when:
         - Deploy.Product.VCFInstaller.Deploy
 
-    - name: Wait until the VCF binaries are downloaded
+    - name: Wait until all the VCF binaries are downloaded
       ansible.builtin.uri:
         url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/bundles/download-status?bundleId={{ item.ID }}
         validate_certs: false
