@@ -130,7 +130,7 @@
       until: download_status_result.json.elements is defined and
              download_status_result.json.elements | length > 0 and
              download_status_result.json.elements[0].downloadStatus == 'SUCCESS'
-      retries: 30
+      retries: 120
       delay: 60
       loop: "{{ Nested_VCFInstaller.BinaryManagement.VCF.Binaries }}"
       loop_control:
