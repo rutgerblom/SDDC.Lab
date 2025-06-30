@@ -90,7 +90,7 @@
     "rootUserPassword": "{{ Nested_VCFInstaller.Deploy.Product.OperationsCollector.Credential.root.Password }}",
     "useExistingDeployment": false
   },
-{% if not Nested_VCFInstaller.Deploy.ExcludeVCFAutomation %}
+{% if Nested_VCFInstaller.Deploy.IncludeVCFAutomation %}
   "vcfAutomationSpec": {
     "hostname": "{{ Nested_VCFInstaller.Deploy.Product.VCFAutomation.Component.Appliance.FQDN }}",
     "adminUserPassword": "{{ Nested_VCFInstaller.Deploy.Product.VCFAutomation.Credential.admin.Password }}",
@@ -102,7 +102,7 @@
     "internalClusterCidr": "{{ Nested_VCFInstaller.Deploy.Product.VCFAutomation.Component.Node.InternalClusterCIDR }}",
     "useExistingDeployment": false
   },
-{% endif %}{# Nested_VCFInstaller.Deploy.ExcludeVCFAutomation #}
+{% endif %}{# Nested_VCFInstaller.Deploy.IncludeVCFAutomation #}
   "hostSpecs": [
 {% for Host in Nested_VCFInstaller.Deploy.Product.Hosts if Host.VCFDomain == 'management'%}
     {
