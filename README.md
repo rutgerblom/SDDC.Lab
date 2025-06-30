@@ -295,7 +295,7 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 54 | VCF Automation | VCF Automation Appliance | pod-240-vcf-automation | No |
 | 55 | VCF Automation Node IP 1 | VCF Automation Appliance IP 1 | pod-240-vcf-automation-ip1 | No |
 | 56 | VCF Automation Node IP 2 | VCF Automation Appliance IP 2 | pod-240-vcf-automation-ip2 | No |
-| 57 | VCF vCenter | vCenter Server Appliance in VCF | pod-240-vcf-vcenter | No |
+| 57 | VCF Mgmt vCenter | vCenter Server Appliance for the VCF management domain | pod-240-vcf-mgmt-vcenter | No |
 | 58 | VCF LM VIP | NSX Local Manager VIP in VCF | pod-240-vcf-nsx-lm | No |
 | 59 | VCF LM-1 | NSX Local Manager Node 1 in VCF | pod-240-vcf-nsx-lm-1 | No |
 | 60 | VCF SDDC Manager | SDDC Manager Appliance in VCF | pod-240-vcf-sddcmanager | No |
