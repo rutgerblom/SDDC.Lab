@@ -980,16 +980,16 @@ Nested_VCFInstaller:
       Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
   Component:
     Appliance:
-      VMName: "{{ SiteCode }}-vcfinstaller"
+      VMName: "{{ SiteCode }}-vcf-installer"
       FQDN: "{% if Deploy.Setting.UseDNS %}{{ SiteCode }}-vcfinstaller.{{ Common.DNS.Domain }}{% else %}{{ Net.Management.IPv4.Network }}.29{% endif %}"
       FIPSEnable: false
       Address:
         IPv4:
-          Address: "{{ Net.Management.IPv4.Network }}.29"
+          Address: "{{ Net.Management.IPv4.Network }}.50"
           Prefix:  "{{ Net.Management.IPv4.Prefix }}"
           Gateway: "{{ Net.Management.IPv4.Network }}.1"
         IPv6:
-          Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(29) }}"
+          Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(50) }}"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
   
   DepotSettings:
@@ -1040,10 +1040,10 @@ Nested_VCFInstaller:
     
   Deploy:
     WorkflowType: VCF
-    ExcludeVCFAutomation: true
+    IncludeCFAutomation: false
     General:
-      VCFInstanceName: VCF1
-      ManagementDomainName: mgmt
+      VCFInstanceName: VCF-1
+      ManagementDomainName: management-domain
       CEIPEnabled: "{{ Common.Question.CEIP.Enabled }}"
       DNS:
         Server:  "{{ Common.DNS.Server1.IPv4 }}"
@@ -1059,15 +1059,28 @@ Nested_VCFInstaller:
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
         Component:
           Appliance:
-            FQDN: "{{ SiteCode }}-vcfops.{{ Common.DNS.Domain }}"
-            VMName: "{{ SiteCode }}-vcfops"
+            FQDN: "{{ SiteCode }}-vcf-operations.{{ Common.DNS.Domain }}"
+            VMName: "{{ SiteCode }}-vcf-operations"
             Deployment:
               Size:  xsmall
             Address:
               IPv4:
-                Address: "{{ Net.Management.IPv4.Network }}.30"
+                Address: "{{ Net.Management.IPv4.Network }}.51"
               IPv6:
-                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(30) }}"
+                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(51) }}"
+      OperationsCollector:
+        Credential:
+          root:
+            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
+        Component:
+          Appliance:
+            FQDN: "{{ SiteCode }}-vcfopscollector.{{ Common.DNS.Domain }}"
+            VMName: "{{ SiteCode }}-vcf-operationscollector"
+            Address:
+              IPv4:
+                Address: "{{ Net.Management.IPv4.Network }}.52"
+              IPv6:
+                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(52) }}"
       FleetManagement:
         Credential:
           root:
@@ -1076,49 +1089,36 @@ Nested_VCFInstaller:
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
         Component:
           Appliance:
-            FQDN: "{{ SiteCode }}-fleetmgmt.{{ Common.DNS.Domain }}"
-            VMName: "{{ SiteCode }}-fleetmgmt"
+            FQDN: "{{ SiteCode }}-vcf-fleetmanagement.{{ Common.DNS.Domain }}"
+            VMName: "{{ SiteCode }}-vcf-fleetmanagement"
             Address:
               IPv4:
-                Address: "{{ Net.Management.IPv4.Network }}.32"
+                Address: "{{ Net.Management.IPv4.Network }}.53"
               IPv6:
-                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(32) }}"
-      OperationsCollector:
-        Credential:
-          root:
-            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-        Component:
-          Appliance:
-            FQDN: "{{ SiteCode }}-vcfopscollector.{{ Common.DNS.Domain }}"
-            VMName: "{{ SiteCode }}-vcfopscollector"
-            Address:
-              IPv4:
-                Address: "{{ Net.Management.IPv4.Network }}.31"
-              IPv6:
-                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(31) }}"
+                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(53) }}"
       VCFAutomation:
         Credential:
           admin: 
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
         Component:
           Appliance:
-            FQDN: "{{ SiteCode }}-vcfautomation.{{ Common.DNS.Domain }}"
-            VMName: "{{ SiteCode }}-vcfautomation"
+            FQDN: "{{ SiteCode }}-vcf-automation.{{ Common.DNS.Domain }}"
+            VMName: "{{ SiteCode }}-vcf-automation"
             Address:
               IPv4:
-                Address: "{{ Net.Management.IPv4.Network }}.33"
+                Address: "{{ Net.Management.IPv4.Network }}.54"
               IPv6:
-                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(33) }}"
+                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(54) }}"
           Node:
             NodeNamePrefix: vcfa
             InternalClusterCIDR: 198.18.0.0/15
             Address:
               IPv4:
-                Address1: "{{ Net.Management.IPv4.Network }}.34"
-                Address2: "{{ Net.Management.IPv4.Network }}.35"
+                Address1: "{{ Net.Management.IPv4.Network }}.55"
+                Address2: "{{ Net.Management.IPv4.Network }}.56"
               IPv6:
-                Address1: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(34) }}"
-                Address2: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(35) }}"
+                Address1: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(55) }}"
+                Address2: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(56) }}"
       vCenter:
         Credential:
           root:
@@ -1127,17 +1127,17 @@ Nested_VCFInstaller:
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
         Component:
           Appliance:
-            FQDN: "{{ SiteCode }}-vcenter.{{ Common.DNS.Domain }}"
-            VMName: "{{ SiteCode }}-vcenter"
+            FQDN: "{{ SiteCode }}-vcf-vcenter.{{ Common.DNS.Domain }}"
+            VMName: "{{ SiteCode }}-vcf-vcenter"
             Deployment:
               Size:  small
             Address:
               IPv4:
-                Address: "{{ Net.Management.IPv4.Network }}.5"
+                Address: "{{ Net.Management.IPv4.Network }}.57"
               IPv6:
-                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(5) }}"
+                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(57) }}"
         DataCenter: "{{ SiteCode }}-mgmt-datacenter"
-        Cluster: "{{ SiteCode }}-mgmt-cluster1"
+        Cluster: "{{ SiteCode }}-mgmt-cluster-1"
         SSODomain: vsphere.local
       NSX:
         Credential:
@@ -1149,23 +1149,23 @@ Nested_VCFInstaller:
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
         Component:
           Appliance:
-            FQDN: "{{ SiteCode }}-nsxt-lm-1.{{ Common.DNS.Domain }}"
-            VMName: "{{ SiteCode }}-nsxt-lm-1"
+            FQDN: "{{ SiteCode }}-vcf-nsx-lm-1.{{ Common.DNS.Domain }}"
+            VMName: "{{ SiteCode }}-vcf-nsx-lm-1"
             Deployment:
               Size:  medium
             Address:
               IPv4:
-                Address: "{{ Net.Management.IPv4.Network }}.12"
+                Address: "{{ Net.Management.IPv4.Network }}.59"
               IPv6:
-                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(12) }}"
+                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(59) }}"
           Cluster:
-            FQDN: "{{ SiteCode }}-nsxt-lm.{{ Common.DNS.Domain }}"
-            VMName: "{{ SiteCode }}-nsxt-lm"
+            FQDN: "{{ SiteCode }}-vcf-nsx-lm.{{ Common.DNS.Domain }}"
+            VMName: "{{ SiteCode }}-vcf-nsx-lm"
             Address:
               IPv4:
-                Address: "{{ Net.Management.IPv4.Network }}.11"
+                Address: "{{ Net.Management.IPv4.Network }}.58"
               IPv6:
-                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(11) }}"
+                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(58) }}"
           TEP:
             PoolName:       "{{ SiteCode }}-TEP-Pool"
             CIDR:           "{{ Net.Transport.IPv4.Network }}.0/{{ Net.Transport.IPv4.Prefix }}"
@@ -1183,19 +1183,19 @@ Nested_VCFInstaller:
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"      
         Component:
           Appliance:
-            FQDN: "{{ SiteCode }}-sddcmanager.{{ Common.DNS.Domain }}"
-            VMName: "{{ SiteCode }}-sddcmanager"
+            FQDN: "{{ SiteCode }}-vcf-sddcmanager.{{ Common.DNS.Domain }}"
+            VMName: "{{ SiteCode }}-vcf-sddcmanager"
             Address:
               IPv4:
-                Address: "{{ Net.Management.IPv4.Network }}.26"
+                Address: "{{ Net.Management.IPv4.Network }}.60"
               IPv6:
-                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(26) }}"
+                Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(60) }}"
       vSAN:
         Datastore: "{{ SiteCode }}-mgmt-cluster1-ds-vsan01"
 
       Hosts:
-        - VMName: "{{ SiteCode }}-esx-1"
-          FQDN: "{{ SiteCode }}-esx-1.{{ Common.DNS.Domain }}"
+        - VMName: "{{ SiteCode }}-vcf-esx-1"
+          FQDN: "{{ SiteCode }}-vcf-esx-1.{{ Common.DNS.Domain }}"
           VCFDomain: management
           Deploy: true
           User: root
@@ -1224,8 +1224,8 @@ Nested_VCFInstaller:
                 IPv6:
                   Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(181) }}"
                   Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-        - VMName: "{{ SiteCode }}-esx-2"
-          FQDN: "{{ SiteCode }}-esx-2.{{ Common.DNS.Domain }}"
+        - VMName: "{{ SiteCode }}-vcf-esx-2"
+          FQDN: "{{ SiteCode }}-vcf-esx-2.{{ Common.DNS.Domain }}"
           VCFDomain: management
           Deploy: true
           User: root
@@ -1254,8 +1254,8 @@ Nested_VCFInstaller:
                 IPv6:
                   Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(182) }}"
                   Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-        - VMName: "{{ SiteCode }}-esx-3"
-          FQDN: "{{ SiteCode }}-esx-3.{{ Common.DNS.Domain }}"
+        - VMName: "{{ SiteCode }}-vcf-esx-3"
+          FQDN: "{{ SiteCode }}-vcf-esx-3.{{ Common.DNS.Domain }}"
           VCFDomain: management
           Deploy: true
           User: root
@@ -1284,8 +1284,8 @@ Nested_VCFInstaller:
                 IPv6:
                   Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(183) }}"
                   Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-        - VMName: "{{ SiteCode }}-esx-4"
-          FQDN: "{{ SiteCode }}-esx-4.{{ Common.DNS.Domain }}"
+        - VMName: "{{ SiteCode }}-vcf-esx-4"
+          FQDN: "{{ SiteCode }}-vcf-esx-4.{{ Common.DNS.Domain }}"
           VCFDomain: management
           Deploy: true
           User: root
@@ -1314,8 +1314,8 @@ Nested_VCFInstaller:
                 IPv6:
                   Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(184) }}"
                   Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-        - VMName: "{{ SiteCode }}-esx-5"
-          FQDN: "{{ SiteCode }}-esx-5.{{ Common.DNS.Domain }}"
+        - VMName: "{{ SiteCode }}-vcf-esx-5"
+          FQDN: "{{ SiteCode }}-vcf-esx-5.{{ Common.DNS.Domain }}"
           VCFDomain: workload
           Deploy: false
           User: root
@@ -1344,8 +1344,8 @@ Nested_VCFInstaller:
                 IPv6:
                   Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(185) }}"
                   Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-        - VMName: "{{ SiteCode }}-esx-6"
-          FQDN: "{{ SiteCode }}-esx-6.{{ Common.DNS.Domain }}"
+        - VMName: "{{ SiteCode }}-vcf-esx-6"
+          FQDN: "{{ SiteCode }}-vcf-esx-6.{{ Common.DNS.Domain }}"
           VCFDomain: workload
           Deploy: false
           User: root
@@ -1374,8 +1374,8 @@ Nested_VCFInstaller:
                 IPv6:
                   Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(186) }}"
                   Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-        - VMName: "{{ SiteCode }}-esx-7"
-          FQDN: "{{ SiteCode }}-esx-7.{{ Common.DNS.Domain }}"
+        - VMName: "{{ SiteCode }}-vcf-esx-7"
+          FQDN: "{{ SiteCode }}-vcf-esx-7.{{ Common.DNS.Domain }}"
           VCFDomain: workload
           Deploy: false
           User: root
@@ -1404,8 +1404,8 @@ Nested_VCFInstaller:
                 IPv6:
                   Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(187) }}"
                   Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-        - VMName: "{{ SiteCode }}-esx-8"
-          FQDN: "{{ SiteCode }}-esx-8.{{ Common.DNS.Domain }}"
+        - VMName: "{{ SiteCode }}-vcf-esx-8"
+          FQDN: "{{ SiteCode }}-vcf-esx-8.{{ Common.DNS.Domain }}"
           VCFDomain: workload
           Deploy: false
           User: root
@@ -1434,7 +1434,7 @@ Nested_VCFInstaller:
                 IPv6:
                   Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(188) }}"
                   Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-    
+
     Network:
       ESXManagement:
         VLAN:           "{{ Net.Management.VLAN }}"
