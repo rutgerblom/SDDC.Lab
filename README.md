@@ -287,13 +287,18 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 26 | SDDC Manager | SDDC Manager Appliance | pod-240-sddcmanager | No |
 | 27 | Cloud Builder | Cloud Builder Appliance | pod-240-cloudbuilder | No |
 | 28 | SSPI Appliance | Security Services Platform Installer Appliance | pod-240-sspi | No |
-| 29 | VCF Installer | VCF Installer Appliance | pod-240-vcfinstaller | No |
-| 30 | VCF Operations | VCF Operations Appliance | pod-240-vcfops | No |
-| 31 | VCF Operations Collector | VCF Operations Collector Appliance | pod-240-vcfopscollector | No |
-| 32 | VCF Fleet Management | VCF Fleet Management Appliance | pod-240-fleetmgmt | No |
-| 33 | VCF Automation | VCF Automation Appliance | pod-240-vcautomation | No |
-| 34 | VCF Automation Node IP 1 | VCF Automation Appliance IP 1 | pod-240-vcfautomation-ip1 | No |
-| 35 | VCF Automation Node IP 2 | VCF Automation Appliance IP 2 | pod-240-vcfautomation-ip2 | No |
+| Thru 49 | Reserved | Reserved for Future Management VMs/Services | | |
+| 50 | VCF Installer | VCF Installer Appliance | pod-240-vcf-installer | No |
+| 51 | VCF Operations | VCF Operations Appliance | pod-240-vcf-operations | No |
+| 52 | VCF Operations Collector | VCF Operations Collector Appliance | pod-240-vcf-operationscollector | No |
+| 53 | VCF Fleet Management | VCF Fleet Management Appliance | pod-240-vcf-fleetmanagement | No |
+| 54 | VCF Automation | VCF Automation Appliance | pod-240-vcf-automation | No |
+| 55 | VCF Automation Node IP 1 | VCF Automation Appliance IP 1 | pod-240-vcf-automation-ip1 | No |
+| 56 | VCF Automation Node IP 2 | VCF Automation Appliance IP 2 | pod-240-vcf-automation-ip2 | No |
+| 57 | VCF vCenter | vCenter Server Appliance in VCF | pod-240-vcf-vcenter | No |
+| 58 | VCF LM VIP | NSX Local Manager VIP in VCF | pod-240-vcf-nsx-lm | No |
+| 59 | VCF LM-1 | NSX Local Manager Node 1 in VCF | pod-240-vcf-nsx-lm-1 | No |
+| 60 | VCF SDDC Manager | SDDC Manager Appliance in VCF | pod-240-vcf-sddcmanager | No |
 | Thru 89 | Reserved | Reserved for Future Management VMs/Services | | |
 | 90 | Reserved | User Deployed 3rd Party Appliances | | |
 | Thru 100 | Reserved | User Deployed 3rd Party Appliances | | |
