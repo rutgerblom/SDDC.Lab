@@ -3227,4 +3227,11 @@
     - ```config.yml```
     - ```templates.yml```
 
-  
+## Dev-v8.0.0 30-JUNE-2025
+
+### Added by Rutger Blom
+  - Updated IP addresses, FQDNs, and VM names of the appliances deployed by VCF Installer.
+  - Updated FQDNs and VM names of the nested ESX hosts used within VCF.
+  - Changed name and degault value of variable from ```ExcludeVCFAutomation: true``` to ```IncludeCFAutomation: false``` and update template ```templates/VCF_v9.0.0.0.j2```accordingly.
+  - Be sure to update your:
+    - ```config.yml```
