@@ -3235,3 +3235,17 @@
   - Changed name and degault value of variable from ```ExcludeVCFAutomation: true``` to ```IncludeCFAutomation: false``` and update template ```templates/VCF_v9.0.0.0.j2```accordingly.
   - Be sure to update your:
     - ```config.yml```
+
+
+<br>
+
+***
+<h1 style="text-align:center">SDDC.Lab Version 8.0 Released</h1>
+<br>
+
+
+## Release-v8.0.0 22-AUGUST-2025
+
+### Added by Rutger Blom & Luis Chanu
+
+- Released version 8 of the SDDC.Lab project.
