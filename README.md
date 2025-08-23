@@ -21,12 +21,12 @@
 * [SDDC.Lab Default Credentials](#sddclab-default-credentials)
 * [Usage](#usage)
 * [Project Features](#project-features)
-  * [NSX-T Federation](#nsx-t-federation-v4)
+  * [NSX Federation](#NSX-federation-v4)
   * [vSphere Content Libraries](#vsphere-content-libraries-v4--updated-in-v5)
   * [Deploy Test Workloads](#deploy-test-workloads-v4)
   * [Workload Management](#workload-management-v4)
   * [Pod-Router User-Defined Configuration Commands](#pod-router-user-defined-configuration-commands-v4)
-  * [NSX-T Segment IP Subnet Auto-Allocation](#nsx-t-segment-ip-subnet-auto-allocation-v5)
+  * [NSX Segment IP Subnet Auto-Allocation](#NSX-segment-ip-subnet-auto-allocation-v5)
   * [Memory Reservation & Shares](#memory-reservation--shares-v6)
   * [Symbolic Link to 'Latest' VyOS Installation ISO Download](#symbolic-link-to-latest-vyos-installation-iso-download-v8)
   * [SDDC Manager Appliance Deployment](#sddc-manager-appliance-deployment-v8)
@@ -46,15 +46,16 @@ Each Pod by default contains:
 * vCenter Server
 * ESXi Hosts
 * vSAN Storage
-* NSX-T Local Manager
-* NSX-T Edge Nodes
+* NSX Local Manager
+* NSX Edge Nodes
 * Aria Operations for Logs
 
 Additional products and solutions can be enabled for automated deployment and configuration within a Pod:
 * A DNS/NTP Server (multi-Pod)
-* NSX Advanced Load Balancer
-* Tanzu Kubernetes Grid Service
-* NSX-T Federation
+* Avi Load Balancer
+* vSphere Kubernetes Service
+* NSX Federation
+* VMware Cloud Foundation
 
 ![Physicaloverview](images/SDDC-Lab-pod2phys.png)
 
@@ -66,7 +67,7 @@ The following are the requirements for successful Pod deployments:
 * A virtual machine with a modern version of Ubuntu (used as the Ansible controller)
 * The default deployment settings require DNS name resolution. You can leverage an existing DNS server, but it must be configured with the required forward and reverse zones and support dynamic updates.
 * Access to VMware product installation media.
-* For deploying NSX-T you will need an NSX-T license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership) or the [NSX-T Product Evaluation Center](https://my.vmware.com/web/vmware/evalcenter?p=nsx-t-eval)).
+* For deploying NSX you will need an NSX license (Check out [VMUG Advantage](https://www.vmug.com/membership/vmug-advantage-membership)
 * If IPv6 deployment is enabled (Deploy.Setting.IPv6 = True):
   * Pod.BaseNetwork.IPv6 must be a fully expanded /56 IPv6 network prefix.  By default, [RFC4193](https://tools.ietf.org/html/rfc4193) ULA fd00::/56 prefix is used as a placeholder.
   * Router Version should be set to "Latest" (default)
@@ -76,23 +77,23 @@ The following are the requirements for successful Pod deployments:
   * DNS server must have IPv6 forward and reverse zones
   * Within each Pod, only the following components are currently configured with IPv6:
     * Nested VyOS Router (All interfaces)
-    * NSX-T Segments
-    * NSX-T eBGP Peering with the Router
+    * NSX Segments
+    * NSX eBGP Peering with the Router
 
 ### Recommendations
 The following are recommendations based on our experience with deploying Pods:
 
 * Use a physical layer-3 switch with appropriate OSPF/BGP configuration matching the OSPF/BGP settings in your config.yml file. Dynamic routing between your Pods and your physical network will make for a better experience.
 * Hardware configuration of the physical ESXi host(s):
-  * 2 CPUs (10 cores per CPU)
+  * 2 CPUs with 10 cores per CPU
   * 320 GB RAM
   * 1 TB storage capacity (preferably SSD). Either DAS or 10 Gbit NFS/iSCSI.  More space required if multiple labs are deployed.
 * Virtual hardware configuration of the Ansible controller VM:
   * 1 vCPU (4 vCPUs recommended)
   * 8 GB RAM (16GB RAM recommended)
-  * Hard disk
+  * Storage capacity
     * 64 GB for Linux boot disk
-    * 300 GB for /Software repository (Recommend this be on it's own disk)
+    * 300 GB for /Software repository (Recommend this be on it's own partition/disk)
   * VMware Paravirtual SCSI controller
   * VMXNET3 network adapter
 * Deploy the pre-configured DNS server for DNS name resolution within Pods instead of using your own.
@@ -151,7 +152,7 @@ Here is a table of "tested" environments for you to compare against:
 
 |    Date    |   Added By  | SDDC.Lab Version | LabInfo file |
 |------------|-------------|------------------|--------------|
-| 8-NOV-2024 |  Luis Chanu |      dev-8       | [LabInfo_20241108.txt](misc/LabInfo/LabInfo_20241108.txt) |
+| 8-NOV-2024 |  Luis Chanu |      v-8         | [LabInfo_20241108.txt](misc/LabInfo/LabInfo_20241108.txt) |
 
 
 
@@ -188,7 +189,7 @@ Consider the following when upgrading SDDC.Lab to a newer version.
 
   * Please review the [Project Features](#project-features) section, as many entries have been updated with additional functionality introduced in this release.  In particular:
     1. Additional functionaly was added to [vSphere Content Libraries](#vsphere-content-libraries-v4--updated-in-v5).  Not only are multiple Content Libraries now supported, but you can now also subscribe to Internet-based content libraries (i.e. TKG).
-    2. Overlay Segments now support automatic IP subnet address assignment for both IPv4 and IPv6.  For more information, see [NSX-T Segment IP Subnet Auto-Allocation](#nsx-t-segment-ip-subnet-auto-allocation-v5).
+    2. Overlay Segments now support automatic IP subnet address assignment for both IPv4 and IPv6.  For more information, see [NSX Segment IP Subnet Auto-Allocation](#NSX-segment-ip-subnet-auto-allocation-v5).
 
 
 ## Networking
@@ -214,14 +215,14 @@ Each Pod is comprised of ten (10) SDDC.Lab networks, numbered 0 through 9.  Thes
 
 | Pod Number | Network Number | MTU  | VLAN ID | DHCP Range |   Description    |
 |------------|----------------|------|---------|------------|------------------|
-|    100     |       0        | 1500 | 100     |            | Management (ESXi, NSX-T Edges, etc.) |
+|    100     |       0        | 1500 | 100     |            | Management (ESXi, NSX Edges, etc.) |
 |    100     |       1        | 9000 | 101     |            | vMotion |
 |    100     |       2        | 9000 | 102     |            | vSAN |
 |    100     |       3        | 9000 | 103     |            | IPStorage |
 |    100     |       4        | 9000 | 104     | .200-.254  | Overlay Transport (i.e. GENEVE Traffic) |
 |    100     |       5        | 1500 | 105     | .200-.254  | Service VM Management Interfaces |
-|    100     |       6        | 1500 | 106     |            | NSX-T Edge Uplink #1 |
-|    100     |       7        | 1500 | 107     |            | NSX-T Edge Uplink #2 |
+|    100     |       6        | 1500 | 106     |            | NSX Edge Uplink #1 |
+|    100     |       7        | 1500 | 107     |            | NSX Edge Uplink #2 |
 |    100     |       8        | 1500 | 108     |            | Remote Tunnel Endpoint (RTEP) |
 |    100     |       9        | 1500 | 109     | .200-.254  | VM Network |
 
@@ -265,40 +266,40 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 4 | Reserved | Reserved for Future Use | | |
 | 5 | vCenter Server | vCenter Server Appliance | pod-240-vcenter | Yes |
 | 6 | Reserved | Reserved for Future Use  | | |
-| 7 | GM VIP | NSX-T Global Manager VIP | pod-240-nsxt-gm | Only if deploying NSX-T Federation |
-| 8 | GM-1 | NSX-T Global Manager Node 1 | pod-240-nsxt-gm-1 | Only if deploying NSX-T Federation |
-| 9 | GM-2 | NSX-T Global Manager Node 2 | pod-240-nsxt-gm-2 | No |
-| 10 | GM-3 | NSX-T Global Manager Node 3 | pod-240-nsxt-gm-3 | No |
-| 11 | LM VIP | NSX-T Local Manager VIP | pod-240-nsxt-lm | Yes |
-| 12 | LM-1 | NSX-T Local Manager Node 1 | pod-240-nsxt-lm-1 | Yes |
-| 13 | LM-2 | NSX-T Local Manager Node 2 | pod-240-nsxt-lm-2 | No |
-| 14 | LM-3 | NSX-T Local Manager Node 3 | pod-240-nsxt-lm-3 | No |
-| 15 | ALB VIP | NSX-T Advanced Load Balancer (ALB) Controller VIP | pod-240-alb-controller | No |
-| 16 | ALB Controller-1 | NSX Advanced Load Balancer (ALB) Controller 1 | pod-240-alb-controller-1 | No |
-| 17 | ALB Controller-2 | NSX Advanced Load Balancer (ALB) Controller 2 | pod-240-alb-controller-2 | No |
-| 18 | ALB Controller-3 | NSX Advanced Load Balancer (ALB) Controller 3 | pod-240-alb-controller-3 | No |
+| 7 | GM VIP | NSX Global Manager VIP | pod-240-nsxt-gm | Only if deploying NSX Federation |
+| 8 | GM-1 | NSX Global Manager Node 1 | pod-240-nsxt-gm-1 | Only if deploying NSX Federation |
+| 9 | GM-2 | NSX Global Manager Node 2 | pod-240-nsxt-gm-2 | No |
+| 10 | GM-3 | NSX Global Manager Node 3 | pod-240-nsxt-gm-3 | No |
+| 11 | LM VIP | NSX Local Manager VIP | pod-240-nsxt-lm | Yes |
+| 12 | LM-1 | NSX Local Manager Node 1 | pod-240-nsxt-lm-1 | Yes |
+| 13 | LM-2 | NSX Local Manager Node 2 | pod-240-nsxt-lm-2 | No |
+| 14 | LM-3 | NSX Local Manager Node 3 | pod-240-nsxt-lm-3 | No |
+| 15 | ALB VIP | Avi Load Balancer (ALB) Controller VIP | pod-240-alb-controller | No |
+| 16 | ALB Controller-1 | Avi Load Balancer Controller 1 | pod-240-alb-controller-1 | No |
+| 17 | ALB Controller-2 | Avi Load Balancer Controller 2 | pod-240-alb-controller-2 | No |
+| 18 | ALB Controller-3 | Avi Load Balancer Controller 3 | pod-240-alb-controller-3 | No |
 | 19 | vRLI VIP | Aria Operations for Logs Cluster VIP | pod-240-vRLI | Yes |
 | 20 | vRLI-1 | Aria Operations for Logs Appliance Node 1 | pod-240-vrli-1 | Yes |
 | 21 | vRLI-2 | Aria Operations for Logs Appliance Node 2 | pod-240-vrli-2 | No |
 | 22 | vRLI-3 | Aria Operations for Logs Appliance Node 3 | pod-240-vrli-3 | No |
-| 23 | vRNI Platform | vRealize Network Insight Platform Appliance | pod-240-vrni | No |
-| 24 | vRNI Collector | vRealize Network Insight Collector Node | pod-240-vrni-collector | No |
+| 23 | vRNI Platform | Aria Operations for Networks Platform Appliance | pod-240-vrni | No |
+| 24 | vRNI Collector | Aria Operations for Networks Collector Node | pod-240-vrni-collector | No |
 | 25 | vSphere Replication | vSphere Replication Appliance | pod-240-replication | No |
 | 26 | SDDC Manager | SDDC Manager Appliance | pod-240-sddcmanager | No |
 | 27 | Cloud Builder | Cloud Builder Appliance | pod-240-cloudbuilder | No |
 | 28 | SSPI Appliance | Security Services Platform Installer Appliance | pod-240-sspi | No |
 | Thru 49 | Reserved | Reserved for Future Management VMs/Services | | |
-| 50 | VCF Installer | VCF Installer Appliance | pod-240-vcf-installer | No |
-| 51 | VCF Operations | VCF Operations Appliance | pod-240-vcf-operations | No |
-| 52 | VCF Operations Collector | VCF Operations Collector Appliance | pod-240-vcf-operationscollector | No |
-| 53 | VCF Fleet Management | VCF Fleet Management Appliance | pod-240-vcf-fleetmanagement | No |
-| 54 | VCF Automation | VCF Automation Appliance | pod-240-vcf-automation | No |
-| 55 | VCF Automation Node IP 1 | VCF Automation Appliance IP 1 | pod-240-vcf-automation-ip1 | No |
-| 56 | VCF Automation Node IP 2 | VCF Automation Appliance IP 2 | pod-240-vcf-automation-ip2 | No |
-| 57 | VCF Mgmt vCenter | vCenter Server Appliance for the VCF management domain | pod-240-vcf-mgmt-vcenter | No |
-| 58 | VCF Mgmt LM VIP | NSX Local Manager VIP in the VCF management domain | pod-240-vcf-mgmt-nsx-lm | No |
-| 59 | VCF Mgmt LM-1 | NSX Local Manager Node 1 in the VCF management domain | pod-240-vcf-mgmt-nsx-lm-1 | No |
-| 60 | VCF SDDC Manager | SDDC Manager Appliance in VCF | pod-240-vcf-sddcmanager | No |
+| 50 | VCF 9 Installer | VCF 9 Installer Appliance | pod-240-vcf-installer | No |
+| 51 | VCF 9 Operations | VCF 9 Operations Appliance | pod-240-vcf-operations | No |
+| 52 | VCF 9 Operations Collector | VCF 9 Operations Collector Appliance | pod-240-vcf-operationscollector | No |
+| 53 | VCF 9 Fleet Management | VCF 9 Fleet Management Appliance | pod-240-vcf-fleetmanagement | No |
+| 54 | VCF 9 Automation | VCF 9 Automation Appliance | pod-240-vcf-automation | No |
+| 55 | VCF 9 Automation Node IP 1 | VCF 9 Automation Appliance IP 1 | pod-240-vcf-automation-ip1 | No |
+| 56 | VCF 9 Automation Node IP 2 | VCF 0 Automation Appliance IP 2 | pod-240-vcf-automation-ip2 | No |
+| 57 | VCF 9 Mgmt vCenter | vCenter Server Appliance for the VCF 9 management domain | pod-240-vcf-mgmt-vcenter | No |
+| 58 | VCF 9 Mgmt LM VIP | NSX Local Manager VIP in the VCF 9 management domain | pod-240-vcf-mgmt-nsx-lm | No |
+| 59 | VCF 9 Mgmt LM-1 | NSX Local Manager Node 1 in the VCF 9 management domain | pod-240-vcf-mgmt-nsx-lm-1 | No |
+| 60 | VCF 9 SDDC Manager | SDDC Manager Appliance in VCF 9 | pod-240-vcf-sddcmanager | No |
 | Thru 89 | Reserved | Reserved for Future Management VMs/Services | | |
 | 90 | Reserved | User Deployed 3rd Party Appliances | | |
 | Thru 100 | Reserved | User Deployed 3rd Party Appliances | | |
@@ -340,20 +341,20 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 226-230 | Reserved | Tanzu Supervisor Cluster Control Plane (Compute*Y*) | | No |
 | 231-235 | Reserved | Tanzu Supervisor Cluster Control Plane (Compute*Z*) | | No |
 | 236-240 | Reserved | Tanzu Supervisor Cluster Control Plane (Edge) | | No |
-| 241 | Reserved  | NSX-T Edge Transport Node  | | No |
-| 242 | Reserved  | NSX-T Edge Transport Node  | | No |
-| 243 | Reserved  | NSX-T Edge Transport Node  | | No |
-| 244 | Reserved  | NSX-T Edge Transport Node  | | No |
-| 245 | Reserved  | NSX-T Edge Transport Node  | | No |
-| 246 | Reserved  | NSX-T Edge Transport Node  | | No |
-| 247 | Reserved  | NSX-T Edge Transport Node  | | No |
-| 248 | Reserved  | NSX-T Edge Transport Node  | | No |
-| 249 | Reserved  | NSX-T Edge Transport Node  | | No |
-| 250 | Reserved  | NSX-T Edge Transport Node  | | No |
-| 251 | Reserved  | NSX-T Edge Transport Node  | | No |
-| 252 | Reserved  | NSX-T Edge Transport Node  | | No |
-| 253 | EdgeVM-02 | NSX-T Tier-0 Edge Transport Node 2 | pod-240-t0-edgevm-02 | Yes |
-| 254 | EdgeVM-01 | NSX-T Tier-0 Edge Transport Node 1 | pod-240-t0-edgevm-01 | Yes |
+| 241 | Reserved  | NSX Edge Transport Node  | | No |
+| 242 | Reserved  | NSX Edge Transport Node  | | No |
+| 243 | Reserved  | NSX Edge Transport Node  | | No |
+| 244 | Reserved  | NSX Edge Transport Node  | | No |
+| 245 | Reserved  | NSX Edge Transport Node  | | No |
+| 246 | Reserved  | NSX Edge Transport Node  | | No |
+| 247 | Reserved  | NSX Edge Transport Node  | | No |
+| 248 | Reserved  | NSX Edge Transport Node  | | No |
+| 249 | Reserved  | NSX Edge Transport Node  | | No |
+| 250 | Reserved  | NSX Edge Transport Node  | | No |
+| 251 | Reserved  | NSX Edge Transport Node  | | No |
+| 252 | Reserved  | NSX Edge Transport Node  | | No |
+| 253 | EdgeVM-02 | NSX Tier-0 Edge Transport Node 2 | pod-240-t0-edgevm-02 | Yes |
+| 254 | EdgeVM-01 | NSX Tier-0 Edge Transport Node 1 | pod-240-t0-edgevm-01 | Yes |
 
 ### Overlay Network
 When a Pod is deployed, the IP space for the NSX overlay is derived from the settings located under ```Pod.BaseOverlay``` in the Pod configuration file.
@@ -383,32 +384,32 @@ Similary you remove an SDDC Pod with:
 ## Project Features
 Below are some project features that we feel are important enough to provide further explanation on, along with the SDDC.Lab version it was introduced in.
 
-### NSX-T Federation (v4)
-When deploying NSX-T Federation, keep the following in mind:
+### NSX Federation (v4)
+When deploying NSX Federation, keep the following in mind:
 
-1. Each NSX-T Location will be deployed from a separate SDDC.Lab Pod configuration file.
+1. Each NSX Location will be deployed from a separate SDDC.Lab Pod configuration file.
 
-2. All of the Pods that are participating in the NSX-T Federation deployment (i.e. Which will become NSX-T Locations) need to have ```Deploy.Product.NSXT.Federation.Deploy = true``` set in their configuration file.
+2. All of the Pods that are participating in the NSX Federation deployment (i.e. Which will become NSX Locations) need to have ```Deploy.Product.NSXT.Federation.Deploy = true``` set in their configuration file.
 
-3. The Global Manager Cluster (single VM) will be deployed by the Pod specified by ```Deploy.Product.NSXT.GlobalManager.SiteCode```.  As the value of this variable for each Pod defaults to their own ```SiteCode```, this value can be left at default for the Pod deploying the Global Manager.  All other Pods participating in NSX-T Federation need to update this value to the SiteCode of the Pod deploying the Global Manager.  For example, if "Pod-100" is deploying the Global Manager, then the other Pods need to change this variable in their respective configurations to ```"Pod-100"```.
+3. The Global Manager Cluster (single VM) will be deployed by the Pod specified by ```Deploy.Product.NSXT.GlobalManager.SiteCode```.  As the value of this variable for each Pod defaults to their own ```SiteCode```, this value can be left at default for the Pod deploying the Global Manager.  All other Pods participating in NSX Federation need to update this value to the SiteCode of the Pod deploying the Global Manager.  For example, if "Pod-100" is deploying the Global Manager, then the other Pods need to change this variable in their respective configurations to ```"Pod-100"```.
 
-4. The Pod responsible for deploying the Global Manager Cluster is responsible for many aspects of the NSX-T Federation deployment.  Because of these extra steps, there may be instances when the other Pods are waiting for some component to come on-line.  This is normal and by design.
+4. The Pod responsible for deploying the Global Manager Cluster is responsible for many aspects of the NSX Federation deployment.  Because of these extra steps, there may be instances when the other Pods are waiting for some component to come on-line.  This is normal and by design.
 
-5. NSX-T Federation can only be deployed as part of a complete Pod deployment.  For that reason, the following Pod Configuration settings must all be enabled to deploy NSX-T Federation:\
+5. NSX Federation can only be deployed as part of a complete Pod deployment.  For that reason, the following Pod Configuration settings must all be enabled to deploy NSX Federation:\
   a) ```Deploy.Product.NSXT.Federation.Deploy = true```\
   b) ```Deploy.Product.NSXT.LocalManager.Deploy = true```\
   c) ```Deploy.Product.NSXT.Edge.Deploy = true```
 
-6. NSX-T Federation requires an NSX-T Enterprise Plus license, so be sure the proper license is included in your ```licenses.yml``` file.
+6. NSX Federation requires an NSX Enterprise Plus license, so be sure the proper license is included in your ```licenses.yml``` file.
 
-7. SDDC.Lab only supports one (1) Tier-0 Gateway when NSX-T Federation is configured.  This Tier-0 Gateway will become the Stretched Tier-0 Gateway.
+7. SDDC.Lab only supports one (1) Tier-0 Gateway when NSX Federation is configured.  This Tier-0 Gateway will become the Stretched Tier-0 Gateway.
 
-8. NSX-T Federation support is still being developed, so there might be some functional items missing as part of the automated deployment.
+8. NSX Federation support is still being developed, so there might be some functional items missing as part of the automated deployment.
 
-9. The ```config_sample.yml``` default configuration assumes the Lab-Routers transit segment, and thus communication between NSX-T Federation Locations, is configured with an MTU of 1500 bytes.  If your environment supports Jumbo Frames, you can obtain better performance by changing the MTU values in the Net section.  Keep in mind that the OSPF (by default) requires matching MTU sizes, so you may lose peering with your ToR router.  If you decide to change the MTU values, you need to take this all into account, and are on your own.  For a lab, the default 1500 byte MTU configurations should suffice.
+9. The ```config_sample.yml``` default configuration assumes the Lab-Routers transit segment, and thus communication between NSX Federation Locations, is configured with an MTU of 1500 bytes.  If your environment supports Jumbo Frames, you can obtain better performance by changing the MTU values in the Net section.  Keep in mind that the OSPF (by default) requires matching MTU sizes, so you may lose peering with your ToR router.  If you decide to change the MTU values, you need to take this all into account, and are on your own.  For a lab, the default 1500 byte MTU configurations should suffice.
 
-10. SDDC.Lab does not support Federation with NSX-T v3.2.x.  If you want to deploy Federation in your lab, you have two options:\
-  a) Deploy Federation using NSX-T v3.1.3.7, then manually upgrade the Pods to NSX-T v3.2.x.\
+10. SDDC.Lab does not support Federation with NSX v3.2.x.  If you want to deploy Federation in your lab, you have two options:\
+  a) Deploy Federation using NSX v3.1.3.7, then manually upgrade the Pods to NSX v3.2.x.\
   b) Use NSX v4.1.0.0, as Federation issues are resolved in that release.
 
 11. Automatic [Deployment of Test Workloads](#deploy-test-workloads-v4) is supported with Federation.  Just keep in mind that although the workloads can be deployed, the DHCP Server functionality is not supported on Federated stretched NSX segments, so you will need to manually assign static IPv4/IPv6 addresses to the workloads after they are deployed.
@@ -418,7 +419,7 @@ SDDC.Lab now supports both local and subscribed vSphere Content Libraries, which
 
 1. Make sure to provision sufficient Pod storage to store whatever content items are used.
 
-2. If a specific datatstore is not specified in the ```config_sample.yml``` file (default), then the datastore used is dynamically selected from the available vSphere clusters.  If multiple vSphere clusters are deployed, the 'Edge' datastore is not used as it's assumed it's storage will be needed for NSX-T EdgeVMs.
+2. If a specific datatstore is not specified in the ```config_sample.yml``` file (default), then the datastore used is dynamically selected from the available vSphere clusters.  If multiple vSphere clusters are deployed, the 'Edge' datastore is not used as it's assumed it's storage will be needed for NSX EdgeVMs.
 
 3. By default, ```config_sample.yml``` assumes the published content library exists on the physical vCenter Server servicing the SDDC.Lab environment.  The default name of this content library is ```SDDC.Lab Content Library```.  Although this entry is included in the ```config_sample.yml``` file, it is not enabled by default.  In order to replicate the content library from the physical vCenter Server, you must enable this content library.
 
@@ -442,7 +443,7 @@ SDDC.Lab has a feature where it can automatically deploy test workload VMs from 
 5. Enable the WorkloadVMs functionality by setting ```Deploy.WorkloadVMs.Deploy``` to ```true``` in the ```config_sample.yml``` file.  By default, this setting is set to ```false```, thereby preventing the test workload VMs from being deployed.
 
 ### Workload Management (v4)
-SDDC.Lab can now enable Workload Management on nested vSphere Clusters during Pod deployment.  This feature is enabled per vSphere Cluster under the ```Nested_Cluster``` section in your ```config.yml```.  When enabled a Tanzu Supervisor Cluster is automatically configured for the vSphere Cluster.  Workload Management in SDDC.Lab relies on the NSX-T Native Load Balancer so NSX-T with an NSX-T Edge must also be deployed as part of the Pod. If you decide to leverage this feature, here are the items that need to be configured to enable the automatic configuration of Workload Management:
+SDDC.Lab can now enable Workload Management on nested vSphere Clusters during Pod deployment.  This feature is enabled per vSphere Cluster under the ```Nested_Cluster``` section in your ```config.yml```.  When enabled a Tanzu Supervisor Cluster is automatically configured for the vSphere Cluster.  Workload Management in SDDC.Lab relies on the NSX Native Load Balancer so NSX with an NSX Edge must also be deployed as part of the Pod. If you decide to leverage this feature, here are the items that need to be configured to enable the automatic configuration of Workload Management:
 
 1. Make sure that ```Deploy.Product.NSXT.LocalManager.Deploy``` and ```Deploy.Product.NSXT.Edge.Deploy``` settings are set to ```true``` in your ```config.yml```.  By default, these settings are set to ```true```.
 
@@ -461,8 +462,8 @@ During Pod-Router deployment, the playbook checks to see if the file exists.  If
 
 An example Pod-Router UserConfig file called ```Pod-010-Router-UserConfig.j2``` has been placed in the ```misc/Router-UserConfig``` directory.  Although this example is a fully rendered configuration, Jinja2 variables can also be included in the UserConfig file.
 
-### NSX-T Segment IP Subnet Auto-Allocation (v5)
-SDDC.Lab has a feature where it can automatically assign both IPv4 and IPv6 IP subnet addresses to NSX-T Segments included in your ```config.yml``` file.  The benefit of using this feature is that it permits you to easily deploy Pods without having to manually configure non-overlapping IP subnets for each NSX-T Segment.  Of course, if you have a need to manually specify the IP subnet used by a given NSX-T Segment, then you still have that flexibility, too, just as you continue to have the ability to create layer-2 only segments as well.
+### NSX Segment IP Subnet Auto-Allocation (v5)
+SDDC.Lab has a feature where it can automatically assign both IPv4 and IPv6 IP subnet addresses to NSX Segments included in your ```config.yml``` file.  The benefit of using this feature is that it permits you to easily deploy Pods without having to manually configure non-overlapping IP subnets for each NSX Segment.  Of course, if you have a need to manually specify the IP subnet used by a given NSX Segment, then you still have that flexibility, too, just as you continue to have the ability to create layer-2 only segments as well.
 
 Here are the important settings to understand in order to properly utilize this feature:
 
@@ -471,11 +472,11 @@ Here are the important settings to understand in order to properly utilize this 
   b) What network prefix is used for the auto-allocated IP subnets.  (See comments in ```config_sample.yml``` for additional information)\
   c) What IP address range is configured on the DHCP server. (See ```RangePrefix``` below)
 
-2. If an NSX-T Segment does not have a ```Subnets:``` entry, then it's assumed to be Layer-2 only, and no IP address is included in the data structure that is created.
+2. If an NSX Segment does not have a ```Subnets:``` entry, then it's assumed to be Layer-2 only, and no IP address is included in the data structure that is created.
 
-3. If an NSX-T Segment does have a ```Subnets:``` entry, and that entry has a list of IP subnets beneath it, then those explicitly mentioned subnets are allocated/assigned to the Segment.  This is how you go about creating user-defined IP subnets for a given NSX-T Segment.
+3. If an NSX Segment does have a ```Subnets:``` entry, and that entry has a list of IP subnets beneath it, then those explicitly mentioned subnets are allocated/assigned to the Segment.  This is how you go about creating user-defined IP subnets for a given NSX Segment.
 
-4. If an NSX-T Segment does have a ```Subnets:``` entry, but that key does NOT have a list of IP subnets beneath it, then SDDC.Lab will dynamically assign subnets based on the settings within the ```Pod.BaseOverlay``` data structure.  Whether IPv4 and IPv6 subnets are assigned is driven by the IPv4 and IPv6 Deploy.Setting values:\
+4. If an NSX Segment does have a ```Subnets:``` entry, but that key does NOT have a list of IP subnets beneath it, then SDDC.Lab will dynamically assign subnets based on the settings within the ```Pod.BaseOverlay``` data structure.  Whether IPv4 and IPv6 subnets are assigned is driven by the IPv4 and IPv6 Deploy.Setting values:\
   a) If ```Deploy.Setting.IPv4: True```, then an IPv4 subnet will be allocated.\
   b) If ```Deploy.Setting.IPv6: True```, then an IPv6 subnet will be allocated.
 
@@ -530,7 +531,7 @@ Here are some known items to be aware of:
 
 4. If there is no local [VyOS](https://www.vyos.io/) ISO image in the software repository, SDDC.Lab will automatically download and use the latest nightly build of [VyOS](https://www.vyos.io/).  Keep in mind, however, that this nightly build is part of their development branch.  Because of this, they may make changes to their product or command syntax as part of their development, which might break the deployment of the Pod-Router.  For this reason, if/when you update your [VyOS](https://www.vyos.io/) software image within the software repository, we recommend that you do not delete the existing file, but rather, rename it, so that you can always fall-back to that file should there be changes in the newer version.  If after you download an updated [VyOS](https://www.vyos.io/) image you are unable to ping across the Pod-Router, or if you notice the Pod-Router is missing some configuration, this is probably the cause.  This is out of our control, and are very thankful to the [VyOS](https://www.vyos.io/) team for providing the nightly image build to the public for free.  That said, as we identify changes in the [VyOS](https://www.vyos.io/) command syntax, we will do our best to implement those changes in future releases.  As we make changes to this in our development branch, we'll do our best to also document them in the CHANGELOG.md file within our development branch.
 
-5. When deploying a Federation configuration using NSX v4.0.0.1, the Workload VM Ansible playbook will fail when the playbook attempts to connect the VM's vNIC to the stretched NSX-T segment.  This is due to a NSX v4.0.0.1 bug related to onboarding of the an NSX Location into Federation.  Hopefully this will be corrected soon in a subsequent NSX version.  For additional information, please see "Issues With Various Software Versions" section below.
+5. When deploying a Federation configuration using NSX v4.0.0.1, the Workload VM Ansible playbook will fail when the playbook attempts to connect the VM's vNIC to the stretched NSX segment.  This is due to a NSX v4.0.0.1 bug related to onboarding of the an NSX Location into Federation.  Hopefully this will be corrected soon in a subsequent NSX version.  For additional information, please see "Issues With Various Software Versions" section below.
 
 6. If you are utilizing SDDC.Lab's content library functionality to subscribe to the ```SDDC.Lab Content Library``` on the physical vCenter Server, and are running into SSL issues, try deleting and recreating the content library on the physical vCenter Server.  We are aware of one installation that ran into this, and we could find no issue with the Ansible playbooks.  After the user deleted and recreated the content library on the phsycial vCenter Server, all the issues were resolved.  We just thought we would mention this in case someone runs into the same issue.
 
@@ -540,16 +541,16 @@ Here are some known items to be aware of:
 ## Issues With Various Software Versions
 As we use SDDC.Lab in our labs, every now-and-then we notice some issues/problems.  As we come across those, we'll try to very briefly document the versions and issue(s) below.  We do not test every software version combination, so by no means should this be taken as a comprehensive list of what works and what doesn't.  This is just a "best effort" from us, to you, in the hope that it saves you time and frustration.  Versions listed below match up with the software version used in config_sample.yml and the version "label" used in Software.yml.  Blank fields mean we believe they aren't relavent to the issue found, and thus, don't matter.
 
-| Date | vCenter Server | ESXi    |  NSX-T  | Description Of Issue | Documented By |
+| Date | vCenter Server | ESXi    |  NSX  | Description Of Issue | Documented By |
 |------|----------------|---------|---------|----------------------|---------------|
 | 5-JAN-2022 | 7.0.0U3  | 7.00U2A |         | Migrating vDS Uplinks in CreateVds playbook fails.  Deployed fine in ESXi v7.00U3. | Luis Chanu |
-| 5-JAN-2022 |          |         |  3.2.0  | NSX-T Federation deployment not supported. | Luis Chanu |
-| 31-JAN-2022 |         |         |  3.2.0.1  | NSX-T Federation deployment not supported. | Luis Chanu |
-| 20-FEB-2022 |         |         |  3.2.0.1  | NSX-T Global MTU Settings are not properly set. | Luis Chanu |
+| 5-JAN-2022 |          |         |  3.2.0  | NSX Federation deployment not supported. | Luis Chanu |
+| 31-JAN-2022 |         |         |  3.2.0.1  | NSX Federation deployment not supported. | Luis Chanu |
+| 20-FEB-2022 |         |         |  3.2.0.1  | NSX Global MTU Settings are not properly set. | Luis Chanu |
 | 12-AUG-2022 |         |         |  4.0.0.1  | There is a bug with NSX Federation onboarding such that imported local objects are not properly migrated to global objects.  Because of this bug, you are unable to connect a VM's vNIC to imported stretched NSX Segments. | Luis Chanu |
 | 11-OCT-2022 | 8.0.0 (Build  20519528) | 8.0.0 (Build 20513097) | 4.0.0.1 | Although v8.0.0 of vCenter Server and ESXi deploy successfully using SDDC.Lab, NSX fails when it attempts to apply the Transport Node Profile to the vSphere cluster.  It fails with the following error message, "```NSX cannot be enabled on the cluster because it contains host 6e6954ea-2f6a-491a-a3d4-34ea27078709:host-14 of unsupported version.```"  So, it appears the next version of NSX is required in order to support vSphere 8.0.0 (GA). | Luis Chanu |
-| 14-OCT-2022 | 8.0.0 (Build  20519528) | 8.0.0 (Build 20513097) | 4.0.1.1 | NSX-T Federation deployment is not supported due to a Federation onboarding bug with NSX where the Segment paths are not correct within vCenter Server. | Luis Chanu |
-| 26-APR-2023 | 7.0.0U3L | 7.0.0U3L | 3.2.2.1 | NSX-T Federation deployment is not supported due to a Federation onboarding bug with NSX where the Segment paths are not correct within vCenter Server.  This is the same issue discovered with NSX v4.0.1.1.  | Luis Chanu |
+| 14-OCT-2022 | 8.0.0 (Build  20519528) | 8.0.0 (Build 20513097) | 4.0.1.1 | NSX Federation deployment is not supported due to a Federation onboarding bug with NSX where the Segment paths are not correct within vCenter Server. | Luis Chanu |
+| 26-APR-2023 | 7.0.0U3L | 7.0.0U3L | 3.2.2.1 | NSX Federation deployment is not supported due to a Federation onboarding bug with NSX where the Segment paths are not correct within vCenter Server.  This is the same issue discovered with NSX v4.0.1.1.  | Luis Chanu |
 | 09-JUL-2024 | N/A | N/A | N/A | PIP3 ansible package v10.1.0 causes ```"/bin/sh: 1: /usr/bin/env python: not found\n"``` failure during deployment.  Solution is to install ansible package v9.7.0. UPDATE: This issue was corrected by the maintainers of the VMware Ansible Modules, and is resolved in ```community.vmware``` module version 5.2.0 | Luis Chanu |
 | 29-DEC-2024 | N/A | N/A | N/A | vRLI v8.18.0 fails during SDDC.Lab deployment.  Solution is to use a different vRLI version. | Luis Chanu |
 
