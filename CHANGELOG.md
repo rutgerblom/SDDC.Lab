@@ -3258,3 +3258,7 @@
 ██████  ███████   ████           ████    █████  
 ```
 
+## Dev-v9.0.0 25-AUGUST-2025
+
+### Added by Rutger Blom
+  - Renamed playbook ```DeployVCFInstallerSddc.yml``` to ```DeployVCF.yml``` for clarity.
