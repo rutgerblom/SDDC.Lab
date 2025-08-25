@@ -170,3 +170,19 @@
       when:
         - Deploy.Product.VCFInstaller.Deploy
         - sddc_exist_result.json.elements | selectattr('status', 'in', ['IN_PROGRESS', 'COMPLETED_WITH_SUCCESS']) | list | length == 0
+
+    - name: Display information
+      ansible.builtin.pause:
+        seconds: 20
+        prompt: |
+          ====================================================================================================
+          =============================================  NOTICE  =============================================
+          ====================================================================================================
+
+           Your VCF Fleet is now being deployed. This can take several hours depending on your environment
+
+           Track deployment progress from the VCF Installer UI at: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}
+
+          ====================================================================================================
+      when:
+        - Deploy.Product.VCFInstaller.Deploy
