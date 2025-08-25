@@ -140,7 +140,7 @@
         - Nested_VCFInstaller.DepotSettings.OnlineDepot.Configure
         - item.Download | default(true)
 
-    - name: Check if a VCF SDDC is already (being) deployed
+    - name: Check if a VCF Fleet is already (being) deployed
       ansible.builtin.uri:
         url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/sddcs
         validate_certs: false
@@ -155,7 +155,7 @@
       when:
         - Deploy.Product.VCFInstaller.Deploy
 
-    - name: Deploy a VCF SDDC
+    - name: Deploy a VCF Fleet
       ansible.builtin.uri:
         url: https://{{ Nested_VCFInstaller.Component.Appliance.FQDN }}/v1/sddcs
         validate_certs: false
