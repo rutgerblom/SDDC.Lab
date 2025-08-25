@@ -3261,4 +3261,5 @@
 ## Dev-v9.0.0 25-AUGUST-2025
 
 ### Added by Rutger Blom
-  - Renamed playbook ```DeployVCFInstallerSddc.yml``` to ```DeployVCF.yml``` for clarity.
+  - Renamed playbook ```DeployVCFInstallerSddc.yml``` to ```DeployVcfFleet.yml``` for clarity.
+  - Updated uppercase/lowercase in playbook names to match the project's naming standard.
