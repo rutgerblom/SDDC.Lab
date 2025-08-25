@@ -314,19 +314,19 @@
     - not Deploy.Setting.DeployVCF
 
 # Deploy VCF Installer (Nested)
-- ansible.builtin.import_playbook: playbooks/DeployVCFInstaller.yml
+- ansible.builtin.import_playbook: playbooks/DeployVcfInstaller.yml
   when: 
     - Deploy.Product.VCFInstaller.Deploy
     - not Deploy.Setting.DeployESXiOnly
 
 # Configure VCF Installer (Nested)
-- ansible.builtin.import_playbook: playbooks/ConfigureVCFInstaller.yml
+- ansible.builtin.import_playbook: playbooks/ConfigureVcfInstaller.yml
   when: 
     - Deploy.Product.VCFInstaller.Deploy
     - not Deploy.Setting.DeployESXiOnly
 
 # Deploy VCF (Nested)
-- ansible.builtin.import_playbook: playbooks/DeployVCF.yml
+- ansible.builtin.import_playbook: playbooks/DeployVcfFleet.yml
   when: 
     - Deploy.Product.VCFInstaller.Deploy
     - Deploy.Setting.DeployVCF
