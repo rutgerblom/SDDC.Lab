@@ -561,3 +561,5 @@ We also suggest that you watch [our vBrownBag video](https://www.youtube.com/wat
 
 ## Credits
 A big thank you to [Yasen Simeonov](https://www.linkedin.com/in/yasen/). His project at https://github.com/yasensim/vsphere-lab-deploy was the inspiration for this project. Another big thank you to my companion and lead developer [Luis Chanu](https://www.linkedin.com/in/luischanu/) (VCDX #246) for pushing this project forward all the time. Last but not least thank you vCommunity for trying this out and providing valuable feedback.
+
+Thank you [William Lam](https://williamlam.com/) for making the vSAN ESA Hardware Mock VIB availble to the community.
