@@ -3271,3 +3271,10 @@
     - Removed extra trailing spaces in ESX entries
     - Corrected version information on vCenter v9.0.0 entry
     - Appended software version to VCFInstaller to follow scheme with other products
+
+## Dev-v9.0.0 29-AUGUST-2025
+
+### Added by Rutger Blom
+  - Updated the object names of Datacenter and Cluster in the nested VCF 9 management vCenter instance so that these follow the naming convention.
+  - Be sure to update your:
+    - ```config.yml```
