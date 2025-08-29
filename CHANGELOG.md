@@ -3263,3 +3263,11 @@
 ### Added by Rutger Blom
   - Renamed playbook ```DeployVCFInstallerSddc.yml``` to ```DeployVcfFleet.yml``` for clarity.
   - Updated uppercase/lowercase in playbook names to match the project's naming standard.
+
+## Dev-v9.0.0 29-AUGUST-2025
+
+### Added by Luis Chanu
+  - Corrected small items in ```software_sample.yml```:
+    - Removed extra trailing spaces in ESX entries
+    - Corrected version information on vCenter v9.0.0 entry
+    - Appended software version to VCFInstaller to follow scheme with other products
