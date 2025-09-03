@@ -133,7 +133,7 @@ Deploy:
     NSXT:                                                 # Label used for selection of which template to use during deployment (templates.yml)
       Vendor:  VMware                                     # Indicates software vendor  you want to deploy from the software repository (software.yml)
       Product: NSXT                                       # Indicates software product you want to deploy from the software repository (software.yml)
-      Version: '4.2.1.0'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
+      Version: '4.2.1.2'                                  # Indicates which software version you want to deploy from the software repository (software.yml)
       Patch:   false
       Config:  "{{ SiteCode }}-NSXT.conf"
       Installer: "{{ SiteCode }}-Installer-NSXT"
@@ -255,7 +255,7 @@ Common:
     Forwarder:
       IPv4: 8.8.8.8                                                           # Forwarder - Default DNS forwarding address used by nested routers.
       IPv6: 2001:4860:4860::8888                                              # Forwarderv6 - Default DNS IPv6 forwarding address used by nested routers.
-    Protocol: udp                                                             # Select protocol to be used when adding/updating dns records for pods on the nested DNS server
+    Protocol: udp                                                             # Select protocol to be used when adding/updating dns records for pods on the nested DNS server.
     Server1:
       IPv4: "{{ Net.Uplink.IPv4.Network }}.5"                                 # Replace this IP if using a different DNS server than the suggested .5  server in the Router Uplink segment (MUST support Dynamic DNS Updates)
       IPv6: "{{ Net.Uplink.IPv6.Network }}::{{ '%04x'|format(5) }}"           # Replace this IP if using a different DNS server than the suggested ::5 server in the Router Uplink segment (MUST support Dynamic DNS Updates)
@@ -685,28 +685,28 @@ Nested_Router:
           IPv6:
             Address: "{{ Net.Uplink.IPv6.Network }}::{{ '%04x'|format(1) }}"
       NSXEdges:
-        - Name: "{{ SiteCode }}-T0-EdgeVM-01-1"
+        - Name: "{{ SiteCode }}-t0-edgevm-01-1"
           ASN: "{% if Deploy.Product.NSXT.Federation.Deploy %}{{ 65000 + (Deploy.Product.NSXT.GlobalManager.PodNumber|int) + 1 }}{% else %}{{ 65000 + Pod.Number + 1 }}{% endif %}"
           SendDefault: true
           IPv4:
             Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"
           IPv6:
             Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(2) }}"
-        - Name: "{{ SiteCode }}-T0-EdgeVM-01-2"
+        - Name: "{{ SiteCode }}-t0-edgevm-01-2"
           ASN: "{% if Deploy.Product.NSXT.Federation.Deploy %}{{ 65000 + (Deploy.Product.NSXT.GlobalManager.PodNumber|int) + 1 }}{% else %}{{ 65000 + Pod.Number + 1 }}{% endif %}"
           SendDefault: true
           IPv4:
             Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"
           IPv6:
             Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(2) }}"
-        - Name: "{{ SiteCode }}-T0-EdgeVM-02-1"
+        - Name: "{{ SiteCode }}-t0-edgevm-02-1"
           ASN: "{% if Deploy.Product.NSXT.Federation.Deploy %}{{ 65000 + (Deploy.Product.NSXT.GlobalManager.PodNumber|int) + 1 }}{% else %}{{ 65000 + Pod.Number + 1 }}{% endif %}"
           SendDefault: true
           IPv4:
             Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"
           IPv6:
             Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(3) }}"
-        - Name: "{{ SiteCode }}-T0-EdgeVM-02-2"
+        - Name: "{{ SiteCode }}-t0-edgevm-02-2"
           ASN: "{% if Deploy.Product.NSXT.Federation.Deploy %}{{ 65000 + (Deploy.Product.NSXT.GlobalManager.PodNumber|int) + 1 }}{% else %}{{ 65000 + Pod.Number + 1 }}{% endif %}"
           SendDefault: true
           IPv4:
@@ -2904,7 +2904,7 @@ Nested_NSXT:
               - Tag: Auto-Created
                 Scope: SDDC.Lab
             EdgeCluster:
-              Name: "{{ SiteCode }}-T0-Edge-Cluster-01"
+              Name: "{{ SiteCode }}-t0-edge-cluster-01"
             RouteRedistributionConfig:
               BGP_Enabled: true
               Rules:
@@ -3000,8 +3000,8 @@ Nested_NSXT:
                 MaxHopLimit: 1
                 Password: ""
           Interfaces:
-            - Name: "{{ SiteCode }}-T0-EdgeVM-01-1_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink1.VLAN|int) }}"
-              Description: "{{ SiteCode }}-T0-EdgeVM-01 Uplink 1"
+            - Name: "{{ SiteCode }}-t0-edgevm-01-1_vlan-{{ '%03d'|format(Net.NSXEdgeUplink1.VLAN|int) }}"
+              Description: "{{ SiteCode }}-t0-edgevm-01 uplink 1"
               SegmentName: "SEG-T0-Edge-Uplink1_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink1.VLAN|int) }}"
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
@@ -3009,15 +3009,15 @@ Nested_NSXT:
                 - Tag: Auto-Created
                   Scope: SDDC.Lab
               EdgeNodeInfo:
-                EdgeClusterName: "{{ SiteCode }}-T0-Edge-Cluster-01"
-                EdgeNodeName:    "{{ SiteCode }}-T0-EdgeVM-01"
+                EdgeClusterName: "{{ SiteCode }}-t0-edge-cluster-01"
+                EdgeNodeName:    "{{ SiteCode }}-t0-edgevm-01"
               Subnets:
                 - Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.2"
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
                 - Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(2) }}"
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
-            - Name: "{{ SiteCode }}-T0-EdgeVM-01-2_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink2.VLAN|int) }}"
-              Description: "{{ SiteCode }}-T0-EdgeVM-01 Uplink 2"
+            - Name: "{{ SiteCode }}-t0-edgevm-01-2_vlan-{{ '%03d'|format(Net.NSXEdgeUplink2.VLAN|int) }}"
+              Description: "{{ SiteCode }}-t0-edgevm-01 uplink 2"
               SegmentName: "SEG-T0-Edge-Uplink2_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink2.VLAN|int) }}"
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
@@ -3025,15 +3025,15 @@ Nested_NSXT:
                 - Tag: Auto-Created
                   Scope: SDDC.Lab
               EdgeNodeInfo:
-                EdgeClusterName: "{{ SiteCode }}-T0-Edge-Cluster-01"
-                EdgeNodeName:    "{{ SiteCode }}-T0-EdgeVM-01"
+                EdgeClusterName: "{{ SiteCode }}-t0-edge-cluster-01"
+                EdgeNodeName:    "{{ SiteCode }}-t0-edgevm-01"
               Subnets:
                 - Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.2"
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
                 - Address: "{{ Net.NSXEdgeUplink2.IPv6.Network }}::{{ '%04x'|format(2) }}"
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv6.Prefix }}"
-            - Name: "{{ SiteCode }}-T0-EdgeVM-02-1_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink1.VLAN|int) }}"
-              Description: "{{ SiteCode }}-T0-EdgeVM-02 Uplink 1"
+            - Name: "{{ SiteCode }}-t0-edgevm-02-1_vlan-{{ '%03d'|format(Net.NSXEdgeUplink1.VLAN|int) }}"
+              Description: "{{ SiteCode }}-t0-edgevm-02 Uplink 1"
               SegmentName: "SEG-T0-Edge-Uplink1_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink1.VLAN|int) }}"
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
@@ -3041,15 +3041,15 @@ Nested_NSXT:
                 - Tag: Auto-Created
                   Scope: SDDC.Lab
               EdgeNodeInfo:
-                EdgeClusterName: "{{ SiteCode }}-T0-Edge-Cluster-01"
-                EdgeNodeName:    "{{ SiteCode }}-T0-EdgeVM-02"
+                EdgeClusterName: "{{ SiteCode }}-t0-edge-cluster-01"
+                EdgeNodeName:    "{{ SiteCode }}-t0-edgevm-02"
               Subnets:
                 - Address: "{{ Net.NSXEdgeUplink1.IPv4.Network }}.3"
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv4.Prefix }}"
                 - Address: "{{ Net.NSXEdgeUplink1.IPv6.Network }}::{{ '%04x'|format(3) }}"
                   Prefix:  "{{ Net.NSXEdgeUplink1.IPv6.Prefix }}"
-            - Name: "{{ SiteCode }}-T0-EdgeVM-02-2_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink2.VLAN|int) }}"
-              Description: "{{ SiteCode }}-T0-EdgeVM-02 Uplink 2"
+            - Name: "{{ SiteCode }}-t0-edgevm-02-2_vlan-{{ '%03d'|format(Net.NSXEdgeUplink2.VLAN|int) }}"
+              Description: "{{ SiteCode }}-t0-edgevm-02 Uplink 2"
               SegmentName: "SEG-T0-Edge-Uplink2_VLAN-{{ '%03d'|format(Net.NSXEdgeUplink2.VLAN|int) }}"
               Type: EXTERNAL                                                                    # Options are EXTERNAL, LOOPBACK, or SERVICE
               URPFMode: NONE                                                                    # Options are NONE or STRICT
@@ -3057,8 +3057,8 @@ Nested_NSXT:
                 - Tag: Auto-Created
                   Scope: SDDC.Lab
               EdgeNodeInfo:
-                EdgeClusterName: "{{ SiteCode }}-T0-Edge-Cluster-01"
-                EdgeNodeName:    "{{ SiteCode }}-T0-EdgeVM-02"
+                EdgeClusterName: "{{ SiteCode }}-t0-edge-cluster-01"
+                EdgeNodeName:    "{{ SiteCode }}-t0-edgevm-02"
               Subnets:
                 - Address: "{{ Net.NSXEdgeUplink2.IPv4.Network }}.3"
                   Prefix:  "{{ Net.NSXEdgeUplink2.IPv4.Prefix }}"
@@ -3128,7 +3128,7 @@ Nested_NSXT:
         Type: DHCP_SERVER                                                                       # Type is either DHCP_SERVER or DHCP_RELAY
         ServerAddresses: []                                                                     # List of Server Address(es).  Required for DHCP_RELAY, but can be left as empty list ("[]") for DHCP_SERVER
         LeaseTime: "{{ Common.DHCP.LeaseTime }}"                                                # Set DHCP Lease Time to the Common DHCP Lease Time
-        EdgeCluster: "{{ SiteCode }}-T0-Edge-Cluster-01"                                        # Edge Cluster where DHCP Server service is instantiated.
+        EdgeCluster: "{{ SiteCode }}-t0-edge-cluster-01"                                        # Edge Cluster where DHCP Server service is instantiated.
         Tags:
           - Tag: Auto-Created
             Scope: SDDC.Lab
@@ -3354,7 +3354,7 @@ Nested_NSXT:
 
       Profile:
         UplinkProfiles:
-          - Name: ESXi-Uplink-Profile
+          - Name: esxi-uplink-profile
             Description: ESXi Host Transport Node Uplink Profile
             Transport:
               VLAN: "{{ Net.Transport.VLAN }}"
@@ -3366,7 +3366,7 @@ Nested_NSXT:
                   Type: PNIC
                 - Name: uplink-2
                   Type: PNIC
-          - Name: Edge-Uplink-Profile
+          - Name: edge-uplink-profile
             Description: Edge Transport Node Uplink Profile
             Transport:
               VLAN: "{{ Net.Transport.VLAN }}"
@@ -3422,7 +3422,7 @@ Nested_NSXT:
                   - Name: TZ-Overlay
                   - Name: TZ-VLAN
                 UplinkProfile:
-                  Name: ESXi-Uplink-Profile
+                  Name: esxi-uplink-profile
                 IPPool:
                   Name: "{{ SiteCode }}-TEP-Pool"
                   Type: StaticIpPoolSpec
@@ -3444,7 +3444,7 @@ Nested_NSXT:
                   - TZ-Edge
                   - TZ-Overlay
                 UplinkProfile:
-                  Name: Edge-Uplink-Profile
+                  Name: edge-uplink-profile
                 IPPool:
                   Name: "{{ SiteCode }}-TEP-Pool"
                   Type: StaticIpPoolSpec
@@ -3492,7 +3492,7 @@ Nested_NSXT:
                   - TZ-Edge
                   - TZ-Overlay
                 UplinkProfile:
-                  Name: Edge-Uplink-Profile
+                  Name: edge-uplink-profile
                 IPPool:
                   Name: "{{ SiteCode }}-TEP-Pool"
                   Type: StaticIpPoolSpec
@@ -3533,7 +3533,7 @@ Nested_NSXT:
                 Scope: SDDC.Lab
 
         EdgeClusters:
-          - Name: "{{ SiteCode }}-T0-Edge-Cluster-01"
+          - Name: "{{ SiteCode }}-t0-edge-cluster-01"
             Description: Edge Cluster
             ClusterProfiles:
               - nsx-default-edge-high-availability-profile
@@ -3573,7 +3573,7 @@ Nested_NSXT:
 ## all of the VM/OVF Templates in the Content Library of the Physical vCenter Server.
 ##
 WorkloadVMs:
-  - VMName: tinyvm-1_seg-web                                                            # VM Name of the GuestVM being created
+  - VMName: tinyvm-1                                                                    # VM Name of the GuestVM being created
     ContentLibrary: "{{ Nested_vCenter.ContentLibrary.WorkloadVMs.Name }}"              # Content Library Name where template is located
     Template:
       Type: OVF_TEMPLATE                                                                # Valid options: OVF_TEMPLATE or VM_TEMPLATE
@@ -3599,7 +3599,7 @@ WorkloadVMs:
             Scope: SDDC.Lab
           - Tag: TinyVM
             Scope: Demo
-  - VMName: tinyvm-2_seg-web                                                            # VM Name of the GuestVM being created
+  - VMName: tinyvm-2                                                                    # VM Name of the GuestVM being created
     ContentLibrary: "{{ Nested_vCenter.ContentLibrary.WorkloadVMs.Name }}"              # Content Library Name where template is located
     Template:
       Type: OVF_TEMPLATE                                                                # Valid options: OVF_TEMPLATE or VM_TEMPLATE
@@ -3625,7 +3625,7 @@ WorkloadVMs:
             Scope: SDDC.Lab
           - Tag: TinyVM
             Scope: Demo
-  - VMName: tinyvm-3_seg-web                                                            # VM Name of the GuestVM being created
+  - VMName: tinyvm-3                                                                    # VM Name of the GuestVM being created
     ContentLibrary: "{{ Nested_vCenter.ContentLibrary.WorkloadVMs.Name }}"              # Content Library Name where template is located
     Template:
       Type: OVF_TEMPLATE                                                                # Valid options: OVF_TEMPLATE or VM_TEMPLATE
