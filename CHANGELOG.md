@@ -3285,5 +3285,6 @@
   - Bumped ```SDDCLab.Version``` from ```8``` to ```9``` in:
     - ```templates/Pod_Config.j2```
     - ```playbooks/ValidateConfiguration.yml```
+  - Updated the object names of NSX Edge Nodes and Cluster to lower case to better align with VCF 9's naming convention.
   - Be sure to regenerate your static SDDC.Lab Pod configurations via either ```playbooks/CreatePodConfig.yml``` or via ```utils/Util_CraeteAllPodConfigs.sh```
   - Removed extra trailing spaces for ```config_sample.yml``` file
