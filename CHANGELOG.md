@@ -3286,3 +3286,4 @@
     - ```templates/Pod_Config.j2```
     - ```playbooks/ValidateConfiguration.yml```
   - Be sure to regenerate your static SDDC.Lab Pod configurations via either ```playbooks/CreatePodConfig.yml``` or via ```utils/Util_CraeteAllPodConfigs.sh```
+  - Removed extra trailing spaces for ```config_sample.yml``` file

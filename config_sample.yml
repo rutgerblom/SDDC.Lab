@@ -254,8 +254,8 @@ Common:
     Domain: sddc.lab                                                          # Domain - Default DNS Domain used by all nested components.
     Forwarder:
       IPv4: 8.8.8.8                                                           # Forwarder - Default DNS forwarding address used by nested routers.
-      IPv6: 2001:4860:4860::8888                                              # Forwarderv6 - Default DNS IPv6 forwarding address used by nested routers.  
-    Protocol: udp                                                             # Select protocol to be used when adding/updating dns records for pods on the nested DNS server  
+      IPv6: 2001:4860:4860::8888                                              # Forwarderv6 - Default DNS IPv6 forwarding address used by nested routers.
+    Protocol: udp                                                             # Select protocol to be used when adding/updating dns records for pods on the nested DNS server
     Server1:
       IPv4: "{{ Net.Uplink.IPv4.Network }}.5"                                 # Replace this IP if using a different DNS server than the suggested .5  server in the Router Uplink segment (MUST support Dynamic DNS Updates)
       IPv6: "{{ Net.Uplink.IPv6.Network }}::{{ '%04x'|format(5) }}"           # Replace this IP if using a different DNS server than the suggested ::5 server in the Router Uplink segment (MUST support Dynamic DNS Updates)
@@ -267,8 +267,8 @@ Common:
       IPv4: "{{ Net.Uplink.IPv4.Network }}.5"                                 # Replace this IP if using a different NTP server than the suggested .5  server in the Router Uplink segment
       IPv6: "{{ Net.Uplink.IPv6.Network }}::{{ '%04x'|format(5) }}"           # Replace this IP if using a different NTP server than the suggested ::5 server in the Router Uplink segment
     Server2:
-      IPv4: "{{ Net.Management.IPv4.Network }}.1"                             
-      IPv6: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(1) }}"       
+      IPv4: "{{ Net.Management.IPv4.Network }}.1"
+      IPv6: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(1) }}"
   Question:
     CEIP:
       Answer: true                                                            # Indicate if CEIP question should be automatically answered
@@ -351,7 +351,7 @@ TargetConfig:
     TempFolder: "{{ lookup('env','HOME') }}/SDDC.Lab/{{ SiteCode }}"          # TempFolder - Temporary folder location used for temporary files created during the deployment process
     TemplateFolder: ../templates
     PortGroup:
-      Uplink: Lab-Routers                                                     # Uplink - The portgroup for your Router Uplink segment 
+      Uplink: Lab-Routers                                                     # Uplink - The portgroup for your Router Uplink segment
       Management:
         Name: "{{ SiteCode }}-Mgmt"
         VLAN: "{{ Net.Management.VLAN }}"
@@ -920,7 +920,7 @@ Nested_CloudBuilder:
 
 
 
-## 
+##
 ## ███    ██ ███████ ███████ ████████ ███████ ██████          ███████ ██████  ██████   ██████ ███    ███  █████  ███    ██  █████   ██████  ███████ ██████
 ## ████   ██ ██      ██         ██    ██      ██   ██         ██      ██   ██ ██   ██ ██      ████  ████ ██   ██ ████   ██ ██   ██ ██       ██      ██   ██
 ## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ███████ ██   ██ ██   ██ ██      ██ ████ ██ ███████ ██ ██  ██ ███████ ██   ███ █████   ██████
@@ -963,11 +963,11 @@ Nested_SDDCManager:
 
 
 ##
-## ███    ██ ███████ ███████ ████████ ███████ ██████          ██    ██  ██████ ███████ ██ ███    ██ ███████ ████████  █████  ██      ██      ███████ ██████  
-## ████   ██ ██      ██         ██    ██      ██   ██         ██    ██ ██      ██      ██ ████   ██ ██         ██    ██   ██ ██      ██      ██      ██   ██ 
-## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██    ██ ██      █████   ██ ██ ██  ██ ███████    ██    ███████ ██      ██      █████   ██████  
-## ██  ██ ██ ██           ██    ██    ██      ██   ██          ██  ██  ██      ██      ██ ██  ██ ██      ██    ██    ██   ██ ██      ██      ██      ██   ██ 
-## ██   ████ ███████ ███████    ██    ███████ ██████  ███████   ████    ██████ ██      ██ ██   ████ ███████    ██    ██   ██ ███████ ███████ ███████ ██   ██ 
+## ███    ██ ███████ ███████ ████████ ███████ ██████          ██    ██  ██████ ███████ ██ ███    ██ ███████ ████████  █████  ██      ██      ███████ ██████
+## ████   ██ ██      ██         ██    ██      ██   ██         ██    ██ ██      ██      ██ ████   ██ ██         ██    ██   ██ ██      ██      ██      ██   ██
+## ██ ██  ██ █████   ███████    ██    █████   ██   ██         ██    ██ ██      █████   ██ ██ ██  ██ ███████    ██    ███████ ██      ██      █████   ██████
+## ██  ██ ██ ██           ██    ██    ██      ██   ██          ██  ██  ██      ██      ██ ██  ██ ██      ██    ██    ██   ██ ██      ██      ██      ██   ██
+## ██   ████ ███████ ███████    ██    ███████ ██████  ███████   ████    ██████ ██      ██ ██   ████ ███████    ██    ██   ██ ███████ ███████ ███████ ██   ██
 ##
 
 Nested_VCFInstaller:
@@ -991,7 +991,7 @@ Nested_VCFInstaller:
         IPv6:
           Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(50) }}"
           Prefix:  "{{ Net.Management.IPv6.Prefix }}"
-  
+
   DepotSettings:
     OnlineDepot:
       Configure: true
@@ -1037,7 +1037,7 @@ Nested_VCFInstaller:
         - Type: vCenter
           ID: c90008b8-3e0d-5556-a264-3cfdb4367286
           Download: true
-    
+
   Deploy:
     WorkflowType: VCF
     IncludeVCFAutomation: false
@@ -1055,7 +1055,7 @@ Nested_VCFInstaller:
         Credential:
           root:
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-          admin: 
+          admin:
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
         Component:
           Appliance:
@@ -1085,7 +1085,7 @@ Nested_VCFInstaller:
         Credential:
           root:
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-          admin: 
+          admin:
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
         Component:
           Appliance:
@@ -1098,7 +1098,7 @@ Nested_VCFInstaller:
                 Address: "{{ Net.Management.IPv6.Network }}::{{ '%04x'|format(53) }}"
       VCFAutomation:
         Credential:
-          admin: 
+          admin:
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
         Component:
           Appliance:
@@ -1123,7 +1123,7 @@ Nested_VCFInstaller:
         Credential:
           root:
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-          admin: 
+          admin:
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
         Component:
           Appliance:
@@ -1143,7 +1143,7 @@ Nested_VCFInstaller:
         Credential:
           root:
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-          admin: 
+          admin:
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
           audit:
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
@@ -1177,10 +1177,10 @@ Nested_VCFInstaller:
         Credential:
           root:
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
-          admin: 
+          admin:
             Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
           vcf:
-            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"      
+            Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
         Component:
           Appliance:
             FQDN: "{{ SiteCode }}-vcf-sddcmanager.{{ Common.DNS.Domain }}"
@@ -1483,7 +1483,7 @@ Nested_SSPI:
     audit:
       Name: audit
       Password: "{{ Common.Password.Nested }}{{ Common.Password.Nested }}"
- 
+
   Component:
     Appliance:
       VMName: "{{ SiteCode }}-sspi"
@@ -1542,12 +1542,12 @@ Nested_DNSServer:
       Password: "{{ Common.Password.Nested }}"
     Network:
       IPv4:
-        Address: "{{ Net.Uplink.IPv4.Network }}.5" 
+        Address: "{{ Net.Uplink.IPv4.Network }}.5"
         Prefix:  "{{ Net.Uplink.IPv4.Prefix }}"
         Gateway: "{{ Net.Uplink.IPv4.Network }}.1"
         DNS: "{{ Common.DNS.Forwarder.IPv4 }}"                                                                   # DNS server reachable by OS to resolve names.  Update as required for your environment.
       IPv6:
-        Address: "{{ Net.Uplink.IPv6.Network }}::{{ '%04x'|format(5) }}" 
+        Address: "{{ Net.Uplink.IPv6.Network }}::{{ '%04x'|format(5) }}"
         Prefix:  "{{ Net.Uplink.IPv6.Prefix }}"
         DNS: "{{ Common.DNS.Forwarder.IPv6 }}"
     Locale: en_US
@@ -1602,10 +1602,10 @@ Nested_Cluster:
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
               Network: 10.244.0.0
               Prefix: 20
-            Service:                                                                    # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components. 
+            Service:                                                                    # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components.
               Network: 10.96.0.0
               Prefix: 23
-            Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
+            Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space.
               Network: "{{ Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number+9) | ansible.utils.ipsubnet(28, 0) | ansible.utils.ipaddr('network') }}"
               Prefix: 28
             Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
@@ -1641,10 +1641,10 @@ Nested_Cluster:
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
               Network: 10.244.16.0
               Prefix: 20
-            Service:                                                                    # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components. 
+            Service:                                                                    # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components.
               Network: 10.96.2.0
               Prefix: 23
-            Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
+            Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space.
               Network: "{{ Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number+9) | ansible.utils.ipsubnet(28, 2) | ansible.utils.ipaddr('network') }}"
               Prefix: 28
             Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
@@ -1680,10 +1680,10 @@ Nested_Cluster:
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
               Network: 10.244.32.0
               Prefix: 20
-            Service:                                                                    # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components. 
+            Service:                                                                    # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components.
               Network: 10.96.4.0
               Prefix: 23
-            Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
+            Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space.
               Network: "{{ Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number+9) | ansible.utils.ipsubnet(28, 4) | ansible.utils.ipaddr('network') }}"
               Prefix: 28
             Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
@@ -1719,10 +1719,10 @@ Nested_Cluster:
             Pod:                                                                        # Pod - Internal CIDR block from which IPs for pods will be allocated. They cannot overlap with IPs of Workload Management components.
               Network: 10.244.48.0
               Prefix: 20
-            Service:                                                                    # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components. 
+            Service:                                                                    # Service - Internal CIDR block from which IPs for Kubernetes ClusterIP Services will be allocated. It cannot overlap with IPs of Workload Management components.
               Network: 10.96.6.0
               Prefix: 23
-            Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space. 
+            Ingress:                                                                    # Ingress - External CIDR blocks from which IPs for Kubernetes Ingresses and LoadBalancer-type Services will be allocated. These CIDRs will come from the external network's IP space.
               Network: "{{ Pod.BaseOverlay.IPv4.Network | ansible.utils.ipsubnet(24, Pod.Number+9) | ansible.utils.ipsubnet(28, 6) | ansible.utils.ipaddr('network') }}"
               Prefix: 28
             Egress:                                                                     # Egress - External CIDR blocks which will be used for translating internal Pod IPs to an external IP via SNAT rules, to allow pods to reach the external network. These CIDRs should come from the external network's IP space.
@@ -3472,7 +3472,7 @@ Nested_NSXT:
               ManagementIPAddress: "{{ Net.Management.IPv4.Network }}.254"
               ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
-              Hostname: "{{ SiteCode }}-t0-edgevm-01.{{ Common.DNS.Domain }}" 
+              Hostname: "{{ SiteCode }}-t0-edgevm-01.{{ Common.DNS.Domain }}"
               Datastore: "{{ Nested_Cluster.Edge.vsanDatastore }}"
               Reservations:
                 CPU:
@@ -3520,7 +3520,7 @@ Nested_NSXT:
               ManagementIPAddress: "{{ Net.Management.IPv4.Network }}.253"
               ManagementIPPrefix: "{{ Net.Management.IPv4.Prefix }}"
               Gateway: "{{ Net.Management.IPv4.Network }}.1"
-              Hostname: "{{ SiteCode }}-t0-edgevm-02.{{ Common.DNS.Domain }}" 
+              Hostname: "{{ SiteCode }}-t0-edgevm-02.{{ Common.DNS.Domain }}"
               Datastore: "{{ Nested_Cluster.Edge.vsanDatastore }}"
               Reservations:
                 CPU:
