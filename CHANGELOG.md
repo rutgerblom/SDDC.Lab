@@ -3278,3 +3278,11 @@
   - Updated the object names of Datacenter and Cluster in the nested VCF 9 management vCenter instance so that these follow the naming convention.
   - Be sure to update your:
     - ```config.yml```
+
+## Dev-v9.0.0 02-SEPTEMBER-2025
+
+### Added by Luis Chanu
+  - Bumped ```SDDCLab.Version``` from ```8``` to ```9``` in:
+    - ```templates/Pod_Config.j2```
+    - ```playbooks/ValidateConfiguration.yml```
+  - Be sure to regenerate your static SDDC.Lab Pod configurations via either ```playbooks/CreatePodConfig.yml``` or via ```utils/Util_CraeteAllPodConfigs.sh```
