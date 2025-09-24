@@ -3249,3 +3249,16 @@
 ### Added by Rutger Blom & Luis Chanu
 
 - Released version 8 of the SDDC.Lab project.
+
+```
+██    ██  █████  
+██    ██ ██   ██ 
+██    ██  █████  
+ ██  ██  ██   ██ 
+  ████    █████ 
+```
+
+## v8.0.0 24-SEPTEMBER-2025
+
+### Added by Rutger Blom
+  - Fixed an issue by adding a conditional to ```templates/VCF_v9.0.0.0.j2``` so that only hosts with "Deploy" set to "true" are added to the list of hosts.
