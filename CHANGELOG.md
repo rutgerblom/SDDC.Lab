@@ -3288,3 +3288,8 @@
   - Updated the object names of NSX Edge Nodes and Cluster to lower case to better align with VCF 9's naming convention.
   - Be sure to regenerate your static SDDC.Lab Pod configurations via either ```playbooks/CreatePodConfig.yml``` or via ```utils/Util_CraeteAllPodConfigs.sh```
   - Removed extra trailing spaces for ```config_sample.yml``` file
+
+## Dev-v9.0.0 24-SEPTEMBER-2025
+
+### Added by Rutger Blom
+  - Fixed an issue by adding a conditional to ```templates/VCF_v9.0.0.0.j2``` so that only hosts with "Deploy" set to "true" are added to the list of hosts.
