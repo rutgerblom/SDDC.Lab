@@ -104,7 +104,7 @@
   },
 {% endif %}{# Nested_VCFInstaller.Deploy.IncludeVCFAutomation #}
   "hostSpecs": [
-{% for Host in Nested_VCFInstaller.Deploy.Product.Hosts if Host.VCFDomain == 'management'%}
+{% for Host in Nested_VCFInstaller.Deploy.Product.Hosts if Host.VCFDomain == 'management' and Host.Deploy %}
     {
       "hostname": "{{ Host.FQDN }}",
       "credentials": {
