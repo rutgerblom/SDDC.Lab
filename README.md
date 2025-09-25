@@ -299,6 +299,10 @@ When a Pod is deployed, various components are deployed as part of that Pod.  Ea
 | 58 | VCF Mgmt LM VIP | NSX Local Manager VIP in the VCF management domain | pod-240-vcf-mgmt-nsx-lm | No |
 | 59 | VCF Mgmt LM-1 | NSX Local Manager Node 1 in the VCF management domain | pod-240-vcf-mgmt-nsx-lm-1 | No |
 | 60 | VCF SDDC Manager | SDDC Manager Appliance in VCF | pod-240-vcf-sddcmanager | No |
+| Thru 69 | Reserved | Reserved for Future Management VMs/Services | | |
+| 70 | VCF WLD vCenter | vCenter Server Appliance for the VCF workload domain | pod-240-vcf-wld-vcenter | No |
+| 71 | VCF WLD LM VIP | NSX Local Manager VIP in the VCF workload domain | pod-240-vcf-mgmt-wld-lm | No |
+| 72 | VCF WLD LM-1 | NSX Local Manager Node 1 in the VCF workload domain | pod-240-vcf-mgmt-wld-lm-1 | No |
 | Thru 89 | Reserved | Reserved for Future Management VMs/Services | | |
 | 90 | Reserved | User Deployed 3rd Party Appliances | | |
 | Thru 100 | Reserved | User Deployed 3rd Party Appliances | | |
