@@ -3293,3 +3293,8 @@
 
 ### Added by Rutger Blom
   - Fixed an issue by adding a conditional to ```templates/VCF_v9.0.0.0.j2``` so that only hosts with "Deploy" set to "true" are added to the list of hosts.
+
+## Dev-v9.0.0 25-SEPTEMBER-2025
+
+### Added by Rutger Blom
+  - Added IP reservations to ```README.md``` for management components in a VCF 9 workload domain.
