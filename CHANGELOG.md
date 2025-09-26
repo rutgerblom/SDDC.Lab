@@ -3298,3 +3298,10 @@
 
 ### Added by Rutger Blom
   - Added IP reservations to ```README.md``` for management components in a VCF 9 workload domain.
+
+## Dev-v9.0.0 26-SEPTEMBER-2025
+
+### Added by Rutger Blom
+  - Expanded the VCF IP address range for vMotion and vSAN from 4 to 8 IP addresses in order to accomodate up to 8 ESX hosts
+  - Be sure to update your:
+    - ```config.yml```
